@@ -1,0 +1,28 @@
+Package: RepSeqNetworkAnalysis
+Type: Package
+Title: Network Analysis for Repertoire-Sequencing
+Version: 0.0.9001
+Authors@R: c(
+    person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"),
+    person("Hai", "Yang", email = "hetao@sfsu.edu", role = "aut"),
+    person("Brian", "Neal", email = "bneal@mail.sfsu.edu", 
+        role = c("aut", "cre")))
+Maintainer: Brian Neal <bneal@mail.sfsu.edu>
+Description: Given clonotype sequences and counts from repertoire-sequence data, 
+    builds the corresponding network graph using `igraph`, computes node-level 
+    and cluster-level network statistics, and creates a `ggraph` visual plot of 
+    the network.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Depends: reticulate
+Imports: igraph, ggraph, ggplot2, stats, Matrix, utils, grDevices
+Config/reticulate:
+  list(
+    packages = list(
+      list(package = "scipy", pip = TRUE),
+      list(package = "numpy", pip = TRUE),
+      list(package = "pandas", pip = TRUE),
+      list(package = "Levenshtein", pip = TRUE)
+    )
+  )
