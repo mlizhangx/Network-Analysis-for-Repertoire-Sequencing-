@@ -90,51 +90,7 @@ Li Zhang, Hai Yang, Brian Neal
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \examples{
-set.seed(42)
-sample_size <- 200
-group_labels <- rep("Control", times = sample_size)
-assign_treatment <- sample(c(TRUE, FALSE), size = sample_size, replace = TRUE)
-base_seq_length <- 7
-characters <- c("G", "A", "T", "C")
-char_probs <- c(2/3, 2/9, 1/18, 1/18)
-characters_sample <- sample(characters,
-                            size = base_seq_length * sample_size,
-                            replace = TRUE, prob = char_probs)
-characters_sample <- matrix(characters_sample, ncol = sample_size)
-clonotypes <- apply(characters_sample, MARGIN = 2,
-                    FUN = function(x) paste0(x, collapse = ""))
-clonotypes_append <- rep("AATC", times = sample_size)
-append_latent_prob <- runif(sample_size, min = 0, max = 1)
-for (i in 1:sample_size) {
-  treat <- assign_treatment[[i]]
-  if (treat) group_labels[[i]] <- "Treatment"
-  if ((treat & append_latent_prob[[i]] > 0.9) |
-      (!treat & append_latent_prob[[i]] > 0.5)) {
-    clonotypes_append[[i]] <- "AATCGGGG"
-  } else if ((treat & append_latent_prob[[i]] > 0.8) |
-      (!treat & append_latent_prob[[i]] > 0.3)) {
-    clonotypes_append[[i]] <- "AATCGGT"
-  } else if ((treat & append_latent_prob[[i]] > 0.7) |
-      (!treat & append_latent_prob[[i]] > 0.2)) {
-    clonotypes_append[[i]] <- "AATCGCT"
-  } else if ((treat & append_latent_prob[[i]] > 0.5) |
-      (!treat & append_latent_prob[[i]] > 0.1)) {
-    clonotypes_append[[i]] <- "AATTGCT"
-  } else if ((treat & append_latent_prob[[i]] > 0.25) |
-      (!treat & append_latent_prob[[i]] > 0.05)) {
-    clonotypes_append[[i]] <- "AATTG"
-  }
-  clonotypes[[i]] <- paste0(clonotypes[[i]], clonotypes_append[[i]],
-                            collapse = "")
-}
-counts <- rbinom(sample_size, size = 300, prob = 0.1)
-net <- buildNetwork(clonotypes = clonotypes,
-                    counts = counts,
-                    frequencies = counts/sum(counts),
-                    group_labels = group_labels,
-                    clone_seq_type = "nucleotide",
-                    sample_name = "Example Data",
-                    group_type = "Treatment Status")
+
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

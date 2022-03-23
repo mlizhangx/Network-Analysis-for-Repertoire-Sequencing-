@@ -313,7 +313,7 @@ buildNetwork <- function(clonotypes, counts, frequencies,
   cat(paste0(nrow(meta_data), " unique clonotype sequences found.\n"))
 
   # remove sequences with length < 3 (empty "" values are included)
-  meta_data$seq_length <- nchar(as.character(meta_data$cloneSeq))
+  meta_data$seq_length <- nchar(meta_data$cloneSeq)
   nontrivial_clone_ids <- meta_data$seq_length > 2
   cat(paste0("Removing ", sum(!nontrivial_clone_ids),
              " clonotype sequences containing fewer than 3 characters...\n"))
