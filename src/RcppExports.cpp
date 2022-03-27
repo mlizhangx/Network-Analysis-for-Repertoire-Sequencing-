@@ -11,18 +11,6 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// levAdjacencyMatDense
-arma::umat levAdjacencyMatDense(std::vector<std::string> strings, const int& maxdist);
-RcppExport SEXP _RepSeqNetworkAnalysis_levAdjacencyMatDense(SEXP stringsSEXP, SEXP maxdistSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type strings(stringsSEXP);
-    Rcpp::traits::input_parameter< const int& >::type maxdist(maxdistSEXP);
-    rcpp_result_gen = Rcpp::wrap(levAdjacencyMatDense(strings, maxdist));
-    return rcpp_result_gen;
-END_RCPP
-}
 // levAdjacencyMatSparse
 arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist);
 RcppExport SEXP _RepSeqNetworkAnalysis_levAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP) {
@@ -50,7 +38,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RepSeqNetworkAnalysis_levAdjacencyMatDense", (DL_FUNC) &_RepSeqNetworkAnalysis_levAdjacencyMatDense, 2},
     {"_RepSeqNetworkAnalysis_levAdjacencyMatSparse", (DL_FUNC) &_RepSeqNetworkAnalysis_levAdjacencyMatSparse, 2},
     {"_RepSeqNetworkAnalysis_levDistBounded", (DL_FUNC) &_RepSeqNetworkAnalysis_levDistBounded, 3},
     {NULL, NULL, 0}
