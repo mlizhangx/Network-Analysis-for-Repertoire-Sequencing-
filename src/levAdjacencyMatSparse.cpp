@@ -33,13 +33,14 @@ arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
   // record indices of nodes with positive degree
   arma::uvec col_ids = find(col_sums > 1);
 
-  // write indices of network nodes to file
-  col_ids.save("col_ids.txt", raw_ascii);
-
   // subset matrix to keep only network nodes
   out = out.cols(col_ids);
   out = out.t();
   out = out.cols(col_ids);
+
+  // write indices of network nodes to file
+  col_ids += 1;  // offset C++'s 0-index starting convention
+  col_ids.save("col_ids.txt", raw_ascii);
 
   return(out);
 
