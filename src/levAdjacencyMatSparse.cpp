@@ -37,13 +37,9 @@ arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
   col_ids.save("col_ids.txt", raw_ascii);
 
   // subset matrix to keep only network nodes
-  Rcout << "out: \n" << out << "\n";
   out = out.cols(col_ids);
-  Rcout << "out.cols(col_ids): \n" << out << "\n";
   out = out.t();
-  Rcout << "out.t(): \n" << out << "\n";
   out = out.cols(col_ids);
-  Rcout << "out.cols(col_ids): \n" << out << "\n";
 
   return(out);
 
