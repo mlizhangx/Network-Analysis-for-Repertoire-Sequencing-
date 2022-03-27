@@ -6,6 +6,8 @@
 //the Levenshtein distance will exceed the bound, the computation is halted and
 //a value of -1 is returned.
 
+#define ARMA_64BIT_WORD 1
+#include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <strings.h>
 using namespace Rcpp;

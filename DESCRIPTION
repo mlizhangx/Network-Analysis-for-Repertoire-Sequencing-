@@ -1,7 +1,7 @@
 Package: RepSeqNetworkAnalysis
 Type: Package
 Title: Network Analysis for Repertoire-Sequencing
-Version: 0.0.9002
+Version: 0.0.9003
 Authors@R: c(
     person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"),
     person("Hai", "Yang", email = "hetao@sfsu.edu", role = "aut"),
@@ -15,15 +15,6 @@ Description: Given clonotype sequences and counts from repertoire-sequence data,
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Depends: reticulate, Matrix
+Depends: Matrix
 Imports: Rcpp (>= 1.0.8), igraph, ggraph, ggplot2, stats, utils, grDevices
 LinkingTo: Rcpp, RcppArmadillo
-Config/reticulate:
-  list(
-    packages = list(
-      list(package = "scipy", pip = TRUE),
-      list(package = "numpy", pip = TRUE),
-      list(package = "pandas", pip = TRUE),
-      list(package = "Levenshtein", pip = TRUE)
-    )
-  )

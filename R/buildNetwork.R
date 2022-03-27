@@ -12,8 +12,6 @@ buildNetwork <- function(clonotypes, counts, frequencies,
                          report_time = FALSE) {
 
   ### INITIALIZE ###
-  # check that required python modules are installed
-  .checkPythonModules()
 
   # check for invalid arguments
   .checkArguments(clonotypes, counts, frequencies, group_labels,
@@ -36,10 +34,12 @@ buildNetwork <- function(clonotypes, counts, frequencies,
 
   ### GENERATE ADJACENCY MATRIX ###
   # call python: generate adjacency matrix for clonotypes with deg > 0
-  python_output <- .createAdjacencyMatrix(distance_type)
+  adjacency_matrix <- adjacencyMatrix(meta_data$cloneSeq, distance_type,
+                                      max_dist = 1, sparse = TRUE)
 
   # clonotypes with deg > 0 (i.e., those corresponding to adjacency matrix)
-  meta_data <- meta_data[python_output$clone_ids, ]
+  clone_ids <- utils::read.table("col_ids.txt") + 1
+  meta_data <- meta_data[clone_ids, ]
 
 
 
@@ -48,14 +48,13 @@ buildNetwork <- function(clonotypes, counts, frequencies,
   set.seed(9999)
 
   # Generate network from adjacency matrix
-  net <- .genNetworkGraph(python_output$adjacency_matrix)
+  net <- .genNetworkGraph(adjacency_matrix)
 
   # Compute node-level network characteristics
   cell_level_info <- .genNetworkStats(net, meta_data)
 
   # Compute cluster-level network characteristics
-  cluster_level_info <- .genClusterStats(net, cell_level_info,
-                                         python_output$adjacency_matrix)
+  cluster_level_info <- .genClusterStats(net, cell_level_info, adjacency_matrix)
 
 
 
@@ -119,21 +118,6 @@ buildNetwork <- function(clonotypes, counts, frequencies,
 
 # Helper functions for buildNetwork ---------------------------------------
 
-# Check that required python modules are installed
-.checkPythonModules <- function() {
-  if (!reticulate::py_module_available("scipy")) {
-    stop("The Python module 'scipy' is unavailable. You can use `installPythonModules()` to install it.")
-  }
-  if (!reticulate::py_module_available("numpy")) {
-    stop("The Python module 'numpy' is unavailable. You can use `installPythonModules()` to install it.")
-  }
-  if (!reticulate::py_module_available("pandas")) {
-    stop("The Python module 'pandas' is unavailable. You can use `installPythonModules()` to install it.")
-  }
-  if (!reticulate::py_module_available("Levenshtein")) {
-    stop("The Python module 'Levenshtein' is unavailable. You can use `installPythonModules()` to install it.")
-  }
-}
 
 
 
@@ -333,39 +317,6 @@ buildNetwork <- function(clonotypes, counts, frequencies,
 
   # Return clonotype data for unique nontrivial clonotype sequences
   return(meta_data)
-
-}
-
-
-
-
-
-# Call python script to create adjacency matrix for nodes with deg > 1
-# Return adjacency matrix and corresponding clonotype data
-.createAdjacencyMatrix <- function(distance_type) {
-
-  cat(paste0("Computing pairwise distances using '",
-             distance_type, "' distance metric...\n"))
-
-  # call python script (writes output to temp files)
-  py_script <- paste0("python/computeDistances_", distance_type, ".py")
-  reticulate::py_run_file(system.file(py_script,
-                                      package = "RepSeqNetworkAnalysis"))
-
-  # import adjacency matrix from temp file
-  adjacency_matrix <- Matrix::readMM("temp_adjacency_matrix.mtx")
-
-  # (dist matrix only includes clonotypes with deg > 0);
-  # import id list of included clonotypes from temp file
-  select_col_id <- utils::read.csv(file = "select_col_id.csv", header = FALSE)
-  clone_ids <- which(as.logical(select_col_id$V1))
-
-  cat(paste0("Adjacency matrix created using only the ", length(clone_ids),
-             " clonotypes corresponding to graph nodes with degree > 0.\n"))
-
-  # Return adjacency matrix and corresponding clonotype data
-  return(list("adjacency_matrix" = adjacency_matrix,
-              "clone_ids" = clone_ids))
 
 }
 
