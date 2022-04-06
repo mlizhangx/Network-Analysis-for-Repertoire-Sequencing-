@@ -13,7 +13,7 @@ arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
   // allocate memory for data structures
   const int dim = strings.size();
   int dist;
-  arma::sp_umat out = speye<sp_umat>(dim, dim);
+  arma::sp_umat out = speye<sp_umat>(dim, dim);  // initialize as identity mat
 
   // compute adjacencies for upper triangle
   for (int j = 0; j < dim; ++j) {           // columns
