@@ -38,8 +38,8 @@ buildNetwork <- function(clonotypes, counts, frequencies,
                                       max_dist = 1, sparse = TRUE)
 
   # clonotypes with deg > 0 (i.e., those corresponding to adjacency matrix)
-  clone_ids <- utils::read.table("col_ids.txt") + 1
-  meta_data <- meta_data[clone_ids, ]
+  clone_ids <- utils::read.table("col_ids.txt")
+  meta_data <- meta_data[clone_ids$V1, ]
 
 
 
