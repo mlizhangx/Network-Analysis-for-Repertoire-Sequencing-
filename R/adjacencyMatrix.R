@@ -1,7 +1,6 @@
 adjacencyMatrix <- function(clones,
                             dist_type = "levenshtein",
-                            max_dist = 1,
-                            sparse = TRUE) {
+                            max_dist = 1) {
 
   # attempt to coerce clones to character vector
   if (length(clones) == 0) stop("'clones' has zero length")
@@ -15,11 +14,11 @@ adjacencyMatrix <- function(clones,
 
   # Compute adjacency matrix
   if (dist_type == "levenshtein") {
-    if (sparse) {
       out <- levAdjacencyMatSparse(clones, max_dist)
-    } else {
-      out <- levAdjacencyMatDense(clones, max_dist) }
+  } else {
+    stop('"levenshtein" is currently the only available option for `dist_type`')
   }
+
 
   return(out)
 
