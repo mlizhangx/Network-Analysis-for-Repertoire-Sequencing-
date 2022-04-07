@@ -36,6 +36,8 @@ install.packages("devtools")
 devtools::install_github("mlizhangx/Network-Analysis-for-Repertoire-Sequencing-")
 ```
 
+**A note to Linux users:** If installing on Linux, note that OpenMP support is disabled by default as MacOS does not support it. If you wish to enable OpenMP, you can do so by editing the file src/Makevars; editing instructions are included as comments in the file. OpenMP is used by the Armadillo library for C++ to automatically parallelize expensive operations such as elementwise matrix operations. Having OpenMP enabled may shorten computation time for the network adjacency matrix depending on the extent to which Armadillo's methods for sparse matrices take advantage of it. 
+
 
 ## Python dependency
 
