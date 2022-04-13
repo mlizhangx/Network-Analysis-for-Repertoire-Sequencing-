@@ -33,6 +33,7 @@
 installPythonModules <- function(method = "auto", conda = "auto", pip = FALSE) {
   reticulate::py_install("numpy", method = method, conda = conda, pip = pip)
   reticulate::py_install("pandas", method = method, conda = conda, pip = pip)
+  reticulate::py_install("tensorflow", method = method, conda = conda, pip = pip)
   reticulate::py_install("keras", method = method, conda = conda, pip = pip)
 }
 

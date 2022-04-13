@@ -1,12 +1,11 @@
 
+# RepSeqNetworkAnalysis 0.0.9006
+* Python module `tensorflow` added to `installPythonModules()` and Config/reticulate field of the DESCRIPTION file. `tensorflow` is required by the Python module `keras`.
+
 
 # RepSeqNetworkAnalysis 0.0.9005
-<<<<<<< HEAD
 * file `zzz.R`  created with .onUnload() directive to unload package dll via call to `library.dynam.unload()` when the package is unloaded
 
-=======
-file `zzz.R`  created with .onUnload() directive to unload package dll via call to `library.dynam.unload()` when the package is unloaded
->>>>>>> fc587322a82fe8cbc48b976dadee83272c3da238
 
 # RepSeqNetworkAnalysis 0.0.9004
 

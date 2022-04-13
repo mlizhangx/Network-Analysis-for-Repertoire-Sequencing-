@@ -21,9 +21,9 @@ LinkingTo: Rcpp, RcppArmadillo
 Config/reticulate:
   list(
     packages = list(
-      list(package = "scipy", pip = TRUE),
       list(package = "numpy", pip = TRUE),
       list(package = "pandas", pip = TRUE),
-      list(package = "Levenshtein", pip = TRUE)
+      list(package = "tensorflow", pip = TRUE),
+      list(package = "keras", pip = TRUE)
     )
   )
