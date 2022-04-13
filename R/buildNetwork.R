@@ -126,8 +126,7 @@ buildNetwork <- function(clonotypes, counts, frequencies,
 # directory created as subfolder of current working directory
 .createOutputDir <- function(distance_type, clone_seq_type, sample_name) {
 
-  dir_output <- paste0(getwd(), '/', sample_name, '/', clone_seq_type, '/',
-                       distance_type)
+  dir_output <- file.path(getwd(), sample_name, clone_seq_type, distance_type)
   dir.create(dir_output, showWarnings = FALSE, recursive = TRUE)
 
   # Confirm successful creation of output directory
@@ -591,24 +590,24 @@ buildNetwork <- function(clonotypes, counts, frequencies,
 
   # Save Network igraph using edgelist format
   igraph::write_graph(net,
-                      file = paste0(dir_output, "/network_graph_edgelist.txt"),
+                      file = file.path(dir_output, "network_graph_edgelist.txt"),
                       format = "edgelist")
   cat("Network igraph object saved in edgelist format as 'network_graph_edgelist.txt'\n")
 
   # Save cell-level info with network characteristics
   utils::write.csv(cell_level_info,
-                   file = paste0(dir_output, "/cell_level_info.csv"),
+                   file = file.path(dir_output, "cell_level_info.csv"),
                    row.names = FALSE)
   cat("Cell-level data and network characteristics saved as 'cell_level_info.csv'\n")
 
   # Save cluster-level stats
   utils::write.csv(cluster_level_info,
-                   file = paste0(dir_output, "/cluster_level_info.csv"),
+                   file = file.path(dir_output, "cluster_level_info.csv"),
                    row.names = FALSE)
   cat("Cluster-level network characteristics saved as 'cluster_level_info.csv'\n")
 
   # Save ggraph
-  grDevices::pdf(file = paste0(dir_output, "/graph_plot.pdf"))
+  grDevices::pdf(file = file.path(dir_output, "graph_plot.pdf"))
   print(network_plot)
   grDevices::dev.off()
   cat("Plot of network graph saved as 'graph_plot.pdf'\n")
