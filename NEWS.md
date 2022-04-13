@@ -1,4 +1,8 @@
 
+
+# RepSeqNetworkAnalysis 0.0.9005
+file `zzz.R`  created with .onUnload() directive to unload package dll via call to `library.dynam.unload()` when the package is unloaded
+
 # RepSeqNetworkAnalysis 0.0.9004
 
 * Reintroduced reticulate package dependency as well as R .onLoad() directives and R functions related to python integration, dependency management and module installation
