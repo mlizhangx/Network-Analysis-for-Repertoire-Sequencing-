@@ -20,6 +20,7 @@ arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
     for (int i = 0; i < j; ++i) {           // rows
       dist = levDistBounded(strings[i], strings[j], maxdist);
       if (dist != -1) { out(i, j) = 1; }
+      Rcpp::checkUserInterrupt();
     }
   }
 
