@@ -1,4 +1,9 @@
 
+# RepSeqNetworkAnalysis 0.0.9007
+* `.genNetworkGraph()` internal helper for `buildNetwork()` renamed into a public version `genNetworkGraph()` for use by other package functions and by users; moved to a new file `utils.R` that will be used to house shared helper functions used by multiple package functions.
+* Added `inst/python/Atchley_factors.csv`, which stores the Atchley factor amino acid embedding used by `BriseisEncoder.py`
+
+
 # RepSeqNetworkAnalysis 0.0.9006
 * Python module `tensorflow` added to `installPythonModules()` and Config/reticulate field of the DESCRIPTION file. `tensorflow` is required by the Python module `keras`.
 

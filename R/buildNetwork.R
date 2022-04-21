@@ -35,7 +35,7 @@ buildNetwork <- function(clonotypes, counts, frequencies,
   ### GENERATE ADJACENCY MATRIX ###
   # call python: generate adjacency matrix for clonotypes with deg > 0
   adjacency_matrix <- adjacencyMatrix(meta_data$cloneSeq, distance_type,
-                                      max_dist = 1, sparse = TRUE)
+                                      max_dist = 1)
 
   # clonotypes with deg > 0 (i.e., those corresponding to adjacency matrix)
   clone_ids <- utils::read.table("col_ids.txt")
@@ -48,7 +48,7 @@ buildNetwork <- function(clonotypes, counts, frequencies,
   set.seed(9999)
 
   # Generate network from adjacency matrix
-  net <- .genNetworkGraph(adjacency_matrix)
+  net <- genNetworkGraph(adjacency_matrix)
 
   # Compute node-level network characteristics
   cell_level_info <- .genNetworkStats(net, meta_data)
@@ -153,7 +153,7 @@ buildNetwork <- function(clonotypes, counts, frequencies,
     stop(paste0("argument 'clonotypes' must be a character vector"))
   }
 
-  # counts is numeric character vector with no NA/Inf values and correct length
+  # counts is numeric vector with no NA/Inf values and correct length
   if (length(counts) == 0) stop("argument 'counts' has zero length")
   if (!is.vector(counts) | !is.numeric(counts)) {
     stop(paste0("argument 'counts' must be a numeric vector"))
@@ -166,7 +166,7 @@ buildNetwork <- function(clonotypes, counts, frequencies,
     stop("length of 'counts' does not match length of 'clonotypes'")
   }
 
-  # frequency is numeric character vector with no NA/Inf values and correct length
+  # frequency is numeric vector with no NA/Inf values and correct length
   if (length(frequencies) == 0) stop("argument 'frequencies' has zero length")
   if (!is.vector(frequencies) | !is.numeric(frequencies)) {
     stop(paste0("argument 'frequencies' must be a numeric vector"))
@@ -321,21 +321,6 @@ buildNetwork <- function(clonotypes, counts, frequencies,
 
 
 
-
-# Use adjacency matrix and corresponding clonotype data to generate network
-.genNetworkGraph <- function(adjacency_matrix) {
-
-  cat("Generating network from adjacency matrix...\n")
-
-  net <- igraph::graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
-
-  net <- igraph::as.undirected(igraph::simplify(net,
-                                                remove.multiple = T,
-                                                remove.loops = T))
-
-  return(net)
-
-}
 
 
 
