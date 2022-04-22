@@ -87,7 +87,7 @@ buildNetwork <- function(clonotypes, counts, frequencies,
   }
 
   # Remove temporary files
-  .removeTempFiles()
+  file.remove("temp_clone_seq_list.txt")
 
   # Report completion and elapsed time
   cat("All processes complete.")
@@ -601,12 +601,3 @@ buildNetwork <- function(clonotypes, counts, frequencies,
 
 
 
-
-.removeTempFiles <- function() {
-
-  # Remove temporary files
-  file.remove("temp_clone_seq_list.txt")
-  file.remove("temp_adjacency_matrix.mtx")
-  file.remove("select_col_id.csv")
-
-}
