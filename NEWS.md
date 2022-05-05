@@ -1,3 +1,22 @@
+# 0.0.9009
+* `buildNetwork()` renamed to `generateNetworkWithStats()`
+* `adjacencyMatrix()` renamed to `sparseAdjacencyMatFromClones()`
+* `genNetworkGraph()` renamed to `generateNetworkFromAdjacencyMat()`
+* Added general-purpose helper functions:
+    * `aggregateCountsByAminoAcidSeq`
+    * `filterDataBySequenceLength`
+    * `generateNetworkFromClones`
+    * `computeNodeNetworkStats`
+    * `addClusterMembership`
+    * `computeClusterNetworkStats`
+    * `plotNetworkGraph`
+    * `adjacencyMatAtchleyFromClones`
+* Added function `findDiseaseMotifsFromMergedSamples` and helper functions:
+    * `computeMetaForCandidateSeqs`
+    * `subsetDataNearTargetMotif`
+* Added vignette for `generateNetworkWithStats()`
+    
+    
 # 0.0.9008
 * New function `hamDistBounded` for computing bounded Hamming distance in C++
     * Supports strings of unequal length; the longer string is effectively truncated to the length of the shorter string, and the difference in length is added to the Hamming distance with the truncated version.  This is equivalent to extending the shorter string to the length of the longer string by appending placeholder characters that differ from their counterparts in the longer string.
