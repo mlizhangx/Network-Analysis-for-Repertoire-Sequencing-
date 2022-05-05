@@ -62,4 +62,4 @@ Vignettes are linked below. Once the package is installed, vignettes can
 also be viewed from within `R` using `browseVignettes()`.
 
 [Generate Network With Node and Cluster
-Statistics](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/tree/main/vignettes/generateNetworkWithStats.html)
+Statistics](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/tree/main/vignettes/generateNetworkWithStats.md)
