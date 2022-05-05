@@ -58,8 +58,14 @@ prior to calling functions from `RepSeqNetworkAnalysis`.
 
 ## Vignettes
 
-Vignettes are linked below. Once the package is installed, vignettes can
-also be viewed from within `R` using `browseVignettes()`.
+Pre-rendered vignettes are included in the package’s `vignettes`
+directory; you can use the links below to view the rendered files on the
+package’s GitHub repository. If you are installing the package from
+GitHub wish to be able to access the vignettes from within `R`, include
+the argument `build_vignettes = TRUE` when calling the
+`devtools::install_github` function. Once the package is installed,
+vignettes can also be viewed from within `R` using
+`help(package = "RepSeqNetworkAnalysis")`.
 
 [Generate Network With Node and Cluster
 Statistics](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/tree/main/vignettes/generateNetworkWithStats.md)
