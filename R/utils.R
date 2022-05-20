@@ -37,12 +37,12 @@ aggregateCountsByAminoAcidSeq <- function(
   cat("Aggregating clone counts and fractions by TCR CDR3 amino acid sequence...\n")
 
   if (!is.null(group_col)) {
-    grouping_variables <- list(data[[clone_col]], data[[group_col]])
-  } else { grouping_variables <- list(data[[clone_col]]) }
+    grouping_variables <- list(data[ , clone_col], data[ , group_col])
+  } else { grouping_variables <- list(data[ , clone_col]) }
 
   # aggregate the data for clonotype sequences with duplicate entries
   data_agg <-
-    stats::aggregate(data.frame(data[[count_col]], data[[frac_col]]),
+    stats::aggregate(data.frame(data[, count_col], data[ , frac_col]),
                      by = grouping_variables, FUN = sum)
 
   if (!is.null(group_col)) {
@@ -50,7 +50,7 @@ aggregateCountsByAminoAcidSeq <- function(
   } else { colnames(data_agg) <- c("cloneSeq", "cloneCount", "cloneFraction") }
 
   # for each sequence, count # of rows for that sequence in input data
-  agg_row_count <- as.data.frame(table(data[[clone_col]]))
+  agg_row_count <- as.data.frame(table(data[ , clone_col]))
   colnames(agg_row_count) <- c("cloneSeq", "uniqueCount")
   data_agg <- merge(data_agg, agg_row_count, by = "cloneSeq")
 
@@ -64,7 +64,7 @@ aggregateCountsByAminoAcidSeq <- function(
 # FUNCTION: Filter rep-seq data to remove rows for clonotype sequences with
 # length below the specified cutoff
 filterDataBySequenceLength <- function(data, clone_col, min_length = 3) {
-  return(data[nchar(data[[clone_col]]) >= min_length, ])
+  return(data[nchar(data[ , clone_col]) >= min_length, ])
 }
 
 
@@ -218,11 +218,11 @@ computeClusterNetworkStats <- function(
   }
   if (is.null(seq_length_col)) { # compute seq length if not provided
     seq_length_col <- "seq_length"
-    data$seq_length <- nchar(data[[clone_col]])
+    data$seq_length <- nchar(data[ , clone_col])
   }
 
   # Tabulate the number of nodes in each cluster
-  out <- as.data.frame(table(data[[cluster_id_col]]))
+  out <- as.data.frame(table(data[ , cluster_id_col]))
   colnames(out) <- c("cluster_id", "node_count")
   num_clusters <- nrow(out) # Total number of clusters
   cat(paste0(num_clusters, " clusters present in network. Computing cluster characteristics...\n"))
@@ -270,7 +270,7 @@ computeClusterNetworkStats <- function(
     # Maximum clonotype count (and corresponding seq) within cluster
     max_count <- max(data[node_ids, count_col])
     out[cluster_index, ]$max_clone_count <- max_count
-    node_id_max_count <- which(node_ids & data[[count_col]] == max_count)
+    node_id_max_count <- which(node_ids & data[ , count_col] == max_count)
     out[cluster_index, ]$motif_w_max_count <-
       as.character(data[node_id_max_count, clone_col][[1]])
 

@@ -1,3 +1,9 @@
+# 0.0.9010
+* `computeMetaForCandidateSeqs()` (helper for `findDiseaseMotifsFromMergedSamples()`) redesigned and renamed to `findDiseaseAssociatedClones()`; this function now takes only the merged sample data as its input data, and filters sequences by a set of criteria (number of samples shared by and minimum seq length) to obtain the list of candidates before conducting the Fisher's exact tests; previously the list of candidates was obtained as input data to the function.
+* `findDiseaseMotifsFromMergedSamples()` redesigned to use candidate sequence metadata as input (previously it computed this metadata from the merged sample data) and renamed to `generateDiseaseAssociatedClusters()`
+* `generateNetworkWithStats()` now automatically prints the ggraph in R when called (previously the user needed to access the variable `graph_plot` contained in the returned list)
+* Added package `dplyr` as a dependency via the `Imports` directive of the `DESCRIPTION` file
+
 # 0.0.9009
 * `buildNetwork()` renamed to `generateNetworkWithStats()`
 * `adjacencyMatrix()` renamed to `sparseAdjacencyMatFromClones()`

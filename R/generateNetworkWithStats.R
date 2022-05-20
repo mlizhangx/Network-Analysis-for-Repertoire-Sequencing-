@@ -32,7 +32,7 @@ generateNetworkWithStats <- function(
 
   # Generate adjacency matrix for network
   adjacency_matrix <-
-    generateNetworkFromClones(data[[clone_col]], dist_type, edge_dist,
+    generateNetworkFromClones(data[ , clone_col], dist_type, edge_dist,
                               contig_ids = rownames(data),
                               return_type = "adjacency_matrix")
   if (dist_type != "euclidean_on_atchley") {
@@ -52,9 +52,9 @@ generateNetworkWithStats <- function(
 
   # Plot of Network Graph
   if (!is.null(group_col)) {
-    color_nodes_by <- node_data[[group_col]]
+    color_nodes_by <- node_data[ , group_col]
     if (is.numeric(group_col)) {
-      color_legend_title <- names(node_data)[[group_col]]
+      color_legend_title <- names(node_data)[ , group_col]
     } else { color_legend_title <- group_col }
   } else {
     color_nodes_by <- node_data$deg
@@ -65,11 +65,12 @@ generateNetworkWithStats <- function(
     title = paste0("Network based on distance type: ", dist_type),
     subtitle = paste0("Max edge distance: ", edge_dist),
     color_nodes_by = color_nodes_by,
-    size_nodes_by = node_data[[count_col]],
+    size_nodes_by = node_data[ , count_col],
     color_legend_title = color_legend_title,
     size_legend_title = "Clone count") +
     ggplot2::scale_size(range =
-                          c(0.1, log(max(node_data[[count_col]])) / 2.5))
+                          c(0.1, log(max(node_data[ , count_col])) / 2.5))
+  print(graph_plot)
 
   # Write results to disk
   if (!is.null(output_dir)) {
