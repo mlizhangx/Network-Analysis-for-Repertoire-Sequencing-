@@ -94,7 +94,7 @@ generateNetworkFromClones <- function(
   } else if (dist_type == "euclidean_on_atchley") {
     adjacency_matrix <-
       adjacencyMatAtchleyFromClones(
-        tcr_list = clone_list,
+        clones = clone_list,
         contig_ids = contig_ids,
         max_dist = edge_dist,
         outfile_distance_matrix = outfile_distance_matrix)
@@ -409,21 +409,21 @@ sparseAdjacencyMatFromClones <- function(
 # This function is intended for building the network for a single cluster, where
 # the adjacency matrix is typically dense
 adjacencyMatAtchleyFromClones <- function(
-  tcr_list, # List of tcr/clonotype sequences
-  contig_ids = names(tcr_list), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
+  clones, # List of amino acid sequences
+  contig_ids = seq_along(clones), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
   max_dist = 1.5, # Maximum Euclidean distance threshold for edge/adjacency between two sequences
   return_type = "adjacency_matrix", # can be set to "distance_matrix" to return the distance matrix instead
   outfile_distance_matrix = NULL # savefile for Euclidean distance matrix
 ) {
   .checkPythonModules()
-  if (length(tcr_list) != length(contig_ids)) {
-    stop("length of `tcr_list` and `contig_ids` must match")
+  if (length(clones) != length(contig_ids)) {
+    stop("length of `clones` and `contig_ids` must match")
   }
   # Write sequences and contig_ids to temporary file
-  tempfile_tcr_list <- file.path(getwd(),
+  tempfile_clones <- file.path(getwd(),
                                  "Atchley_factor_tcr_only_tmp.csv")
-  utils::write.csv(data.frame("contig_id" = contig_ids, "cdr3" = tcr_list),
-                   file = tempfile_tcr_list, row.names = FALSE)
+  utils::write.csv(data.frame("contig_id" = contig_ids, "cdr3" = clones),
+                   file = tempfile_clones, row.names = FALSE)
 
   # Copy files for trained encoder and Atchley factor table to working dir
   file_trained_encoder <-
@@ -470,3 +470,45 @@ adjacencyMatAtchleyFromClones <- function(
 }
 
 
+
+# Atchley Factor Embedding ------------------------------------------------
+
+# Embed amino acid sequences in Euclidean space based on the Atchley factor
+# representations of their elements, using a trained encoding model
+embedClonesByAtchleyFactor <- function(
+  clones, # List of amino acid sequences
+  contig_ids = seq_along(clones), # used by BriseisEncoder
+) {
+  .checkPythonModules()
+  if (length(clones) != length(contig_ids)) {
+    stop("length of `clones` and `contig_ids` must match")
+  }
+  # Write sequences and contig_ids to temporary file
+  tempfile_clones <- file.path(getwd(),
+                               "Atchley_factor_tcr_only_tmp.csv")
+  utils::write.csv(data.frame("contig_id" = contig_ids, "cdr3" = clones),
+                   file = tempfile_clones, row.names = FALSE)
+
+  # Write files for trained encoder and Atchley factor table to working dir
+  file_trained_encoder <-
+    system.file(file.path("python", "TrainedEncoder.h5"),
+                package = "RepSeqNetworkAnalysis")
+  file_atchley_table <-
+    system.file(file.path("python", "Atchley_factors.csv"),
+                package = "RepSeqNetworkAnalysis")
+  utils::write.csv(data.frame("sysfiles" = c(file_atchley_table,
+                                             file_trained_encoder)),
+                   file.path(getwd(), "temp_sysfiles.csv"),
+                   row.names = FALSE)
+
+  # Run BriseisEncoder python function
+  reticulate::py_run_file(
+    system.file(file.path("python", "BriseisEncoder_modified.py"),
+                package = "RepSeqNetworkAnalysis"))
+
+  # import embedded values and remove temp files
+  embedded_values <- utils::read.csv("temp_atchley_factors_encoded.csv")
+  file.remove("Atchley_factor_tcr_only_tmp.csv", "temp_sysfiles.csv",
+              "temp_atchley_factors_encoded.csv")
+  return(embedded_values)
+}
