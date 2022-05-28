@@ -3,45 +3,31 @@
 #       Candidate Disease-Related TCR Sequences
 # Do:
 #       Build Cluster Networks Around First N Candidates
-generateDiseaseAssociatedClusters <- function(
+getClustersForSelectedClones <- function(
   data, # merged bulk rep-seq data from all patients/samples
-  clone_col, # column of data containing clone sequences
-  clone_frac_col, # column of data containing clone counts/fractions
-  pat_id_col = NULL, # optional column of data containing patient ID (to color nodes)
-  sample_id_col = NULL, # optional column of data containing sample ID (to color nodes)
-  disease_col = NULL, # optional column of data containing disease status (to color nodes)
-  assoc_clones_meta, # meta for disease-assoc seqs
-  meta_clone_col = 1, # col of assoc_clones_meta with clone seqs
-  meta_label_col = ncol(assoc_clones_meta), # optional col of assoc_clones_meta with label for plot subtitle (use NULL to exclude)
-  # num_assoc_clones = min(20, nrow(assoc_clones_meta)),
+  nucleo_col,
+  amino_col,
+  count_col,
+  sample_col,
+  selected_clones,
+  selected_clone_labels = NULL,
+  node_colors = sample_col, # accepts multiple values (one plot per value)
   dist_type = "hamming", # options are "hamming", "levenshtein", "euclidean_on_atchley"
   cluster_radius = 1,
   edge_dist = 1,
-  output_dir =  # if NULL, output not saved
-    file.path(getwd(), paste(dist_type, "edgedist", edge_dist,
-                             "radius", cluster_radius, sep = "_")),
-  return_output = TRUE, # return results for all top N candidates when done?
-  keep_adjacency_matrix = FALSE, # save/return adjacency matrix for each cluster
-  display_plots = TRUE # print plots?
+  output_dir = NULL,
+  return_plots = FALSE # should function return a list of dataframe + ggplots, or just print/write plots and return the dataframe?
 ) {
-  if (is.null(output_dir) & !return_output) stop("Function requires an output directory when called with 'return_output = FALSE'")
 
   # Initialize output directory and objects
-  data_all_clusters_combined <- matrix(nrow = 0, ncol = ncol(data) + 1)
-  colnames(data_all_clusters_combined) <- c(colnames(data), "cluster_seq")
-  data_all_clusters_combined <- as.data.frame(data_all_clusters_combined)
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
-  netplot_disease <- netplot_sampleid <- netplot_patid <- netplot_deg <-
-    adjacency_matrix <- NULL
-  if (return_output) { outlist <- list() }
-  cat(paste0("Building cluster networks around each of the ",
-             nrow(assoc_clones_meta), " disease-associated clone sequences contained in 'assoc_clones_meta'...\n"))
+  data_all_clusters <- as.data.frame(matrix(nrow = 0, ncol = ncol(data) + 1))
+  names(data_all_clusters) <- c(colnames(data), "cluster_seq")
+  if (return_plots) { outlist <- list() }
 
-  # Iterate over specified number of candidates
-  for (i in 1:nrow(assoc_clones_meta)) {
-    # Get candidate sequence
-    assoc_clone <- assoc_clones_meta[i, meta_clone_col]
-    cat(paste0("Building cluster network for disease-associated clone sequence ", i, ": ", assoc_clone, "\n"))
+  # Iterate over target clones
+  for (i in 1:length(selected_clones)) {
+    cat(paste0("Building cluster for clone ", i, ": ", selected_clones[[i]], "\n"))
 
     # Subset Data For Sequences Nearby Candidate Seq
     # (only includes samples possessing the candidate seq)
@@ -53,7 +39,7 @@ generateDiseaseAssociatedClusters <- function(
       " distance from the disease-associated clone sequence is at most ", cluster_radius, "...\n"))
     data_current_cluster <-
       subsetDataNearTargetSeq(
-        data, clone_col, sample_id_col, assoc_clone,
+        data, clone_col, sample_col, selected_clones[[i]],
         cluster_radius_dist_type, max_dist = cluster_radius)
 
     # Compute Cluster Network Around Candidate Seq
@@ -84,10 +70,10 @@ generateDiseaseAssociatedClusters <- function(
       dist_label <- "Euclidean distance on Atchley factor encoding"
     } else { dist_label <- paste0(dist_type, " distance") }
     plot_title <- paste0(
-      "Cluster for Disease-Associated Clone Seq #", i, " (", assoc_clone, ")")
+      "Cluster for Disease-Associated Clone Seq #", i, " (", selected_clones[[i]], ")")
     plot_subtitle <- NULL
-    if (!is.null(meta_label_col)) {
-      plot_subtitle <- assoc_clones_meta[i, meta_label_col] }
+    if (!is.null(selected_clone_labels)) {
+      plot_subtitle <- selected_clone_labels[[i]] }
     plot_subtitle <- paste0(
       plot_subtitle,
       "\nNetwork includes clones with ", cluster_radius_dist_type,
@@ -106,11 +92,11 @@ generateDiseaseAssociatedClusters <- function(
         size_legend_title = "Clone Fraction")
       if (display_plots) { print(netplot_disease) }
     }
-    if (!is.null(sample_id_col)) {
+    if (!is.null(sample_col)) {
       netplot_sampleid <- plotNetworkGraph(
         network, title = plot_title,
         subtitle = paste0(plot_subtitle, "\nNodes colored by Sample ID"),
-        color_nodes_by = as.factor(data_current_cluster[ , sample_id_col]),
+        color_nodes_by = as.factor(data_current_cluster[ , sample_col]),
         size_nodes_by = as.numeric(data_current_cluster[ , clone_frac_col]),
         color_legend_title = "Sample ID",
         size_legend_title = "Clone Fraction") +
@@ -147,14 +133,14 @@ generateDiseaseAssociatedClusters <- function(
       .saveResultsForCandidateSeqNetwork(
         network, data_current_cluster, adjacency_matrix, netplot_disease,
         netplot_sampleid, netplot_patid, netplot_deg, keep_adjacency_matrix,
-        dist_type, output_dir, outfilestem = paste(i, assoc_clone, sep = "_"))
+        dist_type, output_dir, outfilestem = paste(i, selected_clones[[i]], sep = "_"))
     }
     # Add data for current cluster to combined cluster data
-    data_all_clusters_combined <-
+    data_all_clusters <-
       rbind(
-        data_all_clusters_combined,
+        data_all_clusters,
         cbind(data_current_cluster,
-              "assoc_clust_seq" = rep(assoc_clone, nrow(data_current_cluster)),
+              "assoc_clust_seq" = rep(selected_clones[[i]], nrow(data_current_cluster)),
               "assoc_clust_id" = rep(i, nrow(data_current_cluster))))
     # Add results for current candidate to output list if applicable
     if (return_output) {
@@ -171,7 +157,7 @@ generateDiseaseAssociatedClusters <- function(
       if (!is.null(netplot_deg)) {
         new_sublist$plot <- netplot_deg }
       outlist$new_sublist <- new_sublist
-      names(outlist)[[length(names(outlist))]] <- assoc_clone
+      names(outlist)[[length(names(outlist))]] <- selected_clones[[i]]
     }
   } # end looping over top candidates
 
@@ -179,14 +165,14 @@ generateDiseaseAssociatedClusters <- function(
   # Save combined cluster data if applicable
   if (!is.null(output_dir)) {
     utils::write.csv(
-      data_all_clusters_combined,
-      file.path(output_dir, "data_all_clusters_combined.csv"))
+      data_all_clusters,
+      file.path(output_dir, "data_all_clusters.csv"))
     cat(paste0(
       "All results saved to output directory '", output_dir, "'.\n"))
   }
   # Return final output list if applicable
   if (return_output) {
-    outlist$combined_cluster_data <- data_all_clusters_combined
+    outlist$combined_cluster_data <- data_all_clusters
     outlist$settings <- list(dist_type = dist_type,
                              cluster_radius = cluster_radius,
                              edge_dist = edge_dist)
@@ -201,12 +187,12 @@ generateDiseaseAssociatedClusters <- function(
 
 # FUNCTION: EXTRACT DATA SUBSET FOR ALL SEQUENCES WITHIN SPECIFIED RADIUS OF
 # TARGET SEQUENCE BY SPECIFIED DISTANCE TYPE
-# If a sample_id_col is provided, only samples that possess the target sequence
+# If a sample_col is provided, only samples that possess the target sequence
 # will be included
 subsetDataNearTargetSeq <- function(
   data, # data frame containing rep seq data, possibly from multiple samples
   clone_col, # col name/# containing clone sequences
-  sample_id_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
+  sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
   target_seq, # specified candidate sequence for the neighborhood
   dist_type = "hamming", # options are "hamming" and "levenshtein"
   max_dist = 2 # Maximum Levenshtein distance allowed for inclusion in neighborhood
@@ -215,7 +201,7 @@ subsetDataNearTargetSeq <- function(
     data <- as.data.frame(data)
   }
   # If sample_id is supplied, subset data keeping only samples with target seq
-  if (is.null(sample_id_col)) {
+  if (is.null(sample_col)) {
     data_samples_w_targetseq <- data
   } else {
     ### SUBSET DATA: SAMPLES WITH TARGET SEQ ###
@@ -225,7 +211,7 @@ subsetDataNearTargetSeq <- function(
     # Extract rows of merged data corresponding to samples with target seq
     data_samples_w_targetseq <-
       data[
-        data[ , sample_id_col] %in% data[rows_for_targetseq, sample_id_col], ]
+        data[ , sample_col] %in% data[rows_for_targetseq, sample_col], ]
   }
   # remove seq with * and _
   data_samples_w_targetseq <-
