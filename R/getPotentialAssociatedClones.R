@@ -123,7 +123,7 @@ getPotentialAssociatedClones <- function(
   # Drop sequences with Fisher P-value above specified cutoff
   out <- out[out$pv_fisher < pval_cutoff, ]
   cat(paste0("Tests complete. Found ", nrow(out), " sequences with Fisher's exact test P-value below ", pval_cutoff,
-             ". Sorting these sequences by P-value and returning them in a data frame containing the P-value, total sample membership and description for each.\n"))
+             ". Sorting these sequences by P-value and returning them in a data frame containing the P-value, total sample membership and description for each."))
   # Sort candidate sequence metadata by fisher P-value and return
   return(out[order(out$pv_fisher), ])
 }

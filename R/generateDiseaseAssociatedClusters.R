@@ -21,8 +21,10 @@ getClustersForSelectedClones <- function(
   cluster_radius = 1,
   edge_dist = 1,
   node_colors = sample_col, # accepts multiple values (one plot per value)
+  long_captions = FALSE, # should plot subtitles include details on cluster settings like dist_type and edge_dist?
   output_dir = NULL,
   return_plots = FALSE # should function return a list of dataframe + ggplots, or just print/write plots and return the dataframe?
+
 ) {
   if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino_acid") {
     stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
@@ -77,25 +79,24 @@ getClustersForSelectedClones <- function(
                                 contig_ids = rownames(data_current_cluster))
     # }
 
-    # Compute network degree within current cluster
+    # Add cluster-level variables to data for current cluster
+    data_current_cluster$assoc_clust_id <- i
+    data_current_cluster$assoc_clust_seq <- selected_clones[[i]]
     data_current_cluster$degree_in_assoc_cluster <- igraph::degree(network)
 
     # Create labels for plots
     plot_title <- paste0("Cluster ", i, " (", selected_clones[[i]], ")")
-    if (dist_type == "euclidean_on_atchley") {
-      dist_label <- "sequence embeddings in Euclidean 30-space based on Atchley factor representation "
-    } else { dist_label <- paste0(dist_type, " distance") }
     plot_subtitle <- NULL
     if (!is.null(selected_clone_labels)) {
-      plot_subtitle <- selected_clone_labels[[i]] }
-    plot_subtitle <- paste0(
-      plot_subtitle,
-      "\nNetwork includes clones with ", cluster_radius_dist_type,
-      " distance at most ", cluster_radius, " from disease-associated sequence",
-      "\nEdges based on ", dist_label, " (max edge dist = ", edge_dist, ")")
-
+      plot_subtitle <- paste0(selected_clone_labels[[i]], "\n") }
+    if (long_captions) {
+      plot_subtitle <- paste0(plot_subtitle, "\nCluster includes clone sequences with a maximum ", cluster_radius_dist_type, " distance of ", cluster_radius, " from the central sequence")
+      if (dist_type == "euclidean_on_atchley") {
+        plot_subtitle <- paste0(plot_subtitle, "\nClone sequences embedded in Euclidean 30-space based on Atchley factor representation using deep learning\nEdges based on a maximum Euclidean distance of ", edge_dist, " between embedded values")
+      } else {
+        plot_subtitle <- paste0(plot_subtitle, "\nEdges based on a maximum ", dist_type, " distance of ", edge_dist, "") }
+    }
     # Generate plots of network graph
-    cat("Generating plot(s)...\n")
     if (!is.null(disease_col)) {
       netplot_disease <- plotNetworkGraph(
         network, title = plot_title,
