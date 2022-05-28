@@ -8,69 +8,83 @@ getClustersForSelectedClones <- function(
   nucleo_col,
   amino_col,
   count_col,
+  freq_col,
+  vgene_col,
+  dgene_col,
+  jgene_col,
   sample_col,
+  other_cols = NULL,
   selected_clones,
   selected_clone_labels = NULL,
-  node_colors = sample_col, # accepts multiple values (one plot per value)
+  clone_seq_type = "amino_acid",
   dist_type = "hamming", # options are "hamming", "levenshtein", "euclidean_on_atchley"
   cluster_radius = 1,
   edge_dist = 1,
+  node_colors = sample_col, # accepts multiple values (one plot per value)
   output_dir = NULL,
   return_plots = FALSE # should function return a list of dataframe + ggplots, or just print/write plots and return the dataframe?
 ) {
+  if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino_acid") {
+    stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
+
+  # Format the input data
+  data <-
+    data[ , # Keep only the relevant columns:
+          c(nucleo_col, amino_col, count_col, freq_col,
+            vgene_col, dgene_col, jgene_col, sample_col, other_cols)]
+  colnames(data)[1:8] <- c(
+    "nucleotideSeq", "aminoAcidSeq", "cloneCount", "cloneFrequency",
+    "VGene", "DGene", "JGene", "sampleID")
+  # Designate amino acid or nucleotide for clone sequence
+  clone_col <- "aminoAcidSeq"
+  if (cloneSeq %in% c("nucleo", "nucleotide")) { clone_col <- "nucleotideSeq" }
+
+  # Determine distance type for cluster radius
+  cluster_radius_dist_type <- "levenshtein"
+  if (dist_type == "hamming") { cluster_radius_dist_type <- "hamming" }
 
   # Initialize output directory and objects
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
-  data_all_clusters <- as.data.frame(matrix(nrow = 0, ncol = ncol(data) + 1))
+  data_all_clusters <- as.data.frame(matrix(nrow = 0, ncol = ncol(data) + 3))
   names(data_all_clusters) <- c(colnames(data), "cluster_seq")
-  if (return_plots) { outlist <- list() }
+  if (return_plots) { plots <- list() }
 
-  # Iterate over target clones
+  # Iterate over selected clones
   for (i in 1:length(selected_clones)) {
-    cat(paste0("Building cluster for clone ", i, ": ", selected_clones[[i]], "\n"))
 
-    # Subset Data For Sequences Nearby Candidate Seq
-    # (only includes samples possessing the candidate seq)
-    cluster_radius_dist_type <- "levenshtein"
-    if (dist_type == "hamming") { cluster_radius_dist_type <- "hamming" }
-    cat(paste0(
-      "Collecting samples that share the disease-associated clone sequence. \n",
-      "Extracting sequences whose ", cluster_radius_dist_type,
-      " distance from the disease-associated clone sequence is at most ", cluster_radius, "...\n"))
+    # Get cluster data
+    cat(paste0("Gathering cluster data for selected clone sequence ", i, ": ", selected_clones[[i]], "...\n"))
     data_current_cluster <-
-      subsetDataNearTargetSeq(
-        data, clone_col, sample_col, selected_clones[[i]],
-        cluster_radius_dist_type, max_dist = cluster_radius)
+      getSimilarClones(selected_clones[[i]], data, clone_col, sample_col,
+                       cluster_radius_dist_type, max_dist = cluster_radius)
 
-    # Compute Cluster Network Around Candidate Seq
-    cat(paste0(
-      "Computing network edges based on a maximum ",
-      dist_type, " distance of ", edge_dist, "...\n"))
-    if (keep_adjacency_matrix) {
-      adjacency_matrix <-
-        generateNetworkFromClones(data_current_cluster[ , clone_col],
-                                  dist_type = dist_type,
-                                  edge_dist = edge_dist,
-                                  contig_ids = rownames(data_current_cluster),
-                                  return_type = "adjacency_matrix")
-      network <-
-        generateNetworkFromAdjacencyMat(adjacency_matrix)
-    } else {
-      network <-
-        generateNetworkFromClones(data_current_cluster[ , clone_col],
-                                  dist_type = dist_type,
-                                  edge_dist = edge_dist,
-                                  contig_ids = rownames(data_current_cluster))
-    }
-    # Add degree to data for candidate seq network
-    data_current_cluster$deg <- igraph::degree(network)
+    # Build cluster network
+    cat("Computing edges between sequences in the cluster...\n")
+    # if (keep_adjacency_matrix) {
+    #   adjacency_matrix <-
+    #     generateNetworkFromClones(data_current_cluster[ , clone_col],
+    #                               dist_type = dist_type,
+    #                               edge_dist = edge_dist,
+    #                               contig_ids = rownames(data_current_cluster),
+    #                               return_type = "adjacency_matrix")
+    #   network <-
+    #     generateNetworkFromAdjacencyMat(adjacency_matrix)
+    # } else {
+    network <-
+      generateNetworkFromClones(data_current_cluster[ , clone_col],
+                                dist_type = dist_type,
+                                edge_dist = edge_dist,
+                                contig_ids = rownames(data_current_cluster))
+    # }
+
+    # Compute network degree within current cluster
+    data_current_cluster$degree_in_assoc_cluster <- igraph::degree(network)
 
     # Create labels for plots
+    plot_title <- paste0("Cluster ", i, " (", selected_clones[[i]], ")")
     if (dist_type == "euclidean_on_atchley") {
-      dist_label <- "Euclidean distance on Atchley factor encoding"
+      dist_label <- "sequence embeddings in Euclidean 30-space based on Atchley factor representation "
     } else { dist_label <- paste0(dist_type, " distance") }
-    plot_title <- paste0(
-      "Cluster for Disease-Associated Clone Seq #", i, " (", selected_clones[[i]], ")")
     plot_subtitle <- NULL
     if (!is.null(selected_clone_labels)) {
       plot_subtitle <- selected_clone_labels[[i]] }
@@ -78,7 +92,7 @@ getClustersForSelectedClones <- function(
       plot_subtitle,
       "\nNetwork includes clones with ", cluster_radius_dist_type,
       " distance at most ", cluster_radius, " from disease-associated sequence",
-      "\nEdges between clones based on ", dist_label, " (max edge dist = ", edge_dist, ")")
+      "\nEdges based on ", dist_label, " (max edge dist = ", edge_dist, ")")
 
     # Generate plots of network graph
     cat("Generating plot(s)...\n")
@@ -189,11 +203,11 @@ getClustersForSelectedClones <- function(
 # TARGET SEQUENCE BY SPECIFIED DISTANCE TYPE
 # If a sample_col is provided, only samples that possess the target sequence
 # will be included
-subsetDataNearTargetSeq <- function(
+getSimilarClones <- function(
+  target_seq, # specified candidate sequence for the neighborhood
   data, # data frame containing rep seq data, possibly from multiple samples
   clone_col, # col name/# containing clone sequences
   sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
-  target_seq, # specified candidate sequence for the neighborhood
   dist_type = "hamming", # options are "hamming" and "levenshtein"
   max_dist = 2 # Maximum Levenshtein distance allowed for inclusion in neighborhood
 ) {
@@ -205,6 +219,7 @@ subsetDataNearTargetSeq <- function(
     data_samples_w_targetseq <- data
   } else {
     ### SUBSET DATA: SAMPLES WITH TARGET SEQ ###
+    cat("Finding samples that possess the selected sequence...\n")
     # Get row ids of merged data corresponding to target seq
     rows_for_targetseq <- grep(pattern = paste0("^", target_seq, "$"),
                                x = data[ , clone_col])
@@ -221,6 +236,7 @@ subsetDataNearTargetSeq <- function(
   # Compute list of bounded distances between target seq and seqs
   # possessed by samples with target seq (values are -1 where bound is exceeded)
   # returned vector will be of type integer; names will be the sequences
+  cat("Extracting clone sequences similar to the selected sequence...\n")
   if (dist_type == "levenshtein") { dist_fun <- levDistBounded
   } else if (dist_type == "hamming") { dist_fun <- hamDistBounded
   } else { stop("invalid option for `dist_type`") }

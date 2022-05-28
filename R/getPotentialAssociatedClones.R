@@ -28,9 +28,6 @@ getPotentialAssociatedClones <- function(
 ) {
 
   ### 1. FILTER CLONE LIST ###
-  # # Designate amino acid or nucleotide for clone sequence
-  # clone_col <- amino_col
-  # if (clone_seq %in% c("n", "nucleo", "nucleotide")) { clone_col <- nucleo_col }
 
   # Determine if data distinguishes subject from sample
   samples_or_subjects <- "samples"
@@ -57,7 +54,7 @@ getPotentialAssociatedClones <- function(
     n_control_subjects, " are labeled as control.\n"))
 
   # Get unique clone sequences and initialize output
-  out <- data.frame("clone_seq" = # list of unique clone seqs
+  out <- data.frame("cloneSeq" = # list of unique clone seqs
                       as.character(unique(data[ , clone_col])))
   out$pv_fisher <- rep(NA, nrow(out))
   out$shared_by_n_samples <- rep(NA, nrow(out))
@@ -69,7 +66,7 @@ getPotentialAssociatedClones <- function(
   ### 2. FILTER CLONES BY SAMPLE MEMBERSHIP ###
   cat(paste0(nrow(out), " unique clononotype sequences identified. Computing sample membership for these sequences...\n"))
   out$shared_by_n_samples <-
-    sapply(out$clone_seq,
+    sapply(out$cloneSeq,
            function(x) {
              length(unique(data[data[ , clone_col] == x, sample_col])) })
 
@@ -83,7 +80,7 @@ getPotentialAssociatedClones <- function(
   for (i in 1:nrow(out)) {
     # logical vector for rows of merged data corresponding to current clone seq
     # grepl(pattern = paste0("^", clone, "$"), x = data[ , clone_col])
-    rowids_clone <- data[ , clone_col] == out$clone_seq[[i]]
+    rowids_clone <- data[ , clone_col] == out$cloneSeq[[i]]
 
     # Number of treatment subjects with target sequence
     shared_by_n_treatment_subjects <-
