@@ -242,15 +242,15 @@ node_stat_settings <- function(
   coreness = TRUE,
   page_rank = TRUE
 ) {
-  list(deg = deg,
+  list(degree = degree,
        cluster_id = cluster_id,
        transitivity = transitivity,
        closeness = closeness,
-       centr_clo_res = centr_clo_res,
+       centrality_by_closeness = centrality_by_closeness,
        eigen_centrality = eigen_centrality,
-       centr_eigen = centr_eigen,
+       centrality_by_eigen = centrality_by_eigen,
        betweenness = betweenness,
-       centr_betw = centr_betw,
+       centrality_by_betweenness = centrality_by_betweenness,
        authority_score = authority_score,
        coreness = coreness,
        page_rank = page_rank)
@@ -299,39 +299,38 @@ computeClusterNetworkStats <- function(
 
   ### INITIALIZE VALUES ###
   out$mean_seq_length <- 0
-  out$deg_mean <- 0
-  out$deg_max <- ""
-  out$motif_w_max_deg <- ""
+  out$mean_degree <- 0
+  out$max_degree <- ""
+  out$seq_w_max_degree <- ""
   out$agg_clone_count <- 0
   out$max_clone_count <- ""
-  out$motif_w_max_count <- ""
-  out$diam_length <- 0
+  out$seq_w_max_count <- ""
+  out$diameter_length <- 0
   out$assortativity <- 0
   out$transitivity <- 0
   out$edge_density <- 0
-  out$centr_degree <- 0
-  out$centr_clo <- 0
-  out$eigen_centrality <- 0
-  out$centr_eigen <- 0
+  out$degree_centrality_index <- 0
+  out$closeness_centrality_index <- 0
+  out$eigen_centrality_index <- 0
+  out$eigen_centrality_eigenvalue <- 0
 
   ### COMPUTE STATS FOR EACH CLUSTER ###
   for(i in 1:num_clusters) {
     cluster_index <- which(out$cluster_id == i) # current row of cluster data
     node_ids <- data$cluster_id == i  # Rows of node data for current cluster
 
-
     # Mean sequence length in cluster
     out[cluster_index, ]$mean_seq_length <-
       round(mean(data[node_ids, seq_length_col]), 2)
 
     # Mean degree in cluster
-    out[cluster_index, ]$deg_mean <- round(mean(data[node_ids, ]$deg), 2)
+    out[cluster_index, ]$mean_degree <- round(mean(data[node_ids, ]$deg), 2)
 
     # Maximum degree (and corresponding seq) within cluster
     max_deg <- max(data[node_ids, ]$deg)
-    out[cluster_index, ]$deg_max <- max_deg
+    out[cluster_index, ]$max_degree <- max_deg
     node_id_max_deg <- which(node_ids & data$deg == max_deg)
-    out[cluster_index, ]$motif_w_max_deg  <-
+    out[cluster_index, ]$seq_w_max_degree  <-
       as.character(data[node_id_max_deg, clone_col][[1]])
 
     # Total aggregate clonotype count in cluster
@@ -341,14 +340,14 @@ computeClusterNetworkStats <- function(
     max_count <- max(data[node_ids, count_col])
     out[cluster_index, ]$max_clone_count <- max_count
     node_id_max_count <- which(node_ids & data[ , count_col] == max_count)
-    out[cluster_index, ]$motif_w_max_count <-
+    out[cluster_index, ]$seq_w_max_count <-
       as.character(data[node_id_max_count, clone_col][[1]])
 
     # Build cluster network to get network properties for the cluster
     cluster_adjacency_matrix <- as.matrix(adjacency_matrix[node_ids, node_ids])
     cluster <- generateNetworkFromAdjacencyMat(cluster_adjacency_matrix)
     # Diameter (longest geodesic distance)
-    out[cluster_index, ]$diam_length <-
+    out[cluster_index, ]$diameter_length <-
       length(igraph::get_diameter(cluster, directed = T))
     # Assortativity
     out[cluster_index, ]$assortativity <-
@@ -360,17 +359,17 @@ computeClusterNetworkStats <- function(
     out[cluster_index, ]$edge_density <-
       igraph::edge_density(cluster, loops = F)
     # Centralization on degree
-    out[cluster_index, ]$centr_degree <-
+    out[cluster_index, ]$degree_centrality_index <-
       igraph::centr_degree(cluster, mode = "in", normalized = T)$centralization
     # Centralization on Closeness (centrality based on distance to others in the graph)
-    out[cluster_index, ]$centr_clo <-
+    out[cluster_index, ]$closeness_centrality_index <-
       igraph::centr_clo(cluster, mode = "all", normalized = T)$centralization
     # Centralization on Eigenvector (centrality proportional to the sum of connection centralities)
     #  (values of the first eigenvector of the graph adjacency matrix)
-    out[cluster_index, ]$eigen_centrality <-
-      igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
-    out[cluster_index, ]$centr_eigen <-
+    out[cluster_index, ]$eigen_centrality_index <-
       igraph::centr_eigen(cluster, directed = T, normalized = T)$centralization
+    out[cluster_index, ]$eigen_centrality_eigenvalue <-
+      igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
   }
   # Return cluster-level info
   return(out)
