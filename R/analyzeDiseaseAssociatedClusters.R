@@ -28,7 +28,6 @@ combineClustersIntoNetwork <- function(
                                   node_stat_settings(cluster_id = TRUE))
   ## Create plots ##
   plots <- list()
-  # color_indices <- c("D", "C", "E", "H", "B", "G", "F" ,"A") # viridis colors
   if (is.numeric(size_col)) {
     size_label <- names(data)[[size_label]]
   } else { size_label <- size_col }

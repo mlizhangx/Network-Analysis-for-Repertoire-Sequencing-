@@ -13,54 +13,99 @@
 
 buildRepSeqNetwork <- function(
   data,      # data frame containing req-seq data
-  clone_col, # name or number of column of `data` containing clone sequences
+  clone_seq_col, # name or number of column of `data` containing clone sequences
   count_col, # name or number of column of `data` containing clone counts
-  frac_col,  # name or number of column of `data` containing clone fractions
+  other_cols = NULL, # other columns to keep (if node data returned)
   dist_type = "hamming", # supports "levenshtein", "hamming", "euclidean_on_atchley"
   edge_dist = 1, # maximum dist threshold for network edges/adjacency
   min_seq_length = 3, # minimum clone sequence length to include
-  aggregate_counts = FALSE, # aggregate counts/fracs by unique clone seq?
-  group_col = NULL, # optional name or number of column of `data` containing additional grouping variable, if aggregating counts
-  output_dir = getwd() # if NULL, output is not saved to file
+  size_nodes_by = count_col,
+  color_nodes_by = NULL,
+  color_scheme = "default",
+  node_stats = FALSE,
+  cluster_stats = FALSE,
+  node_stat_settings = node_stat_settings(cluster_id = cluster_stats),
+  aggregate_reads = FALSE,
+  grouping_cols = NULL,
+  keep_igraph = TRUE,
+  keep_matrix = FALSE,
+  output_dir = NULL # if NULL, output is not saved to file
 ) {
   # Create output directory if applicable
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
+  # Convert input columns to character if not already
+  if (is.numeric(clone_seq_col)) { clone_seq_col <- names(data)[clone_seq_col] }
+  if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
+  if (is.numeric(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
+  if (!is.null(color_nodes_by)) {
+    if (is.numeric(color_nodes_by)) {
+      color_nodes_by <- names(data)[color_nodes_by] } }
+
+  # Copy the relevant columns from the input data
+  data <- data[ , c(clone_seq_col, count_col, other_cols)]
+
+  # Aggregate the counts if specified
+  if (aggregate_reads) { data <- aggregateReads(data, clone_col, count_col) }
+
   # Remove sequences below specified length
-  data <- filterDataBySequenceLength(data, clone_col,
+  data <- filterDataBySequenceLength(data, clone_seq_col,
                                      min_length = min_seq_length)
-  # stop if not enough unique clonotype sequences
-  if (nrow(data) < 2) { stop("Insufficient clone sequences to build network (at least two are needed).") }
+  if (nrow(out) < 2) { stop("Insufficient clone sequences to build network (at least two are needed).") }
 
   # Generate adjacency matrix for network
   adjacency_matrix <-
-    generateNetworkFromClones(data[ , clone_col], dist_type, edge_dist,
+    generateNetworkFromClones(data[ , clone_seq_col],
+                              dist_type, edge_dist,
                               contig_ids = rownames(data),
                               return_type = "adjacency_matrix")
+
+  # Subset data to keep only those clones in the network (nonzero degree)
   if (dist_type != "euclidean_on_atchley") {
-    # Subset of data corresponding to the nodes in the network
-    data <- data[dimnames(adjacency_matrix)[[1]], ]
-  }
+    data <- data[dimnames(adjacency_matrix)[[1]], ] }
 
   # Generate network from adjacency matrix
   net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
 
-  # Compute node-level network characteristics
-  node_data <- computeNodeNetworkStats(net, data)
+  # Add node-level network characteristics
+  if (node_stats) {
+    data <- addNodeNetworkStats(data, net, node_stat_settings) }
 
   # Compute cluster-level network characteristics
-  cluster_data <- computeClusterNetworkStats(
-    adjacency_matrix, node_data, clone_col, count_col, deg_col = "deg")
+  if (cluster_stats) {
+    cluster_info <- getClusterStats(
+      data, adjacency_matrix, clone_seq_col, count_col,
+      cluster_id_col = ifelse("cluster_id" %in% names(data),
+                              yes = "cluster_id", no = NULL),
+      degree_col = ifelse("degree" %in% names(data),
+                          yes = "degree", no = NULL)) }
 
-  # Plot of Network Graph
-  if (!is.null(group_col)) {
-    color_nodes_by <- node_data[ , group_col]
-    if (is.numeric(group_col)) {
-      color_legend_title <- names(node_data)[ , group_col]
-    } else { color_legend_title <- group_col }
+  ## PLOT OF NETWORK GRAPH ##
+
+  # default variable to color nodes by
+  if (is.null(color_nodes_by)) {
+    if ("cluster_id" %in% names(data)) {
+      color_nodes_by <- "cluster_id"
+      color_legend_title <- "cluster"
+    } else if ("degree" %in% names(data)) {
+      color_nodes_by <- "degree"
+      color_legend_title <- "degree"
+    } else {
+      color_nodes_by <- count_col
+      color_legend_title <- "clone count" }
   } else {
-    color_nodes_by <- node_data$deg
-    color_legend_title <- "Network degree" }
+    if ("cluster_id" %in% names(data) & !"cluster_id" %in% color_nodes_by) {
+      color_nodes_by <- c(color_nodes_by, "cluster_id")
+    }
+  }
+
+  # If multiple coloring variables, extend color scheme to vector if needed
+  if (length(color_nodes_by) > 1 & length(color_scheme) == 1) {
+    color_scheme <- rep(color_scheme, length(color_nodes_by)) }
+
+  # If multiple plots (coloring variables), create list to store plots
+  if (length(color_nodes_by) > 1) { plots <- list() }
+
   graph_plot <- plotNetworkGraph(
     net,
     edge_width = 0.3,
@@ -73,6 +118,37 @@ buildRepSeqNetwork <- function(
     ggplot2::scale_size(range =
                           c(0.1, log(max(node_data[ , count_col])) / 2.5))
   print(graph_plot)
+
+  # # # #
+
+  temp_plotlist <- list()
+  for (j in 1:length(color_nodes_by)) {
+    cat(paste0("Creating cluster graph with nodes colored by ",
+               color_nodes_by[[j]], "..."))
+    newplot <-
+      plotNetworkGraph(
+        network, title = plot_title,
+        subtitle = paste0("Nodes colored by ", color_nodes_by[[j]]),
+        color_nodes_by = data_current_cluster[ , color_nodes_by[[j]]],
+        size_nodes_by = data_current_cluster[ , freq_col],
+        color_legend_title = color_nodes_by[[j]],
+        size_legend_title = "freq in own sample",
+        color_scheme = color_scheme[[j]])
+    print(newplot) # print to R
+    temp_plotlist$newplot <- newplot
+    names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
+    cat("Done.\n")
+  }
+  if (save_plots & !is.null(output_dir)) {
+    grDevices::pdf(file = file.path(output_dir,
+                                    paste0("cluster_", i, ".pdf")))
+    for (j in 1:length(color_nodes_by)) { print(temp_plotlist[[j]]) }
+    grDevices::dev.off()
+  }
+  if (return_plots) {
+    plots$newcluster <- temp_plotlist
+    names(plots)[[length(names(plots))]] <- selected_clones[[i]]
+  }
 
   # Write results to disk
   if (!is.null(output_dir)) {

@@ -24,8 +24,8 @@ buildClustersAroundSelectedClones <- function(
   dist_type = "hamming", # options are "hamming", "levenshtein", "euclidean_on_atchley"
   cluster_radius = 1,
   edge_dist = 1,
-  node_colors = sample_col, # accepts multiple values (one plot per value)
-  color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of node_colors)
+  color_nodes_by = sample_col, # accepts multiple values (one plot per value)
+  color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   long_captions = FALSE, # should plot subtitles include details on cluster settings like dist_type and edge_dist?
   output_dir = NULL,
   save_plots = FALSE,
@@ -39,7 +39,7 @@ buildClustersAroundSelectedClones <- function(
 
   ### PREPARE WORKING ENVIRONMENT ###
   # Convert input columns to character if not already
-  if (is.numeric(node_colors)) { node_colors <- names(data)[node_colors] }
+  if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
   if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
   if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
   if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
@@ -50,8 +50,8 @@ buildClustersAroundSelectedClones <- function(
   if (is.numeric(sample_col)) { sample_col <- names(data)[sample_col] }
   if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
 
-  # Add columns in node_colors to other_cols if not present
-  other_cols <- unique(c(other_cols, node_colors))
+  # Add columns in color_nodes_by to other_cols if not present
+  other_cols <- unique(c(other_cols, color_nodes_by))
 
   # Format the input data
   data <-
@@ -112,31 +112,36 @@ buildClustersAroundSelectedClones <- function(
     }
 
     # Generate plots of network graph
-    if (length(color_scheme) == 1) {
-      color_scheme <- rep(color_scheme, length(node_colors)) }
-    if (return_plots) { plots$newcluster <- list() }
-    if (save_plots & !is.null(output_dir)) {
-      grDevices::pdf(file = file.path(output_dir,
-                                      paste0("cluster_", i, ".pdf"))) }
-    for (i in 1:length(node_colors)) {
-      cat(paste0("Creating cluster graph with nodes colored by ", node_colors[[i]], "..."))
+    if (length(color_nodes_by) > 1 & length(color_scheme) == 1) {
+      color_scheme <- rep(color_scheme, length(color_nodes_by)) }
+    temp_plotlist <- list()
+    for (j in 1:length(color_nodes_by)) {
+      cat(paste0("Creating cluster graph with nodes colored by ",
+                 color_nodes_by[[j]], "..."))
       newplot <-
         plotNetworkGraph(
           network, title = plot_title,
-          subtitle = paste0("Nodes colored by ", node_colors[[i]]),
-          color_nodes_by = as.factor(data_current_cluster[ , node_colors[[i]]]),
-          size_nodes_by = as.numeric(data_current_cluster[ , freq_col]),
-          color_legend_title = node_colors[[i]],
+          subtitle = paste0("Nodes colored by ", color_nodes_by[[j]]),
+          color_nodes_by = data_current_cluster[ , color_nodes_by[[j]]],
+          size_nodes_by = data_current_cluster[ , freq_col],
+          color_legend_title = color_nodes_by[[j]],
           size_legend_title = "freq in own sample",
-          color_scheme = color_scheme[[i]])
+          color_scheme = color_scheme[[j]])
       print(newplot) # print to R
-      if (return_plots) { plots$newcluster$newplot <- newplot }
-      names(plots$newcluster)[[length(names(plots$newcluster))]] <- node_colors[[i]]
+      temp_plotlist$newplot <- newplot
+      names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
       cat("Done.\n")
     }
-    if (save_plots & !is.null(output_dir)) { grDevices::dev.off() }
+    if (save_plots & !is.null(output_dir)) {
+      grDevices::pdf(file = file.path(output_dir,
+                                      paste0("cluster_", i, ".pdf")))
+      for (j in 1:length(color_nodes_by)) { print(temp_plotlist[[j]]) }
+      grDevices::dev.off()
+    }
     if (return_plots) {
-      names(plots)[[length(names(plots))]] <- selected_clones[[i]] }
+      plots$newcluster <- temp_plotlist
+      names(plots)[[length(names(plots))]] <- selected_clones[[i]]
+    }
 
   } # done looping over selected clones
   cat("All clusters complete.\n")
@@ -150,7 +155,9 @@ buildClustersAroundSelectedClones <- function(
   if (!is.null(output_dir)) {
     utils::write.csv(data_all_clusters,
                      file.path(output_dir, "data_all_clusters.csv"))
-    cat(paste0("Cluster data saved to file:\n", file.path(output_dir, "data_all_clusters.csv"), "\n")) }
+    cat(paste0(
+      "Cluster data saved to file:\n",
+      file.path(output_dir, "data_all_clusters.csv"), "\n")) }
 
   # Return output
   if (return_plots) {

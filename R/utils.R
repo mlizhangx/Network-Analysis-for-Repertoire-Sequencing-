@@ -24,10 +24,11 @@
 # DO:
 #   aggregate the counts by group based on the grouping columns
 #   add variable counting the number of reads for each
-aggregateCounts <- function(
+aggregateReads <- function(
   data, # data frame containing columns below
+  clone_col,
   count_col, # name or number of column of `data` containing clone counts
-  group_cols = NULL # optional integer or character vector specifying additional grouping columns
+  grouping_cols = NULL # optional integer or character vector specifying additional grouping columns
 ) {
 
   # Convert column specifications from numeric to character if not already
@@ -37,28 +38,28 @@ aggregateCounts <- function(
   # Define grouping variable(s)
   grouping_variables <- list(data[ , clone_col])
   names(grouping_variables) <- clone_col
-  if (!is.null(group_cols)) {
-    if (is.numeric(group_cols)) { group_cols <- names(data)[group_cols] }
-    for (i in 1:length(group_cols)) {
-      grouping_variables$newvar <- data[ , group_cols[[i]]]
-      names(grouping_variables)[[length(grouping_variables)]] <- group_cols[[i]]
+  if (!is.null(grouping_cols)) {
+    if (is.numeric(grouping_cols)) { grouping_cols <- names(data)[grouping_cols] }
+    for (i in 1:length(grouping_cols)) {
+      grouping_variables$newvar <- data[ , grouping_cols[[i]]]
+      names(grouping_variables)[[length(grouping_variables)]] <- grouping_cols[[i]]
     }
   }
 
-  # aggregate the counts by group
+  # aggregate the reads by group
   counts <- list(data[ , count_col])
   names(counts) <- count_col
   agg_counts <- stats::aggregate(counts, by = grouping_variables, FUN = sum)
 
   # add variable for num reads (row count)
-  groups <- as.data.frame(data[ , group_cols])
+  groups <- as.data.frame(data[ , grouping_cols])
   names(groups)[[1]] <- "temporary_placeholder_name" # for summarize function
   num_reads <- dplyr::summarize(dplyr::group_by_all(groups),
                                 numReads = length(temporary_placeholder_name))
-  names(num_reads)[[1]] <- group_cols[[1]] # replace placeholder name with orig
+  names(num_reads)[[1]] <- grouping_cols[[1]] # replace placeholder name with orig
 
   # Merge aggregate counts with num reads
-  out <- merge(agg_counts, num_reads, by = group_cols)
+  out <- merge(agg_counts, num_reads, by = grouping_cols)
 
   return(out)
 }
@@ -181,12 +182,12 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
 
 # input network and corresponding metadata;
 # augment metadata with node-level network info and return
-computeNodeNetworkStats <- function(
-  net, # igraph network object
+addNodeNetworkStats <- function(
   data, # rep-seq data corresponding to the network
+  net, # igraph network object
   stats_to_include = node_stat_settings()
 ) {
-  cat(paste0("Computing node-level network characteristics...\n"))
+  cat(paste0("Computing node-level network statistics..."))
   if (stats_to_include$degree) data$degree <- igraph::degree(net)
 
   if (stats_to_include$cluster_id) data$cluster_id <-
@@ -223,6 +224,7 @@ computeNodeNetworkStats <- function(
   if (stats_to_include$page_rank) data$page_rank <-
       igraph::page_rank(net)$vector
 
+  cat("Done.\n")
   return(data)
 }
 
@@ -266,23 +268,23 @@ addClusterMembership <- function(net, data) {
 }
 
 # FUNCTION: Compute cluster-level network stats
-computeClusterNetworkStats <- function(
-  adjacency_matrix, # adjacency matrix for network
+getClusterStats <- function(
   data, # rep-seq data for network, with node-level network stats
+  adjacency_matrix, # adjacency matrix for network
   clone_col, # name or number of column of `data` containing the clone sequences
   count_col, # name or number of column of `data` containing the clone counts
   cluster_id_col = NULL, # optional name or number of column of `data` containing the cluster IDs
-  deg_col = NULL, # optional name or number of column of `data` containing the network degree
+  degree_col = NULL, # optional name or number of column of `data` containing the network degree
   seq_length_col = NULL # optional name or number of col containing seq lengths
 ) {
-  if (is.null(cluster_id_col) | is.null(deg_col)) {
+  if (is.null(cluster_id_col) | is.null(degree_col)) {
     net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
     if (is.null(cluster_id_col)) { # compute cluster id if not provided
       cluster_id_col <- "cluster_id"
       data <- addClusterMembership(net, data)
     }
-    if (is.null(deg_col)) { # compute deg if not provided
-      deg_col <- "deg"
+    if (is.null(degree_col)) { # compute deg if not provided
+      degree_col <- "deg"
       data$deg <- igraph::degree(net)
     }
   }
@@ -295,7 +297,7 @@ computeClusterNetworkStats <- function(
   out <- as.data.frame(table(data[ , cluster_id_col]))
   colnames(out) <- c("cluster_id", "node_count")
   num_clusters <- nrow(out) # Total number of clusters
-  cat(paste0(num_clusters, " clusters present in network. Computing cluster characteristics...\n"))
+  cat(paste0("Computing statistics for the ", num_clusters, " clusters in the network..."))
 
   ### INITIALIZE VALUES ###
   out$mean_seq_length <- 0
@@ -315,63 +317,76 @@ computeClusterNetworkStats <- function(
   out$eigen_centrality_eigenvalue <- 0
 
   ### COMPUTE STATS FOR EACH CLUSTER ###
-  for(i in 1:num_clusters) {
-    cluster_index <- which(out$cluster_id == i) # current row of cluster data
+  for (i in 1:num_clusters) {
+    cluster_row <- which(out$cluster_id == i) # current row of cluster data
     node_ids <- data$cluster_id == i  # Rows of node data for current cluster
 
     # Mean sequence length in cluster
-    out[cluster_index, ]$mean_seq_length <-
+    out$mean_seq_length[[cluster_row]] <-
       round(mean(data[node_ids, seq_length_col]), 2)
 
     # Mean degree in cluster
-    out[cluster_index, ]$mean_degree <- round(mean(data[node_ids, ]$deg), 2)
+    out$mean_degree[[cluster_row]] <-
+      round(mean(data[node_ids, degree_col]), 2)
 
     # Maximum degree (and corresponding seq) within cluster
-    max_deg <- max(data[node_ids, ]$deg)
-    out[cluster_index, ]$max_degree <- max_deg
-    node_id_max_deg <- which(node_ids & data$deg == max_deg)
-    out[cluster_index, ]$seq_w_max_degree  <-
+    max_deg <- max(data[node_ids, degree_col])
+    out$max_degree[[cluster_row]] <- max_deg
+
+    node_id_max_deg <- which(node_ids & data[ , degree_col] == max_deg)
+    out$seq_w_max_degree[[cluster_row]] <-
       as.character(data[node_id_max_deg, clone_col][[1]])
 
     # Total aggregate clonotype count in cluster
-    out[cluster_index, ]$agg_clone_count <- sum(data[node_ids, count_col])
+    out$agg_clone_count[[cluster_row]] <- sum(data[node_ids, count_col])
 
     # Maximum clonotype count (and corresponding seq) within cluster
     max_count <- max(data[node_ids, count_col])
-    out[cluster_index, ]$max_clone_count <- max_count
+    out$max_clone_count[[cluster_row]] <- max_count
+
     node_id_max_count <- which(node_ids & data[ , count_col] == max_count)
-    out[cluster_index, ]$seq_w_max_count <-
+    out$seq_w_max_count[[cluster_row]] <-
       as.character(data[node_id_max_count, clone_col][[1]])
+
 
     # Build cluster network to get network properties for the cluster
     cluster_adjacency_matrix <- as.matrix(adjacency_matrix[node_ids, node_ids])
     cluster <- generateNetworkFromAdjacencyMat(cluster_adjacency_matrix)
+
     # Diameter (longest geodesic distance)
-    out[cluster_index, ]$diameter_length <-
+    out$diameter_length[[cluster_row]] <-
       length(igraph::get_diameter(cluster, directed = T))
+
     # Assortativity
-    out[cluster_index, ]$assortativity <-
+    out$assortativity[[cluster_row]] <-
       igraph::assortativity_degree(cluster, directed = F)
+
     # Transitivity
-    out[cluster_index, ]$transitivity <-
+    out$transitivity[[cluster_row]] <-
       igraph::transitivity(cluster, type = "global")  # cluster is treated as an undirected network
+
     # Density: The proportion of present edges from all possible ties.
-    out[cluster_index, ]$edge_density <-
+    out$edge_density[[cluster_row]] <-
       igraph::edge_density(cluster, loops = F)
+
     # Centralization on degree
-    out[cluster_index, ]$degree_centrality_index <-
+    out$degree_centrality_index[[cluster_row]] <-
       igraph::centr_degree(cluster, mode = "in", normalized = T)$centralization
+
     # Centralization on Closeness (centrality based on distance to others in the graph)
-    out[cluster_index, ]$closeness_centrality_index <-
+    out$closeness_centrality_index[[cluster_row]] <-
       igraph::centr_clo(cluster, mode = "all", normalized = T)$centralization
+
     # Centralization on Eigenvector (centrality proportional to the sum of connection centralities)
     #  (values of the first eigenvector of the graph adjacency matrix)
-    out[cluster_index, ]$eigen_centrality_index <-
+    out$eigen_centrality_index[[cluster_row]] <-
       igraph::centr_eigen(cluster, directed = T, normalized = T)$centralization
-    out[cluster_index, ]$eigen_centrality_eigenvalue <-
+
+    out$eigen_centrality_eigenvalue[[cluster_row]] <-
       igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
   }
-  # Return cluster-level info
+  cat("Done.\n")
+
   return(out)
 }
 
@@ -402,8 +417,10 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
     ggplot2::labs(title = title, subtitle = subtitle) +
     ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title),
                     size = ggplot2::guide_legend(title = size_legend_title))
+  color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
+  if (color_type == "discrete") { color_nodes_by <- as.factor(color_nodes_by) }
   if (color_scheme != "default") {
-    if (ggplot2::scale_type(color_nodes_by)[[1]] == "continuous") {
+    if (color_type == "continuous") {
       if (color_scheme %in% c("A", "B", "C", "D", "E", "F", "G", "H",
                                "magma", "inferno", "plasma", "viridis",
                                "cividis", "rocket", "mako", "turbo")) {
