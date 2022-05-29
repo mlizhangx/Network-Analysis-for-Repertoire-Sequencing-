@@ -1,6 +1,6 @@
 
 # Input:
-#   combined bulk rep-seq data from multiple samples
+#   Combined bulk rep-seq data from multiple samples
 # Do:
 #   Get potential associated tcr seqs filtered and ranked by Fisher PV:
 #   1. Filter clone list:
@@ -23,7 +23,8 @@ getPotentialAssociatedClones <- function(
   min_seq_length = 7,
   min_sample_membership = 5,
   pval_cutoff = 0.05,
-  drop_chars = "[*|_]"
+  drop_chars = "[*|_]",
+  outfile = NULL
 
 ) {
 
@@ -40,7 +41,7 @@ getPotentialAssociatedClones <- function(
   # Drop sequences below specified length
   data <- data[nchar(data[ , clone_col]) >= min_seq_length, ]
   cat(paste0(
-    "Data contains ", nrow(data), " clones after filtering for minimum sequence length and special characters.\n"))
+    "Data contains ", nrow(data), " clones after filtering for sequence length and special characters.\n"))
 
   # Get subject treatment/control counts
   n_subjects <- length(unique(data[ , subject_col]))
@@ -49,9 +50,8 @@ getPotentialAssociatedClones <- function(
     length(unique(data[rowids_treatment_subjects, subject_col]))
   n_control_subjects <- n_subjects - n_treatment_subjects
   cat(paste0(
-    "Data contains a total of ", n_subjects, " ", samples_or_subjects,
-    ", of which ", n_treatment_subjects, " are labeled as treatment and ",
-    n_control_subjects, " are labeled as control.\n"))
+    "Data contains ", n_subjects, " ", samples_or_subjects,
+    ", ", n_treatment_subjects, " of which belong to the specified treatment groups.\n"))
 
   # Get unique clone sequences and initialize output
   out <- data.frame("cloneSeq" = # list of unique clone seqs
@@ -64,18 +64,19 @@ getPotentialAssociatedClones <- function(
 
 
   ### 2. FILTER CLONES BY SAMPLE MEMBERSHIP ###
-  cat(paste0(nrow(out), " unique clononotype sequences identified. Computing sample membership for these sequences...\n"))
+  cat(paste0(nrow(out), " unique clone sequences found. Computing sample membership (this could take a while)..."))
   out$shared_by_n_samples <-
     sapply(out$cloneSeq,
            function(x) {
              length(unique(data[data[ , clone_col] == x, sample_col])) })
+  cat("Done.\n")
 
   # Drop sequences shared by fewer samples than the specified minimum
   out <- out[out$shared_by_n_samples >= min_sample_membership, ]
-  cat(paste0(nrow(out), " unique clone sequences meet the requirement of appearing in at least ", min_sample_membership, " samples. Performing Fisher's exact tests for these sequences...\n"))
-
+  cat(paste0(nrow(out), " sequences remain after filtering by sample membership.\n"))
 
   ### 3. PERFORM FISHER'S EXACT TESTS FOR FILTERED CLONES ###
+  cat("Performing Fisher's exact tests...")
   # Iterate over filtered list of clones
   for (i in 1:nrow(out)) {
     # logical vector for rows of merged data corresponding to current clone seq
@@ -118,12 +119,21 @@ getPotentialAssociatedClones <- function(
       "\nFisher's exact test P-value: ", signif(out$pv_fisher[[i]], digits = 3),
       ", Max clone frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
   }
+  cat("Done.\n")
+
 
   ### 4. SORT AND FILTER POTENTIAL CLONE LIST BY FISHER P-VALUE ###
+
   # Drop sequences with Fisher P-value above specified cutoff
   out <- out[out$pv_fisher < pval_cutoff, ]
-  cat(paste0("Tests complete. Found ", nrow(out), " sequences with Fisher's exact test P-value below ", pval_cutoff,
-             ". Sorting these sequences by P-value and returning them in a data frame containing the P-value, total sample membership and description for each."))
+  cat(paste0(nrow(out), " sequences remain after filtering by Fisher's exact test P-value.\n"))
+
   # Sort candidate sequence metadata by fisher P-value and return
-  return(out[order(out$pv_fisher), ])
+  cat("Sorting the data for these sequences by Fisher's exact test P-value and returning.\n")
+  out <- out[order(out$pv_fisher), ]
+  if (!is.null(outfile)) {
+    utils::write.csv(out, outfile)
+    cat(paste0("Output saved to file:\n", outfile, "\n"))
+  }
+  return(out)
 }

@@ -6,7 +6,8 @@
 #       Plot Network Graphs
 #       Perform Atchley Factor Embedding of Clone Seqs and Plot Corr Heatmap
 
-analyzeDiseaseAssociatedClusters <- function(
+combineClustersIntoNetwork <- function(
+
   data, # combined rep-seq data from disease-associated clusters to be included
   clone_col, # column of data containing clone sequences
   size_col, # column of data to use for sizing the nodes (e.g., clone count, clone fraction)
@@ -14,6 +15,7 @@ analyzeDiseaseAssociatedClusters <- function(
   dist_type = "hamming",
   edge_dist = 1,
   output_dir = NULL
+
 ) {
   # Check that sample_id_col is valid (or that include_atchley = FALSE)
   # TO DO: Add check

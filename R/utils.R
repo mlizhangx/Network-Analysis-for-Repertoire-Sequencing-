@@ -68,6 +68,59 @@ filterDataBySequenceLength <- function(data, clone_col, min_length = 3) {
 }
 
 
+# FUNCTION: EXTRACT DATA SUBSET FOR ALL SEQUENCES WITHIN SPECIFIED RADIUS OF
+# TARGET SEQUENCE BY SPECIFIED DISTANCE TYPE
+# If a sample_col is provided, only samples that possess the target sequence
+# will be included
+getSimilarClones <- function(
+  target_seq, # specified candidate sequence for the neighborhood
+  data, # data frame containing rep seq data, possibly from multiple samples
+  clone_col, # col name/# containing clone sequences
+  sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
+  dist_type = "hamming", # options are "hamming" and "levenshtein"
+  max_dist = 2 # Maximum Levenshtein distance allowed for inclusion in neighborhood
+) {
+  if (!is.data.frame(data)) {
+    data <- as.data.frame(data)
+  }
+  # If sample_id is supplied, subset data keeping only samples with target seq
+  if (is.null(sample_col)) {
+    data_samples_w_targetseq <- data
+  } else {
+    ### SUBSET DATA: SAMPLES WITH TARGET SEQ ###
+    cat("Finding samples that possess the specified sequence...")
+    # Get row ids of merged data corresponding to target seq
+    rows_for_targetseq <- grep(pattern = paste0("^", target_seq, "$"),
+                               x = data[ , clone_col])
+    # Extract rows of merged data corresponding to samples with target seq
+    data_samples_w_targetseq <-
+      data[
+        data[ , sample_col] %in% data[rows_for_targetseq, sample_col], ]
+    cat("Done.\n")
+  }
+  # remove seq with * and _
+  data_samples_w_targetseq <-
+    data_samples_w_targetseq[
+      -grep("[*|_]", data_samples_w_targetseq[ , clone_col]), ]
+  ### SUBSET DATA: NEIGHBORHOOD OF TARGET SEQUENCE ###
+  # Compute list of bounded distances between target seq and seqs
+  # possessed by samples with target seq (values are -1 where bound is exceeded)
+  # returned vector will be of type integer; names will be the sequences
+  cat("Extracting clone sequences similar to the specified sequence...")
+  if (dist_type == "levenshtein") { dist_fun <- levDistBounded
+  } else if (dist_type == "hamming") { dist_fun <- hamDistBounded
+  } else { stop("invalid option for `dist_type`") }
+  dists_to_targetseq <- sapply(
+    X = data_samples_w_targetseq[ , clone_col],
+    FUN = dist_fun, b = target_seq, k = max_dist)
+  # get data for sequences within the specified radius
+  data_targetseq_neighborhood <-
+    data_samples_w_targetseq[dists_to_targetseq != -1, ]
+  cat("Done.\n")
+  return(data_targetseq_neighborhood)
+}
+
+
 # Network Building --------------------------------------------------------
 
 
@@ -317,8 +370,9 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
                              subtitle = NULL,
                              color_nodes_by,
                              size_nodes_by,
-                             color_legend_title,
-                             size_legend_title,
+                             color_legend_title = NULL,
+                             size_legend_title = NULL,
+                             color_scheme = "default",
                              outfile = NULL
 ) {
   set.seed(9999)
@@ -332,17 +386,20 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
     ggplot2::labs(title = title, subtitle = subtitle) +
     ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title),
                     size = ggplot2::guide_legend(title = size_legend_title))
-  color_code_type <- ggplot2::scale_type(color_nodes_by)[[1]]
-  if (color_code_type == "continuous") {
-    graph_plot <- graph_plot +
-      ggraph::scale_color_viridis(
-        begin = 0.1, end = 0.85, direction = -1, option = "plasma")
-  }
-  if (color_code_type == "discrete") {
-    graph_plot <- graph_plot +
-      ggraph::scale_color_viridis(
-        begin = 0.1, end = 0.85, direction = -1, option = "plasma",
-        discrete = TRUE)
+  if (color_scheme != "default") {
+    if (ggplot2::scale_type(color_nodes_by)[[1]] == "continuous") {
+      if (color_scheme %in% c("A", "B", "C", "D", "E", "F", "G", "H",
+                               "magma", "inferno", "plasma", "viridis",
+                               "cividis", "rocket", "mako", "turbo")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = color_scheme)
+      } else { warning("'color_nodes_by' is continuous; 'color_scheme' must be 'default' or a viridis color map option (see `?viridis`); using default color scheme instead") } } else {
+      if (color_scheme %in% grDevices::hcl.pals()) {
+        graph_plot <- graph_plot +
+          ggplot2::scale_color_manual(
+            values = grDevices::hcl.colors(n = length(color_nodes_by),
+                                           palette = color_scheme))
+      } else { warning("'color_scheme' must be 'default' or one of the values contained in `grDevices::hcl.pals()`; using default color scheme instead") } }
   }
   if (!is.null(outfile)) {
     grDevices::pdf(file = outfile, width = 12, height = 8)
@@ -352,6 +409,8 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
   }
   return(graph_plot)
 }
+
+
 
 
 # Adjacency and Distance Matrices -----------------------------------------
@@ -365,7 +424,6 @@ sparseAdjacencyMatFromClones <- function(
   max_dist = 1 # Maximum distance threshold for edge/adjacency between two sequences
   # drop_isolated_nodes = TRUE # Drop sequences/nodes with zero degree?
 ) {
-  cat("Creating sparse adjacency matrix for list of clonotype sequences...\n")
   # attempt to coerce clones to character vector
   if (length(clones) == 0) stop("'clones' has zero length")
   clones <- as.vector(clones, mode = "character")
@@ -374,29 +432,27 @@ sparseAdjacencyMatFromClones <- function(
 
   # Compute adjacency matrix
   if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
+    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
     out <- levAdjacencyMatSparse(clones, max_dist)
   } else if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
+    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
     out <- hamAdjacencyMatSparse(clones, max_dist)
   } else {
     stop('invalid option for `dist_type`')
   }
+  cat("Done.\n")
   # Number of nodes with positive network degree
   num_nodes <- dim(out)[[1]]
   if (num_nodes == 0) {
     warning(paste0(
-      "Network contains no edges; no pairs of sequences are closer than the specified distance threshold (at most ",
-      max_dist, ") for adjacency. Try using a higher threshold using the `max_dist` argument"))
+      "No edges exist using the specified distance cutoff; try a greater value of `max_dist`"))
   } else {
-    cat(paste0(
-      "Adjacency matrix created for the ", num_nodes,
-      " network nodes with positive degree, i.e., all sequences that are within the specified distance threshold (at most ",
-      max_dist, ") of at least one other sequence.\n"))
+    cat(paste0(num_nodes, " nodes in the network (after removing nodes with degree zero).\n"))
     # Import record of selected column IDs and use for matrix row names
     clone_ids <- utils::read.table("col_ids.txt")
     dimnames(out)[[1]] <- clone_ids$V1
     dimnames(out)[[2]] <- clones[clone_ids$V1]
-    cat(paste0(
-      "The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
+    # cat(paste0("The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
   }
   # Remove temporary file of column ids
   file.remove("col_ids.txt")

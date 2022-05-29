@@ -24,7 +24,7 @@ generateNetworkWithStats <- function(
     clone_col <- "cloneSeq"
     count_col <- "cloneCount"
   }
-  # Remove sequences below  specified
+  # Remove sequences below specified length
   data <- filterDataBySequenceLength(data, clone_col,
                                      min_length = min_seq_length)
   # stop if not enough unique clonotype sequences
