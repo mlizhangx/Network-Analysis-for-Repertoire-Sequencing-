@@ -187,44 +187,57 @@ computeNodeNetworkStats <- function(
   stats_to_include = node_stat_settings()
 ) {
   cat(paste0("Computing node-level network characteristics...\n"))
-  if (stats_to_include$deg) data$deg <- igraph::degree(net)
+  if (stats_to_include$degree) data$degree <- igraph::degree(net)
+
   if (stats_to_include$cluster_id) data$cluster_id <-
       igraph::cluster_fast_greedy(net)$membership
+
   if (stats_to_include$transitivity) data$transitivity <-
       igraph::transitivity(net, type = "local")
+
   if (stats_to_include$closeness) data$closeness <-
       igraph::closeness(net, mode = "all", weights = NA)
-  if (stats_to_include$centr_clo_res) data$centr_clo_res <-
+
+  if (stats_to_include$centrality_by_closeness) data$centrality_by_closeness <-
       igraph::centr_clo(net, mode = "all", normalized = T)$res
+
   if (stats_to_include$eigen_centrality) data$eigen_centrality <-
       igraph::eigen_centrality(net, directed = T, weights = NA)$vector
-  if (stats_to_include$centr_eigen) data$centr_eigen <-
+
+  if (stats_to_include$centrality_by_eigen) data$centrality_by_eigen <-
       igraph::centr_eigen(net, directed = T, normalized = T)$vector
+
   if (stats_to_include$betweenness) data$betweenness <-
       igraph::betweenness(net, directed = T, weights = NA)
-  if (stats_to_include$centr_betw) data$centr_betw <-
-      igraph::centr_betw(net, directed = T, normalized = T)$res
+
+  if (stats_to_include$centrality_by_betweenness) {
+    data$centrality_by_betweenness <-
+      igraph::centr_betw(net, directed = T, normalized = T)$res }
+
   if (stats_to_include$authority_score) data$authority_score <-
       igraph::authority_score(net, weights = NA)$vector
+
   if (stats_to_include$coreness) data$coreness <-
       igraph::coreness(net, mode = "all")
+
   if (stats_to_include$page_rank) data$page_rank <-
       igraph::page_rank(net)$vector
+
   return(data)
 }
 
 # Create list of which node-level network statistics to compute; to be used as
 # value for argument `stats_to_include` of function `computeNodeNetworkStats()`
 node_stat_settings <- function(
-  deg = TRUE,
+  degree = TRUE,
   cluster_id = FALSE,
   transitivity = TRUE,
   closeness = FALSE,
-  centr_clo_res = FALSE,
+  centrality_by_closeness = FALSE,
   eigen_centrality = TRUE,
-  centr_eigen = TRUE,
+  centrality_by_eigen = TRUE,
   betweenness = TRUE,
-  centr_betw = TRUE,
+  centrality_by_betweenness = TRUE,
   authority_score = TRUE,
   coreness = TRUE,
   page_rank = TRUE
