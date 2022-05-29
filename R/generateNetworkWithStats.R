@@ -1,8 +1,17 @@
 # Main function -----------------------------------------------------------
 
-# Input bulk rep-seq clonotype data; construct repertoire network based on
-# desired distance metric, with node and cluster level network characteristics
-generateNetworkWithStats <- function(
+# INPUT:
+#   bulk rep-seq data
+#   network specifications
+# DO:
+#   aggregate rows by unique clone seq (if desired)
+#   filter clone seqs by minimum length
+#   build network to spec (dist type, edge dist)
+#   compute network stats (if desired)
+#   compute clusters (if desired)
+#   generate network graph plot
+
+buildRepSeqNetwork <- function(
   data,      # data frame containing req-seq data
   clone_col, # name or number of column of `data` containing clone sequences
   count_col, # name or number of column of `data` containing clone counts
@@ -17,13 +26,6 @@ generateNetworkWithStats <- function(
   # Create output directory if applicable
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
-  # Aggregate counts by unique clone seq if applicable
-  if (aggregate_counts) {
-    data <- aggregateCountsByAminoAcidSeq(
-      data, clone_col, count_col, frac_col, group_col)
-    clone_col <- "cloneSeq"
-    count_col <- "cloneCount"
-  }
   # Remove sequences below specified length
   data <- filterDataBySequenceLength(data, clone_col,
                                      min_length = min_seq_length)

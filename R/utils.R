@@ -18,45 +18,49 @@
 
 # Data Manipulation -------------------------------------------------------
 
-# FUNCTION: Input data frame containing TCR CDR3 amino acid sequences and
-# corresponding counts and fractions; aggregates rows by unique amino acid
-# sequence
-# Optionally, one can specify a column used to distinguish duplicate amino acid
-# sequences, such as sample/patient ID or disease status; rows will only be
-# aggregated by amino acid sequence for common values of this additional
-# variable.
-# Output includes columns for aggregate count and total number of rows for each
-# sequence
-aggregateCountsByAminoAcidSeq <- function(
+# INPUT:
+#   rep-seq data w/ specification for count column and one or more grouping cols
+#   (clone seq is typically the grouping variable used)
+# DO:
+#   aggregate the counts by group based on the grouping columns
+#   add variable counting the number of reads for each
+aggregateCounts <- function(
   data, # data frame containing columns below
-  clone_col, # name or number of column of `data` containing TCR CDR3 amino acid seqs
   count_col, # name or number of column of `data` containing clone counts
-  frac_col, # name or number of column of `data` containing clone fractions
-  group_col = NULL # optional name or number of column of `data` containing additional grouping variable
+  group_cols = NULL # optional integer or character vector specifying additional grouping columns
 ) {
-  cat("Aggregating clone counts and fractions by TCR CDR3 amino acid sequence...\n")
 
-  if (!is.null(group_col)) {
-    grouping_variables <- list(data[ , clone_col], data[ , group_col])
-  } else { grouping_variables <- list(data[ , clone_col]) }
+  # Convert column specifications from numeric to character if not already
+  if (is.numeric(clone_col)) { clone_col <- names(data)[clone_col] }
+  if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
 
-  # aggregate the data for clonotype sequences with duplicate entries
-  data_agg <-
-    stats::aggregate(data.frame(data[, count_col], data[ , frac_col]),
-                     by = grouping_variables, FUN = sum)
+  # Define grouping variable(s)
+  grouping_variables <- list(data[ , clone_col])
+  names(grouping_variables) <- clone_col
+  if (!is.null(group_cols)) {
+    if (is.numeric(group_cols)) { group_cols <- names(data)[group_cols] }
+    for (i in 1:length(group_cols)) {
+      grouping_variables$newvar <- data[ , group_cols[[i]]]
+      names(grouping_variables)[[length(grouping_variables)]] <- group_cols[[i]]
+    }
+  }
 
-  if (!is.null(group_col)) {
-    colnames(data_agg) <- c("cloneSeq", "cloneCount", "cloneFraction", "group")
-  } else { colnames(data_agg) <- c("cloneSeq", "cloneCount", "cloneFraction") }
+  # aggregate the counts by group
+  counts <- list(data[ , count_col])
+  names(counts) <- count_col
+  agg_counts <- stats::aggregate(counts, by = grouping_variables, FUN = sum)
 
-  # for each sequence, count # of rows for that sequence in input data
-  agg_row_count <- as.data.frame(table(data[ , clone_col]))
-  colnames(agg_row_count) <- c("cloneSeq", "uniqueCount")
-  data_agg <- merge(data_agg, agg_row_count, by = "cloneSeq")
+  # add variable for num reads (row count)
+  groups <- as.data.frame(data[ , group_cols])
+  names(groups)[[1]] <- "temporary_placeholder_name" # for summarize function
+  num_reads <- dplyr::summarize(dplyr::group_by_all(groups),
+                                numReads = length(temporary_placeholder_name))
+  names(num_reads)[[1]] <- group_cols[[1]] # replace placeholder name with orig
 
-  cat(paste0(
-    "Done. ", nrow(data_agg), " unique amino acid sequences present.\n"))
-  return(data_agg)
+  # Merge aggregate counts with num reads
+  out <- merge(agg_counts, num_reads, by = group_cols)
+
+  return(out)
 }
 
 
