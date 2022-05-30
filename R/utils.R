@@ -189,42 +189,50 @@ addNodeNetworkStats <- function(
   net, # igraph network object
   stats_to_include = node_stat_settings()
 ) {
+
+  if (stats_to_include = "all") {
+    stats_to_include <- node_stat_settings(all_stats = TRUE) }
+
   cat(paste0("Computing node-level network statistics..."))
-  if (stats_to_include$degree) data$degree <- igraph::degree(net)
+  if (stats_to_include$degree | stats_to_include$all_stats) {
+    data$degree <- igraph::degree(net) }
 
-  if (stats_to_include$cluster_id) data$cluster_id <-
-      igraph::cluster_fast_greedy(net)$membership
+  if (stats_to_include$cluster_id | stats_to_include$all_stats) {
+    data$cluster_id <- igraph::cluster_fast_greedy(net)$membership }
 
-  if (stats_to_include$transitivity) data$transitivity <-
-      igraph::transitivity(net, type = "local")
+  if (stats_to_include$transitivity | stats_to_include$all_stats) {
+    data$transitivity <- igraph::transitivity(net, type = "local") }
 
-  if (stats_to_include$closeness) data$closeness <-
-      igraph::closeness(net, mode = "all", weights = NA)
+  if (stats_to_include$closeness | stats_to_include$all_stats) {
+    data$closeness <- igraph::closeness(net, mode = "all", weights = NA) }
 
-  if (stats_to_include$centrality_by_closeness) data$centrality_by_closeness <-
-      igraph::centr_clo(net, mode = "all", normalized = T)$res
+  if (stats_to_include$centrality_by_closeness | stats_to_include$all_stats) {
+    data$centrality_by_closeness <-
+      igraph::centr_clo(net, mode = "all", normalized = T)$res }
 
-  if (stats_to_include$eigen_centrality) data$eigen_centrality <-
-      igraph::eigen_centrality(net, directed = T, weights = NA)$vector
+  if (stats_to_include$eigen_centrality | stats_to_include$all_stats) {
+    data$eigen_centrality <-
+      igraph::eigen_centrality(net, directed = T, weights = NA)$vector }
 
-  if (stats_to_include$centrality_by_eigen) data$centrality_by_eigen <-
-      igraph::centr_eigen(net, directed = T, normalized = T)$vector
+  if (stats_to_include$centrality_by_eigen | stats_to_include$all_stats) {
+    data$centrality_by_eigen <-
+      igraph::centr_eigen(net, directed = T, normalized = T)$vector }
 
-  if (stats_to_include$betweenness) data$betweenness <-
-      igraph::betweenness(net, directed = T, weights = NA)
+  if (stats_to_include$betweenness | stats_to_include$all_stats) {
+    data$betweenness <- igraph::betweenness(net, directed = T, weights = NA) }
 
-  if (stats_to_include$centrality_by_betweenness) {
+  if (stats_to_include$centrality_by_betweenness | stats_to_include$all_stats) {
     data$centrality_by_betweenness <-
       igraph::centr_betw(net, directed = T, normalized = T)$res }
 
-  if (stats_to_include$authority_score) data$authority_score <-
-      igraph::authority_score(net, weights = NA)$vector
+  if (stats_to_include$authority_score | stats_to_include$all_stats) {
+    data$authority_score <- igraph::authority_score(net, weights = NA)$vector }
 
-  if (stats_to_include$coreness) data$coreness <-
-      igraph::coreness(net, mode = "all")
+  if (stats_to_include$coreness | stats_to_include$all_stats) {
+    data$coreness <- igraph::coreness(net, mode = "all") }
 
-  if (stats_to_include$page_rank) data$page_rank <-
-      igraph::page_rank(net)$vector
+  if (stats_to_include$page_rank | stats_to_include$all_stats) {
+    data$page_rank <- igraph::page_rank(net)$vector }
 
   cat("Done.\n")
   return(data)
@@ -244,7 +252,8 @@ node_stat_settings <- function(
   centrality_by_betweenness = TRUE,
   authority_score = TRUE,
   coreness = TRUE,
-  page_rank = TRUE
+  page_rank = TRUE,
+  all_stats = FALSE
 ) {
   list(degree = degree,
        cluster_id = cluster_id,
