@@ -48,20 +48,20 @@ aggregateReads <- function(
         grouping_cols[[i]] } }
 
   # aggregate the reads by group
-  data_to_aggregate <- list(data[ , c(count_col, freq_col)])
-  names(data_to_aggregate) <- c("aggCloneCount", "aggCloneFreq")
+  data_to_aggregate <- list("aggCloneCount" = data[ , c(count_col)],
+                            "aggCloneFreq" = data[ , c(freq_col)])
   agg_counts <- stats::aggregate(data_to_aggregate,
                                  by = grouping_variables, FUN = sum)
 
   # add variable for num reads (row count)
-  groups <- as.data.frame(data[ , grouping_cols])
+  groups <- as.data.frame(grouping_variables)
   names(groups)[[1]] <- "temporary_placeholder_name" # for summarize function
   num_reads <- dplyr::summarize(dplyr::group_by_all(groups),
                                 numReads = length(temporary_placeholder_name))
-  names(num_reads)[[1]] <- grouping_cols[[1]] # replace placeholder name with orig
+  names(num_reads)[[1]] <- clone_col # replace placeholder name with orig
 
   # Merge aggregate counts with num reads
-  out <- merge(agg_counts, num_reads, by = grouping_cols)
+  out <- merge(agg_counts, num_reads, by = c(clone_col, grouping_cols))
 
   return(out)
 }
@@ -406,6 +406,7 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
                              color_legend_title = NULL,
                              size_legend_title = NULL,
                              color_scheme = "default",
+                             node_size_limits = NULL,
                              outfile = NULL
 ) {
   set.seed(9999)
@@ -420,21 +421,32 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
     ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title),
                     size = ggplot2::guide_legend(title = size_legend_title))
   color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
-  if (color_type == "discrete") { color_nodes_by <- as.factor(color_nodes_by) }
+
+  # Convert node-color variable to factor if discrete with < 30 distinct values
+  if (color_type == "discrete" & length(unique(color_nodes_by)) < 30) {
+    color_nodes_by <- as.factor(color_nodes_by) }
+
   if (color_scheme != "default") {
+
     if (color_type == "continuous") {
       if (color_scheme %in% c("A", "B", "C", "D", "E", "F", "G", "H",
-                               "magma", "inferno", "plasma", "viridis",
-                               "cividis", "rocket", "mako", "turbo")) {
+                              "magma", "inferno", "plasma", "viridis",
+                              "cividis", "rocket", "mako", "turbo")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme)
-      } else { warning("'color_nodes_by' is continuous; 'color_scheme' must be 'default' or a viridis color map option (see `?viridis`); using default color scheme instead") } } else {
+      } else { warning("'color_nodes_by' is continuous; 'color_scheme' must be 'default' or a viridis color map option (see `?viridis`); using default color scheme instead") }
+
+    } else { # discrete color scheme
       if (color_scheme %in% grDevices::hcl.pals()) {
         graph_plot <- graph_plot +
           ggplot2::scale_color_manual(
             values = grDevices::hcl.colors(n = length(color_nodes_by),
                                            palette = color_scheme))
       } else { warning("'color_scheme' must be 'default' or one of the values contained in `grDevices::hcl.pals()`; using default color scheme instead") } }
+  }
+  if (!is.double(size_nodes_by) & !is.null(node_size_limits)) {
+    temp_plotlist$newplot <- temp_plotlist$newplot +
+      ggplot2::scale_size(range = node_size_limits)
   }
   if (!is.null(outfile)) {
     grDevices::pdf(file = outfile, width = 12, height = 8)
