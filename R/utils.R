@@ -28,12 +28,14 @@ aggregateReads <- function(
   data, # data frame containing columns below
   clone_col,
   count_col, # name or number of column of `data` containing clone counts
+  freq_col,
   grouping_cols = NULL # optional integer or character vector specifying additional grouping columns
 ) {
 
   # Convert column specifications from numeric to character if not already
   if (is.numeric(clone_col)) { clone_col <- names(data)[clone_col] }
   if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
+  if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
 
   # Define grouping variable(s)
   grouping_variables <- list(data[ , clone_col])
@@ -42,14 +44,14 @@ aggregateReads <- function(
     if (is.numeric(grouping_cols)) { grouping_cols <- names(data)[grouping_cols] }
     for (i in 1:length(grouping_cols)) {
       grouping_variables$newvar <- data[ , grouping_cols[[i]]]
-      names(grouping_variables)[[length(grouping_variables)]] <- grouping_cols[[i]]
-    }
-  }
+      names(grouping_variables)[[length(grouping_variables)]] <-
+        grouping_cols[[i]] } }
 
   # aggregate the reads by group
-  counts <- list(data[ , count_col])
-  names(counts) <- count_col
-  agg_counts <- stats::aggregate(counts, by = grouping_variables, FUN = sum)
+  data_to_aggregate <- list(data[ , c(count_col, freq_col)])
+  names(data_to_aggregate) <- c("aggCloneCount", "aggCloneFreq")
+  agg_counts <- stats::aggregate(data_to_aggregate,
+                                 by = grouping_variables, FUN = sum)
 
   # add variable for num reads (row count)
   groups <- as.data.frame(data[ , grouping_cols])
