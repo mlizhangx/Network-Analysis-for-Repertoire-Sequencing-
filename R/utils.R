@@ -190,15 +190,17 @@ addNodeNetworkStats <- function(
   stats_to_include = node_stat_settings()
 ) {
 
-  if (stats_to_include = "all") {
-    stats_to_include <- node_stat_settings(all_stats = TRUE) }
+  if (typeof(stats_to_include) != "list")  {
+    if (stats_to_include == "all") {
+    stats_to_include <- node_stat_settings(all_stats = TRUE) } }
 
   cat(paste0("Computing node-level network statistics..."))
   if (stats_to_include$degree | stats_to_include$all_stats) {
     data$degree <- igraph::degree(net) }
 
   if (stats_to_include$cluster_id | stats_to_include$all_stats) {
-    data$cluster_id <- igraph::cluster_fast_greedy(net)$membership }
+    data$cluster_id <-
+      as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership)) }
 
   if (stats_to_include$transitivity | stats_to_include$all_stats) {
     data$transitivity <- igraph::transitivity(net, type = "local") }
@@ -266,15 +268,17 @@ node_stat_settings <- function(
        centrality_by_betweenness = centrality_by_betweenness,
        authority_score = authority_score,
        coreness = coreness,
-       page_rank = page_rank)
+       page_rank = page_rank,
+       all_stats = all_stats)
 }
 
 # Computing Cluster Statistics --------------------------------------------
 
 # FUNCTION: Compute the clusters for a network and augment the corresponding
 # data with a variable containing the cluster membership ID
-addClusterMembership <- function(net, data) {
-  data$cluster_id <- igraph::cluster_fast_greedy(net)$membership
+addClusterMembership <- function(data, net) {
+  data$cluster_id <-
+    as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
   return(data)
 }
 
@@ -292,7 +296,7 @@ getClusterStats <- function(
     net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
     if (is.null(cluster_id_col)) { # compute cluster id if not provided
       cluster_id_col <- "cluster_id"
-      data <- addClusterMembership(net, data)
+      data <- addClusterMembership(data, net)
     }
     if (is.null(degree_col)) { # compute deg if not provided
       degree_col <- "deg"
@@ -431,9 +435,8 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
                     size = ggplot2::guide_legend(title = size_legend_title))
   color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
 
-  # Convert node-color variable to factor if discrete with < 30 distinct values
-  if (color_type == "discrete" & length(unique(color_nodes_by)) < 30) {
-    color_nodes_by <- as.factor(color_nodes_by) }
+  # Convert node-color variable to factor if discrete
+  # if (color_type == "discrete") { color_nodes_by <- as.factor(color_nodes_by) }
 
   if (color_scheme != "default") {
 
@@ -446,17 +449,23 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
       } else { warning("'color_nodes_by' is continuous; 'color_scheme' must be 'default' or a viridis color map option (see `?viridis`); using default color scheme instead") }
 
     } else { # discrete color scheme
-      if (color_scheme %in% grDevices::hcl.pals()) {
+      if (color_scheme %in% c("A", "B", "C", "D", "E", "F", "G", "H",
+                              "magma", "inferno", "plasma", "viridis",
+                              "cividis", "rocket", "mako", "turbo")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE)
+      } else if (color_scheme %in% grDevices::hcl.pals()) {
         graph_plot <- graph_plot +
           ggplot2::scale_color_manual(
             values = grDevices::hcl.colors(n = length(color_nodes_by),
                                            palette = color_scheme))
       } else { warning("'color_scheme' must be 'default' or one of the values contained in `grDevices::hcl.pals()`; using default color scheme instead") } }
   }
-  if (!is.double(size_nodes_by) & !is.null(node_size_limits)) {
-    temp_plotlist$newplot <- temp_plotlist$newplot +
-      ggplot2::scale_size(range = node_size_limits)
-  }
+
+  # Apply custom size limits to nodes if supplied
+  if (!is.null(node_size_limits)) {
+    graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits) }
+
   if (!is.null(outfile)) {
     grDevices::pdf(file = outfile, width = 12, height = 8)
     print(graph_plot)
