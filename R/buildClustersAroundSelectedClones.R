@@ -32,6 +32,9 @@ buildClustersAroundSelectedClones <- function(
   return_plots = FALSE # should function return a list of dataframe + ggplots, or just print/write plots and return the dataframe?
 
 ) {
+  # Create output directory if applicable
+  if (!is.null(output_dir)) { .createOutputDir(output_dir) }
+
   ### INPUT CHECKS ###
   # Atchley factor embedding only applicable to amino acid sequences
   if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino_acid") {
