@@ -13,9 +13,16 @@
 
 buildRepSeqNetwork <- function(
   data,      # data frame containing req-seq data
-  clone_seq_col, # name or number of column of `data` containing clone sequences
-  count_col, # name or number of column of `data` containing clone counts
-  other_cols = NULL, # other columns to keep (if node data returned)
+  nucleo_col,
+  amino_col,
+  count_col,
+  freq_col,
+  vgene_col,
+  dgene_col,
+  jgene_col,
+  cdr3length_col,
+  other_cols = NULL,
+  clone_seq_type = "amino_acid",
   dist_type = "hamming", # supports "levenshtein", "hamming", "euclidean_on_atchley"
   edge_dist = 1, # maximum dist threshold for network edges/adjacency
   min_seq_length = 3, # minimum clone sequence length to include
@@ -31,28 +38,61 @@ buildRepSeqNetwork <- function(
   keep_matrix = FALSE,
   output_dir = NULL # if NULL, output is not saved to file
 ) {
+  ### INPUT CHECKS ###
+  # Atchley factor embedding only applicable to amino acid sequences
+  if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino_acid") {
+    stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
+
+
+  ### PREPARE WORKING ENVIRONMENT ###
   # Create output directory if applicable
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
   # Convert input columns to character if not already
-  if (is.numeric(clone_seq_col)) { clone_seq_col <- names(data)[clone_seq_col] }
+  if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
+  if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
   if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
+  if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
   if (is.numeric(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
   if (!is.null(color_nodes_by)) {
     if (is.numeric(color_nodes_by)) {
       color_nodes_by <- names(data)[color_nodes_by] } }
+  if (!aggregate_counts) {
+    if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
+    if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
+    if (is.numeric(jgene_col)) { jgene_col <- names(data)[jgene_col] }
+    if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
+  } else {
+    if (is.numeric(grouping_cols)) {
+      grouping_cols <- names(data)[grouping_cols] }
+  }
 
-  # Copy the relevant columns from the input data
-  data <- data[ , c(clone_seq_col, count_col, other_cols)]
+  # Add columns in color_nodes_by to other_cols if not present
+  other_cols <- unique(c(other_cols, color_nodes_by))
 
-  # Aggregate the counts if specified
-  if (aggregate_reads) { data <- aggregateReads(data, clone_col, count_col) }
+  # Designate amino acid or nucleotide for clone sequence
+  clone_seq_col <- amino_col
+  if (clone_seq_type %in% c("nucleo", "nucleotide")) {
+    clone_seq_col <- nucleo_col }
+
+
+  ### FORMAT DATA ###
+  if (aggregate_reads) { # Aggregate the counts if specified
+    data <- aggregateReads(data, clone_seq_col,
+                           count_col, freq_col, grouping_cols)
+  } else { # Copy the relevant columns from the input data
+    data <-
+      data[ , # Keep only the relevant columns:
+            c(nucleo_col, amino_col, count_col, freq_col,
+              vgene_col, dgene_col, jgene_col, cdr3length_col, other_cols)] }
 
   # Remove sequences below specified length
   data <- filterDataBySequenceLength(data, clone_seq_col,
                                      min_length = min_seq_length)
   if (nrow(out) < 2) { stop("Insufficient clone sequences to build network (at least two are needed).") }
 
+
+  ### BUILD NETWORK ###
   # Generate adjacency matrix for network
   adjacency_matrix <-
     generateNetworkFromClones(data[ , clone_seq_col],
@@ -67,6 +107,8 @@ buildRepSeqNetwork <- function(
   # Generate network from adjacency matrix
   net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
 
+
+  ### NODE/CLUSTER STATS ###
   # Add node-level network characteristics
   if (node_stats) {
     data <- addNodeNetworkStats(data, net, node_stat_settings) }
@@ -80,8 +122,8 @@ buildRepSeqNetwork <- function(
       degree_col = ifelse("degree" %in% names(data),
                           yes = "degree", no = NULL)) }
 
-  ## PLOT OF NETWORK GRAPH ##
 
+  ## PLOT(S) OF NETWORK GRAPH ###
   # default variable to color nodes by
   if (is.null(color_nodes_by)) {
     if ("cluster_id" %in% names(data)) {
@@ -149,6 +191,12 @@ buildRepSeqNetwork <- function(
     plots$newcluster <- temp_plotlist
     names(plots)[[length(names(plots))]] <- selected_clones[[i]]
   }
+
+  ### SAVE RESULTS ###
+  if (!aggregate_reads) {  # Rename data columns
+    colnames(data)[1:8] <- c(
+      "nucleotideSeq", "aminoAcidSeq", "cloneCount", "cloneFrequency",
+      "VGene", "DGene", "JGene", "CDR3Length") }
 
   # Write results to disk
   if (!is.null(output_dir)) {
