@@ -440,7 +440,7 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
     grDevices::pdf(file = outfile, width = 12, height = 8)
     print(graph_plot)
     grDevices::dev.off()
-    cat(paste0("Plot of network graph saved as '", outfile, "'\n"))
+    cat(paste0("Plot of network graph saved to file:\n", outfile, "\n"))
   }
   return(graph_plot)
 }

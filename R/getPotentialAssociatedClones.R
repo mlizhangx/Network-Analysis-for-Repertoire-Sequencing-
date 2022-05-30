@@ -28,7 +28,7 @@ getPotentialAssociatedClones <- function(
 
 ) {
 
-  ### 1. FILTER CLONE LIST ###
+  #### FILTER CLONES ####
 
   # Determine if data distinguishes subject from sample
   samples_or_subjects <- "samples"
@@ -63,7 +63,7 @@ getPotentialAssociatedClones <- function(
   out$label <- rep(NA, nrow(out))
 
 
-  ### 2. FILTER CLONES BY SAMPLE MEMBERSHIP ###
+  #### SAMPLE MEMBERSHIP ####
   cat(paste0(nrow(out), " unique clone sequences found. Computing sample membership (this could take a while)..."))
   out$shared_by_n_samples <-
     sapply(out$cloneSeq,
@@ -75,7 +75,7 @@ getPotentialAssociatedClones <- function(
   out <- out[out$shared_by_n_samples >= min_sample_membership, ]
   cat(paste0(nrow(out), " sequences remain after filtering by sample membership.\n"))
 
-  ### 3. PERFORM FISHER'S EXACT TESTS FOR FILTERED CLONES ###
+  #### FISHER'S EXACT TESTS ####
   cat("Performing Fisher's exact tests...")
   # Iterate over filtered list of clones
   for (i in 1:nrow(out)) {
@@ -122,7 +122,7 @@ getPotentialAssociatedClones <- function(
   cat("Done.\n")
 
 
-  ### 4. SORT AND FILTER POTENTIAL CLONE LIST BY FISHER P-VALUE ###
+  #### FILTER/SORT BY P-VALUE ####
 
   # Drop sequences with Fisher P-value above specified cutoff
   out <- out[out$pv_fisher < pval_cutoff, ]

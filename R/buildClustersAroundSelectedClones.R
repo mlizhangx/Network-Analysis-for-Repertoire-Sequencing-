@@ -107,11 +107,11 @@ buildClustersAroundSelectedClones <- function(
     if (!is.null(selected_clone_labels)) {
       plot_subtitle <- paste0(selected_clone_labels[[i]], "\n") }
     if (long_captions) {
-      plot_subtitle <- paste0(plot_subtitle, "\nCluster includes clone sequences with a maximum ", cluster_radius_dist_type, " distance of ", cluster_radius, " from the central sequence")
+      plot_subtitle <- paste0(plot_subtitle, "Cluster includes clone sequences with a maximum ", cluster_radius_dist_type, " distance of ", cluster_radius, " from the central sequence\n")
       if (dist_type == "euclidean_on_atchley") {
-        plot_subtitle <- paste0(plot_subtitle, "\nClone sequences embedded in Euclidean 30-space based on Atchley factor representation using deep learning\nEdges based on a maximum Euclidean distance of ", edge_dist, " between embedded values")
+        plot_subtitle <- paste0(plot_subtitle, "Clone sequences embedded in Euclidean 30-space based on Atchley factor representation using deep learning\nEdges based on a maximum Euclidean distance of ", edge_dist, " between embedded values\n")
       } else {
-        plot_subtitle <- paste0(plot_subtitle, "\nEdges based on a maximum ", dist_type, " distance of ", edge_dist, "") }
+        plot_subtitle <- paste0(plot_subtitle, "Edges based on a maximum ", dist_type, " distance of ", edge_dist, "\n") }
     }
 
     # Generate plots of network graph
@@ -124,7 +124,8 @@ buildClustersAroundSelectedClones <- function(
       newplot <-
         plotNetworkGraph(
           network, title = plot_title,
-          subtitle = paste0("Nodes colored by ", color_nodes_by[[j]]),
+          subtitle = paste0(plot_subtitle,
+                            "Nodes colored by ", color_nodes_by[[j]]),
           color_nodes_by = data_current_cluster[ , color_nodes_by[[j]]],
           size_nodes_by = data_current_cluster[ , freq_col],
           color_legend_title = color_nodes_by[[j]],
