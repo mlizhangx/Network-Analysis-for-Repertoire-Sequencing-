@@ -133,7 +133,7 @@ getPotentialAssociatedClones <- function(
   out <- out[order(out$pv_fisher), ]
   if (!is.null(outfile)) {
     utils::write.csv(out, outfile)
-    cat(paste0("Output saved to file:\n", outfile, "\n"))
+    cat(paste0("Output saved to file:\n  ", outfile, "\n"))
   }
   return(out)
 }
