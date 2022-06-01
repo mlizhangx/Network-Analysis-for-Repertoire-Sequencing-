@@ -196,15 +196,17 @@ addNodeNetworkStats <- function(
   if (typeof(stats_to_include) != "list")  {
     if (stats_to_include == "all") {
     stats_to_include <- node_stat_settings(all_stats = TRUE) } }
-
-  cat(paste0("Computing node-level network statistics..."))
   if (stats_to_include$degree | stats_to_include$all_stats) {
     data$degree <- igraph::degree(net) }
 
   if (stats_to_include$cluster_id | stats_to_include$all_stats) {
+    cat("Computing global cluster membership...")
     data$cluster_id <-
-      as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership)) }
+      as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
+    cat(" Done.\n") }
 
+
+  cat(paste0("Computing node-level network statistics..."))
   if (stats_to_include$transitivity | stats_to_include$all_stats) {
     data$transitivity <- igraph::transitivity(net, type = "local") }
 
@@ -280,8 +282,10 @@ node_stat_settings <- function(
 # FUNCTION: Compute the clusters for a network and augment the corresponding
 # data with a variable containing the cluster membership ID
 addClusterMembership <- function(data, net) {
+  cat("Computing global cluster membership...")
   data$cluster_id <-
     as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
+  cat(" Done.\n")
   return(data)
 }
 
