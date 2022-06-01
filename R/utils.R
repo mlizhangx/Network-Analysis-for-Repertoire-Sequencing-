@@ -48,6 +48,7 @@ aggregateReads <- function(
         grouping_cols[[i]] } }
 
   # aggregate the reads by group
+  cat("Aggregating reads (rows) by unique clone sequence...")
   data_to_aggregate <- list("aggCloneCount" = data[ , c(count_col)],
                             "aggCloneFreq" = data[ , c(freq_col)])
   agg_counts <- stats::aggregate(data_to_aggregate,
@@ -62,6 +63,7 @@ aggregateReads <- function(
 
   # Merge aggregate counts with num reads
   out <- merge(agg_counts, num_reads, by = c(clone_col, grouping_cols))
+  cat(paste0(" Done. ", nrow(out), " unique clone sequences found.\n"))
 
   return(out)
 }
@@ -85,7 +87,8 @@ getSimilarClones <- function(
   clone_col, # col name/# containing clone sequences
   sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
   dist_type = "hamming", # options are "hamming" and "levenshtein"
-  max_dist = 2 # Maximum Levenshtein distance allowed for inclusion in neighborhood
+  max_dist = 2, # Maximum Levenshtein distance allowed for inclusion in neighborhood
+  drop_chars = "[*|_]" # regular expression for chars to filter sequences by
 ) {
   if (!is.data.frame(data)) {
     data <- as.data.frame(data)
@@ -103,12 +106,12 @@ getSimilarClones <- function(
     data_samples_w_targetseq <-
       data[
         data[ , sample_col] %in% data[rows_for_targetseq, sample_col], ]
-    cat("Done.\n")
+    cat(" Done.\n")
   }
   # remove seq with * and _
   data_samples_w_targetseq <-
     data_samples_w_targetseq[
-      -grep("[*|_]", data_samples_w_targetseq[ , clone_col]), ]
+      -grep(drop_chars, data_samples_w_targetseq[ , clone_col]), ]
   ### SUBSET DATA: NEIGHBORHOOD OF TARGET SEQUENCE ###
   # Compute list of bounded distances between target seq and seqs
   # possessed by samples with target seq (values are -1 where bound is exceeded)
@@ -123,7 +126,7 @@ getSimilarClones <- function(
   # get data for sequences within the specified radius
   data_targetseq_neighborhood <-
     data_samples_w_targetseq[dists_to_targetseq != -1, ]
-  cat("Done.\n")
+  cat(paste0(" Done. ", nrow(data_targetseq_neighborhood), " similar clones found.\n"))
   return(data_targetseq_neighborhood)
 }
 
@@ -236,7 +239,7 @@ addNodeNetworkStats <- function(
   if (stats_to_include$page_rank | stats_to_include$all_stats) {
     data$page_rank <- igraph::page_rank(net)$vector }
 
-  cat("Done.\n")
+  cat(" Done.\n")
   return(data)
 }
 
@@ -400,7 +403,7 @@ getClusterStats <- function(
     out$eigen_centrality_eigenvalue[[cluster_row]] <-
       igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
   }
-  cat("Done.\n")
+  cat(" Done.\n")
 
   return(out)
 }
@@ -505,7 +508,7 @@ sparseAdjacencyMatFromClones <- function(
   } else {
     stop('invalid option for `dist_type`')
   }
-  cat("Done.\n")
+  cat(" Done.\n")
   # Number of nodes with positive network degree
   num_nodes <- dim(out)[[1]]
   if (num_nodes == 0) {
@@ -540,19 +543,26 @@ adjacencyMatAtchleyFromClones <- function(
   embedded_values <- embedClonesByAtchleyFactor(clones, contig_ids)
 
   # Compute Euclidean distance matrix on embedded sequence values
+  cat("Computing Euclidean distances between the embedded values...")
   distance_matrix <- as.matrix(stats::dist(embedded_values[ , -1]))
+  cat(" Done.\n")
 
   if (!is.null(outfile_distance_matrix)) {
     # Save distance matrix to file
     utils::write.csv(distance_matrix, outfile_distance_matrix)
-  }
+    cat(paste0("Distance matrix saved to file:\n  ", outfile_distance_matrix,
+               "\n")) }
+
   if (return_type == "distance_matrix") {
     return(distance_matrix)
   } else {
     # Convert distance matrix to adjacency matrix using specified bound
+    cat(paste0("Generating adjacency matrix based on a maximum distance of ",
+               max_dist, "..."))
     adjacency_matrix <-
       matrix(1, nrow = nrow(distance_matrix), ncol = ncol(distance_matrix))
     adjacency_matrix[distance_matrix > max_dist] <- 0
+    cat(" Done.\n")
     return(adjacency_matrix)
   }
 }
@@ -590,6 +600,7 @@ embedClonesByAtchleyFactor <- function(
                    row.names = FALSE)
 
   # Run BriseisEncoder python function
+  cat("Embedding TCR CDR3 amino acid sequences in 30-dimensional Euclidean space based on Atchley factor representation and a trained encoding model using deep learning routines from the keras & tensorflow python modules...\n")
   reticulate::py_run_file(
     system.file(file.path("python", "BriseisEncoder_modified.py"),
                 package = "RepSeqNetworkAnalysis"))

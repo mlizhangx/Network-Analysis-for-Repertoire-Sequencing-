@@ -15,14 +15,14 @@ buildRepSeqNetwork <- function(
 
   # Input Data and Columns
   data,      # data frame containing req-seq data
-  nucleo_col,
-  amino_col,
-  count_col,
-  freq_col,
-  vgene_col, # ignored if aggregate_reads = TRUE
-  dgene_col, # ignored if aggregate_reads = TRUE
-  jgene_col, # ignored if aggregate_reads = TRUE
-  cdr3length_col, # ignored if aggregate_reads = TRUE
+  nucleo_col = "nucleotideSeq",
+  amino_col = "aminoAcidSeq",
+  count_col = "cloneCount",
+  freq_col = "cloneFreqInSample",
+  vgene_col = "VGene",# ignored if aggregate_reads = TRUE
+  dgene_col = "DGene",# ignored if aggregate_reads = TRUE
+  jgene_col = "JGene",# ignored if aggregate_reads = TRUE
+  cdr3length_col = "CDR3Length",# ignored if aggregate_reads = TRUE
   other_cols = NULL, # other cols to keep; ignored if aggregate_reads = TRUE
 
   # Clone Sequence Settings
@@ -35,8 +35,6 @@ buildRepSeqNetwork <- function(
   # Network Settings
   dist_type = "hamming", # or "levenshtein", "hamming", "euclidean_on_atchley"
   edge_dist = 1, # max dist for edges
-
-  # Network Stats
   node_stats = FALSE,
   stats_to_include = node_stat_settings(),
   cluster_stats = FALSE,
@@ -48,6 +46,7 @@ buildRepSeqNetwork <- function(
                          no = paste("Edges based on a maximum", dist_type, "distance of", edge_dist, "\n")),
   size_nodes_by = count_col, # can use a double, e.g., 1.0, for fixed size
   node_size_limits = NULL, # numeric, length 2
+  edge_width = 0.3,
   custom_size_legend = NULL, # custom legend title
   color_nodes_by = NULL, # use NULL to automatically determine
   color_scheme = "default",
@@ -79,6 +78,8 @@ buildRepSeqNetwork <- function(
 
   # each elem of color_nodes_by is a data column or a node stat to be added
 
+  # for each elem of other_cols not present in data, warn that not found
+
 
   #### PREPARE WORKING ENVIRONMENT ####
   # Create output directory if applicable
@@ -104,14 +105,12 @@ buildRepSeqNetwork <- function(
     if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
     if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
     if (is.numeric(jgene_col)) { jgene_col <- names(data)[jgene_col] }
+    if (is.numeric(cdr3length_col)) { cdr3length_col <- names(data)[cdr3length_col] }
     if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
   } else {
     if (is.numeric(grouping_cols)) {
       grouping_cols <- names(data)[grouping_cols] }
   }
-
-  # Add columns in color_nodes_by to other_cols if not present
-  other_cols <- unique(c(other_cols, color_nodes_by))
 
   # Designate amino acid or nucleotide for clone sequence
   clone_seq_col <- amino_col
@@ -119,14 +118,20 @@ buildRepSeqNetwork <- function(
 
 
   #### FORMAT AND FILTER DATA ####
+  cat(paste0("Input data contains ", nrow(data), " rows.\n"))
+
   # Remove sequences below specified length
+  cat(paste0("Filtering for minimum clone sequence length (", min_seq_length, ")..."))
   data <- filterDataBySequenceLength(data, clone_seq_col,
                                      min_length = min_seq_length)
   if (nrow(data) < 2) { stop("fewer than two clone sequences meet the specified minimum length") }
+  cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
 
   # Drop sequences with specified chars
   if (!is.null(drop_chars)) {
-    data <- data[-grep(drop_chars, data[ , clone_seq_col]), ] }
+    cat(paste0("Filtering out sequences with special characters (", drop_chars, ")..."))
+    data <- data[-grep(drop_chars, data[ , clone_seq_col]), ]
+    cat(paste0(" Done. ", nrow(data), " rows remaining.\n")) }
 
   if (aggregate_reads) { # Aggregate the counts if specified
     data <- aggregateReads(data, clone_seq_col,
@@ -145,8 +150,12 @@ buildRepSeqNetwork <- function(
   } else { # Copy the relevant columns from the input data
     data <-
       data[ , # Keep only the relevant columns:
-            c(nucleo_col, amino_col, count_col, freq_col,
-              vgene_col, dgene_col, jgene_col, cdr3length_col, other_cols)] }
+            intersect(
+              unique(
+                c(nucleo_col, amino_col, count_col, freq_col,
+                  vgene_col, dgene_col, jgene_col, cdr3length_col,
+                  other_cols, color_nodes_by)),
+              names(data))] }
 
 
   #### BUILD NETWORK ####
@@ -159,7 +168,7 @@ buildRepSeqNetwork <- function(
 
   # Subset data to keep only those clones in the network (nonzero degree)
   if (dist_type != "euclidean_on_atchley") {
-    data <- data[dimnames(adjacency_matrix)[[1]], ] }
+    data <- data[as.numeric(dimnames(adjacency_matrix)[[1]]), ] }
 
   # Generate network from adjacency matrix
   net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
@@ -247,7 +256,7 @@ buildRepSeqNetwork <- function(
                color_nodes_by[[j]], "..."))
     temp_plotlist$newplot <-
       plotNetworkGraph(
-        net, title = plot_title, subtitle = plot_subtitle,
+        net, edge_width, title = plot_title, subtitle = plot_subtitle,
         color_nodes_by = data[ , color_nodes_by[[j]]],
         size_nodes_by = size_nodes_by,
         color_legend_title = color_legend_title[[j]],
@@ -272,8 +281,9 @@ buildRepSeqNetwork <- function(
                        row.names = FALSE)
       cat(paste0("Node-level data saved to file:\n  ", data_outfile, "\n")) }
     if (cluster_stats) {
-      utils::write.csv(cluster_info, file = file.path(output_dir,
-                                                      cluster_outfile))
+      utils::write.csv(cluster_info,
+                       file = file.path(output_dir, cluster_outfile),
+                       row.names = FALSE)
       cat(paste0("Cluster-level data saved to file:\n  ",
                  file.path(output_dir, cluster_outfile), "\n")) } }
 
@@ -312,18 +322,19 @@ buildRepSeqNetwork <- function(
   #### RETURN OUTPUT ####
   if (return_type == "node_data_only") {
 
-    cat("All tasks complete.\n")
+    cat("All tasks complete. Returning node-level data.\n")
     return(data)
 
   } else {
     out <- list("node_data" = data)
     if (cluster_stats) { out$cluster_info <- cluster_info }
     if (return_type == "all") {
-      if (length(temp_plotlist == 1)) { out$plot <- temp_plotlist[[1]]
+      if (length(temp_plotlist) == 1) { out$plot <- temp_plotlist[[1]]
       } else { out$plot <- temp_plotlist[[1]] }
       out$adjacency_matrix <- adjacency_matrix
       out$igraph <- net }
-    cat("All tasks complete.\n")
+    cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
+               paste(names(out), collapse = ", "), "\n"))
     return(out) }
 
 }

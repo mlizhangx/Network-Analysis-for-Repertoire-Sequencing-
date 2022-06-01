@@ -14,7 +14,7 @@
 getPotentialAssociatedClones <- function(
 
   data,
-  clone_col,
+  clone_seq_col,
   freq_col,
   sample_col,
   subject_col = sample_col,
@@ -24,7 +24,7 @@ getPotentialAssociatedClones <- function(
   min_sample_membership = 5,
   pval_cutoff = 0.05,
   drop_chars = "[*|_]",
-  outfile = NULL
+  outfile = "potential_associated_clones.csv"
 
 ) {
 
@@ -36,10 +36,10 @@ getPotentialAssociatedClones <- function(
 
   # Drop sequences with specified chars
   if (!is.null(drop_chars)) {
-    data <- data[-grep(drop_chars, data[ , clone_col]), ] }
+    data <- data[-grep(drop_chars, data[ , clone_seq_col]), ] }
 
   # Drop sequences below specified length
-  data <- data[nchar(data[ , clone_col]) >= min_seq_length, ]
+  data <- data[nchar(data[ , clone_seq_col]) >= min_seq_length, ]
   cat(paste0(
     "Data contains ", nrow(data), " clones after filtering for sequence length and special characters.\n"))
 
@@ -55,7 +55,7 @@ getPotentialAssociatedClones <- function(
 
   # Get unique clone sequences and initialize output
   out <- data.frame("cloneSeq" = # list of unique clone seqs
-                      as.character(unique(data[ , clone_col])))
+                      as.character(unique(data[ , clone_seq_col])))
   out$pv_fisher <- rep(NA, nrow(out))
   out$shared_by_n_samples <- rep(NA, nrow(out))
   # out$shared_by_n_treatment_subjects <- rep(NA, nrow(out))
@@ -68,8 +68,8 @@ getPotentialAssociatedClones <- function(
   out$shared_by_n_samples <-
     sapply(out$cloneSeq,
            function(x) {
-             length(unique(data[data[ , clone_col] == x, sample_col])) })
-  cat("Done.\n")
+             length(unique(data[data[ , clone_seq_col] == x, sample_col])) })
+  cat(" Done.\n")
 
   # Drop sequences shared by fewer samples than the specified minimum
   out <- out[out$shared_by_n_samples >= min_sample_membership, ]
@@ -80,8 +80,8 @@ getPotentialAssociatedClones <- function(
   # Iterate over filtered list of clones
   for (i in 1:nrow(out)) {
     # logical vector for rows of merged data corresponding to current clone seq
-    # grepl(pattern = paste0("^", clone, "$"), x = data[ , clone_col])
-    rowids_clone <- data[ , clone_col] == out$cloneSeq[[i]]
+    # grepl(pattern = paste0("^", clone, "$"), x = data[ , clone_seq_col])
+    rowids_clone <- data[ , clone_seq_col] == out$cloneSeq[[i]]
 
     # Number of treatment subjects with target sequence
     shared_by_n_treatment_subjects <-
@@ -115,11 +115,11 @@ getPotentialAssociatedClones <- function(
         "and ", shared_by_n_treatment_subjects + shared_by_n_control_subjects, " subjects ")
     }
     out$label[[i]] <- paste0(
-      out$label[[i]], "(of which ", shared_by_n_treatment_subjects, " are categorized as treatment", samples_or_subjects, ")",
+      out$label[[i]], "(of which ", shared_by_n_treatment_subjects, " are categorized as treatment ", samples_or_subjects, ")",
       "\nFisher's exact test P-value: ", signif(out$pv_fisher[[i]], digits = 3),
       ", Max clone frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
   }
-  cat("Done.\n")
+  cat(" Done.\n")
 
 
   #### FILTER/SORT BY P-VALUE ####
@@ -132,7 +132,7 @@ getPotentialAssociatedClones <- function(
   cat("Sorting the data for these sequences by Fisher's exact test P-value and returning.\n")
   out <- out[order(out$pv_fisher), ]
   if (!is.null(outfile)) {
-    utils::write.csv(out, outfile)
+    utils::write.csv(out, outfile, row.names = FALSE)
     cat(paste0("Output saved to file:\n  ", outfile, "\n"))
   }
   return(out)
