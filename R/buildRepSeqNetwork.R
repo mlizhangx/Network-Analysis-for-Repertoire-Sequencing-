@@ -328,20 +328,21 @@ buildRepSeqNetwork <- function(
 
 
   #### RETURN OUTPUT ####
+  cat("Finished building network.\n")
   if (return_type == "node_data_only") {
 
-    cat("All tasks complete. Returning node-level data.\n")
     return(data)
 
   } else {
     out <- list("node_data" = data)
-    if (cluster_stats) { out$cluster_info <- cluster_info }
+    if (cluster_stats) { out$cluster_stats <- cluster_info }
     if (return_type == "all") {
       out$plots <- temp_plotlist
       out$adjacency_matrix <- adjacency_matrix
       out$igraph <- net }
-    cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
-               paste(names(out), collapse = ", "), "\n"))
+    # cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
+    #            paste(names(out), collapse = ", "), "\n"))
+
     return(out) }
 
 }
