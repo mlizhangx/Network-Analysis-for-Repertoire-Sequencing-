@@ -20,36 +20,46 @@ buildClustersAroundSelectedClones <- function(
   sample_col,
   other_cols = NULL,
 
-  selected_clones,
-  selected_clone_labels = NULL,
-
+  # Clone sequence settings
   clone_seq_type = "amino acid",
+  selected_clones,
+  selected_clone_labels = NULL, # added to single-cluster plot subtitles
   drop_chars = "[*|_]", # passed to getSimilarClones() for getting cluster data
 
   # Network Settings
   dist_type = "hamming", # options are "hamming", "levenshtein", "euclidean_on_atchley"
   cluster_radius = 1,
   edge_dist = 1,
+  node_stats = TRUE,
+  stats_to_include = node_stat_settings(), # cluster_id will always be included
+  cluster_stats = FALSE,
 
-  # Plot Settings
-  # main_title = paste("Global cluster network"),
-  # main_subtitle = ifelse(dist_type == "euclidean_on_atchley",
-  #                        yes = paste("Clone sequences embedded in Euclidean 30-space based on Atchley factor representation using deep learning\nEdges based on a maximum Euclidean distance of", edge_dist, "between embedded values\n"),
-  #                        no = paste("Edges based on a maximum", dist_type, "distance of", edge_dist, "\n")),
-  size_nodes_by = count_col, # can use a double, e.g., 1.0, for fixed size
-  node_size_limits = NULL, # numeric, length 2
+  # Plot Settings (global cluster network)
+  custom_title = NULL, # for plot of global cluster network
+  custom_subtitle = NULL,
+  edge_width = 0.1,
+  size_nodes_by = 0.5, # can use a column name/# of data
+  node_size_limits = NULL, # numeric length 2
   custom_size_legend = NULL, # custom legend title
-  edge_width = 0.3,
   color_nodes_by = sample_col, # accepts multiple values (one plot per value)
   color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   custom_color_legend = NULL, # custom title (length must match color_nodes_by)
-  long_captions = TRUE, # should plot subtitles include details on cluster settings like dist_type and edge_dist?
+
+  # Plot Settings (individual cluster plots)
+  single_cluster_plots = TRUE,
+  sc_edge_width = 0.3,
+  sc_size_nodes_by = count_col,
+  sc_node_size_limits = NULL,
+  sc_custom_size_legend = NULL, # custom legend title
+  sc_color_nodes_by = sample_col, # accepts multiple values (one plot per value)
+  sc_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
+  sc_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
   # Output Settings
   output_dir = getwd(),
-  data_outfile = "data_all_clusters.csv",
-  save_plots = FALSE,
-  single_plot = TRUE, # if false, when saving plots, save one file per cluster
+  data_outfile = "data_global_cluster_network.csv",
+  global_plot_outfile = "global_cluster_network_graph.pdf",
+  cluster_plots_outfile = "individual_cluster_graphs.pdf",
   plot_width = 12, # passed to pdf()
   plot_height = 10, # passed to pdf()
   return_plots = FALSE # should function return a list of dataframe + ggplots, or just print/write plots and return the dataframe?
@@ -64,11 +74,7 @@ buildClustersAroundSelectedClones <- function(
 
   #### PREPARE WORKING ENVIRONMENT ####
   # Create output directory if applicable
-  if (!is.null(output_dir)) {
-    .createOutputDir(output_dir)
-    if (save_plots & !single_plot) {
-      .createOutputDir(file.path(output_dir, "individual_cluster_plots"))
-    }}
+  if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
   # Convert input columns to character if not already
   if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
@@ -94,7 +100,7 @@ buildClustersAroundSelectedClones <- function(
 
   # Format the input data
   data <-
-    data[ , # Keep only the relevant columns:
+    data[ , # Keep only the relevant columns, in specified order:
           intersect(
             unique(
               c(nucleo_col, amino_col, count_col, freq_col, vgene_col,
@@ -107,10 +113,33 @@ buildClustersAroundSelectedClones <- function(
   names(data_all_clusters) <- c(colnames(data), "assocClustID",
                                 "assocClustSeq", "degreeInAssocClust")
 
-  if (return_plots | (save_plots & single_plot & !is.null(output_dir))) {
-    plots <- list() }
+  if (return_plots) { plots <- list() }
 
   ### PLOT SETTINGS ###
+  # Title for global cluster network plot
+  if (is.null(custom_title)) {
+    main_title <- paste("Global network of clusters around",
+                        length(selected_clones), "selected clone sequences")
+  } else { main_title <- custom_title }
+
+  # Subtitle for global cluster network plot
+  if (is.null(custom_subtitle)) {
+    main_subtitle <- paste("Network includes clone sequences with a maximum",
+                           cluster_radius_dist_type, "distance of", cluster_radius,
+                           "from one of the selected sequences\n")
+    main_subtitle <-
+      paste(
+        main_subtitle,
+        ifelse(
+          dist_type == "euclidean_on_atchley",
+          yes = paste("Clone sequences embedded in Euclidean 30-space based on Atchley factor representation using deep learning\nEdges based on a maximum Euclidean distance of",
+                      edge_dist, "between embedded values\n"),
+          no = paste("Edges based on a maximum", dist_type, "distance of",
+                     edge_dist, "\n")))
+
+  } else { main_subtitle <- custom_subtitle }
+
+
   # Fixed subtitle content across selected clone sequences
   if (long_captions) {
     subtitle_extra <- paste0("Cluster includes clone sequences with a maximum ", cluster_radius_dist_type, " distance of ", cluster_radius, " from the central sequence\n")
