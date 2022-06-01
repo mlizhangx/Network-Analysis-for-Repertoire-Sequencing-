@@ -44,9 +44,9 @@ buildRepSeqNetwork <- function(
   plot_subtitle = ifelse(dist_type == "euclidean_on_atchley",
                          yes = paste("Clone sequences embedded in Euclidean 30-space based on Atchley factor representation using deep learning\nEdges based on a maximum Euclidean distance of", edge_dist, "between embedded values\n"),
                          no = paste("Edges based on a maximum", dist_type, "distance of", edge_dist, "\n")),
+  edge_width = 0.3,
   size_nodes_by = count_col, # can use a double, e.g., 1.0, for fixed size
   node_size_limits = NULL, # numeric, length 2
-  edge_width = 0.3,
   custom_size_legend = NULL, # custom legend title
   color_nodes_by = NULL, # use NULL to automatically determine
   color_scheme = "default",
