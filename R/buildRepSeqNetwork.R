@@ -36,7 +36,7 @@ buildRepSeqNetwork <- function(
   dist_type = "hamming", # or "levenshtein", "hamming", "euclidean_on_atchley"
   edge_dist = 1, # max dist for edges
   node_stats = FALSE,
-  stats_to_include = node_stat_settings(),
+  stats_to_include = node_stat_settings(), # can also select "all" or "cluster_id_only"
   cluster_stats = FALSE,
 
   # Plot Settings
@@ -179,6 +179,12 @@ buildRepSeqNetwork <- function(
   #### NODE/CLUSTER STATS ####
   # Add node-level network characteristics
   if (node_stats) {
+    if (stats_to_include == "cluster_id_only") {
+      stats_to_include <- node_stat_settings(
+        degree = FALSE, cluster_id = TRUE, transitivity = FALSE,
+        eigen_centrality = FALSE, centrality_by_eigen = FALSE,
+        betweenness = FALSE, centrality_by_betweenness = FALSE,
+        authority_score = FALSE, coreness = FALSE, page_rank = FALSE) }
     data <- addNodeNetworkStats(data, net, stats_to_include) }
 
   # Compute cluster-level network characteristics
@@ -331,8 +337,7 @@ buildRepSeqNetwork <- function(
     out <- list("node_data" = data)
     if (cluster_stats) { out$cluster_info <- cluster_info }
     if (return_type == "all") {
-      if (length(temp_plotlist) == 1) { out$plot <- temp_plotlist[[1]]
-      } else { out$plot <- temp_plotlist[[1]] }
+      out$plots <- temp_plotlist
       out$adjacency_matrix <- adjacency_matrix
       out$igraph <- net }
     cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
