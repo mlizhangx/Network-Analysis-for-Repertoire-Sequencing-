@@ -121,11 +121,12 @@ buildRepSeqNetwork <- function(
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
   # Remove sequences below specified length
-  cat(paste0("Filtering for minimum clone sequence length (", min_seq_length, ")..."))
-  data <- filterDataBySequenceLength(data, clone_seq_col,
-                                     min_length = min_seq_length)
-  if (nrow(data) < 2) { stop("fewer than two clone sequences meet the specified minimum length") }
-  cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
+  if (!is.null(min_seq_length)) {
+    cat(paste0("Filtering for minimum clone sequence length (", min_seq_length, ")..."))
+    data <- filterDataBySequenceLength(data, clone_seq_col,
+                                       min_length = min_seq_length)
+    cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
+  }
 
   # Drop sequences with specified chars
   if (!is.null(drop_chars)) {
@@ -157,6 +158,7 @@ buildRepSeqNetwork <- function(
                   other_cols, color_nodes_by)),
               names(data))] }
 
+  if (nrow(data) < 2) { stop("insufficient clone sequences remaining; at least two are needed") }
 
   #### BUILD NETWORK ####
   # Generate adjacency matrix for network
