@@ -51,6 +51,7 @@ buildRepSeqNetwork <- function(
   color_nodes_by = NULL, # use NULL to automatically determine
   color_scheme = "default",
   custom_color_legend = NULL, # custom title (length must match color_nodes_by)
+  print_plots = TRUE,
 
   # Output Settings
   output_dir = NULL, # if NULL, output is not saved to file
@@ -179,12 +180,15 @@ buildRepSeqNetwork <- function(
   #### NODE/CLUSTER STATS ####
   # Add node-level network characteristics
   if (node_stats) {
-    if (stats_to_include == "cluster_id_only") {
-      stats_to_include <- node_stat_settings(
-        degree = FALSE, cluster_id = TRUE, transitivity = FALSE,
-        eigen_centrality = FALSE, centrality_by_eigen = FALSE,
-        betweenness = FALSE, centrality_by_betweenness = FALSE,
-        authority_score = FALSE, coreness = FALSE, page_rank = FALSE) }
+    if (typeof(stats_to_include) != "list") {
+      if (stats_to_include == "cluster_id_only") {
+        stats_to_include <- node_stat_settings(
+          degree = FALSE, cluster_id = TRUE, transitivity = FALSE,
+          eigen_centrality = FALSE, centrality_by_eigen = FALSE,
+          betweenness = FALSE, centrality_by_betweenness = FALSE,
+          authority_score = FALSE, coreness = FALSE, page_rank = FALSE)
+      }
+    }
     data <- addNodeNetworkStats(data, net, stats_to_include) }
 
   # Compute cluster-level network characteristics
@@ -271,7 +275,7 @@ buildRepSeqNetwork <- function(
         size_legend_title = size_legend_title,
         color_scheme = color_scheme[[j]],
         node_size_limits = node_size_limits)
-    print(temp_plotlist$newplot) # print to R
+    if (print_plots) { print(temp_plotlist$newplot) }
     names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
     cat(" Done.\n") }
 
