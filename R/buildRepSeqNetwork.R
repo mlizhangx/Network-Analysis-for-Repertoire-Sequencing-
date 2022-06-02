@@ -101,7 +101,7 @@ buildRepSeqNetwork <- function(
   if (!is.null(color_nodes_by)) {
     if (is.numeric(color_nodes_by)) {
       color_nodes_by <- names(data)[color_nodes_by] } }
-  if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
+  # if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
   if (!aggregate_reads) {
     if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
     if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }

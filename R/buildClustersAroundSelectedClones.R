@@ -103,9 +103,9 @@ buildClustersAroundSelectedClones <- function(
   if (is.numeric(cdr3length_col)) { cdr3length_col <- names(data)[cdr3length_col] }
   if (is.numeric(sample_col)) { sample_col <- names(data)[sample_col] }
   if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
-  if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
+  # if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
   if (is.numeric(sc_color_nodes_by)) { sc_color_nodes_by <- names(data)[sc_color_nodes_by] }
-  if (is.integer(sc_size_nodes_by)) { sc_size_nodes_by <- names(data)[sc_size_nodes_by] }
+  # if (is.integer(sc_size_nodes_by)) { sc_size_nodes_by <- names(data)[sc_size_nodes_by] }
 
   # Designate amino acid or nucleotide for clone sequence
   clone_seq_col <- amino_col
@@ -256,7 +256,8 @@ buildClustersAroundSelectedClones <- function(
 
       # Ensure size_nodes_by is a vector or fixed value to use for node sizes
       if (is.character(sc_size_nodes_by)) {
-        size_code_vector <- data_current_cluster[ , sc_size_nodes_by] }
+        size_code <- data_current_cluster[ , sc_size_nodes_by]
+      } else { size_code <- sc_size_nodes_by }
 
       # Create one plot for each variable in color_nodes_by
       temp_plotlist <- list()
@@ -268,7 +269,7 @@ buildClustersAroundSelectedClones <- function(
             network, sc_edge_width, title = plot_title,
             subtitle = plot_subtitle,
             color_nodes_by = data_current_cluster[ , sc_color_nodes_by[[j]]],
-            size_nodes_by = size_code_vector,
+            size_nodes_by = size_code,
             color_legend_title = sc_color_legend_title[[j]],
             size_legend_title = sc_size_legend_title,
             color_scheme = sc_color_scheme[[j]],
