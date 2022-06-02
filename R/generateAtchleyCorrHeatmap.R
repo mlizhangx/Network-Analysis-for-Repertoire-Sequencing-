@@ -12,7 +12,7 @@
 generateAtchleyCorrHeatmap <- function(
   data,
   amino_col = "aminoAcidSeq",
-  sample_id_col = "sampleID",
+  sample_col = "sampleID",
   group_col = "subject_group",
   k = 100,
   plot_width = 15,
@@ -24,7 +24,7 @@ generateAtchleyCorrHeatmap <- function(
   return_output = FALSE
 ) {
 
-  df <- as.data.frame(data[ , c(amino_col, sample_id_col, group_col)])
+  df <- as.data.frame(data[ , c(amino_col, sample_col, group_col)])
   names(df) <- c("cdr3", "sample_id", "subject_group")
 
   # Aggregate data by unique rows;
