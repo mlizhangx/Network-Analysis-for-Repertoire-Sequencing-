@@ -195,7 +195,7 @@ addNodeNetworkStats <- function(
 
   if (typeof(stats_to_include) != "list")  {
     if (stats_to_include == "all") {
-    stats_to_include <- node_stat_settings(all_stats = TRUE) } }
+      stats_to_include <- node_stat_settings(all_stats = TRUE) } }
   if (stats_to_include$degree | stats_to_include$all_stats) {
     data$degree <- igraph::degree(net) }
 
@@ -421,8 +421,8 @@ getClusterStats <- function(
 plotNetworkGraph <- function(network, edge_width = 0.3,
                              title = NULL,
                              subtitle = NULL,
-                             color_nodes_by,
-                             size_nodes_by,
+                             color_nodes_by = NULL,
+                             size_nodes_by = NULL,
                              color_legend_title = NULL,
                              size_legend_title = NULL,
                              color_scheme = "default",
@@ -431,15 +431,56 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
 ) {
   set.seed(9999)
   layout <- igraph::layout_components(network)
+
   graph_plot <-
     ggraph::ggraph(network, layout = layout) +
-    ggraph::geom_edge_link0(width = edge_width, colour = "grey") +
-    ggraph::geom_node_point(
-      ggplot2::aes(color = color_nodes_by, size = size_nodes_by)) +
+    ggraph::geom_edge_link0(width = edge_width, colour = "grey")
+
+  if (!is.null(color_nodes_by)) {
+    if (!is.null(size_nodes_by)) {
+      if (is.numeric(size_nodes_by) & length(size_nodes_by) == 1) {
+        graph_plot <- graph_plot +
+          ggraph::geom_node_point(
+            ggplot2::aes(color = color_nodes_by), size = size_nodes_by)
+
+      } else if (length(size_nodes_by) > 1) {
+        graph_plot <- graph_plot +
+          ggraph::geom_node_point(
+            ggplot2::aes(color = color_nodes_by, size = size_nodes_by))
+
+        if (!is.null(node_size_limits)) {
+          graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits)
+        }
+      }
+    } else { # size_nodes_by is null or invalid
+      graph_plot <- graph_plot +
+        ggraph::geom_node_point(ggplot2::aes(color = color_nodes_by))
+
+    }
+  } else { # color_nodes_by is null or invalid
+    if (!is.null(size_nodes_by)) {
+      if (is.numeric(size_nodes_by) & length(size_nodes_by) == 1) {
+        graph_plot <- graph_plot +
+          ggraph::geom_node_point(size = size_nodes_by)
+
+      } else if (length(size_nodes_by) > 1) {
+        graph_plot <- graph_plot +
+          ggraph::geom_node_point(ggplot2::aes(size = size_nodes_by))
+        if (!is.null(node_size_limits)) {
+          graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits)
+        }
+      }
+    } else { # size_nodes_by null or invalid
+      graph_plot <- graph_plot + ggraph::geom_node_point()
+    }
+  }
+
+  graph_plot <- graph_plot +
     ggraph::theme_graph(base_family = "sans") +
     ggplot2::labs(title = title, subtitle = subtitle) +
     ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title),
                     size = ggplot2::guide_legend(title = size_legend_title))
+
   color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
 
   # Convert node-color variable to factor if discrete
@@ -469,9 +510,6 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
       } else { warning("'color_scheme' must be 'default' or one of the values contained in `grDevices::hcl.pals()`; using default color scheme instead") } }
   }
 
-  # Apply custom size limits to nodes if supplied
-  if (!is.null(node_size_limits)) {
-    graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits) }
 
   if (!is.null(outfile)) {
     grDevices::pdf(file = outfile, width = 12, height = 8)
