@@ -38,7 +38,7 @@ buildClustersAroundSelectedClones <- function(
   custom_title = NULL, # for plot of global cluster network
   custom_subtitle = NULL,
   edge_width = 0.1,
-  size_nodes_by = 0.5, # can use a column name/# of data
+  size_nodes_by = count_col, # can use a column name/# of data
   node_size_limits = NULL, # numeric length 2
   custom_size_legend = NULL, # custom legend title
   color_nodes_by = sample_col, # accepts multiple values (one plot per value)
@@ -67,6 +67,7 @@ buildClustersAroundSelectedClones <- function(
   return_all = FALSE # should function return a list, or just the data?
 
 ) {
+
 
   ### INPUT CHECKS ###
   # Atchley factor embedding only applicable to amino acid sequences
@@ -116,7 +117,7 @@ buildClustersAroundSelectedClones <- function(
 
   # Format the input data
   extra_cols <- intersect(
-    unique(other_cols, color_nodes_by, sc_color_nodes_by), names(data))
+    unique(c(other_cols, color_nodes_by, sc_color_nodes_by)), names(data))
   data <-
     data[ , # Keep only the relevant columns, in specified order:
           unique(c(nucleo_col, amino_col, count_col, freq_col,
@@ -195,7 +196,10 @@ buildClustersAroundSelectedClones <- function(
       sc_color_legend_title <- sc_custom_color_legend
     } else { sc_color_legend_title <- sc_color_nodes_by }
 
-    if (return_all) { sc_plots <- list() }
+    if (single_cluster_plots &
+        (return_all | (!is.null(output_dir) & !is.null(cluster_plots_outfile)))) {
+      sc_plots <- list()
+    }
   }
 
 
@@ -211,6 +215,10 @@ buildClustersAroundSelectedClones <- function(
       getSimilarClones(selected_clones[[i]], data, clone_seq_col, sample_col,
                        cluster_radius_dist_type, max_dist = cluster_radius,
                        drop_chars = drop_chars)
+    if (nrow(data_current_cluster) < 2) {
+      warning("not enough clones to build network; proceeding to next clone sequence")
+      next
+    }
 
     # Generate adjacency matrix for network
     adjacency_matrix <-
@@ -257,7 +265,7 @@ buildClustersAroundSelectedClones <- function(
                    sc_color_nodes_by[[j]], "..."))
         temp_plotlist$newplot <-
           plotNetworkGraph(
-            network, edge_width, title = plot_title,
+            network, sc_edge_width, title = plot_title,
             subtitle = plot_subtitle,
             color_nodes_by = data_current_cluster[ , sc_color_nodes_by[[j]]],
             size_nodes_by = size_code_vector,
@@ -265,7 +273,7 @@ buildClustersAroundSelectedClones <- function(
             size_legend_title = sc_size_legend_title,
             color_scheme = sc_color_scheme[[j]],
             node_size_limits = sc_node_size_limits)
-        print(temp_plotlist$newplot) # print to R
+        print(temp_plotlist$newplot)
         names(temp_plotlist)[[length(names(temp_plotlist))]] <-
           sc_color_nodes_by[[j]]
         cat(" Done.\n")
@@ -283,7 +291,8 @@ buildClustersAroundSelectedClones <- function(
       # }
 
       # Add plots to output list if applicable
-      if (return_all) {
+      if (single_cluster_plots &
+          (return_all | (!is.null(output_dir) & !is.null(cluster_plots_outfile)))) {
         sc_plots$newcluster <- temp_plotlist
         names(sc_plots)[[length(names(sc_plots))]] <- selected_clones[[i]]
       }
@@ -292,6 +301,9 @@ buildClustersAroundSelectedClones <- function(
   } # done looping over selected clones
   cat("All clusters complete.\n")
 
+  # Format additional variables in data
+  data_all_clusters$assocClusterID <- as.factor(data_all_clusters$assocClusterID)
+
   #### BUILD GLOBAL CLUSTER NETWORK ####
   # Ensure cluster ID is computed
   if (!node_stats) {
@@ -299,11 +311,18 @@ buildClustersAroundSelectedClones <- function(
   } else if (!stats_to_include$cluster_id) {
     stats_to_include$cluster_id <- TRUE }
 
+  if ("globalClusterID" %in% color_nodes_by) {
+    color_nodes_by[which(color_nodes_by == "globalClusterID")] <- "cluster_id"
+  }
+
   cat("Building global cluster network using combined cluster data:\n")
   global_net <- buildRepSeqNetwork(
     data_all_clusters,
     nucleo_col, amino_col, count_col, freq_col, vgene_col, dgene_col, jgene_col,
-    cdr3length_col, c(sample_col, extra_cols), clone_seq_type,
+    cdr3length_col,
+    other_cols = c(sample_col, extra_cols, "assocClusterID", "assocClusterSeq",
+                   "degreeInAssocCluster"),
+    clone_seq_type,
     min_seq_length = NULL, dist_type = dist_type, edge_dist = edge_dist,
     node_stats = TRUE, stats_to_include = stats_to_include,
     plot_title = main_title, plot_subtitle = main_subtitle,
@@ -320,6 +339,9 @@ buildClustersAroundSelectedClones <- function(
     which(names(data_all_clusters) == sample_col)] <- "sampleID"
   names(data_all_clusters)[
     which(names(data_all_clusters) == "cluster_id")] <- "globalClusterID"
+  if ("degree" %in% names(data_all_clusters)) {
+    names(data_all_clusters)[which(names(data_all_clusters) == "degree")] <-
+      "globalDegree" }
   # colnames(data_all_clusters)[1:9] <- c(
   #   "nucleotideSeq", "aminoAcidSeq", "cloneCount", "cloneFreqInSample",
   #   "VGene", "DGene", "JGene", "CDR3Length", "sampleID")
@@ -347,7 +369,7 @@ buildClustersAroundSelectedClones <- function(
     }
 
     # Save all single-cluster plots to a single pdf if applicable
-    if (!is.null(cluster_plots_outfile)) {
+    if (!is.null(cluster_plots_outfile) & single_cluster_plots) {
       grDevices::pdf(file = file.path(output_dir, cluster_plots_outfile),
                      width = plot_width, height = plot_height)
       for (i in 1:length(sc_plots)) {
@@ -398,7 +420,9 @@ buildClustersAroundSelectedClones <- function(
     cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
                paste(names(out), collapse = ", "), "\n"))
 
-    return(out) }
+    return(out)
+
+  }
 
 }
 
