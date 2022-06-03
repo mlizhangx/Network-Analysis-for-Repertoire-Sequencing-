@@ -51,7 +51,6 @@ buildRepSeqNetwork <- function(
   color_nodes_by = NULL, # use NULL to automatically determine
   color_scheme = "default",
   custom_color_legend = NULL, # custom title (length must match color_nodes_by)
-  print_plots = TRUE,
 
   # Output Settings
   output_dir = NULL, # if NULL, output is not saved to file
@@ -275,7 +274,7 @@ buildRepSeqNetwork <- function(
         size_legend_title = size_legend_title,
         color_scheme = color_scheme[[j]],
         node_size_limits = node_size_limits)
-    if (print_plots) { print(temp_plotlist$newplot) }
+    print(temp_plotlist$newplot)
     names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
     cat(" Done.\n") }
 
