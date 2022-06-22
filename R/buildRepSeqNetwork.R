@@ -18,7 +18,7 @@ buildRepSeqNetwork <- function(
   nucleo_col = "NucleotideSeq",
   amino_col = "AminoAcidSeq",
   count_col = "CloneCount",
-  freq_col = "cloneFreqInSample",
+  freq_col = "CloneFreqInSample",
   vgene_col = "VGene",# ignored if aggregate_reads = TRUE
   dgene_col = "DGene",# ignored if aggregate_reads = TRUE
   jgene_col = "JGene",# ignored if aggregate_reads = TRUE
