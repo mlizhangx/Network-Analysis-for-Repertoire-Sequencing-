@@ -13,7 +13,7 @@ generateAtchleyCorrHeatmap <- function(
   data,
   amino_col = "AminoAcidSeq",
   sample_col = "SampleID",
-  group_col = "subject_group",
+  group_col,
   k = 100,
   plot_width = 15,
   plot_height = 15,
@@ -29,7 +29,8 @@ generateAtchleyCorrHeatmap <- function(
 
   # Aggregate data by unique rows;
   # add variable UniqueCloneCount to count duplicates of each row
-  df <- dplyr::summarize(dplyr::group_by_all(df), UniqueCloneCount = length(cdr3))
+  df <- dplyr::summarize(dplyr::group_by_all(df),
+                         UniqueCloneCount = length(cdr3))
 
   # convert underscores to hyphens in sample ID and subject group values
   # (this allows us to recover the sample ID and group after next step)
