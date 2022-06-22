@@ -282,7 +282,7 @@ buildRepSeqNetwork <- function(
   #### SAVE RESULTS ####
   if (!aggregate_reads) {  # Rename data columns
     colnames(data)[1:8] <- c(
-      "NucleotideSeq", "AminoAcidSeq", "CloneCount", "cloneFrequency",
+      "NucleotideSeq", "AminoAcidSeq", "CloneCount", "CloneFrequency",
       "VGene", "DGene", "JGene", "CDR3Length") }
 
   # Save node [& cluster] data
