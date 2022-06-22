@@ -11,7 +11,7 @@
 
 generateAtchleyCorrHeatmap <- function(
   data,
-  amino_col = "aminoAcidSeq",
+  amino_col = "AminoAcidSeq",
   sample_col = "sampleID",
   group_col = "subject_group",
   k = 100,
@@ -67,7 +67,7 @@ generateAtchleyCorrHeatmap <- function(
 
   # Save cluster ID for each seq
   kmeans_cluster_ids <- df[ , c("cdr3", "kmeanClusterID")]
-  names(kmeans_cluster_ids) <- c("aminoAcidSeq", "kmeanClusterID")
+  names(kmeans_cluster_ids) <- c("AminoAcidSeq", "kmeanClusterID")
 
   # For each sample, aggregate # of reads across TCR seqs by K-means cluster
   # each row of the data now corresponds to a cluster
