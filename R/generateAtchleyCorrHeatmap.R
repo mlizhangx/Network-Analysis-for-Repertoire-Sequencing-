@@ -12,7 +12,7 @@
 generateAtchleyCorrHeatmap <- function(
   data,
   amino_col = "AminoAcidSeq",
-  sample_col = "sampleID",
+  sample_col = "SampleID",
   group_col = "subject_group",
   k = 100,
   plot_width = 15,
@@ -28,8 +28,8 @@ generateAtchleyCorrHeatmap <- function(
   names(df) <- c("cdr3", "sample_id", "subject_group")
 
   # Aggregate data by unique rows;
-  # add variable numReads to count duplicates of each row
-  df <- dplyr::summarize(dplyr::group_by_all(df), numReads = length(cdr3))
+  # add variable UniqueCloneCount to count duplicates of each row
+  df <- dplyr::summarize(dplyr::group_by_all(df), UniqueCloneCount = length(cdr3))
 
   # convert underscores to hyphens in sample ID and subject group values
   # (this allows us to recover the sample ID and group after next step)
@@ -39,9 +39,9 @@ generateAtchleyCorrHeatmap <- function(
   # Convert data to wide form;
   # first column is cdr3 (one row per unique TCR CDR3 amino acid seq)
   # one add'l column per sample (append subject group to sample id)
-  # cell values in add'l columns are corresponding values of numReads
+  # cell values in add'l columns are corresponding values of UniqueCloneCount
   df <- reshape2::dcast(df, cdr3 ~ sample_id + subject_group,
-                        fun.aggregate = sum, value.var = "numReads")
+                        fun.aggregate = sum, value.var = "UniqueCloneCount")
   cat(paste0(nrow(df), " unique TCR CDR3 amino acid sequences present in data.\n"))
   if (k > nrow(df)) { stop("the number 'k' of clusters to build exceeds the number of unique TCR sequences; try a smaller value of 'k'") }
 
