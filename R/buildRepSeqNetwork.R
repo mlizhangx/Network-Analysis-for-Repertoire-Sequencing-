@@ -19,17 +19,17 @@ buildRepSeqNetwork <- function(
   amino_col = "AminoAcidSeq",
   count_col = "CloneCount",
   freq_col = "CloneFreqInSample",
-  vgene_col = "VGene",# ignored if aggregate_reads = TRUE
-  dgene_col = "DGene",# ignored if aggregate_reads = TRUE
-  jgene_col = "JGene",# ignored if aggregate_reads = TRUE
-  cdr3length_col = "CDR3Length",# ignored if aggregate_reads = TRUE
-  other_cols = NULL, # other cols to keep; ignored if aggregate_reads = TRUE
+  vgene_col = "VGene",# ignored if aggregate_identical_clones = TRUE
+  dgene_col = "DGene",# ignored if aggregate_identical_clones = TRUE
+  jgene_col = "JGene",# ignored if aggregate_identical_clones = TRUE
+  cdr3length_col = "CDR3Length",# ignored if aggregate_identical_clones = TRUE
+  other_cols = NULL, # other cols to keep; ignored if aggregate_identical_clones = TRUE
 
   # Clone Sequence Settings
   clone_seq_type = "amino acid", # or "nucleotide"
   min_seq_length = 3, # min clone seq length
   drop_chars = NULL, # regular expression, e.g. "[*|_]"
-  aggregate_reads = FALSE,
+  aggregate_identical_clones = FALSE,
   grouping_cols = NULL,
 
   # Network Settings
@@ -74,7 +74,7 @@ buildRepSeqNetwork <- function(
   if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino acid") {
     stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
 
-  # aggregate_reads only applicable to amino acid sequences
+  # aggregate_identical_clones only applicable to amino acid sequences
 
   # each elem of color_nodes_by is a data column or a node stat to be added
 
@@ -101,7 +101,7 @@ buildRepSeqNetwork <- function(
     if (is.numeric(color_nodes_by)) {
       color_nodes_by <- names(data)[color_nodes_by] } }
   # if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
-  if (!aggregate_reads) {
+  if (!aggregate_identical_clones) {
     if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
     if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
     if (is.numeric(jgene_col)) { jgene_col <- names(data)[jgene_col] }
@@ -134,8 +134,8 @@ buildRepSeqNetwork <- function(
     data <- data[-grep(drop_chars, data[ , clone_seq_col]), ]
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n")) }
 
-  if (aggregate_reads) { # Aggregate the counts if specified
-    data <- aggregateReads(data, clone_seq_col,
+  if (aggregate_identical_clones) { # Aggregate the counts if specified
+    data <- aggregateIdenticalClones(data, clone_seq_col,
                            count_col, freq_col, grouping_cols)
 
     # Update column name references for count and freq
@@ -221,14 +221,14 @@ buildRepSeqNetwork <- function(
   # Force consistent legend labels for count/freq if used for node colors
   # (ensures size and color share same legend if using same variable)
   # if (count_col %in% color_nodes_by) {
-  #   if (aggregate_reads) {
+  #   if (aggregate_identical_clones) {
   #     color_legend_title[which(color_legend_title == count_col)] <-
   #       "agg clone count"
   #   } else {
   #     color_legend_title[which(color_legend_title == count_col)] <-
   #       "clone count" } }
   # if (freq_col %in% color_nodes_by) {
-  #   if (aggregate_reads) {
+  #   if (aggregate_identical_clones) {
   #     color_legend_title[which(color_legend_title == count_col)] <-
   #       "agg clone freq" }  }
 
@@ -240,7 +240,7 @@ buildRepSeqNetwork <- function(
   # also ensure size legend title matches color legend title for same variable
   size_legend_title <- NULL # default for fixed node size
   if (is.character(size_nodes_by)) {
-    # if (aggregate_reads) {
+    # if (aggregate_identical_clones) {
     #   if (size_nodes_by == "AggregatedCloneCount") {
     #     size_legend_title <- "agg clone count"
     #   } else if (size_nodes_by == "AggregatedCloneFrequency") {
@@ -280,7 +280,7 @@ buildRepSeqNetwork <- function(
 
 
   #### SAVE RESULTS ####
-  if (!aggregate_reads) {  # Rename data columns
+  if (!aggregate_identical_clones) {  # Rename data columns
     colnames(data)[1:8] <- c(
       "NucleotideSeq", "AminoAcidSeq", "CloneCount", "CloneFrequency",
       "VGene", "DGene", "JGene", "CDR3Length") }
@@ -358,7 +358,7 @@ buildRepSeqNetwork <- function(
 
 # .saveNetworkResults <- function(node_data, cluster_data, net, adjacency_matrix,
 #                                 graph_plot, output_dir, dist_type, edge_dist,
-#                                 min_seq_length, aggregate_reads, group_col) {
+#                                 min_seq_length, aggregate_identical_clones, group_col) {
 #
 #   cat(paste0("Saving results to ", output_dir, "\n"))
 #
@@ -366,7 +366,7 @@ buildRepSeqNetwork <- function(
 #   settings <- data.frame("distance_type" = dist_type,
 #                          "edge_dist" = edge_dist,
 #                          "min_seq_length" = min_seq_length,
-#                          "aggregate_reads" = aggregate_reads)
+#                          "aggregate_identical_clones" = aggregate_identical_clones)
 #   if (!is.null(group_col)) settings$group_col <- group_col
 #   utils::write.csv(settings,
 #                    file = file.path(output_dir, "settings.csv"),
