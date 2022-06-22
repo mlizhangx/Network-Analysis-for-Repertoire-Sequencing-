@@ -14,7 +14,10 @@
 getPotentialAssociatedClones <- function(
 
   data,
-  clone_seq_col,
+  nucleo_col,
+  amino_col,
+  clone_seq_type = "amino_acid",
+  # clone_seq_col,
   freq_col,
   sample_col,
   subject_col = sample_col,
@@ -27,6 +30,9 @@ getPotentialAssociatedClones <- function(
   outfile = "potential_associated_clones.csv"
 
 ) {
+
+  clone_seq_col <- amino_col
+  if (clone_seq_type == "nucleotide") { clone_seq_col <- nucleo_col }
 
   #### FILTER CLONES ####
 
@@ -54,8 +60,12 @@ getPotentialAssociatedClones <- function(
     ", ", n_treatment_subjects, " of which belong to the specified treatment groups.\n"))
 
   # Get unique clone sequences and initialize output
-  out <- data.frame("cloneSeq" = # list of unique clone seqs
+  out <- data.frame("AminoAcidSeq" = # list of unique clone seqs
                       as.character(unique(data[ , clone_seq_col])))
+  output_clone_seq_col <- "AminoAcidSeq"
+  if (clone_seq_type == "nucleotide") {
+    names(out)[1] <- output_clone_seq_col <- "NucleotideSeq"
+  }
   out$pv_fisher <- rep(NA, nrow(out))
   out$shared_by_n_samples <- rep(NA, nrow(out))
   # out$shared_by_n_treatment_subjects <- rep(NA, nrow(out))
@@ -66,7 +76,7 @@ getPotentialAssociatedClones <- function(
   #### SAMPLE MEMBERSHIP ####
   cat(paste0(nrow(out), " unique clone sequences found. Computing sample membership (this could take a while)..."))
   out$shared_by_n_samples <-
-    sapply(out$cloneSeq,
+    sapply(out[ , output_clone_seq_col],
            function(x) {
              length(unique(data[data[ , clone_seq_col] == x, sample_col])) })
   cat(" Done.\n")
@@ -81,7 +91,7 @@ getPotentialAssociatedClones <- function(
   for (i in 1:nrow(out)) {
     # logical vector for rows of merged data corresponding to current clone seq
     # grepl(pattern = paste0("^", clone, "$"), x = data[ , clone_seq_col])
-    rowids_clone <- data[ , clone_seq_col] == out$cloneSeq[[i]]
+    rowids_clone <- data[ , clone_seq_col] == out[ , output_clone_seq_col][[i]]
 
     # Number of treatment subjects with target sequence
     shared_by_n_treatment_subjects <-
