@@ -24,7 +24,7 @@
 # DO:
 #   aggregate the counts by group based on the grouping columns
 #   add variable counting the number of reads for each
-aggregateReads <- function(
+aggregateIdenticalClones <- function(
   data, # data frame containing columns below
   clone_col,
   count_col, # name or number of column of `data` containing clone counts
@@ -49,8 +49,8 @@ aggregateReads <- function(
 
   # aggregate the reads by group
   cat("Aggregating reads (rows) by unique clone sequence...")
-  data_to_aggregate <- list("aggCloneCount" = data[ , c(count_col)],
-                            "aggCloneFreq" = data[ , c(freq_col)])
+  data_to_aggregate <- list("AggregatedCloneCount" = data[ , c(count_col)],
+                            "AggregatedCloneFrequency" = data[ , c(freq_col)])
   agg_counts <- stats::aggregate(data_to_aggregate,
                                  by = grouping_variables, FUN = sum)
 
@@ -58,7 +58,7 @@ aggregateReads <- function(
   groups <- as.data.frame(grouping_variables)
   names(groups)[[1]] <- "temporary_placeholder_name" # for summarize function
   num_reads <- dplyr::summarize(dplyr::group_by_all(groups),
-                                numReads = length(temporary_placeholder_name))
+                                UniqueCloneCount = length(temporary_placeholder_name))
   names(num_reads)[[1]] <- clone_col # replace placeholder name with orig
 
   # Merge aggregate counts with num reads

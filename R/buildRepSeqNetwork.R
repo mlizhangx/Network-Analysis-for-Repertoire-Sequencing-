@@ -139,14 +139,14 @@ buildRepSeqNetwork <- function(
                            count_col, freq_col, grouping_cols)
 
     # Update column name references for count and freq
-    if (size_nodes_by == count_col) { size_nodes_by <- "aggCloneCount" }
-    if (size_nodes_by == freq_col) { size_nodes_by <- "aggCloneFreq" }
+    if (size_nodes_by == count_col) { size_nodes_by <- "AggregatedCloneCount" }
+    if (size_nodes_by == freq_col) { size_nodes_by <- "AggregatedCloneFrequency" }
     if (count_col %in% color_nodes_by) {
-      color_nodes_by[which(color_nodes_by == count_col)] <- "aggCloneCount" }
+      color_nodes_by[which(color_nodes_by == count_col)] <- "AggregatedCloneCount" }
     if (freq_col %in% color_nodes_by) {
-      color_nodes_by[which(color_nodes_by == freq_col)] <- "aggCloneFreq" }
-    count_col <- "aggCloneCount"
-    freq_col <- "aggCloneFreq"
+      color_nodes_by[which(color_nodes_by == freq_col)] <- "AggregatedCloneFrequency" }
+    count_col <- "AggregatedCloneCount"
+    freq_col <- "AggregatedCloneFrequency"
 
   } else { # Copy the relevant columns from the input data
     data <-
@@ -241,9 +241,9 @@ buildRepSeqNetwork <- function(
   size_legend_title <- NULL # default for fixed node size
   if (is.character(size_nodes_by)) {
     # if (aggregate_reads) {
-    #   if (size_nodes_by == "aggCloneCount") {
+    #   if (size_nodes_by == "AggregatedCloneCount") {
     #     size_legend_title <- "agg clone count"
-    #   } else if (size_nodes_by == "aggCloneFreq") {
+    #   } else if (size_nodes_by == "AggregatedCloneFrequency") {
     #     size_legend_title <- "agg clone freq" }
     # } else if (size_nodes_by == count_col) {
     #   size_legend_title <- "clone count"
