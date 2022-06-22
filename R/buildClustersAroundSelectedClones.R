@@ -139,8 +139,8 @@ buildClustersAroundSelectedClones <- function(
 
   # Initialize output directory and objects
   data_all_clusters <- as.data.frame(matrix(nrow = 0, ncol = ncol(data) + 3))
-  names(data_all_clusters) <- c(colnames(data), "assocClustID",
-                                "assocClustSeq", "degreeInAssocClust")
+  names(data_all_clusters) <- c(colnames(data), "AssocClusterID",
+                                "AssocClusterSeq", "DegreeInAssocCluster")
 
   ### GLOBAL NETWORK PLOT SETTINGS ###
   # Title for global cluster network plot
@@ -250,9 +250,9 @@ buildClustersAroundSelectedClones <- function(
 
 
     # Add variables for cluster ID, central sequence, and degree in cluster
-    data_current_cluster$assocClusterID <- i
-    data_current_cluster$assocClusterSeq <- selected_clones[[i]]
-    data_current_cluster$degreeInAssocCluster <- igraph::degree(network)
+    data_current_cluster$AssocClusterID <- i
+    data_current_cluster$AssocClusterSeq <- selected_clones[[i]]
+    data_current_cluster$DegreeInAssocCluster <- igraph::degree(network)
 
     # Add data for current cluster to combined cluster data
     data_all_clusters <- rbind(data_all_clusters, data_current_cluster)
@@ -316,7 +316,7 @@ buildClustersAroundSelectedClones <- function(
   cat("All clusters complete.\n")
 
   # Format additional variables in data
-  data_all_clusters$assocClusterID <- as.factor(data_all_clusters$assocClusterID)
+  data_all_clusters$AssocClusterID <- as.factor(data_all_clusters$AssocClusterID)
 
   #### BUILD GLOBAL CLUSTER NETWORK ####
   # Ensure cluster ID is computed
@@ -325,8 +325,8 @@ buildClustersAroundSelectedClones <- function(
   } else if (!stats_to_include$cluster_id) {
     stats_to_include$cluster_id <- TRUE }
 
-  if ("globalClusterID" %in% color_nodes_by) {
-    color_nodes_by[which(color_nodes_by == "globalClusterID")] <- "cluster_id"
+  if ("GlobalClusterID" %in% color_nodes_by) {
+    color_nodes_by[which(color_nodes_by == "GlobalClusterID")] <- "cluster_id"
   }
 
   cat("Building global cluster network using combined cluster data:\n")
@@ -334,8 +334,8 @@ buildClustersAroundSelectedClones <- function(
     data_all_clusters,
     nucleo_col, amino_col, count_col, freq_col, vgene_col, dgene_col, jgene_col,
     cdr3length_col,
-    other_cols = c(sample_col, extra_cols, "assocClusterID", "assocClusterSeq",
-                   "degreeInAssocCluster"),
+    other_cols = c(sample_col, extra_cols, "AssocClusterID", "AssocClusterSeq",
+                   "DegreeInAssocCluster"),
     clone_seq_type,
     min_seq_length = NULL, dist_type = dist_type, edge_dist = edge_dist,
     node_stats = TRUE, stats_to_include = stats_to_include,
@@ -351,15 +351,15 @@ buildClustersAroundSelectedClones <- function(
   names(global_net$node_data)[
     which(names(global_net$node_data) == "CloneFrequency")] <- new_freq_colname
   names(global_net$node_data)[
-    which(names(global_net$node_data) == sample_col)] <- "sampleID"
+    which(names(global_net$node_data) == sample_col)] <- "SampleID"
   names(global_net$node_data)[
-    which(names(global_net$node_data) == "cluster_id")] <- "globalClusterID"
+    which(names(global_net$node_data) == "cluster_id")] <- "GlobalClusterID"
   if ("degree" %in% names(global_net$node_data)) {
     names(global_net$node_data)[which(names(global_net$node_data) == "degree")] <-
       "globalDegree" }
   # colnames(global_net$node_data)[1:9] <- c(
   #   "NucleotideSeq", "AminoAcidSeq", "CloneCount", "CloneFreqInSample",
-  #   "VGene", "DGene", "JGene", "CDR3Length", "sampleID")
+  #   "VGene", "DGene", "JGene", "CDR3Length", "SampleID")
 
 
   #### SAVE RESULTS ####
