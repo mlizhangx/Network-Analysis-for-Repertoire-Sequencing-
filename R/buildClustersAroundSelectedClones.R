@@ -38,7 +38,7 @@ buildClustersAroundSelectedClones <- function(
   custom_title = NULL, # for plot of global cluster network
   custom_subtitle = NULL,
   edge_width = 0.1,
-  size_nodes_by = count_col, # can use a column name/# of data
+  size_nodes_by = count_col, # can use a column name of data (a numeric value yields fixed node sizes)
   node_size_limits = NULL, # numeric length 2
   custom_size_legend = NULL, # custom legend title
   color_nodes_by = sample_col, # accepts multiple values (one plot per value)
@@ -92,7 +92,6 @@ buildClustersAroundSelectedClones <- function(
                 no = "node_data_only"))
 
   # Convert input columns to character if not already
-  if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
   if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
   if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
   if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
@@ -103,8 +102,9 @@ buildClustersAroundSelectedClones <- function(
   if (is.numeric(cdr3length_col)) { cdr3length_col <- names(data)[cdr3length_col] }
   if (is.numeric(sample_col)) { sample_col <- names(data)[sample_col] }
   if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
-  # if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
+  if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
   if (is.numeric(sc_color_nodes_by)) { sc_color_nodes_by <- names(data)[sc_color_nodes_by] }
+  # if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
   # if (is.integer(sc_size_nodes_by)) { sc_size_nodes_by <- names(data)[sc_size_nodes_by] }
 
   # Designate amino acid or nucleotide for clone sequence
@@ -123,6 +123,19 @@ buildClustersAroundSelectedClones <- function(
           unique(c(nucleo_col, amino_col, count_col, freq_col,
                    vgene_col, dgene_col, jgene_col, cdr3length_col, sample_col,
                    extra_cols))]
+
+  # Rename frequency column
+  new_freq_colname <- "CloneFreqInSample"
+  if (size_nodes_by == freq_col) { size_nodes_by <- new_freq_colname }
+  if (sc_size_nodes_by == freq_col) { sc_size_nodes_by <- new_freq_colname }
+  if (freq_col %in% color_nodes_by) {
+    color_nodes_by[color_nodes_by == freq_col] <- new_freq_colname
+  }
+  if (freq_col %in% sc_color_nodes_by) {
+    sc_color_nodes_by[sc_color_nodes_by == freq_col] <- new_freq_colname
+  }
+  names(data)[names(data) == freq_col] <- new_freq_colname
+  freq_col <- new_freq_colname
 
   # Initialize output directory and objects
   data_all_clusters <- as.data.frame(matrix(nrow = 0, ncol = ncol(data) + 3))
@@ -333,18 +346,19 @@ buildClustersAroundSelectedClones <- function(
     color_nodes_by = color_nodes_by, color_scheme = color_scheme,
     custom_color_legend = custom_color_legend,
     return_all = TRUE)
-  data_all_clusters <- global_net$node_data
 
   # Rename some columns of combined cluster data
-  names(data_all_clusters)[
-    which(names(data_all_clusters) == sample_col)] <- "sampleID"
-  names(data_all_clusters)[
-    which(names(data_all_clusters) == "cluster_id")] <- "globalClusterID"
-  if ("degree" %in% names(data_all_clusters)) {
-    names(data_all_clusters)[which(names(data_all_clusters) == "degree")] <-
+  names(global_net$node_data)[
+    which(names(global_net$node_data) == "CloneFrequency")] <- new_freq_colname
+  names(global_net$node_data)[
+    which(names(global_net$node_data) == sample_col)] <- "sampleID"
+  names(global_net$node_data)[
+    which(names(global_net$node_data) == "cluster_id")] <- "globalClusterID"
+  if ("degree" %in% names(global_net$node_data)) {
+    names(global_net$node_data)[which(names(global_net$node_data) == "degree")] <-
       "globalDegree" }
-  # colnames(data_all_clusters)[1:9] <- c(
-  #   "NucleotideSeq", "AminoAcidSeq", "CloneCount", "cloneFreqInSample",
+  # colnames(global_net$node_data)[1:9] <- c(
+  #   "NucleotideSeq", "AminoAcidSeq", "CloneCount", "CloneFreqInSample",
   #   "VGene", "DGene", "JGene", "CDR3Length", "sampleID")
 
 
@@ -352,7 +366,7 @@ buildClustersAroundSelectedClones <- function(
   if (!is.null(output_dir)) {
     # Save data for global cluster network if applicable
     if (!is.null(data_outfile)) {
-      utils::write.csv(data_all_clusters, file.path(output_dir, data_outfile),
+      utils::write.csv(global_net$node_data, file.path(output_dir, data_outfile),
                        row.names = FALSE)
       cat(paste0(
         "Global cluster network data and rep-seq data saved to file:\n  ",
@@ -408,10 +422,10 @@ buildClustersAroundSelectedClones <- function(
   if (return_type == "node_data_only") {
 
     cat("All tasks complete.\n")
-    return(data_all_clusters)
+    return(global_net$node_data)
 
   } else {
-    out <- list("data" = data_all_clusters)
+    out <- list("data" = global_net$node_data)
     if (cluster_stats) { out$cluster_stats <- global_net$cluster_stats }
     if (return_type == "all") {
       out$global_plots <- global_net$plots
