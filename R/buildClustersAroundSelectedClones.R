@@ -344,7 +344,7 @@ buildClustersAroundSelectedClones <- function(
     names(data_all_clusters)[which(names(data_all_clusters) == "degree")] <-
       "globalDegree" }
   # colnames(data_all_clusters)[1:9] <- c(
-  #   "nucleotideSeq", "AminoAcidSeq", "cloneCount", "cloneFreqInSample",
+  #   "NucleotideSeq", "AminoAcidSeq", "cloneCount", "cloneFreqInSample",
   #   "VGene", "DGene", "JGene", "CDR3Length", "sampleID")
 
 
