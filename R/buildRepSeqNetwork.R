@@ -15,7 +15,7 @@ buildRepSeqNetwork <- function(
 
   # Input Data and Columns
   data,      # data frame containing req-seq data
-  nucleo_col = "nucleotideSeq",
+  nucleo_col = "NucleotideSeq",
   amino_col = "AminoAcidSeq",
   count_col = "cloneCount",
   freq_col = "cloneFreqInSample",
@@ -282,7 +282,7 @@ buildRepSeqNetwork <- function(
   #### SAVE RESULTS ####
   if (!aggregate_reads) {  # Rename data columns
     colnames(data)[1:8] <- c(
-      "nucleotideSeq", "AminoAcidSeq", "cloneCount", "cloneFrequency",
+      "NucleotideSeq", "AminoAcidSeq", "cloneCount", "cloneFrequency",
       "VGene", "DGene", "JGene", "CDR3Length") }
 
   # Save node [& cluster] data
