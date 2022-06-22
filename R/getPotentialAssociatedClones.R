@@ -22,7 +22,7 @@ getPotentialAssociatedClones <- function(
   sample_col,
   subject_col = sample_col,
   group_col,
-  treatment_groups,
+  case_groups,
   min_seq_length = 7,
   min_sample_membership = 5,
   pval_cutoff = 0.05,
@@ -49,15 +49,15 @@ getPotentialAssociatedClones <- function(
   cat(paste0(
     "Data contains ", nrow(data), " clones after filtering for sequence length and special characters.\n"))
 
-  # Get subject treatment/control counts
+  # Get subject case/control counts
   n_subjects <- length(unique(data[ , subject_col]))
-  rowids_treatment_subjects <- data[ , group_col] %in% treatment_groups
-  n_treatment_subjects <-
-    length(unique(data[rowids_treatment_subjects, subject_col]))
-  n_control_subjects <- n_subjects - n_treatment_subjects
+  rowids_case_subjects <- data[ , group_col] %in% case_groups
+  n_case_subjects <-
+    length(unique(data[rowids_case_subjects, subject_col]))
+  n_control_subjects <- n_subjects - n_case_subjects
   cat(paste0(
     "Data contains ", n_subjects, " ", samples_or_subjects,
-    ", ", n_treatment_subjects, " of which belong to the specified treatment groups.\n"))
+    ", ", n_case_subjects, " of which belong to the specified case groups.\n"))
 
   # Get unique clone sequences and initialize output
   out <- data.frame("AminoAcidSeq" = # list of unique clone seqs
@@ -66,9 +66,9 @@ getPotentialAssociatedClones <- function(
   if (clone_seq_type == "nucleotide") {
     names(out)[1] <- output_clone_seq_col <- "NucleotideSeq"
   }
-  out$pv_fisher <- rep(NA, nrow(out))
+  out$fisher_pvalue <- rep(NA, nrow(out))
   out$shared_by_n_samples <- rep(NA, nrow(out))
-  # out$shared_by_n_treatment_subjects <- rep(NA, nrow(out))
+  # out$shared_by_n_case_subjects <- rep(NA, nrow(out))
   # out$max_freq <- rep(NA, nrow(out))
   out$label <- rep(NA, nrow(out))
 
@@ -93,24 +93,24 @@ getPotentialAssociatedClones <- function(
     # grepl(pattern = paste0("^", clone, "$"), x = data[ , clone_seq_col])
     rowids_clone <- data[ , clone_seq_col] == out[ , output_clone_seq_col][[i]]
 
-    # Number of treatment subjects with target sequence
-    shared_by_n_treatment_subjects <-
+    # Number of case subjects with target sequence
+    shared_by_n_case_subjects <-
       length(unique(
-        data[rowids_clone & rowids_treatment_subjects, subject_col]))
+        data[rowids_clone & rowids_case_subjects, subject_col]))
     # Number of control subjects with target sequence
     shared_by_n_control_subjects <-
       length(unique(
-        data[rowids_clone & !rowids_treatment_subjects, subject_col]))
+        data[rowids_clone & !rowids_case_subjects, subject_col]))
 
     # Compute fisher p-value for target sequence
-    out$pv_fisher[[i]] <-
+    out$fisher_pvalue[[i]] <-
       stats::fisher.test(data.frame(
         "control" =
           c(shared_by_n_control_subjects,
             n_control_subjects - shared_by_n_control_subjects),
-        "treatment" =
-          c(shared_by_n_treatment_subjects,
-            n_treatment_subjects - shared_by_n_treatment_subjects))
+        "case" =
+          c(shared_by_n_case_subjects,
+            n_case_subjects - shared_by_n_case_subjects))
       )$p.value
 
     # Compute max clone fraction of target seq among samples containing it
@@ -122,11 +122,11 @@ getPotentialAssociatedClones <- function(
     if (samples_or_subjects == "subjects") {
       out$label[[i]] <- paste0(
         out$label[[i]],
-        "and ", shared_by_n_treatment_subjects + shared_by_n_control_subjects, " subjects ")
+        "and ", shared_by_n_case_subjects + shared_by_n_control_subjects, " subjects ")
     }
     out$label[[i]] <- paste0(
-      out$label[[i]], "(of which ", shared_by_n_treatment_subjects, " are categorized as treatment ", samples_or_subjects, ")",
-      "\nFisher's exact test P-value: ", signif(out$pv_fisher[[i]], digits = 3),
+      out$label[[i]], "(of which ", shared_by_n_case_subjects, " are categorized as case ", samples_or_subjects, ")",
+      "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3),
       ", Max clone frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
   }
   cat(" Done.\n")
@@ -135,12 +135,12 @@ getPotentialAssociatedClones <- function(
   #### FILTER/SORT BY P-VALUE ####
 
   # Drop sequences with Fisher P-value above specified cutoff
-  out <- out[out$pv_fisher < pval_cutoff, ]
+  out <- out[out$fisher_pvalue < pval_cutoff, ]
   cat(paste0(nrow(out), " sequences remain after filtering by Fisher's exact test P-value.\n"))
 
   # Sort candidate sequence metadata by fisher P-value and return
   cat("Sorting the data for these sequences by Fisher's exact test P-value and returning.\n")
-  out <- out[order(out$pv_fisher), ]
+  out <- out[order(out$fisher_pvalue), ]
   if (!is.null(outfile)) {
     utils::write.csv(out, outfile, row.names = FALSE)
     cat(paste0("Output saved to file:\n  ", outfile, "\n"))
