@@ -8,7 +8,8 @@ using namespace arma;
 
 // [[Rcpp::export]]
 arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
-                                    const int& maxdist) {
+                                    const int& maxdist,
+                                    bool drop_deg_zero) {
 
   // allocate memory for data structures
   const int dim = strings.size();
@@ -27,21 +28,25 @@ arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
   // reflect upper triangle to lower
   out = arma::symmatu(out);
 
-  // sum entries columnwise
-  arma::sp_umat col_sums_spmat = arma::sum(out);
-  arma::urowvec col_sums(col_sums_spmat);
+  if (drop_deg_zero) {
 
-  // record indices of nodes with positive degree
-  arma::uvec col_ids = find(col_sums > 1);
+    // sum entries columnwise
+    arma::sp_umat col_sums_spmat = arma::sum(out);
+    arma::urowvec col_sums(col_sums_spmat);
 
-  // subset matrix to keep only network nodes
-  out = out.cols(col_ids);
-  out = out.t();
-  out = out.cols(col_ids);
+    // record indices of nodes with positive degree
+    arma::uvec col_ids = find(col_sums > 1);
 
-  // write indices of network nodes to file
-  col_ids += 1;  // offset C++'s 0-index starting convention
-  col_ids.save("col_ids.txt", raw_ascii);
+    // subset matrix to keep only network nodes
+    out = out.cols(col_ids);
+    out = out.t();
+    out = out.cols(col_ids);
+
+    // write indices of network nodes to file
+    col_ids += 1;  // offset C++'s 0-index starting convention
+    col_ids.save("col_ids.txt", raw_ascii);
+
+  }
 
   return(out);
 

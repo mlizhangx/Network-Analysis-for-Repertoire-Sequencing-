@@ -531,8 +531,8 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
 sparseAdjacencyMatFromClones <- function(
   clones, # List of tcr/clonotype sequences
   dist_type = "hamming", # supports "levenshtein" and "hamming"
-  max_dist = 1 # Maximum distance threshold for edge/adjacency between two sequences
-  # drop_isolated_nodes = TRUE # Drop sequences/nodes with zero degree?
+  max_dist = 1, # Maximum distance threshold for edge/adjacency between two sequences
+  drop_isolated_nodes = TRUE # Drop sequences/nodes with zero degree?
 ) {
   # attempt to coerce clones to character vector
   if (length(clones) == 0) stop("'clones' has zero length")
@@ -543,10 +543,10 @@ sparseAdjacencyMatFromClones <- function(
   # Compute adjacency matrix
   if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
     cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- levAdjacencyMatSparse(clones, max_dist)
+    out <- levAdjacencyMatSparse(clones, max_dist, drop_isolated_nodes)
   } else if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
     cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- hamAdjacencyMatSparse(clones, max_dist)
+    out <- hamAdjacencyMatSparse(clones, max_dist, drop_isolated_nodes)
   } else {
     stop('invalid option for `dist_type`')
   }
