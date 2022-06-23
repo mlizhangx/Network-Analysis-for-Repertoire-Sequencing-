@@ -12,14 +12,15 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // hamAdjacencyMatSparse
-arma::sp_umat hamAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist);
-RcppExport SEXP _RepSeqNetworkAnalysis_hamAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP) {
+arma::sp_umat hamAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist, bool drop_deg_zero);
+RcppExport SEXP _RepSeqNetworkAnalysis_hamAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP, SEXP drop_deg_zeroSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string> >::type strings(stringsSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxdist(maxdistSEXP);
-    rcpp_result_gen = Rcpp::wrap(hamAdjacencyMatSparse(strings, maxdist));
+    Rcpp::traits::input_parameter< bool >::type drop_deg_zero(drop_deg_zeroSEXP);
+    rcpp_result_gen = Rcpp::wrap(hamAdjacencyMatSparse(strings, maxdist, drop_deg_zero));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -37,14 +38,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // levAdjacencyMatSparse
-arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist);
-RcppExport SEXP _RepSeqNetworkAnalysis_levAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP) {
+arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist, bool drop_deg_zero);
+RcppExport SEXP _RepSeqNetworkAnalysis_levAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP, SEXP drop_deg_zeroSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string> >::type strings(stringsSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxdist(maxdistSEXP);
-    rcpp_result_gen = Rcpp::wrap(levAdjacencyMatSparse(strings, maxdist));
+    Rcpp::traits::input_parameter< bool >::type drop_deg_zero(drop_deg_zeroSEXP);
+    rcpp_result_gen = Rcpp::wrap(levAdjacencyMatSparse(strings, maxdist, drop_deg_zero));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -63,9 +65,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RepSeqNetworkAnalysis_hamAdjacencyMatSparse", (DL_FUNC) &_RepSeqNetworkAnalysis_hamAdjacencyMatSparse, 2},
+    {"_RepSeqNetworkAnalysis_hamAdjacencyMatSparse", (DL_FUNC) &_RepSeqNetworkAnalysis_hamAdjacencyMatSparse, 3},
     {"_RepSeqNetworkAnalysis_hamDistBounded", (DL_FUNC) &_RepSeqNetworkAnalysis_hamDistBounded, 3},
-    {"_RepSeqNetworkAnalysis_levAdjacencyMatSparse", (DL_FUNC) &_RepSeqNetworkAnalysis_levAdjacencyMatSparse, 2},
+    {"_RepSeqNetworkAnalysis_levAdjacencyMatSparse", (DL_FUNC) &_RepSeqNetworkAnalysis_levAdjacencyMatSparse, 3},
     {"_RepSeqNetworkAnalysis_levDistBounded", (DL_FUNC) &_RepSeqNetworkAnalysis_levDistBounded, 3},
     {NULL, NULL, 0}
 };
