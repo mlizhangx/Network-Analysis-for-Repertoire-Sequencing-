@@ -40,7 +40,7 @@ buildRepSeqNetwork <- function(
   cluster_stats = FALSE,
 
   # Plot Settings
-  plot_title = paste("Network on CDR3", clone_seq_type, "sequence"),
+  plot_title = paste("Network on ", clone_seq_type, "sequence"),
   plot_subtitle = ifelse(dist_type == "euclidean_on_atchley",
                          yes = paste("Clone sequences embedded in Euclidean 30-space based on Atchley factor representation using deep learning\nEdges based on a maximum Euclidean distance of", edge_dist, "between embedded values\n"),
                          no = paste("Edges based on a maximum", dist_type, "distance of", edge_dist, "\n")),
