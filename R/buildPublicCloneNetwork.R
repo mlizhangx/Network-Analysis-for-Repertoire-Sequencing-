@@ -96,27 +96,6 @@ buildPublicCloneNetwork <- function(
   # each variable for size/color exists or will be added to data
   # need to account for aggregate_identical_clones if TRUE
 
-  # Load data for first sample to validate column names
-  data <-
-    ifelse(csv_files,
-           read.csv(file.path(input_dir, file_list[[1]]), header, sep),
-           read.table(file.path(input_dir, file_list[[1]]), header, sep))
-
-  # Check that each input column is a distinct col of data and meets specs
-  #
-  #
-
-  # Format the input data
-  extra_cols <- intersect(
-    unique(c(other_cols, bayes_factor_col, diff_test_col,
-             color_nodes_by, cluster_color_nodes_by, sample_color_nodes_by)),
-    names(data))
-
-  data <-
-    data[ , # Keep only the relevant columns, in specified order:
-          unique(c(nucleo_col, amino_col, count_col, freq_col,
-                   vgene_col, dgene_col, jgene_col, cdr3length_col, extra_cols))]
-  data$SampleID <- sample_id_list[[i]]
 
   #### PREPARE WORKING ENVIRONMENT ####
   # Create output directory if applicable
@@ -267,6 +246,7 @@ buildPublicCloneNetwork <- function(
 
 
     ### FILTER CLUSTER STATS ###
+    # row ids of top n clusters by node count
     ids_top_n_clusters <-
       which(
         sample_net$cluster_stats$SampleLevelClusterID %in%
@@ -278,10 +258,13 @@ buildPublicCloneNetwork <- function(
             SampleLevelClusterID
           ]
       )
+    # row ids of clusters with at least min_node_count nodes
     ids_node_count_gt_n <-
       which(sample_net$cluster_stats$node_count >= min_node_count)
+    # row ids of clusters with at least min_clone_count total clone count
     ids_clone_count_gt_n <-
       which(sample_net$cluster_stats$agg_clone_count >= min_clone_count)
+    # Take the union of the filtered row ids
     filtered_ids <-
       unique(c(ids_top_n_clusters, ids_node_count_gt_n, ids_clone_count_gt_n))
     sample_net$cluster_stats <- sample_net$cluster_stats[filtered_ids, ]
