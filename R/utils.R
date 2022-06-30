@@ -202,7 +202,7 @@ addNodeNetworkStats <- function(
     data$degree <- igraph::degree(net) }
 
   if (stats_to_include$cluster_id | stats_to_include$all_stats) {
-    cat("Computing global cluster membership...")
+    cat("Computing cluster membership within the network...")
     data$cluster_id <-
       as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
     cat(" Done.\n") }
@@ -284,7 +284,7 @@ node_stat_settings <- function(
 # FUNCTION: Compute the clusters for a network and augment the corresponding
 # data with a variable containing the cluster membership ID
 addClusterMembership <- function(data, net) {
-  cat("Computing global cluster membership...")
+  cat("Computing cluster membership within the network...")
   data$cluster_id <-
     as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
   cat(" Done.\n")
