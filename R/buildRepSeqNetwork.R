@@ -137,7 +137,7 @@ buildRepSeqNetwork <- function(
 
   if (aggregate_identical_clones) { # Aggregate the counts if specified
     data <- aggregateIdenticalClones(data, clone_seq_col,
-                           count_col, freq_col, grouping_cols)
+                                     count_col, freq_col, grouping_cols)
 
     # Update column name references for count and freq
     if (size_nodes_by == count_col) { size_nodes_by <- "AggregatedCloneCount" }
@@ -282,10 +282,16 @@ buildRepSeqNetwork <- function(
 
 
   #### SAVE RESULTS ####
-  if (!aggregate_identical_clones) {  # Rename data columns
+  # Rename data columns
+  if (aggregate_identical_clones) {
+    colnames(data)[[1]] <- ifelse(clone_seq_type == "nucleotide",
+                                  yes = "NucleotideSeq",
+                                  no = "AminoAcidSeq")
+  } else {
     colnames(data)[1:8] <- c(
       "NucleotideSeq", "AminoAcidSeq", "CloneCount", "CloneFrequency",
-      "VGene", "DGene", "JGene", "CDR3Length") }
+      "VGene", "DGene", "JGene", "CDR3Length")
+  }
 
   # Save node [& cluster] data
   if (!is.null(output_dir)) {
