@@ -140,7 +140,8 @@ generateNetworkFromClones <- function(
   clones, # list of clonotype sequences
   dist_type = "levenshtein", # supports "levenshtein", "hamming", "euclidean_on_atchley"
   edge_dist = 1, # max dist threshold for edges
-  contig_ids = seq_along(clones), # for "euclidean_on_atchley" dist_type only
+  drop_isolated_nodes = TRUE, # forced to FALSE for dist_type = "euclidean_on_atchley"
+  contig_ids = seq_along(clones), # for dist_type = "euclidean_on_atchley"
   outfile_adjacency_matrix = NULL, # save file for adjacency matrix
   outfile_distance_matrix = NULL, # save file for distance matrix (only for Euclidean on Atchley)
   return_type = "network" # can use "adjacency_matrix" to return the adjacency mat
@@ -150,7 +151,8 @@ generateNetworkFromClones <- function(
     adjacency_matrix <-
       sparseAdjacencyMatFromClones(clones = clones,
                                    dist_type = dist_type,
-                                   max_dist = edge_dist)
+                                   max_dist = edge_dist,
+                                   drop_isolated_nodes = drop_isolated_nodes)
     if (!is.null(outfile_adjacency_matrix)) {
       Matrix::writeMM(adjacency_matrix, outfile_adjacency_matrix)
     }

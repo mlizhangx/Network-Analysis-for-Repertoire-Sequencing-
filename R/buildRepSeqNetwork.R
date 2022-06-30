@@ -35,6 +35,7 @@ buildRepSeqNetwork <- function(
   # Network Settings
   dist_type = "hamming", # or "levenshtein", "hamming", "euclidean_on_atchley"
   edge_dist = 1, # max dist for edges
+  drop_isolated_nodes = TRUE,
   node_stats = FALSE,
   stats_to_include = node_stat_settings(), # can also select "all" or "cluster_id_only"
   cluster_stats = FALSE,
@@ -166,7 +167,8 @@ buildRepSeqNetwork <- function(
     generateNetworkFromClones(data[ , clone_seq_col],
                               dist_type, edge_dist,
                               contig_ids = rownames(data),
-                              return_type = "adjacency_matrix")
+                              return_type = "adjacency_matrix",
+                              drop_isolated_nodes = drop_isolated_nodes)
 
   # Subset data to keep only those clones in the network (nonzero degree)
   if (dist_type != "euclidean_on_atchley") {
