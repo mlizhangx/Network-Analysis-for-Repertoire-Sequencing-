@@ -8,7 +8,7 @@ buildPublicCloneNetwork <- function(
   # Input Data and Columns
   input_dir = getwd(),
   file_list,
-  sample_id_list = seq_along(file_list),
+  sample_id_list,
   csv_files = FALSE, # use read.csv instead of read.table?
   header = FALSE,
   sep = "",
@@ -20,7 +20,6 @@ buildPublicCloneNetwork <- function(
   dgene_col,
   jgene_col,
   cdr3length_col,
-  # sample_col,
   other_cols = NULL,
 
   # Clone sequence settings
@@ -32,9 +31,6 @@ buildPublicCloneNetwork <- function(
   # Network Settings
   dist_type = "hamming", # options are "hamming", "levenshtein", "euclidean_on_atchley"
   edge_dist = 1,
-  # node_stats = TRUE,
-  # stats_to_include = node_stat_settings(), # for final public clone network
-  # cluster_stats = FALSE,
   include_atchley_embedding = FALSE, # only applicable to TCRB CDR3 amino acid seqs
 
   # Filter pass settings for sample-level clusters
@@ -55,35 +51,32 @@ buildPublicCloneNetwork <- function(
   size_nodes_by = 0.5, # can use a column name of data (a numeric value yields fixed node sizes)
   node_size_limits = NULL, # numeric length 2
   custom_size_legend = NULL, # custom legend title
-  color_nodes_by = "GlobalClusterID", # accepts multiple values (one plot per value)
+  color_nodes_by = "SampleID", # accepts multiple values (one plot per value)
   color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
   # Plot Settings (public cluster-level network)
-  # single_cluster_plots = TRUE,
   cluster_edge_width = 0.3,
-  cluster_size_nodes_by = count_col,
+  cluster_size_nodes_by = "node_count",
   cluster_node_size_limits = NULL,
   cluster_custom_size_legend = NULL, # custom legend title
-  cluster_color_nodes_by = "ClusterNetworkClusterID", # accepts multiple values (one plot per value)
+  cluster_color_nodes_by = "SampleID", # accepts multiple values (one plot per value)
   cluster_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   cluster_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
   # Plot Settings (sample-level networks)
-  # single_cluster_plots = TRUE,
   sample_edge_width = 0.3,
   sample_size_nodes_by = count_col,
   sample_node_size_limits = NULL,
   sample_custom_size_legend = NULL, # custom legend title
   sample_color_nodes_by = "cluster_id", # accepts multiple values (one plot per value)
   sample_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  sample_custom_color_legend = "sample-level cluster ID", # custom title (length must match color_nodes_by)
+  sample_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
   # Output Settings
   output_dir = file.path(getwd(), "public_clones_output"),
   plot_width = 12, # passed to pdf()
   plot_height = 10 # passed to pdf()
-  # return_all = FALSE # should function return a list, or just the data?
 
 ) {
 
@@ -115,20 +108,53 @@ buildPublicCloneNetwork <- function(
   if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
   if (is.numeric(cluster_color_nodes_by)) { cluster_color_nodes_by <- names(data)[cluster_color_nodes_by] }
   if (is.numeric(sample_color_nodes_by)) { sample_color_nodes_by <- names(data)[sample_color_nodes_by] }
+  if ("SampleLevelClusterID" %in% sample_color_nodes_by) {
+    sample_color_nodes_by[
+      which(sample_color_nodes_by == "SampleLevelClusterID")] <- "cluster_id"
+  }
 
   # Designate amino acid or nucleotide for clone sequence
   clone_seq_col <- amino_col
   if (clone_seq_type == "nucleotide") { clone_seq_col <- nucleo_col }
 
   # Initialize output directory and objects
-  data_cluster_network <- sample_net <- NULL #init
+  data_public_clones <- data_cluster_network <- sample_net <- extra_cols <-
+    keep_cols <- NULL #init
 
+  # New name for frequency column
+  old_freq_colname <- freq_col
+  new_freq_colname <- ifelse(aggregate_identical_clones,
+                             yes = "AggCloneFreqInSample",
+                             no = "CloneFreqInSample")
+
+
+  # Apply new name for freq column to color/size variables for plots
+  old_sample_color_nodes_by <- sample_color_nodes_by
+  old_sample_size_nodes_by <- sample_size_nodes_by
+  old_color_nodes_by <- color_nodes_by
+  old_size_nodes_by <- size_nodes_by
+  if (size_nodes_by == old_freq_colname) { size_nodes_by <- new_freq_colname }
+  if (cluster_size_nodes_by == old_freq_colname) {
+    warning("can't size nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to sizing nodes by the total clone count in the cluster.")
+    cluster_size_nodes_by <- "agg_clone_count" }
+  if (sample_size_nodes_by == old_freq_colname) { sample_size_nodes_by <- new_freq_colname }
+  if (old_freq_colname %in% color_nodes_by) {
+    color_nodes_by[color_nodes_by == old_freq_colname] <- new_freq_colname
+  }
+  if (old_freq_colname %in% cluster_color_nodes_by) {
+
+    warning("can't color nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to coloring nodes by the total clone count in the cluster.")
+    cluster_color_nodes_by[cluster_color_nodes_by == old_freq_colname] <- "agg_clone_count"
+  }
+  if (old_freq_colname %in% sample_color_nodes_by) {
+    sample_color_nodes_by[sample_color_nodes_by == old_freq_colname] <- new_freq_colname
+  }
 
   #### BUILD SAMPLE-LEVEL NETWORKS ####
-  # Iterate over the selected clones
   for (i in 1:length(file_list)) {
+    cat(paste0("Processing data for sample ", i, ": ", sample_id_list[[i]], "\n"))
 
-    cat(paste0("Loading data for sample ", i, ": ", sample_id_list[[i]], "\n"))
+    cat("Loading and formatting data...")
     # Load data
     data <-
       ifelse(csv_files,
@@ -140,42 +166,28 @@ buildPublicCloneNetwork <- function(
     #
 
     # Format the input data
-    extra_cols <- intersect(
-      unique(c(other_cols, bayes_factor_col, diff_test_col,
-               color_nodes_by, cluster_color_nodes_by, sample_color_nodes_by)),
-      names(data))
-    data <-
-      data[ , # Keep only the relevant columns, in specified order:
-            unique(c(nucleo_col, amino_col, count_col, freq_col,
-                     vgene_col, dgene_col, jgene_col, cdr3length_col, extra_cols))]
-    data$SampleID <- sample_id_list[[i]]
-
-    # Rename frequency column
-    old_freq_colname <- freq_col
-    old_sample_color_nodes_by <- sample_color_nodes_by
-    old_sample_size_nodes_by <- sample_size_nodes_by
-    new_freq_colname <- "CloneFreqInSample"
-    # if (size_nodes_by == freq_col) { size_nodes_by <- new_freq_colname }
-    # if (cluster_size_nodes_by == freq_col) { cluster_size_nodes_by <- new_freq_colname }
-    if (sample_size_nodes_by == freq_col) { sample_size_nodes_by <- new_freq_colname }
-    # if (freq_col %in% color_nodes_by) {
-    #   color_nodes_by[color_nodes_by == freq_col] <- new_freq_colname
-    # }
-    # if (freq_col %in% cluster_color_nodes_by) {
-    #   cluster_color_nodes_by[cluster_color_nodes_by == freq_col] <- new_freq_colname
-    # }
-    if (freq_col %in% sample_color_nodes_by) {
-      sample_color_nodes_by[sample_color_nodes_by == freq_col] <- new_freq_colname
+    if (i == 1) {
+      extra_cols <-
+        intersect(
+          unique(c(other_cols, bayes_factor_col, diff_test_col,
+                   old_color_nodes_by, old_size_nodes_by,
+                   old_sample_color_nodes_by, old_sample_size_nodes_by)),
+          names(data))
+      keep_cols <-
+        unique(c(nucleo_col, amino_col, count_col, old_freq_colname,
+                 vgene_col, dgene_col, jgene_col, cdr3length_col, extra_cols))
     }
-    names(data)[names(data) == freq_col] <- new_freq_colname
-    freq_col <- new_freq_colname
+    data <- data[ , keep_cols]
+    names(data)[names(data) == old_freq_colname] <- new_freq_colname
+    data$SampleID <- sample_id_list[[i]]
+    cat(" Done.\n")
 
 
     ### BUILD SAMPLE NETWORK ###
-    cat(paste0("Building network for sample ", i, ": ", sample_id_list[[i]], "\n"))
+    cat("Building network...\n")
     sample_net <- buildRepSeqNetwork(
-      data, nucleo_col, amino_col, count_col, freq_col, vgene_col, dgene_col,
-      jgene_col, cdr3length_col, c(extra_cols, "SampleID"),
+      data, nucleo_col, amino_col, count_col, new_freq_colname, vgene_col,
+      dgene_col, jgene_col, cdr3length_col, c(extra_cols, "SampleID"),
       clone_seq_type, min_seq_length, drop_chars, aggregate_identical_clones,
       dist_type = dist_type, edge_dist = edge_dist,
       node_stats = TRUE, stats_to_include = "all",
@@ -191,6 +203,13 @@ buildPublicCloneNetwork <- function(
       return_all = TRUE)
 
     # Rename sample-level node stats
+    if (aggregate_identical_clones) {
+      names(sample_net$node_data)[
+        names(sample_net$node_data) == "AggregatedCloneFrequency"] <-
+        new_freq_colname
+    }
+    names(sample_net$node_data)[names(sample_net$node_data) == "degree"] <-
+      "SampleLevelNetworkDegree"
     names(sample_net$node_data)[names(sample_net$node_data) == "cluster_id"] <-
       "SampleLevelClusterID"
     names(sample_net$node_data)[names(sample_net$node_data) == "transitivity"] <-
@@ -245,7 +264,8 @@ buildPublicCloneNetwork <- function(
     cat("Network graph plot saved as 'network_graph_plot.pdf'\n")
 
 
-    ### FILTER CLUSTER STATS ###
+    ### GET FILTERED CLUSTERS AND ADD TO PUBLIC CLUSTER DATA ###
+    cat("Identifying clusters of interest by node count and total clone count...")
     # row ids of top n clusters by node count
     ids_top_n_clusters <-
       which(
@@ -268,210 +288,352 @@ buildPublicCloneNetwork <- function(
     filtered_ids <-
       unique(c(ids_top_n_clusters, ids_node_count_gt_n, ids_clone_count_gt_n))
     sample_net$cluster_stats <- sample_net$cluster_stats[filtered_ids, ]
+    cat(" Done.\n")
 
     # Add cluster stats to combined data for public cluster network
+    cat("Adding selected clusters to public cluster data...")
     data_cluster_network <-
       ifelse(i == 1,
              yes = sample_net$cluster_stats,
              no = rbind(data_cluster_network, sample_net$cluster_stats))
+    cat(" Done.\n")
 
-    # Reset freq_col
-    freq_col <- old_freq_colname
-    sample_color_nodes_by <- old_sample_color_nodes_by
-    sample_size_nodes_by <- old_sample_size_nodes_by
 
+    ### GET NODE-LEVEL DATA FOR FILTERED CLUSTERS AND ADD TO PUBLIC CLONE DATA ###
+    cat("Getting node-level data for selected clusters...\n")
+    sample_net$node_data <- # subset rows:
+      sample_net$node_data[ # keep if cluster ID appears in filtered cluster data
+        sample_net$node_data$SampleLevelClusterID %in%
+          sample_net$cluster_stats$SampleLevelClusterID
+        , ]
+    # Filter using Bayes FDR if supplied
+    if (!is.null(bayes_factor_col)) {
+      cat("Filtering node-level data by FDR-adjusted Bayes Factor P-value...\n")
+      sample_net$node_data <- # subset rows:
+        sample_net$node_data[ # keep if Bayes FDR is below cutoff
+          sample_net$node_data[ , bayes_factor_col] < bayes_factor_cutoff
+          , ]
+    }
+    # Filter using differential testing P-value if supplied
+    if (!is.null(diff_test_col)) {
+      cat("Filtering node-level data by P-value from differential testing...\n")
+      sample_net$node_data <- # subset rows:
+        sample_net$node_data[ # keep if Bayes FDR is below cutoff
+          sample_net$node_data[ , diff_test_col] < diff_test_cutoff
+          , ]
+    }
+    cat("Adding node-level data for selected clusters to public clone data...")
+    data_public_clones <-
+      ifelse(i == 1,
+             yes = sample_net$node_data,
+             no = rbind(data_public_clones, sample_net$node_data))
+    cat(" Done.\n")
+
+
+  } # done looping over selected clones
+  cat("Done processing individual sample-level data.\n")
+
+
+
+  #### BUILD NETWORK OF PUBLIC CLUSTERS BY REPRESENTATIVE SEQUENCE ####
+  cat("Building network on public cluster data based on representative clone sequences...\n")
+
+  data_cluster_network$empty <- NA # placeholder column
+  cluster_nucleo_col <- cluster_amino_col <- "empty"
+  if (clone_seq_type == "nucleotide") {
+    cluster_nucleo_col <- "seq_w_max_count"
+  } else { cluster_amino_col <- "seq_w_max_count" }
+  cluster_extra_cols <-
+    c("SampleID", "SampleLevelClusterID", "node_count", "mean_seq_length",
+      "mean_degree", "max_degree", "seq_w_max_degree", "max_clone_count",
+      "diameter_length", "assortativity", 'cluster_transitivity',
+      "edge_density", "degree_centrality_index", "closeness_centrality_index",
+      "eigen_centrality_index", "eigen_centrality_eigenvalue")
+  # Build network
+  pub_clusters <- buildRepSeqNetwork(
+    data_cluster_network, cluster_nucleo_col, cluster_amino_col,
+    "agg_clone_count", "empty", "empty", "empty", "empty", "empty",
+    cluster_extra_cols, clone_seq_type,
+    dist_type = dist_type, edge_dist = edge_dist,
+    drop_isolated_nodes = FALSE, # (keep zero-degree nodes)
+    node_stats = TRUE, stats_to_include = "all",
+    cluster_stats = FALSE,
+    plot_title =
+      "Public Cluster-Level Network Based on Representative Clone Sequence",
+    plot_subtitle =
+      paste0(
+        "Includes top ", top_n_clusters,
+        " clusters from each sample by node count; clusters with node count > ",
+        min_node_count - 1, "; and clusters with total clone count > ",
+        min_clone_count - 1),
+    edge_width = cluster_edge_width, size_nodes_by = cluster_size_nodes_by,
+    node_size_limits = cluster_node_size_limits,
+    custom_size_legend = cluster_custom_size_legend,
+    color_nodes_by = cluster_color_nodes_by,
+    color_scheme = cluster_color_scheme,
+    custom_color_legend = cluster_custom_color_legend,
+    return_all = TRUE)
+
+  # Drop/rename variables for node-level data
+  if (clone_seq_type == "nucleotide") {
+    drop_cols <- c(2, 4:8)
+  } else { drop_cols <- c(1, 4:8) }
+  pub_clusters$node_data <- pub_clusters$node_data[ , -drop_cols]
+  names(pub_clusters$node_data)[1:2] <-
+    c("RepresentativeCloneSeq", "AggCloneCount")
+  names(pub_clusters$node_data)[
+    names(pub_clusters$node_data) == "node_count"] <- "SampleLevelNodeCount"
+  names(pub_clusters$node_data)[
+    names(pub_clusters$node_data) == "cluster_id"] <- "ClusterLevelClusterID"
+  names(pub_clusters$node_data)[
+    names(pub_clusters$node_data) == "degree"] <- "ClusterLevelDegree"
+
+  # Compute cluster level cluster stats
+  # Tabulate the number of nodes in each cluster
+  pub_cluster_level_cluster_info <-
+    as.data.frame(table(pub_clusters$node_data[ , "ClusterLevelClusterID"]))
+  colnames(pub_cluster_level_cluster_info) <-
+    c("ClusterLevelClusterID", "ClusterLevelNodeCount")
+  num_clusters <- nrow(pub_cluster_level_cluster_info) # Total number of clusters
+  cat(paste0("Computing statistics for the ", num_clusters, " cluster-level clusters..."))
+
+  ### INITIALIZE VALUES ###
+  pub_cluster_level_cluster_info$AggSampleLevelNodeCount <- 0
+  pub_cluster_level_cluster_info$AggSampleLevelCloneCount <- 0
+  pub_cluster_level_cluster_info$MeanValueOfMeanSeqLength <- 0
+  pub_cluster_level_cluster_info$MeanClusterLevelDegree <- 0
+  pub_cluster_level_cluster_info$MaxClusterLevelDegree <- 0
+  pub_cluster_level_cluster_info$ClusterSeqWithMaxClusterLevelDeg <- ""
+  pub_cluster_level_cluster_info$MaxCloneCount <- 0
+  pub_cluster_level_cluster_info$SampleWithMaxCloneCount <- ""
+  pub_cluster_level_cluster_info$SeqWithMaxCloneCount <- ""
+  pub_cluster_level_cluster_info$MaxValueOfAggCloneCount <- 0
+  pub_cluster_level_cluster_info$SampleWithHighestAggCloneCount <- ""
+  pub_cluster_level_cluster_info$ClusterSeqWithHighestAggCloneCount <- ""
+  pub_cluster_level_cluster_info$DiameterLength <- 0
+  pub_cluster_level_cluster_info$Assortativity <- 0
+  pub_cluster_level_cluster_info$Transitivity <- 0
+  pub_cluster_level_cluster_info$EdgeDensity <- 0
+  pub_cluster_level_cluster_info$DegreeCentralityIndex <- 0
+  pub_cluster_level_cluster_info$ClosenessCentralityIndex <- 0
+  pub_cluster_level_cluster_info$EigenCentralityIndex <- 0
+  pub_cluster_level_cluster_info$EigenCentralityEigenvalue <- 0
+
+  ### COMPUTE STATS FOR EACH CLUSTER ###
+  for (i in 1:num_clusters) {
+
+    cluster_row <- which(pub_cluster_level_cluster_info$ClusterLevelClusterID == i) # current row of cluster pub_clusters$node_data
+    node_ids <- pub_clusters$node_data$ClusterLevelClusterID == i  # Rows of node pub_clusters$node_data for current cluster
+
+    # Aggregate Sample-level Node Count
+    pub_cluster_level_cluster_info$AggSampleLevelNodeCount[[cluster_row]] <-
+      sum(pub_clusters$node_data[node_ids, "SampleLevelNodeCount"])
+
+    # Aggregate Sample-level Clone Count
+    pub_cluster_level_cluster_info$AggSampleLevelCloneCount[[cluster_row]] <-
+      sum(pub_clusters$node_data[node_ids, "AggCloneCount"])
+
+    # Mean value of mean sequence length
+    pub_cluster_level_cluster_info$MeanValueOfMeanSeqLength[[cluster_row]] <-
+      round(mean(pub_clusters$node_data[node_ids, "mean_seq_length"]), 2)
+
+    # Mean degree in cluster
+    pub_cluster_level_cluster_info$MeanClusterLevelDegree[[cluster_row]] <-
+      round(mean(pub_clusters$node_data[node_ids, "ClusterLevelDegree"]), 2)
+
+    # Maximum degree (and corresponding seq) within cluster
+    max_deg <- max(pub_clusters$node_data[node_ids, "ClusterLevelDegree"])
+    pub_cluster_level_cluster_info$MaxClusterLevelDegree[[cluster_row]] <- max_deg
+    node_id_max_deg <-
+      which(node_ids &
+              pub_clusters$node_data[ , "ClusterLevelDegree"] == max_deg)[[1]]
+    pub_cluster_level_cluster_info$ClusterSeqWithMaxClusterLevelDeg[[cluster_row]] <-
+      as.character(
+        pub_clusters$node_data[node_id_max_deg, "RepresentativeCloneSeq"])
+
+    # max value of max clone count (and corresponding sample & seq)
+    max_count <- max(pub_clusters$node_data[node_ids, "max_clone_count"])
+    pub_cluster_level_cluster_info$MaxCloneCount[[cluster_row]] <- max_count
+    node_id_max_count <-
+      which(node_ids &
+              pub_clusters$node_data[ , "max_clone_count"] == max_count)[[1]]
+    pub_cluster_level_cluster_info$SampleWithMaxCloneCount[[cluster_row]] <-
+      pub_clusters$node_data[node_id_max_count, "SampleID"]
+    pub_cluster_level_cluster_info$SeqWithMaxCloneCount[[cluster_row]] <-
+      pub_clusters$node_data[node_id_max_count, "RepresentativeCloneSeq"]
+
+    # max value of agg clone count (and corresponding sample & seq)
+    max_agg_count <- max(pub_clusters$node_data[node_ids, "AggCloneCount"])
+    pub_cluster_level_cluster_info$MaxValueOfAggCloneCount[[cluster_row]] <- max_agg_count
+    node_id_max_agg_count <-
+      which(node_ids &
+              pub_clusters$node_data[ , "AggCloneCount"] == max_agg_count)[[1]]
+    pub_cluster_level_cluster_info$SampleWithHighestAggCloneCount[[cluster_row]] <-
+      pub_clusters$node_data[node_id_max_agg_count, "SampleID"]
+    pub_cluster_level_cluster_info$ClusterSeqWithHighestAggCloneCount[[cluster_row]] <-
+      pub_clusters$node_data[node_id_max_agg_count, "RepresentativeCloneSeq"]
+
+
+    # Build cluster network to get network properties for the cluster
+    cluster <- generateNetworkFromAdjacencyMat(
+      as.matrix(pub_clusters$adjacency_matrix[node_ids, node_ids]))
+
+    # Diameter (longest geodesic distance)
+    pub_cluster_level_cluster_info$DiameterLength[[cluster_row]] <-
+      length(igraph::get_diameter(cluster, directed = T))
+
+    # Assortativity
+    pub_cluster_level_cluster_info$Assortativity[[cluster_row]] <-
+      igraph::assortativity_degree(cluster, directed = F)
+
+    # Transitivity
+    pub_cluster_level_cluster_info$Transitivity[[cluster_row]] <-
+      igraph::transitivity(cluster, type = "global")  # cluster is treated as an undirected network
+
+    # Density: The proportion of present edges from all possible ties.
+    pub_cluster_level_cluster_info$EdgeDensity[[cluster_row]] <-
+      igraph::edge_density(cluster, loops = F)
+
+    # Centralization on degree
+    pub_cluster_level_cluster_info$DegreeCentralityIndex[[cluster_row]] <-
+      igraph::centr_degree(cluster, mode = "in", normalized = T)$centralization
+
+    # Centralization on Closeness (centrality based on distance to others in the graph)
+    pub_cluster_level_cluster_info$ClosenessCentralityIndex[[cluster_row]] <-
+      igraph::centr_clo(cluster, mode = "all", normalized = T)$centralization
+
+    # Centralization on Eigenvector (centrality proportional to the sum of connection centralities)
+    #  (values of the first eigenvector of the graph adjacency matrix)
+    pub_cluster_level_cluster_info$EigenCentralityIndex[[cluster_row]] <-
+      igraph::centr_eigen(cluster, directed = T, normalized = T)$centralization
+
+    pub_cluster_level_cluster_info$EigenCentralityEigenvalue[[cluster_row]] <-
+      igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
+  }
+  cat(" Done.\n")
+
+  ## Save node & cluster data & plots ##
+  cluster_output_dir <- file.path(output_dir, "cluster_level_public_network")
+  cat(paste0("Saving output for cluster-level public network to:\n  ",
+             cluster_output_dir, "\n"))
+  utils::write.csv(
+    pub_clusters$node_data,
+    file = file.path(cluster_output_dir, "node_level_meta_data.csv"),
+    row.names = FALSE)
+  cat("Node-level meta data saved as 'node_level_meta_data.csv'\n")
+  utils::write.csv(pub_cluster_level_cluster_info,
+                   file = file.path(cluster_output_dir, "cluster_info.csv"),
+                   row.names = FALSE)
+  cat("Cluster meta data saved as 'cluster_info.csv'\n")
+  grDevices::pdf(
+    file = file.path(cluster_output_dir, "network_graph_plot.pdf"),
+    width = plot_width, height = plot_height)
+  for (j in 1:length(pub_clusters$plots)) { print(pub_clusters$plots[[j]]) }
+  grDevices::dev.off()
+  cat("Network graph plot saved as 'network_graph_plot.pdf'\n")
+
+
+
+  #### BUILD PUBLIC CLONE NETWORK ####
+  cat("Building public clone network...\n")
+
+  pub_cols <- c("SampleID", other_cols,
+                bayes_factor_col, diff_test_col,
+                color_nodes_by, size_nodes_by,
+                "SampleLevelClusterID", "SampleLevelTransitivity",
+                "SampleLevelCloseness", "SampleLevelCentralityByCloseness",
+                "SampleLevelEigenCentrality", "SampleLevelCentralityByEigen",
+                "SampleLevelBetweenness", "SampleLevelCentralityByBetweenness",
+                "SampleLevelAuthorityScore", "SampleLevelCoreness",
+                "SampleLevelPageRank")
+  if (aggregate_identical_clones) { pub_cols <- c("UniqueCloneCount", pub_cols) }
+  pub_extra_cols <- intersect(unique(pub_cols), names(data_public_clones))
+  pub_nucleo_col <- "NucleotideSeq"
+  pub_amino_col  <-  "AminoAcidSeq"
+  if (aggregate_identical_clones) {
+    data_public_clones$empty <- NA
+    pub_count_col <- "AggregatedCloneCount"
+    pub_freq_col <- "AggCloneFreqInSample"
+    pub_vgene_col <- "empty"
+    pub_dgene_col <- "empty"
+    pub_jgene_col <- "empty"
+    pub_cdr3length_col <- "empty"
+  } else {
+    pub_count_col <- "CloneCount"
+    pub_freq_col <- "CloneFreqInSample"
+    pub_vgene_col <- "VGene"
+    pub_dgene_col <- "DGene"
+    pub_jgene_col <- "JGene"
+    pub_cdr3length_col <- "CDR3Length"
   }
 
-} # done looping over selected clones
-cat("Done building sample-level networks.\n")
+  pub_clones <- buildRepSeqNetwork(
+    data = data_public_clones,
+    nucleo_col = pub_nucleo_col, amino_col = pub_amino_col,
+    count_col = pub_count_col, freq_col = pub_freq_col,
+    vgene_col = pub_vgene_col, dgene_col = pub_dgene_col, jgene_col = pub_jgene_col,
+    cdr3length_col = pub_cdr3length_col, other_cols = pub_extra_cols,
+    clone_seq_type = clone_seq_type, min_seq_length = NULL, drop_chars = NULL,
+    aggregate_identical_clones = FALSE, grouping_cols = NULL,
+    dist_type = dist_type, edge_dist = edge_dist,
+    drop_isolated_nodes = FALSE,
+    node_stats = TRUE, stats_to_include = "all", cluster_stats = TRUE,
+    plot_title = "Public Clone Network", plot_subtitle = NULL,
+    edge_width = edge_width, size_nodes_by = size_nodes_by,
+    node_size_limits = node_size_limits,
+    custom_size_legend = custom_size_legend,
+    color_nodes_by = color_nodes_by, color_scheme = color_scheme,
+    custom_color_legend = custom_color_legend,
+    return_all = TRUE)
+
+  # Rename public node stats
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "degree"] <-
+    "PublicNetworkDegree"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "cluster_id"] <-
+    "PublicClusterID"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "transitivity"] <-
+    "PublicTransitivity"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "Closeness"] <-
+    "PublicCloseness"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "centrality_by_closeness"] <-
+    "PublicCentralityByCloseness"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "eigen_centrality"] <-
+    "PublicEigenCentrality"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "centrality_by_eigen"] <-
+    "PublicCentralityByEigen"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "betweenness"] <-
+    "PublicBetweenness"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "centrality_by_betweenness"] <-
+    "PublicCentralityByBetweenness"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "authority_score"] <-
+    "PublicAuthorityScore"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "coreness"] <-
+    "PublicCoreness"
+  names(pub_clones$node_data)[names(pub_clones$node_data) == "page_rank"] <-
+    "PublicPageRank"
+
+  ## Save node & cluster data & plots ##
+  cat(paste0("Saving output for public clone network to:\n  ",
+             output_dir, "\n"))
+  utils::write.csv(
+    pub_clones$node_data,
+    file = file.path(output_dir, "public_clone_network_node_level_meta_data.csv"),
+    row.names = FALSE)
+  cat("Node-level meta data saved as 'public_clone_network_node_level_meta_data.csv'\n")
+  utils::write.csv(pub_clones$cluster_stats,
+                   file = file.path(output_dir, "public_clone_network_cluster_info.csv"),
+                   row.names = FALSE)
+  cat("Cluster meta data saved as 'public_clone_network_cluster_info.csv'\n")
+  grDevices::pdf(
+    file = file.path(output_dir, "public_clone_network_graph_plot.pdf"),
+    width = plot_width, height = plot_height)
+  for (j in 1:length(pub_clones$plots)) { print(pub_clones$plots[[j]]) }
+  grDevices::dev.off()
+  cat("Network graph plot saved as 'public_clone_network_graph_plot.pdf'\n")
 
 
-#### BUILD NETWORK OF PUBLIC CLUSTERS BY REPRESENTATIVE SEQUENCE ####
 
-# Build network (keep zero-degree nodes)
+  #### ENCODE CLONES BY ATCHLEY FACTOR AND PERFORM K-MEANS CLUSTERING ####
 
-# Rename variables for node-level data
-
-# Rename variables for cluster-level data
-
-
-#### COMPILE AND FILTER PUBLIC CLONE DATA ####
-
-# Loop over sample ID
-
-
-
-#### BUILD PUBLIC CLONE NETWORK ####
-
-
-# Format additional variables in data
-data_public_clones$AssocClusterID <- as.factor(data_public_clones$AssocClusterID)
-
-#### BUILD GLOBAL CLUSTER NETWORK ####
-# Ensure cluster ID is computed
-if (!node_stats) {
-  stats_to_include <- "cluster_id_only"
-} else if (!stats_to_include$cluster_id) {
-  stats_to_include$cluster_id <- TRUE }
-
-if ("GlobalClusterID" %in% color_nodes_by) {
-  color_nodes_by[which(color_nodes_by == "GlobalClusterID")] <- "cluster_id"
-}
-
-cat("Building global cluster network using combined cluster data:\n")
-global_net <- buildRepSeqNetwork(
-  data_public_clones,
-  nucleo_col, amino_col, count_col, freq_col, vgene_col, dgene_col, jgene_col,
-  cdr3length_col,
-  other_cols = c(sample_col, extra_cols, "AssocClusterID", "AssocClusterSeq",
-                 "DegreeInAssocCluster"),
-  clone_seq_type,
-  min_seq_length = NULL, dist_type = dist_type, edge_dist = edge_dist,
-  node_stats = TRUE, stats_to_include = stats_to_include,
-  plot_title = main_title, plot_subtitle = main_subtitle,
-  edge_width = edge_width, size_nodes_by = size_nodes_by,
-  node_size_limits = node_size_limits,
-  custom_size_legend = custom_size_legend,
-  color_nodes_by = color_nodes_by, color_scheme = color_scheme,
-  custom_color_legend = custom_color_legend,
-  return_all = TRUE)
-
-# Rename some columns of combined cluster data
-names(global_net$node_data)[
-  which(names(global_net$node_data) == "CloneFrequency")] <- new_freq_colname
-names(global_net$node_data)[
-  which(names(global_net$node_data) == sample_col)] <- "SampleID"
-names(global_net$node_data)[
-  which(names(global_net$node_data) == "cluster_id")] <- "GlobalClusterID"
-if ("degree" %in% names(global_net$node_data)) {
-  names(global_net$node_data)[which(names(global_net$node_data) == "degree")] <-
-    "globalDegree" }
-# colnames(global_net$node_data)[1:9] <- c(
-#   "NucleotideSeq", "AminoAcidSeq", "CloneCount", "CloneFreqInSample",
-#   "VGene", "DGene", "JGene", "CDR3Length", "SampleID")
-
-
-#### SAVE RESULTS ####
-if (!is.null(output_dir)) {
-  # Save data for global cluster network if applicable
-  if (!is.null(data_outfile)) {
-    utils::write.csv(global_net$node_data, file.path(output_dir, data_outfile),
-                     row.names = FALSE)
-    cat(paste0(
-      "Global cluster network data and rep-seq data saved to file:\n  ",
-      file.path(output_dir, data_outfile), "\n"))
-  }
-
-  # Save global network cluster plots to a single pdf if applicable
-  if (!is.null(global_plot_outfile)) {
-    grDevices::pdf(file = file.path(output_dir, global_plot_outfile),
-                   width = plot_width, height = plot_height)
-    for (i in 1:length(global_net$plots)) { print(global_net$plots[[i]]) }
-    grDevices::dev.off()
-    cat(paste0("Plot of global cluster network graph saved to file:\n  ",
-               file.path(output_dir, global_plot_outfile), "\n"))
-  }
-
-  # Save all single-cluster plots to a single pdf if applicable
-  if (!is.null(cluster_plots_outfile) & single_cluster_plots) {
-    grDevices::pdf(file = file.path(output_dir, cluster_plots_outfile),
-                   width = plot_width, height = plot_height)
-    for (i in 1:length(sc_plots)) {
-      for (j in 1:length(sc_plots[[i]])) { print(sc_plots[[i]][[j]]) } }
-    grDevices::dev.off()
-    cat(paste0("Individual single-cluster graph plots saved to file:\n  ",
-               file.path(output_dir, cluster_plots_outfile), "\n"))
-  }
-
-  # Save igraph
-  if (!is.null(igraph_outfile)) {
-    igraph::write_graph(global_net$igraph,
-                        file = file.path(output_dir, igraph_outfile),
-                        format = "edgelist")
-    cat(paste0("Global cluster network igraph saved in edgelist format to file:\n  ",
-               file.path(output_dir, igraph_outfile), "\n")) }
-
-  # Save adjacency matrix
-  if (!is.null(matrix_outfile)) {
-    if (dist_type == "euclidean_on_atchley") {
-      utils::write.csv(adjacency_matrix,
-                       file.path(output_dir, matrix_outfile),
-                       row.names = FALSE)
-      cat(paste0("Global cluster network adjacency matrix saved to file:\n  ",
-                 file.path(output_dir, matrix_outfile), "\n"))
-    } else {
-      Matrix::writeMM(adjacency_matrix,
-                      file.path(output_dir, matrix_outfile))
-      cat(paste0("Global cluster network adjacency matrix saved to file:\n  ",
-                 file.path(output_dir, matrix_outfile), "\n")) } }
-}
-
-
-#### RETURN OUTPUT ####
-if (return_type == "node_data_only") {
-
-  cat("All tasks complete.\n")
-  return(global_net$node_data)
-
-} else {
-  out <- list("data" = global_net$node_data)
-  if (cluster_stats) { out$cluster_stats <- global_net$cluster_stats }
-  if (return_type == "all") {
-    out$global_plots <- global_net$plots
-    out$cluster_plots <- sc_plots
-    out$adjacency_matrix <- adjacency_matrix
-    out$igraph <- global_net$igraph }
-  cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
-             paste(names(out), collapse = ", "), "\n"))
-
-  return(out)
 
 }
-
-}
-
-
-# Helpers -----------------------------------------------------------------
-
-
-
-
-
-
-
-# .saveResultsForCandidateSeqNetwork <- function(
-#   network, data_current_cluster, adjacency_matrix, netplot_disease,
-#   netplot_sampleid, netplot_patid, netplot_deg, keep_adjacency_matrix,
-#   dist_type, output_dir, outfilestem) {
-#
-#   # pdf: network graphs
-#   plotfile <- paste0(outfilestem, "_network_plots.pdf")
-#   grDevices::pdf(file.path(output_dir, plotfile), width = 12, height = 8)
-#   if (!is.null(netplot_deg)) { print(netplot_deg) }
-#   if (!is.null(netplot_disease)) { print(netplot_disease) }
-#   if (!is.null(netplot_sampleid)) { print(netplot_sampleid) }
-#   if (!is.null(netplot_patid)) { print(netplot_patid) }
-#   grDevices::dev.off()
-#
-#   # Save metadata for candidiate sequence network
-#   utils::write.csv(
-#     data_current_cluster,
-#     file.path(output_dir, paste0(outfilestem, "_network_metadata.csv")))
-#
-#   # Save Network igraphs using edgelist format
-#   igraph::write_graph(
-#     network,
-#     file = file.path(
-#       output_dir, paste0(outfilestem, "_network_graph_edgelist.txt")),
-#     format = "edgelist")
-#
-#   # Save adjacency matrices
-#   if (keep_adjacency_matrix) {
-#     matfile <- file.path(output_dir, paste0(outfilestem, "_adjacency_matrix"))
-#     if (dist_type == "euclidean_on_atchley") {
-#       utils::write.csv(adjacency_matrix, paste0(matfile, ".csv"))
-#     } else { #hamming/levenshtein returns sparse matrix
-#       Matrix::writeMM(adjacency_matrix, paste0(matfile, ".mtx"))
-#     }
-#   }
-# }
