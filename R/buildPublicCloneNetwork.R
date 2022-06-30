@@ -286,9 +286,22 @@ buildPublicCloneNetwork <- function(
 cat("Done building sample-level networks.\n")
 
 
+#### BUILD NETWORK OF PUBLIC CLUSTERS BY REPRESENTATIVE SEQUENCE ####
+
+# Build network (keep zero-degree nodes)
+
+# Rename variables for node-level data
+
+# Rename variables for cluster-level data
+
+
+#### COMPILE AND FILTER PUBLIC CLONE DATA ####
+
+# Loop over sample ID
 
 
 
+#### BUILD PUBLIC CLONE NETWORK ####
 
 
 # Format additional variables in data
