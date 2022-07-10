@@ -102,6 +102,35 @@ generateAtchleyCorrHeatmap <- function(
     viridisLite::viridis(n = length(unique(sample_subject_group)))
   names(colors_subject_group) <- levels(as.factor(data[ , group_col]))
 
+
+  heatmap.2(as.matrix(code.df),
+            col = hmcol,
+            trace = "none",
+            margins = c(25,25), lhei = c(1,3),
+            cexRow = 1, cexCol = 2,
+            key.title = NA, key.xlab = "Cluster frequency",
+            key.par = list(cex=1.2),
+            ColSideColors = col.color)
+  legend(0.7,1.125,
+         legend = names(color.key),
+         col = color.key,
+         lty= 1, lwd = 10,
+         border=FALSE, bty="n", y.intersp = 0.8, cex=2, xpd=TRUE)
+
+  heatmap.2(cor_matrix,col = hmcol,
+            trace = "none",
+            margins = c(15,15), lhei = c(1,3),
+            cexRow = 2, cexCol = 2,
+            key.title = NA, key.xlab = "correlation coefficient",
+            key.par = list(cex=1.2),
+            ColSideColors = col.color)
+  legend(0.7,1.125,
+         legend = names(color.key),
+         col = color.key,
+         lty= 1, lwd = 10,
+         border=FALSE, bty="n", y.intersp = 0.8, cex=2, xpd=TRUE)
+
+
   cat("Generating a sample correlation heatmap for the matrix...")
   gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",
                     margins = c(margin_size, margin_size), lhei = c(1, 3),
