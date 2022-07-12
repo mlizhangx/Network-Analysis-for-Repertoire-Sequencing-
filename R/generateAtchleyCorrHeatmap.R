@@ -20,7 +20,8 @@ generateAtchleyCorrHeatmap <- function(
   margin_size = 15,
   use_viridis = FALSE, # use viridis color palettes for color-blindness robustness
   output_dir = getwd(),
-  outfile = "atchley_corr_heatmap.pdf", # write pdf to file
+  outfile_heatmap = "heatmap_cluster_share_of_sample_TCRs.pdf",
+  outfile_corr_heatmap = "heatmap_corr_in_relative_cluster_sizes.pdf",
   return_output = FALSE
 ) {
 
@@ -70,17 +71,15 @@ generateAtchleyCorrHeatmap <- function(
   kmeans_cluster_ids <- df[ , c("cdr3", "kmeanClusterID")]
   names(kmeans_cluster_ids) <- c("AminoAcidSeq", "kmeanClusterID")
 
-  # For each sample, aggregate # of reads across TCR seqs by K-means cluster
+  # For each sample, aggregate # of TCR seqs by K-means cluster
   # each row of the data now corresponds to a cluster
-  cat("Aggregating the total number of TCR sequence reads for each sample by K-means cluster ID...")
+  cat("Computing each cluster's share of the TCRs in each sample...")
   df <- dplyr::summarise_all(
     dplyr::group_by(dplyr::select(df, -cdr3), kmeanClusterID), sum)
-  cat(" Done.\n")
 
-  # Convert aggregate # of reads to share of total reads in the sample (column)
-  cat("Transforming aggregate reads into share of sample's total reads...")
+  # Divide each value by total # of TCRs in the sample
   df <- dplyr::mutate_all(dplyr::select(df, -kmeanClusterID), ~ . / sum(.))
-  cat(" Done.\nResulting matrix contains one column for each sample and one row for each K-means cluster, with entries encoding the sample's aggregate number of reads for all TCR sequences in the K-means cluster, expressed as a share of the total number of reads for the sample.\n")
+  cat(" Done.\n")
 
   ## GENERATE CORRELATION HEATMAP ##
   # Extract subject group of samples from column names of data
@@ -103,35 +102,40 @@ generateAtchleyCorrHeatmap <- function(
   names(colors_subject_group) <- levels(as.factor(data[ , group_col]))
 
 
-  heatmap.2(as.matrix(code.df),
-            col = hmcol,
-            trace = "none",
-            margins = c(25,25), lhei = c(1,3),
-            cexRow = 1, cexCol = 2,
-            key.title = NA, key.xlab = "Cluster frequency",
-            key.par = list(cex=1.2),
-            ColSideColors = col.color)
-  legend(0.7,1.125,
-         legend = names(color.key),
-         col = color.key,
-         lty= 1, lwd = 10,
-         border=FALSE, bty="n", y.intersp = 0.8, cex=2, xpd=TRUE)
+  cat("Generating a heatmap of the TCR shares by cluster and sample...")
+  gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
+                    margins = c(margin_size, margin_size), lhei = c(1, 3),
+                    cexRow = 2, cexCol = 2,
+                    key.title = NA, key.xlab = "cluster's share of in-sample TCRs",
+                    key.par = list(cex = 1.2),
+                    ColSideColors = colors_subject_group[sample_subject_group])
+  graphics::legend(x = 0.75, y = 1.175,
+                   legend = names(colors_subject_group),
+                   col = colors_subject_group,
+                   lty = 1, lwd = 10, border = FALSE,
+                   bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
+  cat(" Done.\n")
+  if (!is.null(outfile_heatmap) & !is.null(output_dir)) { # write pdf to file
+    grDevices::pdf(file.path(output_dir, outfile_heatmap),
+                   width = plot_width, height = plot_height)
+    gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
+                      margins = c(margin_size, margin_size), lhei = c(1, 3),
+                      cexRow = 2, cexCol = 2,
+                      key.title = NA, key.xlab = "cluster's share of in-sample TCRs",
+                      key.par = list(cex = 1.2),
+                      ColSideColors = colors_subject_group[sample_subject_group])
+    graphics::legend(x = "topright",
+                     legend = names(colors_subject_group),
+                     col = colors_subject_group,
+                     lty = 1, lwd = 10, border = FALSE,
+                     bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
+    grDevices::dev.off()
+    cat(paste0("Heatmap saved to file:\n  ",
+               file.path(output_dir, outfile_heatmap), "\n"))
+  }
 
-  heatmap.2(cor_matrix,col = hmcol,
-            trace = "none",
-            margins = c(15,15), lhei = c(1,3),
-            cexRow = 2, cexCol = 2,
-            key.title = NA, key.xlab = "correlation coefficient",
-            key.par = list(cex=1.2),
-            ColSideColors = col.color)
-  legend(0.7,1.125,
-         legend = names(color.key),
-         col = color.key,
-         lty= 1, lwd = 10,
-         border=FALSE, bty="n", y.intersp = 0.8, cex=2, xpd=TRUE)
 
-
-  cat("Generating a sample correlation heatmap for the matrix...")
+  cat("Generating a heatmap of the correlation in cluster TCR shares between samples...")
   gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",
                     margins = c(margin_size, margin_size), lhei = c(1, 3),
                     cexRow = 2, cexCol = 2,
@@ -144,8 +148,8 @@ generateAtchleyCorrHeatmap <- function(
                    lty = 1, lwd = 10, border = FALSE,
                    bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
   cat(" Done.\n")
-  if (!is.null(outfile) & !is.null(output_dir)) { # write pdf to file
-    grDevices::pdf(file.path(output_dir, outfile),
+  if (!is.null(outfile_corr_heatmap) & !is.null(output_dir)) { # write pdf to file
+    grDevices::pdf(file.path(output_dir, outfile_corr_heatmap),
                    width = plot_width, height = plot_height)
     gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",
                       margins = c(margin_size, margin_size), lhei = c(1, 3),
@@ -160,12 +164,12 @@ generateAtchleyCorrHeatmap <- function(
                      bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
     grDevices::dev.off()
     cat(paste0("Correlation heatmap saved to file:\n  ",
-               file.path(output_dir, outfile), "\n"))
+               file.path(output_dir, outfile_corr_heatmap), "\n"))
   }
-  cat("All tasks complete.\n")
 
   if (return_output) {
     return(list("kmeans_cluster_ids" = kmeans_cluster_ids,
-                "embedded_values" = embedded_values))
+                "embedded_values" = embedded_values,
+                "cluster_TCR_shares" = df))
   }
 }
