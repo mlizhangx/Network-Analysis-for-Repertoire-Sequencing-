@@ -644,7 +644,7 @@ embedClonesByAtchleyFactor <- function(
                    row.names = FALSE)
 
   # Run BriseisEncoder python function
-  cat("Embedding TCR CDR3 amino acid sequences in 30-dimensional Euclidean space based on Atchley factor representation and a trained encoding model using deep learning routines from the keras & tensorflow python modules...\n")
+  cat("Embedding TCR CDR3 amino acid sequences in 30-dimensional Euclidean space based on Atchley factor representation and a trained encoding model using deep learning routines from the keras & tensorflow python modules. This may produce some warnings...\n")
   reticulate::py_run_file(
     system.file(file.path("python", "BriseisEncoder_modified.py"),
                 package = "RepSeqNetworkAnalysis"))
