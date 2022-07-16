@@ -20,6 +20,7 @@ buildPublicCloneNetwork <- function(
   dgene_col,
   jgene_col,
   cdr3length_col,
+  group_col,
   other_cols = NULL,
 
   # Clone sequence settings
@@ -31,7 +32,6 @@ buildPublicCloneNetwork <- function(
   # Network Settings
   dist_type = "hamming", # options are "hamming", "levenshtein", "euclidean_on_atchley"
   edge_dist = 1,
-  include_atchley_embedding = FALSE, # only applicable to TCRB CDR3 amino acid seqs
 
   # Filter pass settings for sample-level clusters
   top_n_clusters = 20,
@@ -43,6 +43,15 @@ buildPublicCloneNetwork <- function(
   bayes_factor_cutoff = 0.05,
   diff_test_col = NULL, # column containing pvalues from differential testing
   diff_test_cutoff = 0.05,
+
+  # Settings for K-means clustering on Atchley factor
+  kmeans_atchley = ifelse(clone_seq_type == "nucleotide", FALSE, TRUE), # include kmeans clustering? only applicable to TCRB CDR3 amino acid seqs
+  k = 100, # number of clusters
+  k_plot_width = 15,
+  k_plot_height = 15,
+  k_plot_margin = 15,
+  k_plot_viridis = FALSE, # use viridis color palettes for color-blindness robustness
+
 
   # Plot Settings (public clone network)
   custom_title = NULL, #
@@ -85,6 +94,7 @@ buildPublicCloneNetwork <- function(
   # Atchley factor embedding only applicable to amino acid sequences
   if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino acid") {
     stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
+  # warn about computational limits for atchley compared to ham/lev?
 
   # each variable for size/color exists or will be added to data
   # need to account for aggregate_identical_clones if TRUE
@@ -104,6 +114,7 @@ buildPublicCloneNetwork <- function(
   if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
   if (is.numeric(jgene_col)) { jgene_col <- names(data)[jgene_col] }
   if (is.numeric(cdr3length_col)) { cdr3length_col <- names(data)[cdr3length_col] }
+  if (is.numeric(group_col)) { group_col <- names(data)[group_col] }
   if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
   if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
   if (is.numeric(cluster_color_nodes_by)) { cluster_color_nodes_by <- names(data)[cluster_color_nodes_by] }
@@ -175,7 +186,8 @@ buildPublicCloneNetwork <- function(
           names(data))
       keep_cols <-
         unique(c(nucleo_col, amino_col, count_col, old_freq_colname,
-                 vgene_col, dgene_col, jgene_col, cdr3length_col, extra_cols))
+                 vgene_col, dgene_col, jgene_col, cdr3length_col, group_col,
+                 extra_cols))
     }
     data <- data[ , keep_cols]
     names(data)[names(data) == old_freq_colname] <- new_freq_colname
@@ -189,6 +201,7 @@ buildPublicCloneNetwork <- function(
       data, nucleo_col, amino_col, count_col, new_freq_colname, vgene_col,
       dgene_col, jgene_col, cdr3length_col, c(extra_cols, "SampleID"),
       clone_seq_type, min_seq_length, drop_chars, aggregate_identical_clones,
+      grouping_cols = group_col, #only used if aggregate_identical_clones = TRUE
       dist_type = dist_type, edge_dist = edge_dist,
       node_stats = TRUE, stats_to_include = "all",
       cluster_stats = TRUE,
@@ -551,7 +564,12 @@ buildPublicCloneNetwork <- function(
   pub_nucleo_col <- "NucleotideSeq"
   pub_amino_col  <-  "AminoAcidSeq"
   if (aggregate_identical_clones) {
-    data_public_clones$empty <- NA
+    data_public_clones$empty <- NA # placeholder variable
+    if (clone_seq_type == "nucleotide") {
+      pub_amino_col <- "empty"
+    } else {
+      pub_nucleo_col <- "empty"
+    }
     pub_count_col <- "AggregatedCloneCount"
     pub_freq_col <- "AggCloneFreqInSample"
     pub_vgene_col <- "empty"
@@ -634,6 +652,22 @@ buildPublicCloneNetwork <- function(
 
 
   #### ENCODE CLONES BY ATCHLEY FACTOR AND PERFORM K-MEANS CLUSTERING ####
-
+  cat("Embedding the public clones in Euclidean space to perform K-means clustering...\n")
+  kmeansAtchley(
+    pub_clones$node_data,
+    amino_col = "AminoAcidSeq",
+    sample_col = "SampleID",
+    group_col = group_col,
+    k = 100,
+    plot_width = k_plot_width,
+    plot_height = k_plot_height,
+    margin_size = k_plot_margin,
+    use_viridis = k_plot_viridis,
+    output_dir = output_dir,
+    outfile_heatmap =
+      "public_clone_network_atchley_kmeans_relative_clust_sizes.pdf",
+    outfile_corr_heatmap =
+      "public_clone_network_atchley_kmeans_corr_in_relative_clust_sizes.pdf",
+    return_output = FALSE)
 
 }
