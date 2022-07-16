@@ -9,7 +9,7 @@
 #         each value is the total reads in the sample for all tcr in the cluster
 #       Create heatmap for correlation matrix of the above data frame
 
-generateAtchleyCorrHeatmap <- function(
+kmeansAtchley <- function(
   data,
   amino_col = "AminoAcidSeq",
   sample_col = "SampleID",
