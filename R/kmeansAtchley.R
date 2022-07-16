@@ -39,12 +39,12 @@ kmeansAtchley <- function(
   df$subject_group <- gsub("_", "-", df$subject_group)
 
   # Convert data to wide form;
-  # first column is cdr3 (one row per unique TCR CDR3 amino acid seq)
+  # first column is cdr3 (one row per unique TCR)
   # one add'l column per sample (append subject group to sample id)
   # cell values in add'l columns are corresponding values of UniqueCloneCount
   df <- reshape2::dcast(df, cdr3 ~ sample_id + subject_group,
                         fun.aggregate = sum, value.var = "UniqueCloneCount")
-  cat(paste0(nrow(df), " unique TCR CDR3 amino acid sequences present in data.\n"))
+  cat(paste0(nrow(df), " unique TCR sequences present across all samples.\n"))
   if (k > nrow(df)) { stop("the number 'k' of clusters to build exceeds the number of unique TCR sequences; try a smaller value of 'k'") }
 
   # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
@@ -61,10 +61,10 @@ kmeansAtchley <- function(
   num_singleton_clusters <- sum(clusters_kmeans$size == 1)
   if (num_singleton_clusters > 0) {
     warning(paste0("K-means resulted in ", num_singleton_clusters,
-                   " clusters containing only a single element. If the number of single-element clusters is high, try a using a smaller value of 'k', which controls the number of clusters (see help file for details).\n"))
+                   " clusters containing only a single TCR. If the number of single-TCR clusters is high, try a using a smaller value of 'k', which controls the number of clusters (see help file for details).\n"))
   } else {
     cat(paste0("K-means resulted in ", num_singleton_clusters,
-               " clusters containing only a single element.\n"))
+               " clusters containing only a single TCR.\n"))
   }
 
   # Save cluster ID for each seq
