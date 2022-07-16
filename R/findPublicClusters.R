@@ -3,7 +3,7 @@
 # Do:
 #       Identify public clones and build public clone network
 
-buildPublicCloneNetwork <- function(
+findPublicClusters <- function(
 
   # Input Data and Columns
   input_dir = getwd(),
