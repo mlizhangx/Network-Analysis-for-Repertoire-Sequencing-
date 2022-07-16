@@ -20,8 +20,8 @@ kmeansAtchley <- function(
   margin_size = 15,
   use_viridis = FALSE, # use viridis color palettes for color-blindness robustness
   output_dir = getwd(),
-  outfile_heatmap = "heatmap_cluster_share_of_sample_TCRs.pdf",
-  outfile_corr_heatmap = "heatmap_corr_in_relative_cluster_sizes.pdf",
+  outfile_heatmap = "atchley_kmeans_relative_clust_sizes.pdf",
+  outfile_corr_heatmap = "atchley_kmeans_corr_in_relative_clust_sizes.pdf",
   return_output = FALSE
 ) {
 
@@ -102,7 +102,7 @@ kmeansAtchley <- function(
   names(colors_subject_group) <- levels(as.factor(data[ , group_col]))
 
 
-  cat("Generating a heatmap of the TCR shares by cluster and sample...")
+  cat("Generating a heatmap of relative cluster size (share of TCRs) in sample, plotted by cluster (row) and sample (column)...")
   gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
                     margins = c(margin_size, margin_size), lhei = c(1, 3),
                     cexRow = 2, cexCol = 2,
@@ -135,7 +135,7 @@ kmeansAtchley <- function(
   }
 
 
-  cat("Generating a heatmap of the correlation in cluster TCR shares between samples...")
+  cat("Generating a heatmap of correlation between samples' profiles of relative cluster sizes...")
   gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",
                     margins = c(margin_size, margin_size), lhei = c(1, 3),
                     cexRow = 2, cexCol = 2,
