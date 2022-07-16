@@ -9,6 +9,7 @@ buildPublicCloneNetwork <- function(
   input_dir = getwd(),
   file_list,
   sample_id_list,
+  group_list = NULL, #exactly one of group_list or group_cols must be non-NULL
   csv_files = FALSE, # use read.csv instead of read.table?
   header = FALSE,
   sep = "",
@@ -20,7 +21,7 @@ buildPublicCloneNetwork <- function(
   dgene_col,
   jgene_col,
   cdr3length_col,
-  group_col,
+  group_col = NULL, #exactly one of group_list or group_cols must be non-NULL
   other_cols = NULL,
 
   # Clone sequence settings
@@ -60,8 +61,8 @@ buildPublicCloneNetwork <- function(
   size_nodes_by = 0.5, # can use a column name of data (a numeric value yields fixed node sizes)
   node_size_limits = NULL, # numeric length 2
   custom_size_legend = NULL, # custom legend title
-  color_nodes_by = "SampleID", # accepts multiple values (one plot per value)
-  color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
+  color_nodes_by = c(group_col, "cluster_id", "SampleID"), # accepts multiple values (one plot per value)
+  color_scheme = c("viridis", "turbo", "turbo"), # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
   # Plot Settings (public cluster-level network)
@@ -104,6 +105,8 @@ buildPublicCloneNetwork <- function(
   # Create output directory if applicable
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
+  # Check that #exactly one of group_list or group_cols is non-NULL
+
 
   # Convert input columns to character if not already
   if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
@@ -122,6 +125,10 @@ buildPublicCloneNetwork <- function(
   if ("SampleLevelClusterID" %in% sample_color_nodes_by) {
     sample_color_nodes_by[
       which(sample_color_nodes_by == "SampleLevelClusterID")] <- "cluster_id"
+  }
+  if ("PublicClusterID" %in% color_nodes_by) {
+    color_nodes_by[
+      which(color_nodes_by == "PublicClusterID")] <- "cluster_id"
   }
 
   # Designate amino acid or nucleotide for clone sequence
