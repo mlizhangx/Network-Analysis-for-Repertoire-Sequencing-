@@ -653,5 +653,7 @@ embedClonesByAtchleyFactor <- function(
   embedded_values <- utils::read.csv("temp_atchley_factors_encoded.csv")
   file.remove("Atchley_factor_tcr_only_tmp.csv", "temp_sysfiles.csv",
               "temp_atchley_factors_encoded.csv")
+  cat("Embedding complete.\n")
+  warning("the trained encoder model used to perform the embedding was trained on TCR CDR3 sequences; note that results are unpredictable for other amino acid sequences")
   return(embedded_values)
 }
