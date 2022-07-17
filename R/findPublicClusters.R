@@ -177,8 +177,8 @@ findPublicClusters <- function(
     # Load data
     data <-
       ifelse(csv_files,
-             read.csv(file.path(input_dir, file_list[[i]]), header, sep),
-             read.table(file.path(input_dir, file_list[[i]]), header, sep))
+             utils::read.csv(file.path(input_dir, file_list[[i]]), header, sep),
+             utils::read.table(file.path(input_dir, file_list[[i]]), header, sep))
 
     # Check that each input column is a distinct col of data and meets specs
     # Only need to perform this check for i = 1
@@ -296,7 +296,7 @@ findPublicClusters <- function(
               sample_net$cluster_stats$node_count, decreasing = TRUE
             )[1:top_n_clusters]
             ,
-            SampleLevelClusterID
+            "SampleLevelClusterID"
           ]
       )
     # row ids of clusters with at least min_node_count nodes
