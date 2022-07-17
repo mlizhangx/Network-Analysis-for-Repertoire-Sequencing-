@@ -54,7 +54,7 @@ findPublicClusters <- function(
   k_plot_viridis = FALSE, # use viridis color palettes for color-blindness robustness
 
 
-  # Plot Settings (public clone network)
+  # Plot Settings (public cluster network)
   custom_title = NULL, #
   custom_subtitle = NULL,
   edge_width = 0.1,
@@ -65,14 +65,14 @@ findPublicClusters <- function(
   color_scheme = c("viridis", "turbo", "turbo"), # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
-  # Plot Settings (public cluster-level network)
-  cluster_edge_width = 0.3,
-  cluster_size_nodes_by = "node_count",
-  cluster_node_size_limits = NULL,
-  cluster_custom_size_legend = NULL, # custom legend title
-  cluster_color_nodes_by = "SampleID", # accepts multiple values (one plot per value)
-  cluster_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  cluster_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
+  # Plot Settings (public cluster-core network)
+  cores_edge_width = 0.3,
+  cores_size_nodes_by = "node_count",
+  cores_node_size_limits = NULL,
+  cores_custom_size_legend = NULL, # custom legend title
+  cores_color_nodes_by = "SampleID", # accepts multiple values (one plot per value)
+  cores_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
+  cores_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
   # Plot Settings (sample-level networks)
   sample_edge_width = 0.3,
@@ -84,7 +84,7 @@ findPublicClusters <- function(
   sample_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
 
   # Output Settings
-  output_dir = file.path(getwd(), "public_clones_output"),
+  output_dir = file.path(getwd(), "public_clusters"),
   plot_width = 12, # passed to pdf()
   plot_height = 10 # passed to pdf()
 
@@ -120,7 +120,7 @@ findPublicClusters <- function(
   if (is.numeric(group_col)) { group_col <- names(data)[group_col] }
   if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
   if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
-  if (is.numeric(cluster_color_nodes_by)) { cluster_color_nodes_by <- names(data)[cluster_color_nodes_by] }
+  if (is.numeric(cores_color_nodes_by)) { cores_color_nodes_by <- names(data)[cores_color_nodes_by] }
   if (is.numeric(sample_color_nodes_by)) { sample_color_nodes_by <- names(data)[sample_color_nodes_by] }
   if ("SampleLevelClusterID" %in% sample_color_nodes_by) {
     sample_color_nodes_by[
@@ -136,7 +136,7 @@ findPublicClusters <- function(
   if (clone_seq_type == "nucleotide") { clone_seq_col <- nucleo_col }
 
   # Initialize output directory and objects
-  data_public_clones <- data_cluster_network <- sample_net <- extra_cols <-
+  data_public_clusters <- data_cores_network <- sample_net <- extra_cols <-
     keep_cols <- NULL #init
 
   # New name for frequency column
@@ -152,23 +152,24 @@ findPublicClusters <- function(
   old_color_nodes_by <- color_nodes_by
   old_size_nodes_by <- size_nodes_by
   if (size_nodes_by == old_freq_colname) { size_nodes_by <- new_freq_colname }
-  if (cluster_size_nodes_by == old_freq_colname) {
+  if (cores_size_nodes_by == old_freq_colname) {
     warning("can't size nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to sizing nodes by the total clone count in the cluster.")
-    cluster_size_nodes_by <- "agg_clone_count" }
+    cores_size_nodes_by <- "agg_clone_count" }
   if (sample_size_nodes_by == old_freq_colname) { sample_size_nodes_by <- new_freq_colname }
   if (old_freq_colname %in% color_nodes_by) {
     color_nodes_by[color_nodes_by == old_freq_colname] <- new_freq_colname
   }
-  if (old_freq_colname %in% cluster_color_nodes_by) {
+  if (old_freq_colname %in% cores_color_nodes_by) {
 
     warning("can't color nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to coloring nodes by the total clone count in the cluster.")
-    cluster_color_nodes_by[cluster_color_nodes_by == old_freq_colname] <- "agg_clone_count"
+    cores_color_nodes_by[cores_color_nodes_by == old_freq_colname] <- "agg_clone_count"
   }
   if (old_freq_colname %in% sample_color_nodes_by) {
     sample_color_nodes_by[sample_color_nodes_by == old_freq_colname] <- new_freq_colname
   }
 
   #### BUILD SAMPLE-LEVEL NETWORKS ####
+  cat("Building individual networks for each sample and searching for public clusters...\n")
   for (i in 1:length(file_list)) {
     cat(paste0("Processing data for sample ", i, ": ", sample_id_list[[i]], "\n"))
 
@@ -203,7 +204,7 @@ findPublicClusters <- function(
 
 
     ### BUILD SAMPLE NETWORK ###
-    cat("Building network...\n")
+    cat("Building network for current sample...\n")
     sample_net <- buildRepSeqNetwork(
       data, nucleo_col, amino_col, count_col, new_freq_colname, vgene_col,
       dgene_col, jgene_col, cdr3length_col, c(extra_cols, "SampleID"),
@@ -284,8 +285,8 @@ findPublicClusters <- function(
     cat("Network graph plot saved as 'network_graph_plot.pdf'\n")
 
 
-    ### GET FILTERED CLUSTERS AND ADD TO PUBLIC CLUSTER DATA ###
-    cat("Identifying clusters of interest by node count and total clone count...")
+    ### FIND PUBLIC CLUSTERS AND ADD TO PUBLIC CLUSTER DATA ###
+    cat("Finding public clusters in the current sample...")
     # row ids of top n clusters by node count
     ids_top_n_clusters <-
       which(
@@ -310,17 +311,7 @@ findPublicClusters <- function(
     sample_net$cluster_stats <- sample_net$cluster_stats[filtered_ids, ]
     cat(" Done.\n")
 
-    # Add cluster stats to combined data for public cluster network
-    cat("Adding selected clusters to public cluster data...")
-    data_cluster_network <-
-      ifelse(i == 1,
-             yes = sample_net$cluster_stats,
-             no = rbind(data_cluster_network, sample_net$cluster_stats))
-    cat(" Done.\n")
-
-
-    ### GET NODE-LEVEL DATA FOR FILTERED CLUSTERS AND ADD TO PUBLIC CLONE DATA ###
-    cat("Getting node-level data for selected clusters...\n")
+    # (GET NODE-LEVEL DATA FOR FILTERED CLUSTERS AND ADD TO PUBLIC CLONE DATA)
     sample_net$node_data <- # subset rows:
       sample_net$node_data[ # keep if cluster ID appears in filtered cluster data
         sample_net$node_data$SampleLevelClusterID %in%
@@ -328,234 +319,239 @@ findPublicClusters <- function(
         , ]
     # Filter using Bayes FDR if supplied
     if (!is.null(bayes_factor_col)) {
-      cat("Filtering node-level data by FDR-adjusted Bayes Factor P-value...\n")
+      cat("Filtering nodes in public clusters for current sample by FDR-adjusted Bayes Factor P-value...")
       sample_net$node_data <- # subset rows:
         sample_net$node_data[ # keep if Bayes FDR is below cutoff
           sample_net$node_data[ , bayes_factor_col] < bayes_factor_cutoff
           , ]
+      cat(" Done.\n")
     }
     # Filter using differential testing P-value if supplied
     if (!is.null(diff_test_col)) {
-      cat("Filtering node-level data by P-value from differential testing...\n")
+      cat("Filtering nodes in public clusters for current sample by P-value from differential testing...")
       sample_net$node_data <- # subset rows:
         sample_net$node_data[ # keep if Bayes FDR is below cutoff
           sample_net$node_data[ , diff_test_col] < diff_test_cutoff
           , ]
+      cat(" Done.\n")
     }
-    cat("Adding node-level data for selected clusters to public clone data...")
-    data_public_clones <-
+    cat("Adding public clusters for current sample to existing public cluster data...")
+    data_cores_network <- # Add cluster-level data to public cluster-cores network
+      ifelse(i == 1,
+             yes = sample_net$cluster_stats,
+             no = rbind(data_cores_network, sample_net$cluster_stats))
+    data_public_clusters <- # Add node-level data to public cluster network
       ifelse(i == 1,
              yes = sample_net$node_data,
-             no = rbind(data_public_clones, sample_net$node_data))
+             no = rbind(data_public_clusters, sample_net$node_data))
     cat(" Done.\n")
 
 
   } # done looping over selected clones
-  cat("Done processing individual sample-level data.\n")
+  cat("All samples have been processed.\n")
 
 
 
   #### BUILD NETWORK OF PUBLIC CLUSTERS BY REPRESENTATIVE SEQUENCE ####
-  cat("Building network on public cluster data based on representative clone sequences...\n")
-
-  data_cluster_network$empty <- NA # placeholder column
-  cluster_nucleo_col <- cluster_amino_col <- "empty"
+  cat("Building public network using a single representative (core) clone from each cluster...\n")
+  data_cores_network$empty <- NA # placeholder column
+  cores_nucleo_col <- cores_amino_col <- "empty"
   if (clone_seq_type == "nucleotide") {
-    cluster_nucleo_col <- "seq_w_max_count"
-  } else { cluster_amino_col <- "seq_w_max_count" }
-  cluster_extra_cols <-
+    cores_nucleo_col <- "seq_w_max_count"
+  } else { cores_amino_col <- "seq_w_max_count" }
+  cores_extra_cols <-
     c("SampleID", "SampleLevelClusterID", "node_count", "mean_seq_length",
       "mean_degree", "max_degree", "seq_w_max_degree", "max_clone_count",
       "diameter_length", "assortativity", 'cluster_transitivity',
       "edge_density", "degree_centrality_index", "closeness_centrality_index",
       "eigen_centrality_index", "eigen_centrality_eigenvalue")
   # Build network
-  pub_clusters <- buildRepSeqNetwork(
-    data_cluster_network, cluster_nucleo_col, cluster_amino_col,
+  cores_network <- buildRepSeqNetwork(
+    data_cores_network, cores_nucleo_col, cores_amino_col,
     "agg_clone_count", "empty", "empty", "empty", "empty", "empty",
-    cluster_extra_cols, clone_seq_type,
+    cores_extra_cols, clone_seq_type,
     dist_type = dist_type, edge_dist = edge_dist,
     drop_isolated_nodes = FALSE, # (keep zero-degree nodes)
     node_stats = TRUE, stats_to_include = "all",
     cluster_stats = FALSE,
     plot_title =
-      "Public Cluster-Level Network Based on Representative Clone Sequence",
+      "Network Using One Representative Clone From Each Public Cluster",
     plot_subtitle =
       paste0(
         "Includes top ", top_n_clusters,
         " clusters from each sample by node count; clusters with node count > ",
         min_node_count - 1, "; and clusters with total clone count > ",
         min_clone_count - 1),
-    edge_width = cluster_edge_width, size_nodes_by = cluster_size_nodes_by,
-    node_size_limits = cluster_node_size_limits,
-    custom_size_legend = cluster_custom_size_legend,
-    color_nodes_by = cluster_color_nodes_by,
-    color_scheme = cluster_color_scheme,
-    custom_color_legend = cluster_custom_color_legend,
+    edge_width = cores_edge_width, size_nodes_by = cores_size_nodes_by,
+    node_size_limits = cores_node_size_limits,
+    custom_size_legend = cores_custom_size_legend,
+    color_nodes_by = cores_color_nodes_by,
+    color_scheme = cores_color_scheme,
+    custom_color_legend = cores_custom_color_legend,
     return_all = TRUE)
 
   # Drop/rename variables for node-level data
   if (clone_seq_type == "nucleotide") {
     drop_cols <- c(2, 4:8)
   } else { drop_cols <- c(1, 4:8) }
-  pub_clusters$node_data <- pub_clusters$node_data[ , -drop_cols]
-  names(pub_clusters$node_data)[1:2] <-
+  cores_network$node_data <- cores_network$node_data[ , -drop_cols]
+  names(cores_network$node_data)[1:2] <-
     c("RepresentativeCloneSeq", "AggCloneCount")
-  names(pub_clusters$node_data)[
-    names(pub_clusters$node_data) == "node_count"] <- "SampleLevelNodeCount"
-  names(pub_clusters$node_data)[
-    names(pub_clusters$node_data) == "cluster_id"] <- "ClusterLevelClusterID"
-  names(pub_clusters$node_data)[
-    names(pub_clusters$node_data) == "degree"] <- "ClusterLevelDegree"
+  names(cores_network$node_data)[
+    names(cores_network$node_data) == "node_count"] <- "NodeCountInSampleNetwork"
+  names(cores_network$node_data)[
+    names(cores_network$node_data) == "cluster_id"] <- "ClusterIDInCoresNetwork"
+  names(cores_network$node_data)[
+    names(cores_network$node_data) == "degree"] <- "DegreeInCoresNetwork"
 
   # Compute cluster level cluster stats
   # Tabulate the number of nodes in each cluster
-  pub_cluster_level_cluster_info <-
-    as.data.frame(table(pub_clusters$node_data[ , "ClusterLevelClusterID"]))
-  colnames(pub_cluster_level_cluster_info) <-
-    c("ClusterLevelClusterID", "ClusterLevelNodeCount")
-  num_clusters <- nrow(pub_cluster_level_cluster_info) # Total number of clusters
+  cores_network_cluster_info <-
+    as.data.frame(table(cores_network$node_data[ , "ClusterIDInCoresNetwork"]))
+  colnames(cores_network_cluster_info) <-
+    c("ClusterIDInCoresNetwork", "NodeCountInCoresNetwork")
+  num_clusters <- nrow(cores_network_cluster_info) # Total number of clusters
   cat(paste0("Computing statistics for the ", num_clusters, " cluster-level clusters..."))
 
   ### INITIALIZE VALUES ###
-  pub_cluster_level_cluster_info$AggSampleLevelNodeCount <- 0
-  pub_cluster_level_cluster_info$AggSampleLevelCloneCount <- 0
-  pub_cluster_level_cluster_info$MeanValueOfMeanSeqLength <- 0
-  pub_cluster_level_cluster_info$MeanClusterLevelDegree <- 0
-  pub_cluster_level_cluster_info$MaxClusterLevelDegree <- 0
-  pub_cluster_level_cluster_info$ClusterSeqWithMaxClusterLevelDeg <- ""
-  pub_cluster_level_cluster_info$MaxCloneCount <- 0
-  pub_cluster_level_cluster_info$SampleWithMaxCloneCount <- ""
-  pub_cluster_level_cluster_info$SeqWithMaxCloneCount <- ""
-  pub_cluster_level_cluster_info$MaxValueOfAggCloneCount <- 0
-  pub_cluster_level_cluster_info$SampleWithHighestAggCloneCount <- ""
-  pub_cluster_level_cluster_info$ClusterSeqWithHighestAggCloneCount <- ""
-  pub_cluster_level_cluster_info$DiameterLength <- 0
-  pub_cluster_level_cluster_info$Assortativity <- 0
-  pub_cluster_level_cluster_info$Transitivity <- 0
-  pub_cluster_level_cluster_info$EdgeDensity <- 0
-  pub_cluster_level_cluster_info$DegreeCentralityIndex <- 0
-  pub_cluster_level_cluster_info$ClosenessCentralityIndex <- 0
-  pub_cluster_level_cluster_info$EigenCentralityIndex <- 0
-  pub_cluster_level_cluster_info$EigenCentralityEigenvalue <- 0
+  cores_network_cluster_info$AggNodeCountInSampleNetwork <- 0
+  cores_network_cluster_info$AggCloneCountInSampleNetwork <- 0
+  cores_network_cluster_info$MeanValueOfMeanSeqLength <- 0
+  cores_network_cluster_info$MeanDegreeInCoresNetwork <- 0
+  cores_network_cluster_info$MaxDegreeInCoresNetwork <- 0
+  cores_network_cluster_info$SeqWithMaxDegreeInCoresNetwork <- ""
+  cores_network_cluster_info$MaxCloneCount <- 0
+  cores_network_cluster_info$SampleWithMaxCloneCount <- ""
+  cores_network_cluster_info$SeqWithMaxCloneCount <- ""
+  cores_network_cluster_info$MaxAggCloneCount <- 0
+  cores_network_cluster_info$SampleWithMaxAggCloneCount <- ""
+  cores_network_cluster_info$SeqWithMaxAggCloneCount <- ""
+  cores_network_cluster_info$DiameterLength <- 0
+  cores_network_cluster_info$Assortativity <- 0
+  cores_network_cluster_info$Transitivity <- 0
+  cores_network_cluster_info$EdgeDensity <- 0
+  cores_network_cluster_info$DegreeCentralityIndex <- 0
+  cores_network_cluster_info$ClosenessCentralityIndex <- 0
+  cores_network_cluster_info$EigenCentralityIndex <- 0
+  cores_network_cluster_info$EigenCentralityEigenvalue <- 0
 
   ### COMPUTE STATS FOR EACH CLUSTER ###
   for (i in 1:num_clusters) {
 
-    cluster_row <- which(pub_cluster_level_cluster_info$ClusterLevelClusterID == i) # current row of cluster pub_clusters$node_data
-    node_ids <- pub_clusters$node_data$ClusterLevelClusterID == i  # Rows of node pub_clusters$node_data for current cluster
+    cores_cluster_id <- which(cores_network_cluster_info$ClusterIDInCoresNetwork == i) # current row of cluster cores_network$node_data
+    node_ids <- cores_network$node_data$ClusterIDInCoresNetwork == i  # Rows of node cores_network$node_data for current cluster
 
     # Aggregate Sample-level Node Count
-    pub_cluster_level_cluster_info$AggSampleLevelNodeCount[[cluster_row]] <-
-      sum(pub_clusters$node_data[node_ids, "SampleLevelNodeCount"])
+    cores_network_cluster_info$AggNodeCountInSampleNetwork[[cores_cluster_id]] <-
+      sum(cores_network$node_data[node_ids, "NodeCountInSampleNetwork"])
 
     # Aggregate Sample-level Clone Count
-    pub_cluster_level_cluster_info$AggSampleLevelCloneCount[[cluster_row]] <-
-      sum(pub_clusters$node_data[node_ids, "AggCloneCount"])
+    cores_network_cluster_info$AggCloneCountInSampleNetwork[[cores_cluster_id]] <-
+      sum(cores_network$node_data[node_ids, "AggCloneCount"])
 
     # Mean value of mean sequence length
-    pub_cluster_level_cluster_info$MeanValueOfMeanSeqLength[[cluster_row]] <-
-      round(mean(pub_clusters$node_data[node_ids, "mean_seq_length"]), 2)
+    cores_network_cluster_info$MeanValueOfMeanSeqLength[[cores_cluster_id]] <-
+      round(mean(cores_network$node_data[node_ids, "mean_seq_length"]), 2)
 
     # Mean degree in cluster
-    pub_cluster_level_cluster_info$MeanClusterLevelDegree[[cluster_row]] <-
-      round(mean(pub_clusters$node_data[node_ids, "ClusterLevelDegree"]), 2)
+    cores_network_cluster_info$MeanDegreeInCoresNetwork[[cores_cluster_id]] <-
+      round(mean(cores_network$node_data[node_ids, "DegreeInCoresNetwork"]), 2)
 
     # Maximum degree (and corresponding seq) within cluster
-    max_deg <- max(pub_clusters$node_data[node_ids, "ClusterLevelDegree"])
-    pub_cluster_level_cluster_info$MaxClusterLevelDegree[[cluster_row]] <- max_deg
+    max_deg <- max(cores_network$node_data[node_ids, "DegreeInCoresNetwork"])
+    cores_network_cluster_info$MaxDegreeInCoresNetwork[[cores_cluster_id]] <- max_deg
     node_id_max_deg <-
       which(node_ids &
-              pub_clusters$node_data[ , "ClusterLevelDegree"] == max_deg)[[1]]
-    pub_cluster_level_cluster_info$ClusterSeqWithMaxClusterLevelDeg[[cluster_row]] <-
+              cores_network$node_data[ , "DegreeInCoresNetwork"] == max_deg)[[1]]
+    cores_network_cluster_info$SeqWithMaxDegreeInCoresNetwork[[cores_cluster_id]] <-
       as.character(
-        pub_clusters$node_data[node_id_max_deg, "RepresentativeCloneSeq"])
+        cores_network$node_data[node_id_max_deg, "RepresentativeCloneSeq"])
 
     # max value of max clone count (and corresponding sample & seq)
-    max_count <- max(pub_clusters$node_data[node_ids, "max_clone_count"])
-    pub_cluster_level_cluster_info$MaxCloneCount[[cluster_row]] <- max_count
+    max_count <- max(cores_network$node_data[node_ids, "max_clone_count"])
+    cores_network_cluster_info$MaxCloneCount[[cores_cluster_id]] <- max_count
     node_id_max_count <-
       which(node_ids &
-              pub_clusters$node_data[ , "max_clone_count"] == max_count)[[1]]
-    pub_cluster_level_cluster_info$SampleWithMaxCloneCount[[cluster_row]] <-
-      pub_clusters$node_data[node_id_max_count, "SampleID"]
-    pub_cluster_level_cluster_info$SeqWithMaxCloneCount[[cluster_row]] <-
-      pub_clusters$node_data[node_id_max_count, "RepresentativeCloneSeq"]
+              cores_network$node_data[ , "max_clone_count"] == max_count)[[1]]
+    cores_network_cluster_info$SampleWithMaxCloneCount[[cores_cluster_id]] <-
+      cores_network$node_data[node_id_max_count, "SampleID"]
+    cores_network_cluster_info$SeqWithMaxCloneCount[[cores_cluster_id]] <-
+      cores_network$node_data[node_id_max_count, "RepresentativeCloneSeq"]
 
     # max value of agg clone count (and corresponding sample & seq)
-    max_agg_count <- max(pub_clusters$node_data[node_ids, "AggCloneCount"])
-    pub_cluster_level_cluster_info$MaxValueOfAggCloneCount[[cluster_row]] <- max_agg_count
+    max_agg_count <- max(cores_network$node_data[node_ids, "AggCloneCount"])
+    cores_network_cluster_info$MaxAggCloneCount[[cores_cluster_id]] <- max_agg_count
     node_id_max_agg_count <-
       which(node_ids &
-              pub_clusters$node_data[ , "AggCloneCount"] == max_agg_count)[[1]]
-    pub_cluster_level_cluster_info$SampleWithHighestAggCloneCount[[cluster_row]] <-
-      pub_clusters$node_data[node_id_max_agg_count, "SampleID"]
-    pub_cluster_level_cluster_info$ClusterSeqWithHighestAggCloneCount[[cluster_row]] <-
-      pub_clusters$node_data[node_id_max_agg_count, "RepresentativeCloneSeq"]
+              cores_network$node_data[ , "AggCloneCount"] == max_agg_count)[[1]]
+    cores_network_cluster_info$SampleWithMaxAggCloneCount[[cores_cluster_id]] <-
+      cores_network$node_data[node_id_max_agg_count, "SampleID"]
+    cores_network_cluster_info$SeqWithMaxAggCloneCount[[cores_cluster_id]] <-
+      cores_network$node_data[node_id_max_agg_count, "RepresentativeCloneSeq"]
 
 
     # Build cluster network to get network properties for the cluster
     cluster <- generateNetworkFromAdjacencyMat(
-      as.matrix(pub_clusters$adjacency_matrix[node_ids, node_ids]))
+      as.matrix(cores_network$adjacency_matrix[node_ids, node_ids]))
 
     # Diameter (longest geodesic distance)
-    pub_cluster_level_cluster_info$DiameterLength[[cluster_row]] <-
+    cores_network_cluster_info$DiameterLength[[cores_cluster_id]] <-
       length(igraph::get_diameter(cluster, directed = T))
 
     # Assortativity
-    pub_cluster_level_cluster_info$Assortativity[[cluster_row]] <-
+    cores_network_cluster_info$Assortativity[[cores_cluster_id]] <-
       igraph::assortativity_degree(cluster, directed = F)
 
     # Transitivity
-    pub_cluster_level_cluster_info$Transitivity[[cluster_row]] <-
+    cores_network_cluster_info$Transitivity[[cores_cluster_id]] <-
       igraph::transitivity(cluster, type = "global")  # cluster is treated as an undirected network
 
     # Density: The proportion of present edges from all possible ties.
-    pub_cluster_level_cluster_info$EdgeDensity[[cluster_row]] <-
+    cores_network_cluster_info$EdgeDensity[[cores_cluster_id]] <-
       igraph::edge_density(cluster, loops = F)
 
     # Centralization on degree
-    pub_cluster_level_cluster_info$DegreeCentralityIndex[[cluster_row]] <-
+    cores_network_cluster_info$DegreeCentralityIndex[[cores_cluster_id]] <-
       igraph::centr_degree(cluster, mode = "in", normalized = T)$centralization
 
     # Centralization on Closeness (centrality based on distance to others in the graph)
-    pub_cluster_level_cluster_info$ClosenessCentralityIndex[[cluster_row]] <-
+    cores_network_cluster_info$ClosenessCentralityIndex[[cores_cluster_id]] <-
       igraph::centr_clo(cluster, mode = "all", normalized = T)$centralization
 
     # Centralization on Eigenvector (centrality proportional to the sum of connection centralities)
     #  (values of the first eigenvector of the graph adjacency matrix)
-    pub_cluster_level_cluster_info$EigenCentralityIndex[[cluster_row]] <-
+    cores_network_cluster_info$EigenCentralityIndex[[cores_cluster_id]] <-
       igraph::centr_eigen(cluster, directed = T, normalized = T)$centralization
 
-    pub_cluster_level_cluster_info$EigenCentralityEigenvalue[[cluster_row]] <-
+    cores_network_cluster_info$EigenCentralityEigenvalue[[cores_cluster_id]] <-
       igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
   }
   cat(" Done.\n")
 
   ## Save node & cluster data & plots ##
-  cluster_output_dir <- file.path(output_dir, "cluster_level_public_network")
-  cat(paste0("Saving output for cluster-level public network to:\n  ",
-             cluster_output_dir, "\n"))
+  cores_output_dir <- file.path(output_dir, "network_on_public_cluster_cores")
+  cat(paste0("Saving output for network of public cluster cores to:\n  ",
+             cores_output_dir, "\n"))
   utils::write.csv(
-    pub_clusters$node_data,
-    file = file.path(cluster_output_dir, "node_level_meta_data.csv"),
+    cores_network$node_data,
+    file = file.path(cores_output_dir, "node_level_meta_data.csv"),
     row.names = FALSE)
   cat("Node-level meta data saved as 'node_level_meta_data.csv'\n")
-  utils::write.csv(pub_cluster_level_cluster_info,
-                   file = file.path(cluster_output_dir, "cluster_info.csv"),
+  utils::write.csv(cores_network_cluster_info,
+                   file = file.path(cores_output_dir, "cluster_info.csv"),
                    row.names = FALSE)
   cat("Cluster meta data saved as 'cluster_info.csv'\n")
   grDevices::pdf(
-    file = file.path(cluster_output_dir, "network_graph_plot.pdf"),
+    file = file.path(cores_output_dir, "network_graph_plot.pdf"),
     width = plot_width, height = plot_height)
-  for (j in 1:length(pub_clusters$plots)) { print(pub_clusters$plots[[j]]) }
+  for (j in 1:length(cores_network$plots)) { print(cores_network$plots[[j]]) }
   grDevices::dev.off()
   cat("Network graph plot saved as 'network_graph_plot.pdf'\n")
 
 
 
-  #### BUILD PUBLIC CLONE NETWORK ####
-  cat("Building public clone network...\n")
+  #### BUILD FULL PUBLIC CLUSTER NETWORK ####
+  cat("Building network using all clones in the public clusters...\n")
 
   pub_cols <- c("SampleID", other_cols,
                 bayes_factor_col, diff_test_col,
@@ -567,11 +563,11 @@ findPublicClusters <- function(
                 "SampleLevelAuthorityScore", "SampleLevelCoreness",
                 "SampleLevelPageRank")
   if (aggregate_identical_clones) { pub_cols <- c("UniqueCloneCount", pub_cols) }
-  pub_extra_cols <- intersect(unique(pub_cols), names(data_public_clones))
+  pub_extra_cols <- intersect(unique(pub_cols), names(data_public_clusters))
   pub_nucleo_col <- "NucleotideSeq"
   pub_amino_col  <-  "AminoAcidSeq"
   if (aggregate_identical_clones) {
-    data_public_clones$empty <- NA # placeholder variable
+    data_public_clusters$empty <- NA # placeholder variable
     if (clone_seq_type == "nucleotide") {
       pub_amino_col <- "empty"
     } else {
@@ -592,8 +588,8 @@ findPublicClusters <- function(
     pub_cdr3length_col <- "CDR3Length"
   }
 
-  pub_clones <- buildRepSeqNetwork(
-    data = data_public_clones,
+  pub_clusters <- buildRepSeqNetwork(
+    data = data_public_clusters,
     nucleo_col = pub_nucleo_col, amino_col = pub_amino_col,
     count_col = pub_count_col, freq_col = pub_freq_col,
     vgene_col = pub_vgene_col, dgene_col = pub_dgene_col, jgene_col = pub_jgene_col,
@@ -612,56 +608,56 @@ findPublicClusters <- function(
     return_all = TRUE)
 
   # Rename public node stats
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "degree"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "degree"] <-
     "PublicNetworkDegree"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "cluster_id"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "cluster_id"] <-
     "PublicClusterID"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "transitivity"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "transitivity"] <-
     "PublicTransitivity"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "Closeness"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "Closeness"] <-
     "PublicCloseness"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "centrality_by_closeness"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "centrality_by_closeness"] <-
     "PublicCentralityByCloseness"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "eigen_centrality"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "eigen_centrality"] <-
     "PublicEigenCentrality"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "centrality_by_eigen"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "centrality_by_eigen"] <-
     "PublicCentralityByEigen"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "betweenness"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "betweenness"] <-
     "PublicBetweenness"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "centrality_by_betweenness"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "centrality_by_betweenness"] <-
     "PublicCentralityByBetweenness"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "authority_score"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "authority_score"] <-
     "PublicAuthorityScore"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "coreness"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "coreness"] <-
     "PublicCoreness"
-  names(pub_clones$node_data)[names(pub_clones$node_data) == "page_rank"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "page_rank"] <-
     "PublicPageRank"
 
   ## Save node & cluster data & plots ##
-  cat(paste0("Saving output for public clone network to:\n  ",
+  cat(paste0("Saving output for full network of public clusters to:\n  ",
              output_dir, "\n"))
   utils::write.csv(
-    pub_clones$node_data,
-    file = file.path(output_dir, "public_clone_network_node_level_meta_data.csv"),
+    pub_clusters$node_data,
+    file = file.path(output_dir, "public_cluster_network_node_level_meta_data.csv"),
     row.names = FALSE)
-  cat("Node-level meta data saved as 'public_clone_network_node_level_meta_data.csv'\n")
-  utils::write.csv(pub_clones$cluster_stats,
-                   file = file.path(output_dir, "public_clone_network_cluster_info.csv"),
+  cat("Node-level meta data saved as 'public_cluster_network_node_level_meta_data.csv'\n")
+  utils::write.csv(pub_clusters$cluster_stats,
+                   file = file.path(output_dir, "public_cluster_network_cluster_info.csv"),
                    row.names = FALSE)
-  cat("Cluster meta data saved as 'public_clone_network_cluster_info.csv'\n")
+  cat("Cluster meta data saved as 'public_cluster_network_cluster_info.csv'\n")
   grDevices::pdf(
-    file = file.path(output_dir, "public_clone_network_graph_plot.pdf"),
+    file = file.path(output_dir, "public_cluster_network_graph_plot.pdf"),
     width = plot_width, height = plot_height)
-  for (j in 1:length(pub_clones$plots)) { print(pub_clones$plots[[j]]) }
+  for (j in 1:length(pub_clusters$plots)) { print(pub_clusters$plots[[j]]) }
   grDevices::dev.off()
-  cat("Network graph plot saved as 'public_clone_network_graph_plot.pdf'\n")
+  cat("Network graph plot saved as 'public_cluster_network_graph_plot.pdf'\n")
 
 
 
   #### ENCODE CLONES BY ATCHLEY FACTOR AND PERFORM K-MEANS CLUSTERING ####
-  cat("Embedding the public clones in Euclidean space to perform K-means clustering...\n")
+  cat("Embedding the TCR sequences from the public clusters in Euclidean space to perform K-means clustering...\n")
   kmeansAtchley(
-    pub_clones$node_data,
+    pub_clusters$node_data,
     amino_col = "AminoAcidSeq",
     sample_col = "SampleID",
     group_col = group_col,
@@ -672,9 +668,11 @@ findPublicClusters <- function(
     use_viridis = k_plot_viridis,
     output_dir = output_dir,
     outfile_heatmap =
-      "public_clone_network_atchley_kmeans_relative_clust_sizes.pdf",
+      "public_cluster_network_atchley_kmeans_relative_clust_sizes.pdf",
     outfile_corr_heatmap =
-      "public_clone_network_atchley_kmeans_corr_in_relative_clust_sizes.pdf",
+      "public_cluster_network_atchley_kmeans_corr_in_relative_clust_sizes.pdf",
     return_output = FALSE)
+
+  cat("All tasks complete.\n")
 
 }
