@@ -11,7 +11,7 @@ findPublicClusters <- function(
   sample_id_list,
   group_list = NULL, #exactly one of group_list or group_cols must be non-NULL
   csv_files = FALSE, # use read.csv instead of read.table?
-  header = FALSE,
+  header = TRUE,
   sep = "",
   nucleo_col,
   amino_col,
