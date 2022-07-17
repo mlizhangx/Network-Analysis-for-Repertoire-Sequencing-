@@ -130,7 +130,7 @@ kmeansAtchley <- function(
                      lty = 1, lwd = 10, border = FALSE,
                      bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
     grDevices::dev.off()
-    cat(paste0("Heatmap saved to file:\n  ",
+    cat(paste0("Plot saved to file:\n  ",
                file.path(output_dir, outfile_heatmap), "\n"))
   }
 
@@ -163,7 +163,7 @@ kmeansAtchley <- function(
                      lty = 1, lwd = 10, border = FALSE,
                      bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
     grDevices::dev.off()
-    cat(paste0("Correlation heatmap saved to file:\n  ",
+    cat(paste0("Plot saved to file:\n  ",
                file.path(output_dir, outfile_corr_heatmap), "\n"))
   }
 
