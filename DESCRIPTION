@@ -1,17 +1,19 @@
-Package: RepSeqNetworkAnalysis
+Package: NAIR
 Type: Package
-Title: Network Analysis for Repertoire-Sequencing
-Version: 0.0.9011
+Title: Network Analysis for Immune Repertoire
+Version: 0.0.9012
 Authors@R: c(
-    person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"),
-    person("Hai", "Yang", email = "hetao@sfsu.edu", role = "aut"),
-    person("Brian", "Neal", email = "bneal@mail.sfsu.edu", 
-        role = c("aut", "cre")))
-Maintainer: Brian Neal <bneal@mail.sfsu.edu>
-Description: Given clonotype sequences and counts from repertoire-sequence data, 
-    builds the corresponding network graph using `igraph`, computes node-level 
-    and cluster-level network statistics, and creates a `ggraph` visual plot of 
-    the network.
+    person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
+    person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
+    person("Jason", "Cham", email = "Cham.Jason@scrippshealth.org", role = "aut"),
+    person("Zenghua", "Fan", email = "Zenghua.Fan@ucsf.edu", role = "aut"),
+    person("Tao", "He", email = "hetao@sfsu.edu", role = "aut"),
+    person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"))
+Maintainer: Brian Neal <Brian.Neal@ucsf.edu>
+Description: Pipelines for studying the immune repertoire of T and B cells 
+    via network analysis based on the similarity of their receptor sequences. 
+    Relate clinical outcomes to immune repertoires based on their network 
+    properties, or to particular clusters and clones within a repertoire.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

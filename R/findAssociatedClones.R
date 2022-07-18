@@ -11,7 +11,7 @@
 #   2. Compute Fisher PV for filtered clones
 #   3. Sort and filter list of potential associated clones by Fisher PV
 
-getPotentialAssociatedClones <- function(
+findAssociatedClones <- function(
 
   data,
   nucleo_col,

@@ -1,3 +1,3 @@
-useDynLib(RepSeqNetworkAnalysis, .registration=TRUE)
+useDynLib(NAIR, .registration=TRUE)
 importFrom(Rcpp, evalCpp)
 exportPattern("^[[:alpha:]]+")

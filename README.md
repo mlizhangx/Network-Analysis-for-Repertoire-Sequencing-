@@ -1,21 +1,23 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# RepSeqNetworkAnalysis: Network Analysis For Repertoire-Sequencing
+# NAIR: Network Analysis for Immune Repeprtoire
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-This package provides functions for performing network analysis on
-TCR/BCR repertoire-sequencing data.
+This package implements pipelines for studying the immune repertoire of T and B cells 
+via network analysis based on the similarity of their receptor sequences. 
+NAIR can be used to relate clinical outcomes to immune repertoires based on their network 
+properties, or to particular clusters and clones within a repertoire.
 
 ## Installation
 
-You can install the development version of `RepSeqNetworkAnalysis` from
+You can install the development version of `NAIR` from
 GitHub using the following commands in `R`:
 
-    install.packages("devtools")
-    devtools::install_github("mlizhangx/Network-Analysis-for-Repertoire-Sequencing-")
+install.packages("devtools")
+devtools::install_github("mlizhangx/Network-Analysis-for-Repertoire-Sequencing-")
 
 If you run into installation issues, consider updating `R` if using a
 version prior to 3.0.2. Package installation requires
@@ -54,7 +56,7 @@ missing modules.
 
 If you wish to specify the Python environment to use, you can do so by
 using the `use_virtualenv()` function from the `reticulate` package
-prior to calling functions from `RepSeqNetworkAnalysis`.
+prior to calling functions from `NAIR`.
 
 ## Vignettes
 
@@ -65,8 +67,8 @@ GitHub wish to be able to access the vignettes from within `R`, include
 the argument `build_vignettes = TRUE` when calling the
 `devtools::install_github` function. Once the package is installed,
 vignettes can be accessed from within `R` using
-`help(package = "RepSeqNetworkAnalysis")` (to view in `R`) or
-`browseVignettes(package = "RepSeqNetworkAnalysis")` (to view in web
+`help(package = "NAIR")` (to view in `R`) or
+`browseVignettes(package = "NAIR")` (to view in web
 browser).
 
 [Generate Network With Node and Cluster

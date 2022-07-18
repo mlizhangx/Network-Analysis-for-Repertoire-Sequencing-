@@ -46,7 +46,7 @@ findPublicClusters <- function(
   diff_test_cutoff = 0.05,
 
   # Settings for K-means clustering on Atchley factor
-  kmeans_atchley = ifelse(clone_seq_type == "nucleotide", FALSE, TRUE), # include kmeans clustering? only applicable to TCRB CDR3 amino acid seqs
+  kmeans_atchley = TRUE, # include kmeans clustering? only applicable to TCRB CDR3 amino acid seqs
   k = 100, # number of clusters
   k_plot_width = 15,
   k_plot_height = 15,
@@ -61,27 +61,27 @@ findPublicClusters <- function(
   size_nodes_by = 0.5, # can use a column name of data (a numeric value yields fixed node sizes)
   node_size_limits = NULL, # numeric length 2
   custom_size_legend = NULL, # custom legend title
-  color_nodes_by = c(group_col, "cluster_id", "SampleID"), # accepts multiple values (one plot per value)
-  color_scheme = c("viridis", "turbo", "turbo"), # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  custom_color_legend = NULL, # custom title (length must match color_nodes_by)
+  color_nodes_by = "subject_group", # accepts multiple values (one plot per value)
+  color_scheme = "viridis", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
+  custom_color_legend = "Subject Group", # custom title (length must match color_nodes_by)
 
   # Plot Settings (public cluster-core network)
   cores_edge_width = 0.3,
   cores_size_nodes_by = "node_count",
-  cores_node_size_limits = NULL,
-  cores_custom_size_legend = NULL, # custom legend title
-  cores_color_nodes_by = "SampleID", # accepts multiple values (one plot per value)
-  cores_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  cores_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
+  cores_node_size_limits = c(0.1, 3),
+  cores_custom_size_legend = "Node Count", # custom legend title
+  cores_color_nodes_by = "mean_degree", # accepts multiple values (one plot per value)
+  cores_color_scheme = "inferno", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
+  cores_custom_color_legend = "Mean Network Degree", # custom title (length must match color_nodes_by)
 
   # Plot Settings (sample-level networks)
   sample_edge_width = 0.3,
   sample_size_nodes_by = count_col,
-  sample_node_size_limits = NULL,
-  sample_custom_size_legend = NULL, # custom legend title
-  sample_color_nodes_by = "cluster_id", # accepts multiple values (one plot per value)
-  sample_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  sample_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
+  sample_node_size_limits = c(0.1, 4),
+  sample_custom_size_legend = "Clone Count", # custom legend title
+  sample_color_nodes_by = "degree", # accepts multiple values (one plot per value)
+  sample_color_scheme = "inferno", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
+  sample_custom_color_legend = "Network Degree", # custom title (length must match color_nodes_by)
 
   # Output Settings
   output_dir = file.path(getwd(), "public_clusters"),
@@ -89,7 +89,6 @@ findPublicClusters <- function(
   plot_height = 10 # passed to pdf()
 
 ) {
-
 
   ### INPUT CHECKS ###
   # Atchley factor embedding only applicable to amino acid sequences
@@ -141,32 +140,32 @@ findPublicClusters <- function(
 
   # New name for frequency column
   old_freq_colname <- freq_col
-  new_freq_colname <- ifelse(aggregate_identical_clones,
-                             yes = "AggCloneFreqInSample",
-                             no = "CloneFreqInSample")
+  if (aggregate_identical_clones) {
+    new_freq_colname <- "AggCloneFreqInSample"
+  } else { new_freq_colname <- "CloneFreqInSample" }
 
 
-  # Apply new name for freq column to color/size variables for plots
-  old_sample_color_nodes_by <- sample_color_nodes_by
-  old_sample_size_nodes_by <- sample_size_nodes_by
-  old_color_nodes_by <- color_nodes_by
-  old_size_nodes_by <- size_nodes_by
-  if (size_nodes_by == old_freq_colname) { size_nodes_by <- new_freq_colname }
-  if (cores_size_nodes_by == old_freq_colname) {
-    warning("can't size nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to sizing nodes by the total clone count in the cluster.")
-    cores_size_nodes_by <- "agg_clone_count" }
-  if (sample_size_nodes_by == old_freq_colname) { sample_size_nodes_by <- new_freq_colname }
-  if (old_freq_colname %in% color_nodes_by) {
-    color_nodes_by[color_nodes_by == old_freq_colname] <- new_freq_colname
-  }
-  if (old_freq_colname %in% cores_color_nodes_by) {
-
-    warning("can't color nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to coloring nodes by the total clone count in the cluster.")
-    cores_color_nodes_by[cores_color_nodes_by == old_freq_colname] <- "agg_clone_count"
-  }
-  if (old_freq_colname %in% sample_color_nodes_by) {
-    sample_color_nodes_by[sample_color_nodes_by == old_freq_colname] <- new_freq_colname
-  }
+  # # Apply new name for freq column to color/size variables for plots
+  # # old_sample_color_nodes_by <- sample_color_nodes_by
+  # # old_sample_size_nodes_by <- sample_size_nodes_by
+  # old_color_nodes_by <- color_nodes_by
+  # old_size_nodes_by <- size_nodes_by
+  # if (size_nodes_by == old_freq_colname) { size_nodes_by <- new_freq_colname }
+  # if (cores_size_nodes_by == old_freq_colname) {
+  #   warning("can't size nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to sizing nodes by the total clone count in the cluster.")
+  #   cores_size_nodes_by <- "agg_clone_count" }
+  # # if (sample_size_nodes_by == old_freq_colname) { sample_size_nodes_by <- new_freq_colname }
+  # if (old_freq_colname %in% color_nodes_by) {
+  #   color_nodes_by[color_nodes_by == old_freq_colname] <- new_freq_colname
+  # }
+  # if (old_freq_colname %in% cores_color_nodes_by) {
+  #
+  #   warning("can't color nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to coloring nodes by the total clone count in the cluster.")
+  #   cores_color_nodes_by[cores_color_nodes_by == old_freq_colname] <- "agg_clone_count"
+  # }
+  # # if (old_freq_colname %in% sample_color_nodes_by) {
+  # #   sample_color_nodes_by[sample_color_nodes_by == old_freq_colname] <- new_freq_colname
+  # # }
 
   #### BUILD SAMPLE-LEVEL NETWORKS ####
   cat("Building individual networks for each sample and searching for public clusters...\n")
@@ -175,10 +174,11 @@ findPublicClusters <- function(
 
     cat("Loading and formatting data...")
     # Load data
-    data <-
-      ifelse(csv_files,
-             utils::read.csv(file.path(input_dir, file_list[[i]]), header, sep),
-             utils::read.table(file.path(input_dir, file_list[[i]]), header, sep))
+    if (csv_files) {
+      data <- utils::read.csv(file.path(input_dir, file_list[[i]]), header, sep)
+    } else {
+      data <- utils::read.table(file.path(input_dir, file_list[[i]]), header, sep)
+    }
 
     # Check that each input column is a distinct col of data and meets specs
     # Only need to perform this check for i = 1
@@ -189,24 +189,29 @@ findPublicClusters <- function(
       extra_cols <-
         intersect(
           unique(c(other_cols, bayes_factor_col, diff_test_col,
-                   old_color_nodes_by, old_size_nodes_by,
-                   old_sample_color_nodes_by, old_sample_size_nodes_by)),
+                   color_nodes_by, size_nodes_by,
+                   sample_color_nodes_by, sample_size_nodes_by)),
           names(data))
       keep_cols <-
-        unique(c(nucleo_col, amino_col, count_col, old_freq_colname,
+        unique(c(nucleo_col, amino_col, count_col, freq_col,
                  vgene_col, dgene_col, jgene_col, cdr3length_col, group_col,
                  extra_cols))
     }
     data <- data[ , keep_cols]
-    names(data)[names(data) == old_freq_colname] <- new_freq_colname
+    # names(data)[names(data) == old_freq_colname] <- new_freq_colname
     data$SampleID <- sample_id_list[[i]]
+    # If subject group supplied as list, add variable to data
+    if (!is.null(group_list)) {
+      data$subject_group <- group_list[[i]]
+      extra_cols <- unique(c(extra_cols, "subject_group"))
+    }
     cat(" Done.\n")
 
 
     ### BUILD SAMPLE NETWORK ###
     cat("Building network for current sample...\n")
     sample_net <- buildRepSeqNetwork(
-      data, nucleo_col, amino_col, count_col, new_freq_colname, vgene_col,
+      data, nucleo_col, amino_col, count_col, freq_col, vgene_col,
       dgene_col, jgene_col, cdr3length_col, c(extra_cols, "SampleID"),
       clone_seq_type, min_seq_length, drop_chars, aggregate_identical_clones,
       grouping_cols = group_col, #only used if aggregate_identical_clones = TRUE
@@ -224,11 +229,11 @@ findPublicClusters <- function(
       return_all = TRUE)
 
     # Rename sample-level node stats
-    if (aggregate_identical_clones) {
-      names(sample_net$node_data)[
-        names(sample_net$node_data) == "AggregatedCloneFrequency"] <-
-        new_freq_colname
-    }
+    # if (aggregate_identical_clones) {
+    #   names(sample_net$node_data)[
+    #     names(sample_net$node_data) == "AggregatedCloneFrequency"] <-
+    #     new_freq_colname
+    # }
     names(sample_net$node_data)[names(sample_net$node_data) == "degree"] <-
       "SampleLevelNetworkDegree"
     names(sample_net$node_data)[names(sample_net$node_data) == "cluster_id"] <-
@@ -266,8 +271,9 @@ findPublicClusters <- function(
     ## Save node & cluster data & plots ##
     sample_output_dir <- file.path(output_dir, "sample-level networks",
                                    sample_id_list[[i]])
-    cat(paste0("Saving output for current sample to:\n  ", sample_output_dir,
-               "\n"))
+    dir.create(sample_output_dir, showWarnings = FALSE, recursive = TRUE)
+    cat(paste0("Saving output for current sample to directory:\n  ",
+               sample_output_dir, "\n"))
     utils::write.csv(
       sample_net$node_data,
       file = file.path(sample_output_dir, "node_level_meta_data.csv"),
@@ -336,14 +342,13 @@ findPublicClusters <- function(
       cat(" Done.\n")
     }
     cat("Adding public clusters for current sample to existing public cluster data...")
-    data_cores_network <- # Add cluster-level data to public cluster-cores network
-      ifelse(i == 1,
-             yes = sample_net$cluster_stats,
-             no = rbind(data_cores_network, sample_net$cluster_stats))
-    data_public_clusters <- # Add node-level data to public cluster network
-      ifelse(i == 1,
-             yes = sample_net$node_data,
-             no = rbind(data_public_clusters, sample_net$node_data))
+    if (i == 1) {
+      data_cores_network <- sample_net$cluster_stats
+      data_public_clusters <- sample_net$node_data
+    } else {
+      data_cores_network <- rbind(data_cores_network, sample_net$cluster_stats)
+      data_public_clusters <- rbind(data_public_clusters, sample_net$node_data)
+    }
     cat(" Done.\n")
 
 
@@ -354,7 +359,18 @@ findPublicClusters <- function(
 
   #### BUILD NETWORK OF PUBLIC CLUSTERS BY REPRESENTATIVE SEQUENCE ####
   cat("Building public network using a single representative (core) clone from each cluster...\n")
-  data_cores_network$empty <- NA # placeholder column
+
+  if (freq_col %in% cores_color_nodes_by) {
+    warning("can't color nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to coloring nodes by the total clone count in the cluster.")
+    cores_color_nodes_by[cores_color_nodes_by == freq_col] <- "agg_clone_count"
+  }
+  if (cores_size_nodes_by == freq_col) {
+    warning("can't size nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to sizing nodes by the total clone count in the cluster.")
+    cores_size_nodes_by <- "agg_clone_count" }
+
+  data_cores_network$empty <- data_cores_network$empty1 <-
+    data_cores_network$empty2 <- data_cores_network$empty3 <-
+    data_cores_network$empty4 <- data_cores_network$empty5 <- NA # placeholders
   cores_nucleo_col <- cores_amino_col <- "empty"
   if (clone_seq_type == "nucleotide") {
     cores_nucleo_col <- "seq_w_max_count"
@@ -368,7 +384,7 @@ findPublicClusters <- function(
   # Build network
   cores_network <- buildRepSeqNetwork(
     data_cores_network, cores_nucleo_col, cores_amino_col,
-    "agg_clone_count", "empty", "empty", "empty", "empty", "empty",
+    "agg_clone_count", "empty1", "empty2", "empty3", "empty4", "empty5",
     cores_extra_cols, clone_seq_type,
     dist_type = dist_type, edge_dist = edge_dist,
     drop_isolated_nodes = FALSE, # (keep zero-degree nodes)
@@ -530,7 +546,8 @@ findPublicClusters <- function(
 
   ## Save node & cluster data & plots ##
   cores_output_dir <- file.path(output_dir, "network_on_public_cluster_cores")
-  cat(paste0("Saving output for network of public cluster cores to:\n  ",
+  dir.create(cores_output_dir, showWarnings = FALSE, recursive = TRUE)
+  cat(paste0("Saving output for network of public cluster cores to directory:\n  ",
              cores_output_dir, "\n"))
   utils::write.csv(
     cores_network$node_data,
@@ -553,6 +570,25 @@ findPublicClusters <- function(
   #### BUILD FULL PUBLIC CLUSTER NETWORK ####
   cat("Building network using all clones in the public clusters...\n")
 
+  # if clone count or frequency used for node size/colors, update variable name
+  if (aggregate_identical_clones) { new_count_colname <- "AggregatedCloneCount"
+  } else { new_count_colname <- "CloneCount" }
+  if (size_nodes_by == freq_col) { size_nodes_by <- new_freq_colname }
+  if (freq_col %in% color_nodes_by) {
+    color_nodes_by[color_nodes_by == freq_col] <- new_freq_colname }
+  if (size_nodes_by == count_col) { size_nodes_by <- new_count_colname }
+  if (count_col %in% color_nodes_by) {
+    color_nodes_by[color_nodes_by == count_col] <- new_count_colname
+  }
+
+  # Update variable name for clone frequency
+  if (aggregate_identical_clones) {
+    names(data_public_clusters)[
+      names(data_public_clusters) == "AggregatedCloneFrequency"] <- new_freq_colname
+  } else {
+    names(data_public_clusters)[
+      names(data_public_clusters) == "CloneFrequency"] <- new_freq_colname
+  }
   pub_cols <- c("SampleID", other_cols,
                 bayes_factor_col, diff_test_col,
                 color_nodes_by, size_nodes_by,
@@ -566,22 +602,23 @@ findPublicClusters <- function(
   pub_extra_cols <- intersect(unique(pub_cols), names(data_public_clusters))
   pub_nucleo_col <- "NucleotideSeq"
   pub_amino_col  <-  "AminoAcidSeq"
+  pub_freq_col <- new_freq_colname
   if (aggregate_identical_clones) {
-    data_public_clusters$empty <- NA # placeholder variable
+    data_public_clusters$empty <- data_public_clusters$empty1 <-
+      data_public_clusters$empty2 <- data_public_clusters$empty3 <-
+      data_public_clusters$empty4 <- NA # placeholders
     if (clone_seq_type == "nucleotide") {
       pub_amino_col <- "empty"
     } else {
       pub_nucleo_col <- "empty"
     }
     pub_count_col <- "AggregatedCloneCount"
-    pub_freq_col <- "AggCloneFreqInSample"
-    pub_vgene_col <- "empty"
-    pub_dgene_col <- "empty"
-    pub_jgene_col <- "empty"
-    pub_cdr3length_col <- "empty"
+    pub_vgene_col <- "empty1"
+    pub_dgene_col <- "empty2"
+    pub_jgene_col <- "empty3"
+    pub_cdr3length_col <- "empty4"
   } else {
     pub_count_col <- "CloneCount"
-    pub_freq_col <- "CloneFreqInSample"
     pub_vgene_col <- "VGene"
     pub_dgene_col <- "DGene"
     pub_jgene_col <- "JGene"
@@ -599,7 +636,13 @@ findPublicClusters <- function(
     dist_type = dist_type, edge_dist = edge_dist,
     drop_isolated_nodes = FALSE,
     node_stats = TRUE, stats_to_include = "all", cluster_stats = TRUE,
-    plot_title = "Public Clone Network", plot_subtitle = NULL,
+    plot_title = "Network of Public Clusters",
+    plot_subtitle =
+      paste0(
+        "Includes top ", top_n_clusters,
+        " clusters from each sample by node count; clusters with node count > ",
+        min_node_count - 1, "; and clusters with total clone count > ",
+        min_clone_count - 1),
     edge_width = edge_width, size_nodes_by = size_nodes_by,
     node_size_limits = node_size_limits,
     custom_size_legend = custom_size_legend,
@@ -634,7 +677,7 @@ findPublicClusters <- function(
     "PublicPageRank"
 
   ## Save node & cluster data & plots ##
-  cat(paste0("Saving output for full network of public clusters to:\n  ",
+  cat(paste0("Saving output for full network of public clusters to directory:\n  ",
              output_dir, "\n"))
   utils::write.csv(
     pub_clusters$node_data,

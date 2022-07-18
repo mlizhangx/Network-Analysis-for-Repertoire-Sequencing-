@@ -5,7 +5,7 @@
 #       Build a cluster around each of the selected clones
 #       Print the plot for each cluster and return the combined cluster data
 
-buildClustersAroundSelectedClones <- function(
+getAssociatedClusters <- function(
 
   # Input Data and Columns
   data, # merged bulk rep-seq data from all patients/samples

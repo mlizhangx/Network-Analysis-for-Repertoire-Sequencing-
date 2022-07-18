@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 hamAdjacencyMatSparse <- function(strings, maxdist, drop_deg_zero) {
-    .Call(`_RepSeqNetworkAnalysis_hamAdjacencyMatSparse`, strings, maxdist, drop_deg_zero)
+    .Call(`_NAIR_hamAdjacencyMatSparse`, strings, maxdist, drop_deg_zero)
 }
 
 hamDistBounded <- function(a, b, k) {
-    .Call(`_RepSeqNetworkAnalysis_hamDistBounded`, a, b, k)
+    .Call(`_NAIR_hamDistBounded`, a, b, k)
 }
 
 levAdjacencyMatSparse <- function(strings, maxdist, drop_deg_zero) {
-    .Call(`_RepSeqNetworkAnalysis_levAdjacencyMatSparse`, strings, maxdist, drop_deg_zero)
+    .Call(`_NAIR_levAdjacencyMatSparse`, strings, maxdist, drop_deg_zero)
 }
 
 levDistBounded <- function(a, b, k) {
-    .Call(`_RepSeqNetworkAnalysis_levDistBounded`, a, b, k)
+    .Call(`_NAIR_levDistBounded`, a, b, k)
 }
 

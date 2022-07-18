@@ -1,2 +1,2 @@
 .onUnload <- function(libpath) {
-  library.dynam.unload("RepSeqNetworkAnalysis", libpath) }
+  library.dynam.unload("NAIR", libpath) }

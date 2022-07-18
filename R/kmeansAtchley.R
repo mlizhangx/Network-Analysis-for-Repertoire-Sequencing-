@@ -106,7 +106,7 @@ kmeansAtchley <- function(
   gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
                     margins = c(margin_size, margin_size), lhei = c(1, 3),
                     cexRow = 2, cexCol = 2,
-                    key.title = NA, key.xlab = "cluster's share of in-sample TCRs",
+                    key.title = NA, key.xlab = "cluster's share of TCRs in sample",
                     key.par = list(cex = 1.2),
                     ColSideColors = colors_subject_group[sample_subject_group])
   graphics::legend(x = 0.75, y = 1.175,
@@ -121,7 +121,7 @@ kmeansAtchley <- function(
     gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
                       margins = c(margin_size, margin_size), lhei = c(1, 3),
                       cexRow = 2, cexCol = 2,
-                      key.title = NA, key.xlab = "cluster's share of in-sample TCRs",
+                      key.title = NA, key.xlab = "cluster's share of TCRs in sample",
                       key.par = list(cex = 1.2),
                       ColSideColors = colors_subject_group[sample_subject_group])
     graphics::legend(x = "topright",
