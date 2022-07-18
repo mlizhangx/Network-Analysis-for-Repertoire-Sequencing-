@@ -657,7 +657,7 @@ findPublicClusters <- function(
     "PublicClusterID"
   names(pub_clusters$node_data)[names(pub_clusters$node_data) == "transitivity"] <-
     "PublicTransitivity"
-  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "Closeness"] <-
+  names(pub_clusters$node_data)[names(pub_clusters$node_data) == "closeness"] <-
     "PublicCloseness"
   names(pub_clusters$node_data)[names(pub_clusters$node_data) == "centrality_by_closeness"] <-
     "PublicCentralityByCloseness"
