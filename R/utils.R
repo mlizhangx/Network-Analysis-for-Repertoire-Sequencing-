@@ -559,15 +559,20 @@ sparseAdjacencyMatFromClones <- function(
     warning(paste0(
       "No edges exist using the specified distance cutoff; try a greater value of `max_dist`"))
   } else {
-    cat(paste0(num_nodes, " nodes in the network (after removing nodes with degree zero).\n"))
-    # Import record of selected column IDs and use for matrix row names
-    clone_ids <- utils::read.table("col_ids.txt")
-    dimnames(out)[[1]] <- clone_ids$V1
-    dimnames(out)[[2]] <- clones[clone_ids$V1]
-    # cat(paste0("The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
+    if (drop_isolated_nodes) {
+      cat(paste0(num_nodes, " nodes in the network (after removing nodes with degree zero).\n"))
+      # Import record of selected column IDs and use for matrix row names
+      clone_ids <- utils::read.table("col_ids.txt")
+      dimnames(out)[[1]] <- clone_ids$V1
+      dimnames(out)[[2]] <- clones[clone_ids$V1]
+      # cat(paste0("The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
+
+      # Remove temporary file of column ids
+      file.remove("col_ids.txt")
+    } else {
+      cat(paste0(num_nodes, " nodes in the network.\n"))
+    }
   }
-  # Remove temporary file of column ids
-  file.remove("col_ids.txt")
   return(out)
 }
 
@@ -634,10 +639,10 @@ embedClonesByAtchleyFactor <- function(
   # Write files for trained encoder and Atchley factor table to working dir
   file_trained_encoder <-
     system.file(file.path("python", "TrainedEncoder.h5"),
-                package = "RepSeqNetworkAnalysis")
+                package = "NAIR")
   file_atchley_table <-
     system.file(file.path("python", "Atchley_factors.csv"),
-                package = "RepSeqNetworkAnalysis")
+                package = "NAIR")
   utils::write.csv(data.frame("sysfiles" = c(file_atchley_table,
                                              file_trained_encoder)),
                    file.path(getwd(), "temp_sysfiles.csv"),
@@ -647,7 +652,7 @@ embedClonesByAtchleyFactor <- function(
   cat("Embedding TCR CDR3 amino acid sequences in 30-dimensional Euclidean space based on Atchley factor representation and a trained encoding model using deep learning routines from the keras & tensorflow python modules. This may produce some warnings...\n")
   reticulate::py_run_file(
     system.file(file.path("python", "BriseisEncoder_modified.py"),
-                package = "RepSeqNetworkAnalysis"))
+                package = "NAIR"))
 
   # Import embedded values and remove temp files
   embedded_values <- utils::read.csv("temp_atchley_factors_encoded.csv")
