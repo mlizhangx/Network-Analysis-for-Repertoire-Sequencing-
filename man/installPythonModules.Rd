@@ -3,11 +3,11 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   %%  ~~function to do ... ~~
-    Install Python Modules Used By RepSeqNetworkTools
+    Install Python Modules Used By NAIR
 }
 \description{
   %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Checks whether the Python modules used by the `RepSeqNetworkTools` package are available, and automatically installs any that are missing via `reticulate::py_install()`.
+    Checks whether the Python modules used by the `NAIR` package are available, and automatically installs any that are missing via `reticulate::py_install()`.
 }
 \usage{
   installPythonModules(method = "auto", conda = "auto", pip = FALSE)
@@ -36,7 +36,7 @@
 }
 \author{
   %%  ~~who you are~~
-    Li Zhang, Hai Yang, Brian Neal
+    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
