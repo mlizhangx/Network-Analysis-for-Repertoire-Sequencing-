@@ -52,9 +52,10 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    A data frame whose first column has the same name as the column of `data` specified by `clone_col`
-    containing the receptor sequences. If additional columns of `data` were supplied via the `grouping_cols`
-    argument, these columns will also be inherited. The remaining columns are as follows:
+    A data frame whose first column contains the receptor sequences and has the
+    same name as the column of `data` specified by `clone_col`. If additional
+    columns of `data` were supplied via the `grouping_cols` argument, these
+    columns will also be inherited. The remaining columns are as follows:
 
     \item{AggregatedCloneCount}{The aggregated clone count for each receptor sequence}
 
