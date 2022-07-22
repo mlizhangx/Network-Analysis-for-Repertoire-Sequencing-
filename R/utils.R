@@ -87,7 +87,7 @@ getSimilarClones <- function(
   clone_col, # col name/# containing clone sequences
   sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
   dist_type = "hamming", # options are "hamming" and "levenshtein"
-  max_dist = 2, # Maximum Levenshtein distance allowed for inclusion in neighborhood
+  max_dist = 1, # Maximum Levenshtein distance allowed for inclusion in neighborhood
   drop_chars = "[*|_]" # regular expression for chars to filter sequences by
 ) {
   if (!is.data.frame(data)) {
@@ -108,10 +108,11 @@ getSimilarClones <- function(
         data[ , sample_col] %in% data[rows_for_targetseq, sample_col], ]
     cat(" Done.\n")
   }
-  # remove seq with * and _
-  data_samples_w_targetseq <-
-    data_samples_w_targetseq[
-      -grep(drop_chars, data_samples_w_targetseq[ , clone_col]), ]
+  # Remove sequences that match expression in `drop_chars`
+  drop_matches <- grep(drop_chars, data_samples_w_targetseq[ , clone_col])
+  if (length(drop_matches) > 0) {
+    data_samples_w_targetseq <- data_samples_w_targetseq[-drop_matches, ]
+  }
   ### SUBSET DATA: NEIGHBORHOOD OF TARGET SEQUENCE ###
   # Compute list of bounded distances between target seq and seqs
   # possessed by samples with target seq (values are -1 where bound is exceeded)
