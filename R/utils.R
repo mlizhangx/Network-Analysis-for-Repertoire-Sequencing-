@@ -139,7 +139,7 @@ getSimilarClones <- function(
 # FUNCTION: GENERATE NETWORK FOR A LIST OF CLONE SEQS USING SPECIFIED DISTANCE TYPE AND THRESHOLD
 generateNetworkFromClones <- function(
   clones, # list of clonotype sequences
-  dist_type = "levenshtein", # supports "levenshtein", "hamming", "euclidean_on_atchley"
+  dist_type = "hamming", # supports "levenshtein", "hamming", "euclidean_on_atchley"
   edge_dist = 1, # max dist threshold for edges
   drop_isolated_nodes = TRUE, # forced to FALSE for dist_type = "euclidean_on_atchley"
   contig_ids = seq_along(clones), # for dist_type = "euclidean_on_atchley"
