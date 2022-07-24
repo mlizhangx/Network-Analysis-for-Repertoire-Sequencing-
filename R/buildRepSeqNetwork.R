@@ -124,8 +124,8 @@ buildRepSeqNetwork <- function(
   # Remove sequences below specified length
   if (!is.null(min_seq_length)) {
     cat(paste0("Filtering for minimum clone sequence length (", min_seq_length, ")..."))
-    data <- filterDataBySequenceLength(data, clone_seq_col,
-                                       min_length = min_seq_length)
+    data <- filterClonesBySequenceLength(data, clone_seq_col,
+                                         min_length = min_seq_length)
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
   }
 

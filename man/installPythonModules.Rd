@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
   %%  ~~function to do ... ~~
-    Install Python Modules Used By NAIR
+    Install Python Modules Used by NAIR
 }
 \description{
   %%  ~~ A concise (1-5 lines) description of what the function does. ~~

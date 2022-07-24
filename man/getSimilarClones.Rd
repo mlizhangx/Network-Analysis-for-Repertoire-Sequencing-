@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Find Clones Similar To A Target By Receptor Sequence
+    Find Clones Similar to a Target by Receptor Sequence
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
@@ -91,25 +91,53 @@ getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-  # Create some data
-  data <- data.frame(
-    clone_seq = c("ATCG", "ATTT", "ATT", rep("ATCC", 2), "ATCC", "ACC"),
-    clone_count = rep(1, 7),
-    clone_freq = rep(1 / 7, 7),
-    # group/label variable 1
-    time_point = c("t_0", rep(c("t_0", "t_1"), 3)),
-    # group/label variable 2
-    subject_id = c(rep(1, 5), rep(2, 2))
-  )
-  target <- "ATCG"
+# Create some data
+data <- data.frame(
+  clone_seq = c("ATCG", "TTCG", "TCG", rep("ATCC", 2), "ATGG", "TGG"),
+  clone_count = rep(1, 7),
+  clone_freq = rep(1 / 7, 7),
+  # group/label variable 1
+  time_point = c("t_0", rep(c("t_0", "t_1"), 3)),
+  # group/label variable 2
+  subject_id = c(rep(1, 5), rep(2, 2))
+)
+target <- "ATCG"
 
-  # Default usage (Hamming distance, max distance 1)
-  data_target <- getSimilarClones(target, data, clone_seq)
+# Default usage (Hamming distance, max distance 1)
+data_target <-
+  getSimilarClones(target, data, "clone_seq")
 
-  # Levenshtein d
-  data_target <- getSimilarClones(target, data, clone_seq)
+# Max Hamming distance of 2
+# No sequences have a Hamming distance of 2 from the target,
+# so the output is the same as in the previous example
+data_target2 <-
+  getSimilarClones(target, data, "clone_seq",
+                   max_dist = 2)
 
+# Levenshtein (edit) distance
+data_target_lev <-
+  getSimilarClones(target, data, "clone_seq",
+                   dist_type = "levenshtein")
 
+# Levenshtein (edit) distance, max distance 2
+data_target_lev2 <-
+  getSimilarClones(target, data, "clone_seq",
+                   dist_type = "levenshtein",
+                   max_dist = 2)
+
+# Keeping only the subjects with the target sequence
+data_subjects_lev2 <-
+  getSimilarClones(target, data, "clone_seq",
+                   sample_col = "subject_id",
+                   dist_type = "levenshtein",
+                   max_dist = 2)
+
+# Keeping only the time points with the target sequence
+data_timepoints_lev2 <-
+  getSimilarClones(target, data, "clone_seq",
+                   sample_col = "time_point",
+                   dist_type = "levenshtein",
+                   max_dist = 2)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

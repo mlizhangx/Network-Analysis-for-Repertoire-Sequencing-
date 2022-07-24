@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Aggregate counts/frequencies for clones with identical receptor sequences
+    Aggregate Counts/Frequencies for Clones With Identical Receptor Sequences
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
@@ -20,20 +20,21 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 \arguments{
   \item{data}{
 %%     ~~Describe \code{data} here~~
-      A data frame containing the columns specified below.
+      A data frame containing the immune repertoire sequence data, with clones
+      indexed by row.
 }
   \item{clone_col}{
 %%     ~~Describe \code{clone_col} here~~
       The column name or number of `data` containing the receptor sequences (e.g.,
-      TCR CDR3 nucleotide sequence or amino acid sequence)
+      TCR CDR3 nucleotide sequence or amino acid sequence).
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~
-      The column name or number of `data` containing the clone counts
+      The column name or number of `data` containing the clone counts.
 }
   \item{freq_col}{
 %%     ~~Describe \code{freq_col} here~~
-      The column name or number of `data` containing the clone frequencies
+      The column name or number of `data` containing the clone frequencies.
 }
   \item{grouping_cols}{
 %%     ~~Describe \code{grouping_cols} here~~
@@ -57,9 +58,13 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
     columns of `data` were supplied via the `grouping_cols` argument, these
     columns will also be inherited. The remaining columns are as follows:
 
-    \item{AggregatedCloneCount}{The aggregated clone count for each receptor sequence}
+    \item{AggregatedCloneCount}{The aggregated clone count for each receptor sequence.}
 
-    \item{AggregatedCloneFrequency}{The aggregated clone frequency for each receptor sequence}}
+    \item{AggregatedCloneFrequency}{The aggregated clone frequency for each receptor sequence.}}
+
+    \item{UniqueCloneCount}{The number of clones (rows) in `data` possessing the receptor sequence for the current row
+    (if groups are supplied, this is a within-group count).}
+}
 \references{
 %% ~put references to the literature/web site here ~
     Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
@@ -83,44 +88,36 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 ##---- Should be DIRECTLY executable !! ----
 ##-- ==>  Define data, use random,
 ##--	or do  help(data=index)  for the standard data sets.
+  # Create some data
+  data <- data.frame(
+    clone_seq = c("ATCG", rep("ACAC", 2), rep("GGGG", 4)),
+    clone_count = rep(1, 7),
+    clone_freq = rep(1 / 7, 7),
+    # group/label variable 1
+    time_point = c("t_0", rep(c("t_0", "t_1"), 3)),
+    # group/label variable 2
+    subject_id = c(rep(1, 5), rep(2, 2))
+  )
 
-## The function is currently defined as
-function (data, clone_col, count_col, freq_col, grouping_cols = NULL)
-{
-    if (is.numeric(clone_col)) {
-        clone_col <- names(data)[clone_col]
-    }
-    if (is.numeric(count_col)) {
-        count_col <- names(data)[count_col]
-    }
-    if (is.numeric(freq_col)) {
-        freq_col <- names(data)[freq_col]
-    }
-    grouping_variables <- list(data[, clone_col])
-    names(grouping_variables) <- clone_col
-    if (!is.null(grouping_cols)) {
-        if (is.numeric(grouping_cols)) {
-            grouping_cols <- names(data)[grouping_cols]
-        }
-        for (i in 1:length(grouping_cols)) {
-            grouping_variables$newvar <- data[, grouping_cols[[i]]]
-            names(grouping_variables)[[length(grouping_variables)]] <- grouping_cols[[i]]
-        }
-    }
-    cat("Aggregating reads (rows) by unique clone sequence...")
-    data_to_aggregate <- list(AggregatedCloneCount = data[, c(count_col)],
-        AggregatedCloneFrequency = data[, c(freq_col)])
-    agg_counts <- stats::aggregate(data_to_aggregate, by = grouping_variables,
-        FUN = sum)
-    groups <- as.data.frame(grouping_variables)
-    names(groups)[[1]] <- "temporary_placeholder_name"
-    num_reads <- dplyr::summarize(dplyr::group_by_all(groups),
-        UniqueCloneCount = length(temporary_placeholder_name))
-    names(num_reads)[[1]] <- clone_col
-    out <- merge(agg_counts, num_reads, by = c(clone_col, grouping_cols))
-    cat(paste0(" Done. ", nrow(out), " unique clone sequences found.\n"))
-    return(out)
-  }
+  # Aggregate clones by receptor sequence (default usage)
+  data_agg <- aggregateIdenticalClones(
+    data, "clone_seq", "clone_count", "clone_freq")
+
+  # Aggregate clones by receptor sequence and time point
+  data_agg_time <- aggregateIdenticalClones(
+    data, "clone_seq", "clone_count", "clone_freq",
+    grouping_cols = "time_point")
+
+  # Aggregate clones by receptor sequence and subject
+  data_agg_subject <- aggregateIdenticalClones(
+    data, "clone_seq", "clone_count", "clone_freq",
+    grouping_cols = "subject_id")
+
+  # Aggregate clones by receptor sequence, subject & time point
+  # (note all clones in each group are already unique)
+  data_agg_time_subject <- aggregateIdenticalClones(
+    data, "clone_seq", "clone_count", "clone_freq",
+    grouping_cols = c("subject_id", "time_point"))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

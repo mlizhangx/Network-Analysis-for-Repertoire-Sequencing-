@@ -1,3 +1,16 @@
+# 0.0.9013
+* R Documentation files added for package functions:
+    * `aggregateIdenticalClones`
+    * `filterClonesBySequenceLength`
+    * `getSimilarClones`
+    * `generateNetworkFromClones`
+    * `generateNetworkFromAdjacencyMat`
+    * `addNodeNetworkStats`
+    * `node_stat_settings`
+    * `addClusterMembership`
+    * `getClusterStats`
+* Implemented on-install testing of package functions using package `testthat`
+
 # 0.0.9012
 * Package name changed to NAIR (Network Analysis for Immune Repertoire)
 * Added `findPublicClusters()`

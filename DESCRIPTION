@@ -1,7 +1,7 @@
 Package: NAIR
 Type: Package
 Title: Network Analysis for Immune Repertoire
-Version: 0.0.9012
+Version: 0.0.9013
 Authors@R: c(
     person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
@@ -17,10 +17,12 @@ Description: Pipelines for studying the immune repertoire of T and B cells
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 1.0.8), Matrix, reticulate, igraph, ggraph, ggplot2, stats, utils, grDevices, dplyr, reshape2, gplots, RColorBrewer, viridisLite, graphics
+Imports: Rcpp (>= 1.0.8), Matrix, reticulate, igraph, ggraph, ggplot2, stats, 
+    utils, grDevices, dplyr, reshape2, gplots, RColorBrewer, viridisLite, graphics
 LinkingTo: Rcpp (>= 1.0.8), RcppArmadillo (>= 0.10.8.0.0)
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3
 Config/reticulate:
   list(
     packages = list(

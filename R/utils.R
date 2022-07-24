@@ -72,7 +72,7 @@ aggregateIdenticalClones <- function(
 
 # FUNCTION: Filter rep-seq data to remove rows for clonotype sequences with
 # length below the specified cutoff
-filterDataBySequenceLength <- function(data, clone_col, min_length = 3) {
+filterClonesBySequenceLength <- function(data, clone_col, min_length = 3) {
   return(data[nchar(data[ , clone_col]) >= min_length, ])
 }
 
@@ -208,42 +208,41 @@ addNodeNetworkStats <- function(
       as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
     cat(" Done.\n") }
 
-
   cat(paste0("Computing node-level network statistics..."))
   if (stats_to_include$transitivity | stats_to_include$all_stats) {
-    data$transitivity <- igraph::transitivity(net, type = "local") }
-
+    data$transitivity <- igraph::transitivity(net, type = "local")
+  }
   if (stats_to_include$closeness | stats_to_include$all_stats) {
-    data$closeness <- igraph::closeness(net, mode = "all", weights = NA) }
-
+    data$closeness <- igraph::closeness(net, mode = "all", weights = NA)
+  }
   if (stats_to_include$centrality_by_closeness | stats_to_include$all_stats) {
     data$centrality_by_closeness <-
-      igraph::centr_clo(net, mode = "all", normalized = T)$res }
-
+      igraph::centr_clo(net, mode = "all", normalized = T)$res
+  }
   if (stats_to_include$eigen_centrality | stats_to_include$all_stats) {
     data$eigen_centrality <-
-      igraph::eigen_centrality(net, directed = T, weights = NA)$vector }
-
+      igraph::eigen_centrality(net, directed = T, weights = NA)$vector
+  }
   if (stats_to_include$centrality_by_eigen | stats_to_include$all_stats) {
     data$centrality_by_eigen <-
-      igraph::centr_eigen(net, directed = T, normalized = T)$vector }
-
+      igraph::centr_eigen(net, directed = T, normalized = T)$vector
+  }
   if (stats_to_include$betweenness | stats_to_include$all_stats) {
     data$betweenness <- igraph::betweenness(net, directed = T, weights = NA) }
 
   if (stats_to_include$centrality_by_betweenness | stats_to_include$all_stats) {
     data$centrality_by_betweenness <-
-      igraph::centr_betw(net, directed = T, normalized = T)$res }
-
+      igraph::centr_betw(net, directed = T, normalized = T)$res
+  }
   if (stats_to_include$authority_score | stats_to_include$all_stats) {
-    data$authority_score <- igraph::authority_score(net, weights = NA)$vector }
-
+    data$authority_score <- igraph::authority_score(net, weights = NA)$vector
+  }
   if (stats_to_include$coreness | stats_to_include$all_stats) {
-    data$coreness <- igraph::coreness(net, mode = "all") }
-
+    data$coreness <- igraph::coreness(net, mode = "all")
+  }
   if (stats_to_include$page_rank | stats_to_include$all_stats) {
-    data$page_rank <- igraph::page_rank(net)$vector }
-
+    data$page_rank <- igraph::page_rank(net)$vector
+  }
   cat(" Done.\n")
   return(data)
 }
