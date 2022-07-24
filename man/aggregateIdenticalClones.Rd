@@ -60,7 +60,7 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 
     \item{AggregatedCloneCount}{The aggregated clone count for each receptor sequence.}
 
-    \item{AggregatedCloneFrequency}{The aggregated clone frequency for each receptor sequence.}}
+    \item{AggregatedCloneFrequency}{The aggregated clone frequency for each receptor sequence.}
 
     \item{UniqueCloneCount}{The number of clones (rows) in `data` possessing the receptor sequence for the current row
     (if groups are supplied, this is a within-group count).}
