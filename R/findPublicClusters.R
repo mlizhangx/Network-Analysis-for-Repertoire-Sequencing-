@@ -60,28 +60,28 @@ findPublicClusters <- function(
   edge_width = 0.1,
   size_nodes_by = 0.5, # can use a column name of data (a numeric value yields fixed node sizes)
   node_size_limits = NULL, # numeric length 2
-  custom_size_legend = NULL, # custom legend title
+  size_title = NULL, # custom legend title
   color_nodes_by = "subject_group", # accepts multiple values (one plot per value)
   color_scheme = "viridis", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  custom_color_legend = "Subject Group", # custom title (length must match color_nodes_by)
+  color_title = "Subject Group", # custom title (length must match color_nodes_by)
 
   # Plot Settings (public cluster-core network)
   cores_edge_width = 0.3,
   cores_size_nodes_by = "node_count",
   cores_node_size_limits = c(0.1, 3),
-  cores_custom_size_legend = "Node Count", # custom legend title
+  cores_size_title = "Node Count", # custom legend title
   cores_color_nodes_by = "mean_degree", # accepts multiple values (one plot per value)
   cores_color_scheme = "inferno", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  cores_custom_color_legend = "Mean Network Degree", # custom title (length must match color_nodes_by)
+  cores_color_title = "Mean Network Degree", # custom title (length must match color_nodes_by)
 
   # Plot Settings (sample-level networks)
   sample_edge_width = 0.3,
   sample_size_nodes_by = count_col,
   sample_node_size_limits = c(0.1, 4),
-  sample_custom_size_legend = "Clone Count", # custom legend title
+  sample_size_title = "Clone Count", # custom legend title
   sample_color_nodes_by = "degree", # accepts multiple values (one plot per value)
   sample_color_scheme = "inferno", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  sample_custom_color_legend = "Network Degree", # custom title (length must match color_nodes_by)
+  sample_color_title = "Network Degree", # custom title (length must match color_nodes_by)
 
   # Output Settings
   output_dir = file.path(getwd(), "public_clusters"),
@@ -222,10 +222,10 @@ findPublicClusters <- function(
       plot_subtitle = NULL,
       edge_width = sample_edge_width, size_nodes_by = sample_size_nodes_by,
       node_size_limits = sample_node_size_limits,
-      custom_size_legend = sample_custom_size_legend,
+      size_title = sample_size_title,
       color_nodes_by = sample_color_nodes_by,
       color_scheme = sample_color_scheme,
-      custom_color_legend = sample_custom_color_legend,
+      color_title = sample_color_title,
       return_all = TRUE)
 
     # Rename sample-level node stats
@@ -400,10 +400,10 @@ findPublicClusters <- function(
         min_clone_count - 1),
     edge_width = cores_edge_width, size_nodes_by = cores_size_nodes_by,
     node_size_limits = cores_node_size_limits,
-    custom_size_legend = cores_custom_size_legend,
+    size_title = cores_size_title,
     color_nodes_by = cores_color_nodes_by,
     color_scheme = cores_color_scheme,
-    custom_color_legend = cores_custom_color_legend,
+    color_title = cores_color_title,
     return_all = TRUE)
 
   # Drop/rename variables for node-level data
@@ -645,9 +645,9 @@ findPublicClusters <- function(
         min_clone_count - 1),
     edge_width = edge_width, size_nodes_by = size_nodes_by,
     node_size_limits = node_size_limits,
-    custom_size_legend = custom_size_legend,
+    size_title = size_title,
     color_nodes_by = color_nodes_by, color_scheme = color_scheme,
-    custom_color_legend = custom_color_legend,
+    color_title = color_title,
     return_all = TRUE)
 
   # Rename public node stats

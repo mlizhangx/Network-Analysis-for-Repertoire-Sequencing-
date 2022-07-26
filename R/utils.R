@@ -424,11 +424,12 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
                              title = NULL,
                              subtitle = NULL,
                              color_nodes_by = NULL,
-                             size_nodes_by = NULL,
-                             color_legend_title = NULL,
-                             size_legend_title = NULL,
                              color_scheme = "default",
-                             node_size_limits = NULL,
+                             show_color_legend = TRUE,
+                             color_legend_title = "auto",
+                             size_nodes_by = NULL,
+                             node_size_limits = "auto",
+                             size_legend_title = "auto",
                              outfile = NULL
 ) {
   set.seed(9999)
@@ -439,19 +440,23 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
     ggraph::geom_edge_link0(width = edge_width, colour = "grey")
 
   if (!is.null(color_nodes_by)) {
+    # Custom node color scheme
     if (!is.null(size_nodes_by)) {
+      # Custom node size scheme
       if (is.numeric(size_nodes_by) & length(size_nodes_by) == 1) {
+        # Fixed node sizes
         graph_plot <- graph_plot +
           ggraph::geom_node_point(
             ggplot2::aes(color = color_nodes_by), size = size_nodes_by)
-
       } else if (length(size_nodes_by) > 1) {
+        # size_nodes_by is a numeric vector specifying the size of each node
         graph_plot <- graph_plot +
           ggraph::geom_node_point(
             ggplot2::aes(color = color_nodes_by, size = size_nodes_by))
-
-        if (!is.null(node_size_limits)) {
-          graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits)
+        if (node_size_limits != "auto") {
+          # Rescale node sizes if specified
+          graph_plot <-
+            graph_plot + ggplot2::scale_size(range = node_size_limits)
         }
       }
     } else { # size_nodes_by is null or invalid
@@ -469,7 +474,8 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
         graph_plot <- graph_plot +
           ggraph::geom_node_point(ggplot2::aes(size = size_nodes_by))
         if (!is.null(node_size_limits)) {
-          graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits)
+          graph_plot <-
+            graph_plot + ggplot2::scale_size(range = node_size_limits)
         }
       }
     } else { # size_nodes_by null or invalid
@@ -479,9 +485,21 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
 
   graph_plot <- graph_plot +
     ggraph::theme_graph(base_family = "sans") +
-    ggplot2::labs(title = title, subtitle = subtitle) +
-    ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title),
-                    size = ggplot2::guide_legend(title = size_legend_title))
+    ggplot2::labs(title = title, subtitle = subtitle)
+
+  if (show_color_legend) {
+    if (color_legend_title != "auto") {
+      graph_plot <- graph_plot +
+        ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title))
+    }
+  } else {
+    graph_plot <- graph_plot + ggplot2::guides(color = "none")
+  }
+
+  if (size_legend_title != "auto") {
+    graph_plot <- graph_plot +
+      ggplot2::guides(size = ggplot2::guide_legend(title = size_legend_title))
+  }
 
   color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
 

@@ -24,7 +24,7 @@ addNodeNetworkStats(data, net, stats_to_include = node_stat_settings())
 }
   \item{net}{
 %%     ~~Describe \code{net} here~~
-      An `igraph` igraph object containing the network corresponding to the
+      An `igraph` object containing the network corresponding to the
       clones in `data`.
 }
   \item{stats_to_include}{

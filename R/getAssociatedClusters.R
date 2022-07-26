@@ -13,10 +13,10 @@ getAssociatedClusters <- function(
   amino_col,
   count_col,
   freq_col,
-  vgene_col,
-  dgene_col,
-  jgene_col,
-  cdr3length_col,
+  vgene_col = NULL,
+  dgene_col = NULL,
+  jgene_col = NULL,
+  cdr3length_col = NULL,
   sample_col,
   other_cols = NULL,
 
@@ -35,25 +35,27 @@ getAssociatedClusters <- function(
   cluster_stats = FALSE,
 
   # Plot Settings (global cluster network)
-  custom_title = NULL, # for plot of global cluster network
-  custom_subtitle = NULL,
+  plot_title = "auto", # for plot of global cluster network
+  plot_subtitle = "auto",
+  color_nodes_by = sample_col, # accepts multiple values (one plot per value)
+  color_scheme = "auto", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
+  color_legend = TRUE,
+  color_title = "auto", # custom title (length must match color_nodes_by)
   edge_width = 0.1,
   size_nodes_by = count_col, # can use a column name of data (a numeric value yields fixed node sizes)
-  node_size_limits = NULL, # numeric length 2
-  custom_size_legend = NULL, # custom legend title
-  color_nodes_by = sample_col, # accepts multiple values (one plot per value)
-  color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  custom_color_legend = NULL, # custom title (length must match color_nodes_by)
+  node_size_limits = "auto", # numeric length 2
+  size_title = "auto", # custom legend title
 
   # Plot Settings (individual cluster plots)
   single_cluster_plots = TRUE,
-  sc_edge_width = 0.3,
-  sc_size_nodes_by = count_col,
-  sc_node_size_limits = NULL,
-  sc_custom_size_legend = NULL, # custom legend title
   sc_color_nodes_by = sample_col, # accepts multiple values (one plot per value)
   sc_color_scheme = "default", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
-  sc_custom_color_legend = NULL, # custom title (length must match color_nodes_by)
+  sc_color_legend = TRUE,
+  sc_color_title = "auto", # custom title (length must match color_nodes_by)
+  sc_edge_width = 0.3,
+  sc_size_nodes_by = count_col,
+  sc_node_size_limits = "auto",
+  sc_size_title = "auto", # custom legend title
 
   # Output Settings
   output_dir = getwd(),
@@ -104,8 +106,6 @@ getAssociatedClusters <- function(
   if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
   if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
   if (is.numeric(sc_color_nodes_by)) { sc_color_nodes_by <- names(data)[sc_color_nodes_by] }
-  # if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
-  # if (is.integer(sc_size_nodes_by)) { sc_size_nodes_by <- names(data)[sc_size_nodes_by] }
 
   # Designate amino acid or nucleotide for clone sequence
   clone_seq_col <- amino_col
@@ -144,10 +144,10 @@ getAssociatedClusters <- function(
 
   ### GLOBAL NETWORK PLOT SETTINGS ###
   # Title for global cluster network plot
-  if (is.null(custom_title)) {
+  if (plot_title == "auto") {
     main_title <- paste("Global network of clusters around",
                         length(selected_clones), "selected clone sequences")
-  } else { main_title <- custom_title }
+  } else { main_title <- plot_title }
 
   # Default fixed component of subtitle across all plots
   subtitle_part <- ifelse(
@@ -161,28 +161,13 @@ getAssociatedClusters <- function(
       "\nEdges based on a maximum", dist_type, "distance of", edge_dist, "\n"))
 
   # Subtitle for global cluster network plot
-  if (is.null(custom_subtitle)) {
+  if (plot_subtitle == "auto") {
     main_subtitle <- paste(
       "Network includes clone sequences with a maximum",
       cluster_radius_dist_type, "distance of", cluster_radius,
       "from one of the selected sequences",
       subtitle_part)
-  } else { main_subtitle <- custom_subtitle }
-
-  # # If multiple coloring variables, extend color scheme to vector if needed
-  # if (length(color_nodes_by) > 1 & length(color_scheme) == 1) {
-  #   color_scheme <- rep(color_scheme, length(color_nodes_by)) }
-
-  # # Legend titles for size and color (global plot)
-  # size_legend_title <- NULL # default for fixed node size
-  # if (is.character(size_nodes_by)) {
-  #   if (!is.null(custom_size_legend)) {
-  #     size_legend_title <- custom_size_legend
-  #   } else { size_legend_title <- size_nodes_by }
-  # }
-  # if (!is.null(custom_color_legend)) {
-  #   color_legend_title <- custom_color_legend
-  # } else { color_legend_title <- color_nodes_by }
+  } else { main_subtitle <- plot_subtitle }
 
 
   ### SINGLE-CLUSTER PLOT SETTINGS ###
@@ -201,12 +186,12 @@ getAssociatedClusters <- function(
     # Legend titles for size and color (single-cluster plots)
     sc_size_legend_title <- NULL # default for fixed node size
     if (is.character(sc_size_nodes_by)) {
-      if (!is.null(sc_custom_size_legend)) {
-        sc_size_legend_title <- sc_custom_size_legend
+      if (sc_size_title == "auto") {
+        sc_size_legend_title <- sc_size_title
       } else { sc_size_legend_title <- sc_size_nodes_by }
     }
-    if (!is.null(sc_custom_color_legend)) {
-      sc_color_legend_title <- sc_custom_color_legend
+    if (sc_color_title == "auto") {
+      sc_color_legend_title <- sc_color_title
     } else { sc_color_legend_title <- sc_color_nodes_by }
 
     if (single_cluster_plots &
@@ -261,11 +246,11 @@ getAssociatedClusters <- function(
     ### PLOT(S) OF SINGLE-CLUSTER NETWORK GRAPH ###
     if (single_cluster_plots) {
       # Create labels for plots
-      plot_title <- paste0("Cluster ", i, " (", selected_clones[[i]], ")")
+      current_title <- paste0("Cluster ", i, " (", selected_clones[[i]], ")")
       sc_subtitle_prefix <- NULL
       if (!is.null(selected_clone_labels)) {
         sc_subtitle_prefix <- paste0(selected_clone_labels[[i]], "\n") }
-      plot_subtitle <- paste0(sc_subtitle_prefix, sc_subtitle)
+      current_subtitle <- paste0(sc_subtitle_prefix, sc_subtitle)
 
       # Ensure size_nodes_by is a vector or fixed value to use for node sizes
       if (is.character(sc_size_nodes_by)) {
@@ -279,10 +264,12 @@ getAssociatedClusters <- function(
                    sc_color_nodes_by[[j]], "..."))
         temp_plotlist$newplot <-
           plotNetworkGraph(
-            network, sc_edge_width, title = plot_title,
-            subtitle = plot_subtitle,
+            network, sc_edge_width,
+            title = current_title,
+            subtitle = current_subtitle,
             color_nodes_by = data_current_cluster[ , sc_color_nodes_by[[j]]],
             size_nodes_by = size_code,
+            show_color_legend = sc_color_legend,
             color_legend_title = sc_color_legend_title[[j]],
             size_legend_title = sc_size_legend_title,
             color_scheme = sc_color_scheme[[j]],
@@ -318,6 +305,7 @@ getAssociatedClusters <- function(
   # Format additional variables in data
   data_all_clusters$AssocClusterID <- as.factor(data_all_clusters$AssocClusterID)
 
+
   #### BUILD GLOBAL CLUSTER NETWORK ####
   # Ensure cluster ID is computed
   if (!node_stats) {
@@ -342,9 +330,9 @@ getAssociatedClusters <- function(
     plot_title = main_title, plot_subtitle = main_subtitle,
     edge_width = edge_width, size_nodes_by = size_nodes_by,
     node_size_limits = node_size_limits,
-    custom_size_legend = custom_size_legend,
+    size_title = size_title,
     color_nodes_by = color_nodes_by, color_scheme = color_scheme,
-    custom_color_legend = custom_color_legend,
+    color_title = color_title, color_legend = color_legend,
     return_all = TRUE)
 
   # Rename some columns of combined cluster data
@@ -357,9 +345,6 @@ getAssociatedClusters <- function(
   if ("degree" %in% names(global_net$node_data)) {
     names(global_net$node_data)[which(names(global_net$node_data) == "degree")] <-
       "globalDegree" }
-  # colnames(global_net$node_data)[1:9] <- c(
-  #   "NucleotideSeq", "AminoAcidSeq", "CloneCount", "CloneFreqInSample",
-  #   "VGene", "DGene", "JGene", "CDR3Length", "SampleID")
 
 
   #### SAVE RESULTS ####
