@@ -19,10 +19,10 @@ plotNetworkGraph(network,
                  color_nodes_by = NULL,
                  color_scheme = "default",
                  show_color_legend = TRUE,
-                 color_legend_title = NULL,
+                 color_legend_title = "auto",
                  size_nodes_by = NULL,
-                 node_size_limits = NULL,
-                 size_legend_title = NULL,
+                 node_size_limits = "auto",
+                 size_legend_title = "auto",
                  outfile = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -49,25 +49,31 @@ plotNetworkGraph(network,
 }
   \item{color_scheme}{
 %%     ~~Describe \code{color_scheme} here~~
-    a fixed color specified by name (e.g., "blue") or hexadecimal RGB triplet (e.g., "#6600CC"),
+    A character string specifying the color palette used to color the nodes: either "default" for default `ggplot2` colors, a viridis color map option (e.g., `"viridis"`, `"plasma"`, etc., or one the corresponding strings "A" through "H"; see `?viridis` for details), or a palette from `grDevices::hcl.pals()` (these can only be used with discrete color scales).
 }
   \item{show_color_legend}{
 %%     ~~Describe \code{color_legend_title} here~~
+    Logical scalar; whether to display the color legend on the plot. For discrete color scales with a large number of unique values, the color legend can exceed the size of the plotting space and cause issues; try setting this argument to `FALSE` if this occurs.
 }
   \item{color_legend_title}{
 %%     ~~Describe \code{color_legend_title} here~~
+    A character string or `NULL` specifying the title for the color legend. If "auto" and a vector was supplied for `color_nodes_by`, the color legend title will attempt to use the name of the supplied vector.
 }
   \item{size_nodes_by}{
 %%     ~~Describe \code{size_nodes_by} here~~
+    Passed to the size aesthetic mapping of `ggraph::geom_node_point`, used to encode the size of each node. Either a numeric vector with positive entires whose length matches the number of nodes in `network`, a positive-valued number (denoting a fixed constant size for each node), or `NULL`.
 }
   \item{size_legend_title}{
 %%     ~~Describe \code{size_legend_title} here~~
+    A character string or `NULL` specifying the title for the size legend. The size legend is only displayed if a vector was supplied for `size_nodes_by`, in which case `size_legend_title = "auto"` will attempt to use the name of the supplied vector.
 }
   \item{node_size_limits}{
 %%     ~~Describe \code{node_size_limits} here~~
+    A numeric vector of length 2 with positive entries, or `NULL`. If a vector of values is provided, the node sizes will be rescaled using the first value for the minimum node size and the second value for the maximum node sizes. Only applicable if a vector is supplied for `size_nodes_by`.
 }
   \item{outfile}{
-%%     ~~Describe \code{outfile} here~~
+%%     ~~Describe \code{outfile} here~
+    A character string containing a valid file name ending in `".pdf"`, or `NULL`. If a file name is supplied, the plot will be saved to the file.
 }
 }
 \details{
@@ -79,12 +85,17 @@ plotNetworkGraph(network,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
+  A `ggraph` object.
 }
 \references{
 %% ~put references to the literature/web site here ~
+    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+
+    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }
 \author{
 %%  ~~who you are~~
+    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \note{
 %%  ~~further notes~~
@@ -96,96 +107,62 @@ plotNetworkGraph(network,
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (network, edge_width = 0.3, title = NULL, subtitle = NULL,
-    color_nodes_by = NULL, size_nodes_by = NULL, color_legend_title = NULL,
-    size_legend_title = NULL, color_scheme = "default", node_size_limits = NULL,
-    outfile = NULL)
-{
-    set.seed(9999)
-    layout <- igraph::layout_components(network)
-    graph_plot <- ggraph::ggraph(network, layout = layout) +
-        ggraph::geom_edge_link0(width = edge_width, colour = "grey")
-    if (!is.null(color_nodes_by)) {
-        if (!is.null(size_nodes_by)) {
-            if (is.numeric(size_nodes_by) & length(size_nodes_by) ==
-                1) {
-                graph_plot <- graph_plot + ggraph::geom_node_point(ggplot2::aes(color = color_nodes_by),
-                  size = size_nodes_by)
-            }
-            else if (length(size_nodes_by) > 1) {
-                graph_plot <- graph_plot + ggraph::geom_node_point(ggplot2::aes(color = color_nodes_by,
-                  size = size_nodes_by))
-                if (!is.null(node_size_limits)) {
-                  graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits)
-                }
-            }
-        }
-        else {
-            graph_plot <- graph_plot + ggraph::geom_node_point(ggplot2::aes(color = color_nodes_by))
-        }
-    }
-    else {
-        if (!is.null(size_nodes_by)) {
-            if (is.numeric(size_nodes_by) & length(size_nodes_by) ==
-                1) {
-                graph_plot <- graph_plot + ggraph::geom_node_point(size = size_nodes_by)
-            }
-            else if (length(size_nodes_by) > 1) {
-                graph_plot <- graph_plot + ggraph::geom_node_point(ggplot2::aes(size = size_nodes_by))
-                if (!is.null(node_size_limits)) {
-                  graph_plot <- graph_plot + ggplot2::scale_size(range = node_size_limits)
-                }
-            }
-        }
-        else {
-            graph_plot <- graph_plot + ggraph::geom_node_point()
-        }
-    }
-    graph_plot <- graph_plot + ggraph::theme_graph(base_family = "sans") +
-        ggplot2::labs(title = title, subtitle = subtitle) + ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title),
-        size = ggplot2::guide_legend(title = size_legend_title))
-    color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
-    if (color_scheme != "default") {
-        if (color_type == "continuous") {
-            if (color_scheme \%in\% c("A", "B", "C", "D", "E",
-                "F", "G", "H", "magma", "inferno", "plasma",
-                "viridis", "cividis", "rocket", "mako", "turbo")) {
-                graph_plot <- graph_plot + ggraph::scale_color_viridis(option = color_scheme)
-            }
-            else {
-                warning("'color_nodes_by' is continuous; 'color_scheme' must be 'default' or a viridis color map option (see `?viridis`); using default color scheme instead")
-            }
-        }
-        else {
-            if (color_scheme \%in\% c("A", "B", "C", "D", "E",
-                "F", "G", "H", "magma", "inferno", "plasma",
-                "viridis", "cividis", "rocket", "mako", "turbo")) {
-                graph_plot <- graph_plot + ggraph::scale_color_viridis(option = color_scheme,
-                  discrete = TRUE)
-            }
-            else if (color_scheme \%in\% grDevices::hcl.pals()) {
-                graph_plot <- graph_plot + ggplot2::scale_color_manual(values = grDevices::hcl.colors(n = length(color_nodes_by),
-                  palette = color_scheme))
-            }
-            else {
-                warning("'color_scheme' must be 'default' or one of the values contained in `grDevices::hcl.pals()`; using default color scheme instead")
-            }
-        }
-    }
-    if (!is.null(outfile)) {
-        grDevices::pdf(file = outfile, width = 12, height = 8)
-        print(graph_plot)
-        grDevices::dev.off()
-        cat(paste0("Plot of network graph saved to file:\n  ",
-            outfile, "\n"))
-    }
-    return(graph_plot)
+# Generate some data
+set.seed(42)
+sample_size <- 200
+group_labels <- rep("Control", times = sample_size)
+assign_group <- sample(c(TRUE, FALSE), size = sample_size, replace = TRUE)
+base_seq_length <- 7
+characters <- c("G", "A", "T", "C")
+char_probs <- c(2/3, 2/9, 1/18, 1/18)
+characters_sample <- sample(characters,
+                            size = base_seq_length * sample_size,
+                            replace = TRUE, prob = char_probs)
+characters_sample <- matrix(characters_sample, ncol = sample_size)
+clone_seqs <- apply(characters_sample, MARGIN = 2,
+                    FUN = function(x) paste0(x, collapse = ""))
+clone_seqs_append <- rep("AATC", times = sample_size)
+append_latent_prob <- runif(sample_size, min = 0, max = 1)
+for (i in 1:sample_size) {
+  case_group <- assign_group[[i]]
+  if (case_group) group_labels[[i]] <- "Case"
+  if ((case_group & append_latent_prob[[i]] > 0.9) |
+      (!case_group & append_latent_prob[[i]] > 0.5)) {
+    clone_seqs_append[[i]] <- "AATCGGGG"
+  } else if ((case_group & append_latent_prob[[i]] > 0.8) |
+             (!case_group & append_latent_prob[[i]] > 0.3)) {
+    clone_seqs_append[[i]] <- "AATCGGT"
+  } else if ((case_group & append_latent_prob[[i]] > 0.7) |
+             (!case_group & append_latent_prob[[i]] > 0.2)) {
+    clone_seqs_append[[i]] <- "AATCGCT"
+  } else if ((case_group & append_latent_prob[[i]] > 0.5) |
+             (!case_group & append_latent_prob[[i]] > 0.1)) {
+    clone_seqs_append[[i]] <- "AATTGCT"
+  } else if ((case_group & append_latent_prob[[i]] > 0.25) |
+             (!case_group & append_latent_prob[[i]] > 0.05)) {
+    clone_seqs_append[[i]] <- "AATTG"
   }
+  clone_seqs[[i]] <- paste0(clone_seqs[[i]], clone_seqs_append[[i]],
+                            collapse = "")
+}
+counts <- rbinom(sample_size, size = 300, prob = 0.1)
+frequencies <- counts/sum(counts)
+data <- data.frame("clone_seq" = clone_seqs,
+                   "count" = counts,
+                   "frequency" = frequencies,
+                   "group" = group_labels)
+
+# Generate network for data
+net <- generateNetworkFromClones(data$clone_seq,
+                                 drop_isolated_nodes = FALSE)
+
+# Plot network graph
+net_plot <- plotNetworkGraph(
+  net,
+  color_nodes_by = data$group,
+  color_scheme = "viridis",
+  size_nodes_by = data$count,
+  node_size_limits = c(0.5, 5))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
