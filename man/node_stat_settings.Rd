@@ -81,9 +81,6 @@ node_stat_settings(degree = TRUE,
     Logical. If `TRUE`, then `addNodeNetworkStats()` will disregard the values for the other settings and instead treat all of them as `TRUE`.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -101,15 +98,6 @@ node_stat_settings(degree = TRUE,
 \author{
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 # Generate some data

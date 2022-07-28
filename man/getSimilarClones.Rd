@@ -13,7 +13,7 @@
 }
 \usage{
 getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
-                 dist_type = "hamming", max_dist = 2, drop_chars = "[*|_]")
+                 dist_type = "hamming", max_dist = 1, drop_chars = "[*|_]")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -56,9 +56,6 @@ getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
 %%     ~~Describe \code{drop_chars} here~~
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -80,15 +77,6 @@ getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
 \author{
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 # Create some data

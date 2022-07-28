@@ -23,10 +23,6 @@ generateNetworkFromAdjacencyMat(adjacency_matrix)
     Sparse matrices created using the `Matrix` package are supported.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-
-}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -44,15 +40,6 @@ generateNetworkFromAdjacencyMat(adjacency_matrix)
 \author{
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 # Generate some data

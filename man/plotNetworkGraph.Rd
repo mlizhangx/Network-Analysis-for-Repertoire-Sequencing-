@@ -76,9 +76,6 @@ plotNetworkGraph(network,
     A character string containing a valid file name ending in `".pdf"`, or `NULL`. If a file name is supplied, the plot will be saved to the file.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -97,16 +94,8 @@ plotNetworkGraph(network,
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
+\dontrun{
 # Generate some data
 set.seed(42)
 sample_size <- 200
@@ -163,6 +152,7 @@ net_plot <- plotNetworkGraph(
   color_scheme = "viridis",
   size_nodes_by = data$count,
   node_size_limits = c(0.5, 5))
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

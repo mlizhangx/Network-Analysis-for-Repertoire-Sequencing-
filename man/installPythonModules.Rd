@@ -31,9 +31,6 @@
   %%  ~~ If necessary, more details than the description above ~~
     The modules checked for and installed are `numpy`, `pandas`, `tensorflow` and `keras`. Calling this function is equivalent to making individual calls to `recitulate::py_install()` for each of these modules.
 }
-\references{
-  %% ~put references to the literature/web site here ~
-}
 \author{
   %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.

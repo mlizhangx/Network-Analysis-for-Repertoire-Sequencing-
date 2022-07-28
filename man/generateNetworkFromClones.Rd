@@ -14,7 +14,7 @@
 \usage{
 generateNetworkFromClones(
     clones,
-    dist_type = "levenshtein",
+    dist_type = "hamming",
     edge_dist = 1,
     drop_isolated_nodes = TRUE,
     contig_ids = seq_along(clones),
@@ -61,9 +61,6 @@ generateNetworkFromClones(
     Character string specifying the type of output. Valid options are `"network"` (the default), which returns an `igraph` network object, and `"adjacency_matrix"`, which returns the adjacency matrix.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -83,15 +80,6 @@ generateNetworkFromClones(
 \author{
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 # Generate some data

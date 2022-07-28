@@ -44,9 +44,6 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
       sequences, effectively aggregating only the identical clones within each group.
 }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -74,15 +71,6 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 \author{
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
 ##---- Should be DIRECTLY executable !! ----
