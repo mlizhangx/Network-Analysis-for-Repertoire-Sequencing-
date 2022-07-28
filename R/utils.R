@@ -453,7 +453,7 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
         graph_plot <- graph_plot +
           ggraph::geom_node_point(
             ggplot2::aes(color = color_nodes_by, size = size_nodes_by))
-        if (node_size_limits != "auto") {
+        if (length(node_size_limits) == 2) {
           # Rescale node sizes if specified
           graph_plot <-
             graph_plot + ggplot2::scale_size(range = node_size_limits)
