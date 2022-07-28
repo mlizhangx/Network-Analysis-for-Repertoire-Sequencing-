@@ -122,11 +122,13 @@ findPublicClusters <- function(
   if (is.numeric(sample_color_nodes_by)) { sample_color_nodes_by <- names(data)[sample_color_nodes_by] }
 
   # Default node colors by subject group in public cluster plot
-  if (color_nodes_by == "auto") {
-    if (!is.null(sample_groups)) {
-      color_nodes_by <- "subject_group"
-    } else {
-      color_nodes_by <- group_col
+  if (length(color_nodes_by) == 1) {
+    if (color_nodes_by == "auto") {
+      if (!is.null(sample_groups)) {
+        color_nodes_by <- "subject_group"
+      } else {
+        color_nodes_by <- group_col
+      }
     }
   }
 
