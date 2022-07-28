@@ -657,24 +657,50 @@ findPublicClusters <- function(
   names(pub_clusters$node_data)[names(pub_clusters$node_data) == "page_rank"] <-
     "PublicPageRank"
 
-  ## Save node & cluster data & plots ##
+  ## Save output for public cluster network ##
   cat(paste0("Saving output for full network of public clusters to directory:\n  ",
              output_dir, "\n"))
+
+  # Save node-level data
   utils::write.csv(
     pub_clusters$node_data,
     file = file.path(output_dir, "public_cluster_network_node_level_meta_data.csv"),
     row.names = FALSE)
   cat("Node-level meta data saved as 'public_cluster_network_node_level_meta_data.csv'\n")
+
+  # Save cluster-level data
   utils::write.csv(pub_clusters$cluster_stats,
                    file = file.path(output_dir, "public_cluster_network_cluster_info.csv"),
                    row.names = FALSE)
   cat("Cluster meta data saved as 'public_cluster_network_cluster_info.csv'\n")
+
+  # Save graph plot
   grDevices::pdf(
     file = file.path(output_dir, "public_cluster_network_graph_plot.pdf"),
     width = plot_width, height = plot_height)
   for (j in 1:length(pub_clusters$plots)) { print(pub_clusters$plots[[j]]) }
   grDevices::dev.off()
   cat("Network graph plot saved as 'public_cluster_network_graph_plot.pdf'\n")
+
+  # # Save igraph network
+  # igraph::write_graph(
+  #   pub_clusters$igraph,
+  #   file = file.path(output_dir, "public_cluster_network_edgelist.txt"),
+  #   format = "edgelist")
+  # cat("Network edge list saved as 'public_cluster_network_edgelist.txt'\n")
+
+  # Save adjacency matrix
+  if (dist_type != "euclidean_on_atchley") {
+    Matrix::writeMM(
+      pub_clusters$adjacency_matrix,
+      file.path(output_dir, "public_cluster_network_adjacency_matrix.mtx"))
+    cat("Network adjacency matrix saved as 'public_cluster_network_adjacency_matrix.mtx'\n")
+    # utils::write.csv(
+    #   pub_clusters$adjacency_matrix,
+    #   file.path(output_dir, "public_cluster_network_adjacency_matrix.csv"),
+    #   row.names = FALSE)
+    # cat("Network adjacency matrix saved as 'public_cluster_network_adjacency_matrix.csv'\n")
+  }
 
 
 
