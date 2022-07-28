@@ -209,15 +209,14 @@ buildRepSeqNetwork <- function(
     }
   }
 
-  if (color_nodes_by == "auto") {
-    if ("degree" %in% names(data)) { # use network degree if available
-      color_nodes_by <- "degree"
-    } else { # if degree unavailable, color the nodes by clone count
-      color_nodes_by <- count_col }
+  if (length(color_nodes_by) == 1) {
+    if (color_nodes_by == "auto") {
+      if ("degree" %in% names(data)) { # use network degree if available
+        color_nodes_by <- "degree"
+      } else { # if degree unavailable, color the nodes by clone count
+        color_nodes_by <- count_col }
+    }
   }
-
-  # Vector of legend titles as node variable names
-  color_legend_title <- color_nodes_by
 
   # If multiple coloring variables, extend color scheme to vector if needed
   if (length(color_nodes_by) > 1 & length(color_scheme) == 1) {
@@ -230,19 +229,30 @@ buildRepSeqNetwork <- function(
   } else {
     size_legend_title <- NULL # default for fixed node size
   }
+  # Use custom size legend title if supplied
+  if (size_title != "auto") { size_legend_title <- size_title }
 
-  # Override legend titles with custom values if provided
-  if (color_title != "auto") {
-    color_legend_title <- color_title
+  # Vector of legend titles as node variable names
+  color_legend_title <- rep("auto", length(color_nodes_by))
+
+  # Use any custom color legend titles supplied
+  if (length(color_title) == 1) {
+    if (color_title != "auto") { # implies length(color_nodes_by) = 1
+      color_legend_title <- color_title
+    }
+  } else { # implies length(color_nodes_by) = length(color_title)
+    for (i in 1:length(color_title)) {
+      if (color_title[[i]] != "auto") {
+        color_legend_title[[i]] <- color_title[[i]]
+      }
+    }
   }
-  if (size_title != "auto") {
-    size_legend_title <- size_title
-  }
+
 
   # Create one plot for each variable used to color the nodes
   temp_plotlist <- list()
   for (j in 1:length(color_nodes_by)) {
-    if (color_nodes_by == "auto") { cat("Generating graph plot...")
+    if (color_nodes_by[[j]] == "auto") { cat("Generating graph plot...")
     } else {
       cat(paste0("Generating graph plot with nodes colored by ",
                  color_nodes_by[[j]], "..."))
