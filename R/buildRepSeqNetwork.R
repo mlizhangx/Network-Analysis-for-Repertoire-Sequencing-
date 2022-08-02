@@ -43,7 +43,7 @@ buildRepSeqNetwork <- function(
   plot_title = "auto",
   plot_subtitle = "auto",
   color_nodes_by = "auto",
-  color_scheme = "auto",
+  color_scheme = "default",
   color_legend = TRUE,
   color_title = "auto", # custom title (length must match color_nodes_by)
   edge_width = 0.3,
