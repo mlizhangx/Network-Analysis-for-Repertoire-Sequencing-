@@ -222,16 +222,6 @@ buildRepSeqNetwork <- function(
   if (length(color_nodes_by) > 1 & length(color_scheme) == 1) {
     color_scheme <- rep(color_scheme, length(color_nodes_by)) }
 
-  # If using column to size nodes, get column vector from column name
-  if (is.character(size_nodes_by)) {
-    size_legend_title <- size_nodes_by
-    size_nodes_by <- data[ , size_nodes_by]
-  } else {
-    size_legend_title <- NULL # default for fixed node size
-  }
-  # Use custom size legend title if supplied
-  if (size_title != "auto") { size_legend_title <- size_title }
-
   # Vector of legend titles as node variable names
   color_legend_title <- rep("auto", length(color_nodes_by))
 
@@ -247,6 +237,16 @@ buildRepSeqNetwork <- function(
       }
     }
   }
+
+  # If using column to size nodes, get column vector from column name
+  if (is.character(size_nodes_by)) {
+    size_legend_title <- size_nodes_by
+    size_nodes_by <- data[ , size_nodes_by]
+  } else {
+    size_legend_title <- NULL # default for fixed node size
+  }
+  # Use custom size legend title if supplied
+  if (size_title != "auto") { size_legend_title <- size_title }
 
 
   # Create one plot for each variable used to color the nodes
