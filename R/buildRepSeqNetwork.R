@@ -198,7 +198,7 @@ buildRepSeqNetwork <- function(
   ### PLOT(S) OF NETWORK GRAPH ####
   # Determine plot title/subtitle
   if (plot_title == "auto") {
-    plot_title <- paste("Network on ", clone_seq_type, "sequence")
+    plot_title <- paste("Network on", clone_seq_type, "sequence")
   }
   if (plot_subtitle == "auto") {
     if (dist_type == "euclidean_on_atchley") {
