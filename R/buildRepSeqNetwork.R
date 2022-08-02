@@ -209,6 +209,7 @@ buildRepSeqNetwork <- function(
     }
   }
 
+  # Determine default variable for node colors if applicable
   if (length(color_nodes_by) == 1) {
     if (color_nodes_by == "auto") {
       if ("degree" %in% names(data)) { # use network degree if available
@@ -222,7 +223,7 @@ buildRepSeqNetwork <- function(
   if (length(color_nodes_by) > 1 & length(color_scheme) == 1) {
     color_scheme <- rep(color_scheme, length(color_nodes_by)) }
 
-  # Vector of legend titles as node variable names
+  # Vector containing node color legend title for each plot
   color_legend_title <- rep("auto", length(color_nodes_by))
 
   # Use any custom color legend titles supplied
@@ -230,7 +231,7 @@ buildRepSeqNetwork <- function(
     if (color_title != "auto") { # implies length(color_nodes_by) = 1
       color_legend_title <- color_title
     }
-  } else { # implies length(color_nodes_by) = length(color_title)
+  } else { # implies length(color_nodes_by) = length(color_title) > 1
     for (i in 1:length(color_title)) {
       if (color_title[[i]] != "auto") {
         color_legend_title[[i]] <- color_title[[i]]
