@@ -17,11 +17,12 @@ kmeansAtchley <- function(
   k = 100,
   plot_width = 15,
   plot_height = 15,
-  margin_size = 15,
+  margin_cluster_heatmap = 25,
+  margin_corr_heatmap = 15,
   use_viridis = FALSE, # use viridis color palettes for color-blindness robustness
   output_dir = getwd(),
-  outfile_heatmap = "atchley_kmeans_relative_clust_sizes.pdf",
-  outfile_corr_heatmap = "atchley_kmeans_corr_in_relative_clust_sizes.pdf",
+  file_cluster_heatmap = "atchley_kmeans_cluster_relative_size_profiles_by_sample.pdf",
+  file_corr_heatmap = "atchley_kmeans_corr_in_cluster_size_profile_between_samples.pdf",
   return_output = FALSE
 ) {
 
@@ -81,7 +82,7 @@ kmeansAtchley <- function(
   df <- dplyr::mutate_all(dplyr::select(df, -kmeanClusterID), ~ . / sum(.))
   cat(" Done.\n")
 
-  ## GENERATE CORRELATION HEATMAP ##
+  ## GENERATE HEATMAPS ##
   # Extract subject group of samples from column names of data
   sample_subject_group <-
     sapply(strsplit(colnames(df), "_"), function(x) x[[2]])
@@ -101,26 +102,14 @@ kmeansAtchley <- function(
     viridisLite::viridis(n = length(unique(sample_subject_group)))
   names(colors_subject_group) <- levels(as.factor(data[ , group_col]))
 
-
-  cat("Generating a heatmap of each cluster's share of the TCRs in each sample...")
-  gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
-                    margins = c(margin_size, margin_size), lhei = c(1, 3),
-                    cexRow = 2, cexCol = 2,
-                    key.title = NA, key.xlab = "cluster's share of TCRs in sample",
-                    key.par = list(cex = 1.2),
-                    ColSideColors = colors_subject_group[sample_subject_group])
-  graphics::legend(x = 0.75, y = 1.175,
-                   legend = names(colors_subject_group),
-                   col = colors_subject_group,
-                   lty = 1, lwd = 10, border = FALSE,
-                   bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
-  cat(" Done.\n")
-  if (!is.null(outfile_heatmap) & !is.null(output_dir)) { # write pdf to file
-    grDevices::pdf(file.path(output_dir, outfile_heatmap),
+  # Generate heatmap for cluster share of TCRs in each sample
+  if (!is.null(file_cluster_heatmap) & !is.null(output_dir)) { # write pdf to file
+    cat("Generating a heatmap of each cluster's share of the TCRs in each sample...")
+    grDevices::pdf(file.path(output_dir, file_cluster_heatmap),
                    width = plot_width, height = plot_height)
     gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
-                      margins = c(margin_size, margin_size), lhei = c(1, 3),
-                      cexRow = 2, cexCol = 2,
+                      margins = c(margin_cluster_heatmap, margin_cluster_heatmap),
+                      lhei = c(1, 3), cexRow = 2, cexCol = 2,
                       key.title = NA, key.xlab = "cluster's share of TCRs in sample",
                       key.par = list(cex = 1.2),
                       ColSideColors = colors_subject_group[sample_subject_group])
@@ -130,30 +119,19 @@ kmeansAtchley <- function(
                      lty = 1, lwd = 10, border = FALSE,
                      bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
     grDevices::dev.off()
+    cat(" Done.\n")
     cat(paste0("Plot saved to file:\n  ",
-               file.path(output_dir, outfile_heatmap), "\n"))
+               file.path(output_dir, file_cluster_heatmap), "\n"))
   }
 
-
-  cat("Generating a heatmap of correlation between samples (based on each sample's profile of TCR shares for all k clusters)...")
-  gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",
-                    margins = c(margin_size, margin_size), lhei = c(1, 3),
-                    cexRow = 2, cexCol = 2,
-                    key.title = NA, key.xlab = "correlation coefficient",
-                    key.par = list(cex = 1.2),
-                    ColSideColors = colors_subject_group[sample_subject_group])
-  graphics::legend(x = 0.75, y = 1.175,
-                   legend = names(colors_subject_group),
-                   col = colors_subject_group,
-                   lty = 1, lwd = 10, border = FALSE,
-                   bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
-  cat(" Done.\n")
-  if (!is.null(outfile_corr_heatmap) & !is.null(output_dir)) { # write pdf to file
-    grDevices::pdf(file.path(output_dir, outfile_corr_heatmap),
+  # Heatmap of correlation between sample profiles of TCR share per cluster
+  if (!is.null(file_corr_heatmap) & !is.null(output_dir)) { # write pdf to file
+    cat("Generating a heatmap of correlation between samples (based on each sample's profile of TCR shares for all k clusters)...")
+    grDevices::pdf(file.path(output_dir, file_corr_heatmap),
                    width = plot_width, height = plot_height)
     gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",
-                      margins = c(margin_size, margin_size), lhei = c(1, 3),
-                      cexRow = 2, cexCol = 2,
+                      margins = c(margin_corr_heatmap, margin_corr_heatmap),
+                      lhei = c(1, 3), cexRow = 2, cexCol = 2,
                       key.title = NA, key.xlab = "correlation coefficient",
                       key.par = list(cex = 1.2),
                       ColSideColors = colors_subject_group[sample_subject_group])
@@ -163,8 +141,9 @@ kmeansAtchley <- function(
                      lty = 1, lwd = 10, border = FALSE,
                      bty = "n", y.intersp = 1, cex = 1.75, xpd = TRUE)
     grDevices::dev.off()
+    cat(" Done.\n")
     cat(paste0("Plot saved to file:\n  ",
-               file.path(output_dir, outfile_corr_heatmap), "\n"))
+               file.path(output_dir, file_corr_heatmap), "\n"))
   }
 
   if (return_output) {

@@ -50,7 +50,8 @@ findPublicClusters <- function(
   k = 100, # number of clusters
   k_plot_width = 15,
   k_plot_height = 15,
-  k_plot_margin = 15,
+  k_plot_margin_cluster = 25,
+  k_plot_margin_corr = 15,
   k_plot_viridis = FALSE, # use viridis color palettes for color-blindness robustness
 
   # Plot Settings (public cluster network)
@@ -716,7 +717,8 @@ findPublicClusters <- function(
     k = 100,
     plot_width = k_plot_width,
     plot_height = k_plot_height,
-    margin_size = k_plot_margin,
+    margin_cluster_heatmap = k_plot_margin_cluster,
+    margin_corr_heatmap = k_plot_margin_corr,
     use_viridis = k_plot_viridis,
     output_dir = output_dir,
     outfile_heatmap =
