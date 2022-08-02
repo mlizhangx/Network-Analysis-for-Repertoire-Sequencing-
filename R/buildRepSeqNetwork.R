@@ -197,15 +197,19 @@ buildRepSeqNetwork <- function(
 
   ### PLOT(S) OF NETWORK GRAPH ####
   # Determine plot title/subtitle
-  if (plot_title == "auto") {
-    plot_title <- paste("Network on", clone_seq_type, "sequence")
+  if (!is.null(plot_title)) {
+    if (plot_title == "auto") {
+      plot_title <- paste("Network on", clone_seq_type, "sequence")
+    }
   }
-  if (plot_subtitle == "auto") {
-    if (dist_type == "euclidean_on_atchley") {
-      plot_subtitle <- paste(
-        "Clone sequences encoded as numeric vectors using deep learning based on Atchley factor representation\nEdges based on a maximum Euclidean distance of", edge_dist, "between encoded vectors\n")
-    } else {
-      plot_subtitle <- paste("Edges based on a maximum", dist_type, "distance of", edge_dist, "\n")
+  if (!is.null(plot_subtitle)) {
+    if (plot_subtitle == "auto") {
+      if (dist_type == "euclidean_on_atchley") {
+        plot_subtitle <- paste(
+          "Clone sequences encoded as numeric vectors using deep learning based on Atchley factor representation\nEdges based on a maximum Euclidean distance of", edge_dist, "between encoded vectors\n")
+      } else {
+        plot_subtitle <- paste("Edges based on a maximum", dist_type, "distance of", edge_dist, "\n")
+      }
     }
   }
 
