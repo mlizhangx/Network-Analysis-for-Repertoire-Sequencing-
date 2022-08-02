@@ -183,17 +183,32 @@ getAssociatedClusters <- function(
     if (length(sc_color_nodes_by) > 1 & length(sc_color_scheme) == 1) {
       sc_color_scheme <- rep(sc_color_scheme, length(sc_color_nodes_by)) }
 
-    # Legend titles for size and color (single-cluster plots)
-    sc_size_legend_title <- NULL # default for fixed node size
-    if (is.character(sc_size_nodes_by)) {
-      if (sc_size_title == "auto") {
-        sc_size_legend_title <- sc_size_title
-      } else { sc_size_legend_title <- sc_size_nodes_by }
-    }
-    if (sc_color_title == "auto") {
-      sc_color_legend_title <- sc_color_title
-    } else { sc_color_legend_title <- sc_color_nodes_by }
+    # Vector containing node color legend title for each plot
+    sc_color_legend_title <- rep("auto", length(sc_color_nodes_by))
 
+    # Use any custom color legend titles supplied
+    if (length(sc_color_title) == 1) {
+      if (sc_color_title != "auto") { # implies length(color_nodes_by) = 1
+        sc_color_legend_title <- sc_color_title
+      }
+    } else { # implies length(color_nodes_by) = length(color_title)
+      for (i in 1:length(sc_color_title)) {
+        if (sc_color_title[[i]] != "auto") {
+          sc_color_legend_title[[i]] <- sc_color_title[[i]]
+        }
+      }
+    }
+
+    # Default legend title for node size
+    if (is.character(sc_size_nodes_by)) {
+      sc_size_legend_title <- sc_size_nodes_by
+    } else {
+      sc_size_legend_title <- NULL # default for fixed node size
+    }
+    # Use custom size legend title if supplied
+    if (sc_size_title != "auto") { sc_size_legend_title <- sc_size_title }
+
+    # Initialize storage for plots if applicable
     if (single_cluster_plots &
         (return_all | (!is.null(output_dir) & !is.null(cluster_plots_outfile)))) {
       sc_plots <- list()
@@ -252,10 +267,12 @@ getAssociatedClusters <- function(
         sc_subtitle_prefix <- paste0(selected_clone_labels[[i]], "\n") }
       current_subtitle <- paste0(sc_subtitle_prefix, sc_subtitle)
 
-      # Ensure size_nodes_by is a vector or fixed value to use for node sizes
+      # If using column to size nodes, get column vector from column name
       if (is.character(sc_size_nodes_by)) {
         size_code <- data_current_cluster[ , sc_size_nodes_by]
-      } else { size_code <- sc_size_nodes_by }
+      } else {
+        size_code <- sc_size_nodes_by # numeric value = fixed node size
+      }
 
       # Create one plot for each variable in color_nodes_by
       temp_plotlist <- list()
@@ -426,48 +443,3 @@ getAssociatedClusters <- function(
 
 }
 
-
-# Helpers -----------------------------------------------------------------
-
-
-
-
-
-
-
-# .saveResultsForCandidateSeqNetwork <- function(
-#   network, data_current_cluster, adjacency_matrix, netplot_disease,
-#   netplot_sampleid, netplot_patid, netplot_deg, keep_adjacency_matrix,
-#   dist_type, output_dir, outfilestem) {
-#
-#   # pdf: network graphs
-#   plotfile <- paste0(outfilestem, "_network_plots.pdf")
-#   grDevices::pdf(file.path(output_dir, plotfile), width = 12, height = 8)
-#   if (!is.null(netplot_deg)) { print(netplot_deg) }
-#   if (!is.null(netplot_disease)) { print(netplot_disease) }
-#   if (!is.null(netplot_sampleid)) { print(netplot_sampleid) }
-#   if (!is.null(netplot_patid)) { print(netplot_patid) }
-#   grDevices::dev.off()
-#
-#   # Save metadata for candidiate sequence network
-#   utils::write.csv(
-#     data_current_cluster,
-#     file.path(output_dir, paste0(outfilestem, "_network_metadata.csv")))
-#
-#   # Save Network igraphs using edgelist format
-#   igraph::write_graph(
-#     network,
-#     file = file.path(
-#       output_dir, paste0(outfilestem, "_network_graph_edgelist.txt")),
-#     format = "edgelist")
-#
-#   # Save adjacency matrices
-#   if (keep_adjacency_matrix) {
-#     matfile <- file.path(output_dir, paste0(outfilestem, "_adjacency_matrix"))
-#     if (dist_type == "euclidean_on_atchley") {
-#       utils::write.csv(adjacency_matrix, paste0(matfile, ".csv"))
-#     } else { #hamming/levenshtein returns sparse matrix
-#       Matrix::writeMM(adjacency_matrix, paste0(matfile, ".mtx"))
-#     }
-#   }
-# }
