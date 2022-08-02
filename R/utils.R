@@ -488,7 +488,10 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
     ggplot2::labs(title = title, subtitle = subtitle)
 
   if (show_color_legend) {
-    if (color_legend_title != "auto") {
+    if (is.null(color_legend_title)) {
+      graph_plot <- graph_plot +
+        ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title))
+    } else if (color_legend_title != "auto") {
       graph_plot <- graph_plot +
         ggplot2::guides(color = ggplot2::guide_legend(title = color_legend_title))
     }
@@ -496,7 +499,10 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
     graph_plot <- graph_plot + ggplot2::guides(color = "none")
   }
 
-  if (size_legend_title != "auto") {
+  if (is.null(size_legend_title)) {
+    graph_plot <- graph_plot +
+      ggplot2::guides(size = ggplot2::guide_legend(title = size_legend_title))
+  } else if (size_legend_title != "auto") {
     graph_plot <- graph_plot +
       ggplot2::guides(size = ggplot2::guide_legend(title = size_legend_title))
   }
