@@ -42,10 +42,10 @@ buildRepSeqNetwork <- function(
   # Plot Settings
   plot_title = "auto",
   plot_subtitle = "auto",
-  color_nodes_by = "auto",
-  color_scheme = "default",
+  color_nodes_by = "auto", # uses degree if available, else clone count
+  color_scheme = "default", #  (accepts vector of same length as color_nodes_by)
   color_legend = TRUE,
-  color_title = "auto", # custom title (length must match color_nodes_by)
+  color_title = "auto", # custom title (accepts vector of same length as color_nodes_by)
   edge_width = 0.3,
   size_nodes_by = count_col, # can use a double, e.g., 1.0, for fixed size
   node_size_limits = "auto", # numeric, length 2
@@ -77,8 +77,7 @@ buildRepSeqNetwork <- function(
 
   # for each elem of other_cols not present in data, warn that not found
 
-  # if color_nodes_by is not a character vector of column names/numbers from data, force to "auto" with warning
-
+  # if color_nodes_by is not a scalar/vector of column names/numbers from data, force to "auto" with warning
 
   #### PREPARE WORKING ENVIRONMENT ####
   # Create output directory if applicable
@@ -89,10 +88,9 @@ buildRepSeqNetwork <- function(
   if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
   if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
   if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
-  if (!is.null(color_nodes_by)) {
-    if (is.numeric(color_nodes_by)) {
-      color_nodes_by <- names(data)[color_nodes_by] } }
-  # if (is.integer(size_nodes_by)) { size_nodes_by <- names(data)[size_nodes_by] }
+  if (is.numeric(color_nodes_by)) {
+    color_nodes_by <- names(data)[color_nodes_by]
+  }
   if (!aggregate_identical_clones) {
     if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
     if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
@@ -213,7 +211,7 @@ buildRepSeqNetwork <- function(
     }
   }
 
-  # Determine default variable for node colors if applicable
+  # Assign default variable for node colors if applicable
   if (length(color_nodes_by) == 1) {
     if (color_nodes_by == "auto") {
       if ("degree" %in% names(data)) { # use network degree if available
@@ -223,36 +221,43 @@ buildRepSeqNetwork <- function(
     }
   }
 
-  # If multiple coloring variables, extend color scheme to vector if needed
-  if (length(color_nodes_by) > 1 & length(color_scheme) == 1) {
-    color_scheme <- rep(color_scheme, length(color_nodes_by)) }
-
-  # Vector containing node color legend title for each plot
-  color_legend_title <- rep("auto", length(color_nodes_by))
-
-  # Use any custom color legend titles supplied
-  if (length(color_title) == 1) {
-    if (color_title != "auto") { # implies length(color_nodes_by) = 1
-      color_legend_title <- color_title
+  # If multiple coloring variables, extend color scheme and legend title to vectors if needed
+  if (length(color_nodes_by) > 1) {
+    if (length(color_scheme) == 1) { # extend to vector
+      color_scheme <- rep(color_scheme, length(color_nodes_by)) }
+    if (!is.null(color_title)) {
+      if (length(color_title) == 1) { # extend to vector
+        color_title <- rep(color_title, length(color_nodes_by)) }
+    } else { # color_title is NULL
+      # vector of empty titles (hack, since can't have NULL vector entries)
+      color_title <- rep("", length(color_nodes_by))
     }
-  } else { # implies length(color_nodes_by) = length(color_title) > 1
+  }
+
+  # Set default color legend title if applicable
+  if (!is.null(color_title)) {
     for (i in 1:length(color_title)) {
-      if (color_title[[i]] != "auto") {
-        color_legend_title[[i]] <- color_title[[i]]
+      if (color_title[[i]] == "auto") {
+        color_title[[i]] <- color_nodes_by[[i]]
+      }
+    }
+  }
+  # Set default size legend title if applicable
+  if (!is.null(size_title)) {
+    if (size_title == "auto") {
+      if (is.numeric(size_nodes_by)) {
+        size_title <- NULL
+      }
+      if (is.character(size_nodes_by)) {
+        size_title <- size_nodes_by
       }
     }
   }
 
-  # If using column to size nodes, get column vector from column name
+  # If using a variable to size nodes, get the vector by column name
   if (is.character(size_nodes_by)) {
-    size_legend_title <- size_nodes_by
     size_nodes_by <- data[ , size_nodes_by]
-  } else {
-    size_legend_title <- NULL # default for fixed node size
   }
-  # Use custom size legend title if supplied
-  if (size_title != "auto") { size_legend_title <- size_title }
-
 
   # Create one plot for each variable used to color the nodes
   temp_plotlist <- list()
@@ -266,11 +271,11 @@ buildRepSeqNetwork <- function(
       plotNetworkGraph(
         net, edge_width, title = plot_title, subtitle = plot_subtitle,
         color_nodes_by = data[ , color_nodes_by[[j]]],
-        size_nodes_by = size_nodes_by,
-        show_color_legend = color_legend,
-        color_legend_title = color_legend_title[[j]],
-        size_legend_title = size_legend_title,
+        color_legend_title = color_title[[j]],
         color_scheme = color_scheme[[j]],
+        show_color_legend = color_legend,
+        size_nodes_by = size_nodes_by,
+        size_legend_title = size_title,
         node_size_limits = node_size_limits)
     print(temp_plotlist$newplot)
     names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
