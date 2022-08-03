@@ -179,34 +179,38 @@ getAssociatedClusters <- function(
       "from the central sequence",
       subtitle_part)
 
-    # If multiple coloring variables, extend color scheme to vector if needed
-    if (length(sc_color_nodes_by) > 1 & length(sc_color_scheme) == 1) {
-      sc_color_scheme <- rep(sc_color_scheme, length(sc_color_nodes_by)) }
-
-    # Vector containing node color legend title for each plot
-    sc_color_legend_title <- rep("auto", length(sc_color_nodes_by))
-
-    # Use any custom color legend titles supplied
-    if (length(sc_color_title) == 1) {
-      if (sc_color_title != "auto") { # implies length(color_nodes_by) = 1
-        sc_color_legend_title <- sc_color_title
+    # If multiple coloring variables, extend color scheme and legend title to vectors if needed
+    if (length(sc_color_nodes_by) > 1) {
+      if (length(sc_color_scheme) == 1) { # extend to vector
+        sc_color_scheme <- rep(sc_color_scheme, length(sc_color_nodes_by)) }
+      if (!is.null(sc_color_title)) {
+        if (length(sc_color_title) == 1) { # extend to vector
+          sc_color_title <- rep(sc_color_title, length(sc_color_nodes_by)) }
+      } else { # sc_color_title is NULL
+        # vector of empty titles (hack, since can't have NULL vector entries)
+        sc_color_title <- rep("", length(sc_color_nodes_by))
       }
-    } else { # implies length(color_nodes_by) = length(color_title)
+    }
+
+    # Set default color legend title if applicable
+    if (!is.null(sc_color_title)) {
       for (i in 1:length(sc_color_title)) {
-        if (sc_color_title[[i]] != "auto") {
-          sc_color_legend_title[[i]] <- sc_color_title[[i]]
+        if (sc_color_title[[i]] == "auto") {
+          sc_color_title[[i]] <- sc_color_nodes_by[[i]]
         }
       }
     }
-
-    # Default legend title for node size
-    if (is.character(sc_size_nodes_by)) {
-      sc_size_legend_title <- sc_size_nodes_by
-    } else {
-      sc_size_legend_title <- NULL # default for fixed node size
+    # Set default size legend title if applicable
+    if (!is.null(sc_size_title)) {
+      if (sc_size_title == "auto") {
+        if (is.numeric(sc_size_nodes_by)) {
+          sc_size_title <- NULL
+        }
+        if (is.character(sc_size_nodes_by)) {
+          sc_size_title <- sc_size_nodes_by
+        }
+      }
     }
-    # Use custom size legend title if supplied
-    if (sc_size_title != "auto") { sc_size_legend_title <- sc_size_title }
 
     # Initialize storage for plots if applicable
     if (single_cluster_plots &
@@ -285,11 +289,11 @@ getAssociatedClusters <- function(
             title = current_title,
             subtitle = current_subtitle,
             color_nodes_by = data_current_cluster[ , sc_color_nodes_by[[j]]],
-            size_nodes_by = size_code,
-            show_color_legend = sc_color_legend,
-            color_legend_title = sc_color_legend_title[[j]],
-            size_legend_title = sc_size_legend_title,
             color_scheme = sc_color_scheme[[j]],
+            color_legend_title = sc_color_title[[j]],
+            show_color_legend = sc_color_legend,
+            size_nodes_by = size_code,
+            size_legend_title = sc_size_title,
             node_size_limits = sc_node_size_limits)
         print(temp_plotlist$newplot)
         names(temp_plotlist)[[length(names(temp_plotlist))]] <-
