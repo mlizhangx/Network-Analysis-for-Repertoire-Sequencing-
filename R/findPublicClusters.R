@@ -55,7 +55,7 @@ findPublicClusters <- function(
   k_plot_viridis = FALSE, # use viridis color palettes for color-blindness robustness
 
   # Plot Settings (public cluster network)
-  color_nodes_by = "auto", # accepts multiple values (one plot per value), default is subject group
+  color_nodes_by = "auto", # accepts multiple values (one plot per value), default is sample group
   color_scheme = "viridis", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   color_legend = TRUE,
   color_title = "auto", # custom title (length must match color_nodes_by)
@@ -65,12 +65,12 @@ findPublicClusters <- function(
   size_title = "auto", # custom legend title
 
   # Plot Settings (public cluster-core network)
-  cores_color_nodes_by = "mean_degree", # accepts multiple values (one plot per value)
+  cores_color_nodes_by = "mean_degree", # accepts multiple values (one plot per value) NOTE: this does not accept numeric values; must be name of a cluster-level stat
   cores_color_scheme = "inferno", # passed to plotNetworkGraph(); accepts multiple values (one per value of color_nodes_by)
   cores_color_legend = TRUE,
   cores_color_title = "auto", # custom title (length must match color_nodes_by)
   cores_edge_width = 0.3,
-  cores_size_nodes_by = "node_count",
+  cores_size_nodes_by = "node_count", # must be the name of a cluster level stat (or numeric scalar for fixed size)
   cores_node_size_limits = c(0.1, 3),
   cores_size_title = "auto", # custom legend title
 
@@ -107,26 +107,11 @@ findPublicClusters <- function(
   # Create output directory if applicable
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
-  # Convert input columns to character if not already
-  if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
-  if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
-  if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
-  if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
-  if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
-  if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
-  if (is.numeric(jgene_col)) { jgene_col <- names(data)[jgene_col] }
-  if (is.numeric(cdr3length_col)) { cdr3length_col <- names(data)[cdr3length_col] }
-  if (is.numeric(group_col)) { group_col <- names(data)[group_col] }
-  if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
-  if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
-  if (is.numeric(cores_color_nodes_by)) { cores_color_nodes_by <- names(data)[cores_color_nodes_by] }
-  if (is.numeric(sample_color_nodes_by)) { sample_color_nodes_by <- names(data)[sample_color_nodes_by] }
-
-  # Default node colors by subject group in public cluster plot
+  # Default node colors by sample group in public cluster plot
   if (length(color_nodes_by) == 1) {
     if (color_nodes_by == "auto") {
       if (!is.null(sample_groups)) {
-        color_nodes_by <- "subject_group"
+        color_nodes_by <- "sample_group"
       } else {
         color_nodes_by <- group_col
       }
@@ -161,57 +146,77 @@ findPublicClusters <- function(
 
 
   #### BUILD SAMPLE-LEVEL NETWORKS ####
-  cat("Building individual networks for each sample and searching for public clusters...\n")
+  cat(">>>>> COMMENCING STEP 1: Build sample-level networks and search for public clusters\n")
+
   for (i in 1:length(file_list)) {
-    cat(paste0("Processing data for sample ", i, ": ", sample_ids[[i]], "\n"))
+
+    cat(paste0("Processing data for sample ", i, " of ", length(file_list), ": ", sample_ids[[i]], "\n"))
 
     # Load data
-    cat("Loading and formatting data...")
     if (csv_files) {
       data <- utils::read.csv(file.path(input_dir, file_list[[i]]), header, sep)
     } else {
       data <- utils::read.table(file.path(input_dir, file_list[[i]]), header, sep)
     }
-    # Check that each input column is a distinct col of data and meets specs
-    # (do this check for whichever of sample_groups or group_col is non-NULL)
-    #
 
-    # If subject group supplied as list, add variable to data
-    if (!is.null(sample_groups)) {
-      data$subject_group <- sample_groups[[i]]
-      group_col <- "subject_group"
-    }
+    if (i == 1) {
+      # Check that each input column is a distinct col of data and meets specs
+      # (do this check for whichever of sample_groups or group_col is non-NULL)
+      #
 
-    if (i == 1) { # Establish the columns to keep from each sample
+      # Convert input columns to character if not already
+      if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
+      if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
+      if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
+      if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
+      if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
+      if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
+      if (is.numeric(jgene_col)) { jgene_col <- names(data)[jgene_col] }
+      if (is.numeric(cdr3length_col)) { cdr3length_col <- names(data)[cdr3length_col] }
+      if (is.numeric(group_col)) { group_col <- names(data)[group_col] }
+      if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
+      if (is.numeric(bayes_factor_col)) { bayes_factor_col <- names(data)[bayes_factor_col] }
+      if (is.numeric(diff_test_col)) { diff_test_col <- names(data)[diff_test_col] }
+      if (is.numeric(color_nodes_by)) { color_nodes_by <- names(data)[color_nodes_by] }
+      if (is.numeric(sample_color_nodes_by)) { sample_color_nodes_by <- names(data)[sample_color_nodes_by] }
+
+      # Establish the columns to keep from each sample
       extra_cols <- # to pass to buildRepSeqNetwork as 'other_cols'
         intersect(
-          unique(c(other_cols, bayes_factor_col, diff_test_col,
+          unique(c(group_col, other_cols, bayes_factor_col, diff_test_col,
                    color_nodes_by, size_nodes_by,
                    sample_color_nodes_by, sample_size_nodes_by)),
           names(data) # need to intersect since some cols might not yet exist
         )
-      keep_cols <-
+      keep_cols <- # varaibles to keep from initial input data
         unique(c(nucleo_col, amino_col, count_col, freq_col,
-                 vgene_col, dgene_col, jgene_col, cdr3length_col, group_col,
+                 vgene_col, dgene_col, jgene_col, cdr3length_col,
                  extra_cols))
+    } # end if (i == 1)
+
+
+    # Drop extraneous columns
+    data <- data[ , keep_cols]
+
+    # If sample group supplied as list, add variable to data
+    if (!is.null(sample_groups)) {
+      data$sample_group <- sample_groups[[i]]
+      if (i == 1) {
+        group_col <- "sample_group"
+        extra_cols <- unique(c(group_col, extra_cols))
+      }
     }
 
-    # Finish formating data
-    data <- data[ , keep_cols] # drop extraneous columns
-    data$SampleID <- sample_ids[[i]] # add sample ID variable
-    cat(" Done.\n")
-
     ## BUILD SAMPLE NETWORK ##
-    cat("Building network for current sample...\n")
     sample_net <- buildRepSeqNetwork(
       data, nucleo_col, amino_col, count_col, freq_col, vgene_col,
-      dgene_col, jgene_col, cdr3length_col, c(extra_cols, "SampleID"),
+      dgene_col, jgene_col, cdr3length_col, extra_cols,
       clone_seq_type, min_seq_length, drop_chars, aggregate_identical_clones,
       grouping_cols = group_col, #only used if aggregate_identical_clones = TRUE
       dist_type = dist_type, edge_dist = edge_dist,
       node_stats = TRUE, stats_to_include = "all",
       cluster_stats = TRUE,
-      plot_title = paste("Network for Sample:", sample_ids[[i]]),
+      plot_title = paste0("Network for Sample ", sample_ids[[i]], " (", data[1, group_col], ")"),
       plot_subtitle = NULL,
       edge_width = sample_edge_width, size_nodes_by = sample_size_nodes_by,
       node_size_limits = sample_node_size_limits,
@@ -222,6 +227,7 @@ findPublicClusters <- function(
       color_title = sample_color_title,
       return_all = TRUE)
 
+    # Rename variables
     names(sample_net$node_data)[names(sample_net$node_data) == "degree"] <-
       "SampleLevelNetworkDegree"
     names(sample_net$node_data)[names(sample_net$node_data) == "cluster_id"] <-
@@ -252,9 +258,6 @@ findPublicClusters <- function(
       "SampleLevelClusterID"
     names(sample_net$cluster_stats)[names(sample_net$cluster_stats) == "transitivity"] <-
       "cluster_transitivity"
-
-    # Add sample ID to cluster stats
-    sample_net$cluster_stats$SampleID <- sample_ids[[i]]
 
     ## Save node & cluster data & plots ##
     sample_output_dir <- file.path(output_dir, "sample-level networks",
@@ -329,6 +332,13 @@ findPublicClusters <- function(
           , ]
       cat(" Done.\n")
     }
+
+    # Add sample ID to node-level data
+    sample_net$node_data$SampleID <- sample_ids[[i]]
+
+    # Add sample ID to cluster stats
+    sample_net$cluster_stats$SampleID <- sample_ids[[i]]
+
     cat("Adding public clusters for current sample to existing public cluster data...")
     if (i == 1) {
       data_cores_network <- sample_net$cluster_stats
@@ -338,15 +348,16 @@ findPublicClusters <- function(
       data_public_clusters <- rbind(data_public_clusters, sample_net$node_data)
     }
     cat(" Done.\n")
+    cat("**** Done processing current sample. ****\n")
 
 
   } # done looping over selected clones
-  cat("All samples have been processed.\n")
+  cat("****** All samples have now been processed. ******\n")
 
 
 
   #### BUILD NETWORK OF PUBLIC CLUSTERS BY REPRESENTATIVE SEQUENCE ####
-  cat("Building public network using a single representative (core) clone from each cluster...\n")
+  cat(">>>>> COMMENCING STEP 2: Public network using a single representative (core) clone from each cluster\n")
 
   if (freq_col %in% cores_color_nodes_by) {
     warning("can't color nodes for cluster-level network by clone frequency since this variable isn't present at the cluster level. Defaulting to coloring nodes by the total clone count in the cluster.")
@@ -557,7 +568,7 @@ findPublicClusters <- function(
 
 
   #### BUILD FULL PUBLIC CLUSTER NETWORK ####
-  cat("Building network using all clones in the public clusters...\n")
+  cat(">>>>> COMMENCING STEP 3: Network for all clones in the public clusters\n")
 
   # if clone count or frequency used for node size/colors, update variable name
   if (aggregate_identical_clones) { new_count_colname <- "AggregatedCloneCount"
@@ -578,9 +589,7 @@ findPublicClusters <- function(
     names(data_public_clusters)[
       names(data_public_clusters) == "CloneFrequency"] <- new_freq_colname
   }
-  pub_cols <- c("SampleID", other_cols,
-                bayes_factor_col, diff_test_col,
-                color_nodes_by, size_nodes_by,
+  pub_cols <- c("SampleID", extra_cols,
                 "SampleLevelClusterID", "SampleLevelTransitivity",
                 "SampleLevelCloseness", "SampleLevelCentralityByCloseness",
                 "SampleLevelEigenCentrality", "SampleLevelCentralityByEigen",
@@ -708,24 +717,26 @@ findPublicClusters <- function(
 
 
   #### ENCODE CLONES BY ATCHLEY FACTOR AND PERFORM K-MEANS CLUSTERING ####
-  cat("Embedding the TCR sequences from the public clusters in Euclidean space to perform K-means clustering...\n")
-  kmeansAtchley(
-    pub_clusters$node_data,
-    amino_col = "AminoAcidSeq",
-    sample_col = "SampleID",
-    group_col = group_col,
-    k = 100,
-    plot_width = k_plot_width,
-    plot_height = k_plot_height,
-    margin_cluster_heatmap = k_plot_margin_cluster,
-    margin_corr_heatmap = k_plot_margin_corr,
-    use_viridis = k_plot_viridis,
-    output_dir = output_dir,
-    outfile_heatmap =
-      "public_cluster_network_atchley_kmeans_relative_clust_sizes.pdf",
-    outfile_corr_heatmap =
-      "public_cluster_network_atchley_kmeans_corr_in_relative_clust_sizes.pdf",
-    return_output = FALSE)
+  if (clone_seq_type == "amino_acid") {
+    cat(">>>>> COMMENCING STEP 4: Embed public TCR sequences in Euclidean space and perform K-means clustering\n")
+    kmeansAtchley(
+      pub_clusters$node_data,
+      amino_col = "AminoAcidSeq",
+      sample_col = "SampleID",
+      group_col = group_col,
+      k = 100,
+      plot_width = k_plot_width,
+      plot_height = k_plot_height,
+      margin_cluster_heatmap = k_plot_margin_cluster,
+      margin_corr_heatmap = k_plot_margin_corr,
+      use_viridis = k_plot_viridis,
+      output_dir = output_dir,
+      file_cluster_heatmap =
+        "public_cluster_network_atchley_kmeans_relative_clust_sizes.pdf",
+      file_corr_heatmap =
+        "public_cluster_network_atchley_kmeans_corr_in_relative_clust_sizes.pdf",
+      return_output = FALSE)
+  }
 
   cat("All tasks complete.\n")
 
