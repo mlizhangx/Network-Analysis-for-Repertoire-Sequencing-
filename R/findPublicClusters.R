@@ -348,11 +348,11 @@ findPublicClusters <- function(
       data_public_clusters <- rbind(data_public_clusters, sample_net$node_data)
     }
     cat(" Done.\n")
-    cat("**** Done processing current sample. ****\n")
+    cat(" ****** Done processing current sample. ******\n")
 
 
   } # done looping over selected clones
-  cat("****** All samples have now been processed. ******\n")
+  cat(" ************ All samples have now been processed. ************\n")
 
 
 
