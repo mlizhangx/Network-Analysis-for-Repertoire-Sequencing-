@@ -315,7 +315,13 @@ net <- generateNetworkFromClones(data$clone_seq,
 #                   clone_col = "clone_seq",
 #                   count_col = "count")
 
-
+# Plot network graph
+net_plot <- plotNetworkGraph(
+  net,
+  color_nodes_by = data$group,
+  color_scheme = "viridis",
+  size_nodes_by = data$count,
+  node_size_limits = c(0.5, 5))
 
 # library(AMKAT)
 #
