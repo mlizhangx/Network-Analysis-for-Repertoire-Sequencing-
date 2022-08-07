@@ -42,7 +42,9 @@ findAssociatedClones <- function(
 
   # Drop sequences with specified chars
   if (!is.null(drop_chars)) {
-    data <- data[-grep(drop_chars, data[ , clone_seq_col]), ] }
+    drop_matches <- grep(drop_chars, data[ , clone_seq_col])
+    if (length(drop_matches) > 0) { data <- data[-drop_matches, ] }
+  }
 
   # Drop sequences below specified length
   data <- data[nchar(data[ , clone_seq_col]) >= min_seq_length, ]
