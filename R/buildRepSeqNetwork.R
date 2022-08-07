@@ -121,7 +121,8 @@ buildRepSeqNetwork <- function(
   # Filter seqs with special chars
   if (!is.null(drop_chars)) {
     cat(paste0("Filtering out sequences with special characters (", drop_chars, ")..."))
-    data <- data[-grep(drop_chars, data[ , clone_seq_col]), ]
+    drop_matches <- grep(drop_chars, data[ , clone_seq_col])
+    if (length(drop_matches) > 0) { data <- data[-drop_matches, ] }
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n")) }
 
   # Format input data
