@@ -1,21 +1,18 @@
-\name{adjacencyMatAtchleyFromClones}
-\alias{adjacencyMatAtchleyFromClones}
+\name{embedClonesByAtchleyFactor}
+\alias{embedClonesByAtchleyFactor}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-Network Adjacency Matrix Based on Clone Sequence Atchley Factor Representations
+Numerically Encode TCR CDR3 Amino Acid Sequences By Atchley Factor Representation
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-Given a list of T-cell receptor CDR3 amino acid sequences, encodes each sequence as a 30-dimensional numeric vector based on the Atchley factor representation of its terms using a trained encoder, then computes the corresponding network adjacency matrix based on the Euclidean distance between encoded vectors using a specified cutoff.
+Given a list of T-cell receptor CDR3 amino acid sequences, encodes each sequence as a 30-dimensional numeric vector based on the Atchley factor representation of its terms using a trained encoder.
 }
 \usage{
-adjacencyMatAtchleyFromClones(
+embedClonesByAtchleyFactor(
     clones,
-    contig_ids = seq_along(clones),
-    max_dist,
-    return_type = "adjacency_matrix",
-    outfile_distance_matrix = NULL)
+    contig_ids = seq_along(clones))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,32 +24,18 @@ A character vector containing the TCR CDR3 amino acid sequences.
 %%     ~~Describe \code{contig_ids} here~~
 A numeric vector of the same length as \code{clones}, used to uniquely identify its elements. By default, this is simply the sequence of integers from 1 to \code{length(clones)}.
 }
-  \item{max_dist}{
-%%     ~~Describe \code{max_dist} here~~
-A positive integer specifying the maximum Euclidean distance at which the numeric vectors corresponding to two TCR sequences are concidered adjacent (joined by an edge) in the network graph.
-}
-  \item{return_type}{
-%%     ~~Describe \code{return_type} here~~
-A character string specifying the type of matrix to be returned. Valid options are \code{"adjacency_matrix"} and \code{"distance_matrix"}, the latter of which returns the matrix containing the pairwise Euclidean distances rather than the pairwise adjacencies.
-}
-  \item{outfile_distance_matrix}{
-%%     ~~Describe \code{outfile_distance_matrix} here~~
-An optional argument specifying a \code{csv} file to which the matrix will be written.
-}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-The adjacency matrix of a graph with \eqn{n} nodes/vertices is the symmetric \eqn{n \times n} matrix for which the \eqn{(i,j)}th entry is equal to 1 if nodes \eqn{i} and \eqn{j} are adjacent (joined by an edge in the graph) and 0 otherwise.
-
-Each element of \code{clones} represents a node in the corresponding network graph; two nodes are adjacent if the Euclidean distance between their numerically encoded values is at most \code{max_dist}.
+Encoding is performed using the BriseisEncoder python script. Each amino acid is represented by its five-dimensional vector of Atchley factors, which numerically encode its biological characteristics. Each TCR CDR3 amino acid sequence is embedded in Euclidean 30-space based on the Atchley factor representations of its constitutent terms, using a deep learning encoder and a pretrained model.
 }
 \value{
-A matrix.
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
+A matrix with \code{length(clones)} rows and 31 columns. Each row corresponds to a TCR sequence; the first column is \code{contig_ids}, while the remaining columns contain the 30-dimensional numerical encoding for each TCR sequence.
 }
 \warning{
 The encoder was trained specifically on TCR CDR3 amino acid sequences and is not appropriate for use with other amino acid sequences.
@@ -79,12 +62,7 @@ clones <- c("CASSEAQGSGSTDTQYF",
             "CASSLGLATDTQYF",
             "CASSEKEEVGELFF",
             "CASSSRTSGGAGELFF")
-adjacencyMatAtchleyFromClones(
-    clones, max_dist = 3)
-
-adjacencyMatAtchleyFromClones(
-    clones,
-    return_type = "distance_matrix")
+embedClonesByAtchleyFactor(clones)
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
