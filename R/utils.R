@@ -608,7 +608,7 @@ sparseAdjacencyMatFromClones <- function(
 adjacencyMatAtchleyFromClones <- function(
   clones, # List of TCR CDR3 amino acid sequences corresponding to the clones
   contig_ids = seq_along(clones), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
-  max_dist = 1.5, # Maximum Euclidean distance threshold for edge/adjacency between two sequences
+  max_dist, # Maximum Euclidean distance threshold for edge/adjacency between two sequences
   return_type = "adjacency_matrix", # can be set to "distance_matrix" to return the distance matrix instead
   outfile_distance_matrix = NULL # savefile for Euclidean distance matrix
 ) {
