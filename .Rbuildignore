@@ -3,3 +3,4 @@
 ^non-package files$
 ^README\.Rmd$
 ^LICENSE\.md$
+^LICENSE$
