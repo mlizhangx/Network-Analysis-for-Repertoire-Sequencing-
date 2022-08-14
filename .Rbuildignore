@@ -1,4 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^non-package files$
-^README\\.Rmd$
+^README\.Rmd$
+^LICENSE\.md$
