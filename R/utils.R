@@ -570,7 +570,7 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
       } else if (color_scheme %in% grDevices::hcl.pals()) {
         graph_plot <- graph_plot +
           ggplot2::scale_color_manual(
-            values = grDevices::hcl.colors(n = length(color_nodes_by),
+            values = grDevices::hcl.colors(n = length(unique(color_nodes_by)),
                                            palette = color_scheme))
       } else { warning("value for 'color_scheme' is not a valid option for discrete variables; using default color scheme instead") } }
   }
