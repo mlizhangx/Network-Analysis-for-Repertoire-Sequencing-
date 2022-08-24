@@ -42,7 +42,7 @@ getAssociatedClusters <- function(
   color_legend = TRUE,
   color_title = "auto", # custom title (length must match color_nodes_by)
   edge_width = 0.1,
-  size_nodes_by = count_col, # can use a column name of data (a numeric value yields fixed node sizes)
+  size_nodes_by = 0.5, # can use a column name of data (a numeric value yields fixed node sizes)
   node_size_limits = "auto", # numeric length 2
   size_title = "auto", # custom legend title
 
