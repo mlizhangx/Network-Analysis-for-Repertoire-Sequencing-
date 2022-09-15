@@ -37,7 +37,7 @@ Encoding is performed using the BriseisEncoder python script. Each amino acid is
 %% ...
 A matrix with \code{length(clones)} rows and 31 columns. Each row corresponds to a TCR sequence; the first column is \code{contig_ids}, while the remaining columns contain the 30-dimensional numerical encoding for each TCR sequence.
 }
-\warning{
+\note{
 The encoder was trained specifically on TCR CDR3 amino acid sequences and is not appropriate for use with other amino acid sequences.
 }
 \references{

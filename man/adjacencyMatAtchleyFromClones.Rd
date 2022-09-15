@@ -54,7 +54,7 @@ A matrix.
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
 }
-\warning{
+\note{
 The encoder was trained specifically on TCR CDR3 amino acid sequences and is not appropriate for use with other amino acid sequences.
 }
 \references{

@@ -515,25 +515,64 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
   if (color_scheme != "default") {
 
     if (color_type == "continuous") {
-      if (color_scheme %in% c("A", "B", "C", "D", "E", "F", "G", "H",
-                              "magma", "inferno", "plasma", "viridis",
-                              "cividis", "rocket", "mako", "turbo")) {
+      if (color_scheme %in% c("A", "B", "C", "F", "G",
+                              "magma", "inferno", "plasma", "rocket", "mako")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = color_scheme,
+                                      begin = 0.2, end = 0.8)
+      } else if (color_scheme %in% c("D", "viridis")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = color_scheme,
+                                      begin = 0, end = 0.9)
+      } else if (color_scheme %in% c("E", "H", "cividis",  "turbo")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme)
-      } else { warning("'color_nodes_by' is continuous; 'color_scheme' must be 'default' or a viridis color map option (see `?viridis`); using default color scheme instead") }
+      } else if (color_scheme %in% c("A-1", "B-1", "C-1", "F-1", "G-1",
+                                     "magma-1", "inferno-1", "plasma-1", "rocket-1", "mako-1")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]],
+                                      begin = 0.2, end = 0.8, direction = -1)
+      } else if (color_scheme %in% c("D-1", "viridis-1")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]],
+                                      begin = 0, end = 0.9, direction = -1)
+      } else if (color_scheme %in% c("E-1", "H-1", "cividis-1",  "turbo-1")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], direction = -1)
+      } else { warning("value for 'color_scheme' is not a valid option for continuous variables; using default color scheme instead") }
 
     } else { # discrete color scheme
-      if (color_scheme %in% c("A", "B", "C", "D", "E", "F", "G", "H",
-                              "magma", "inferno", "plasma", "viridis",
-                              "cividis", "rocket", "mako", "turbo")) {
+      if (color_scheme %in% c("A", "B", "C", "F", "G",
+                              "magma", "inferno", "plasma", "rocket", "mako")) {
         graph_plot <- graph_plot +
-          ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE)
+          ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE,
+                                      begin = 0.2, end = 0.8)
+      } else if (color_scheme %in% c("D", "viridis")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE,
+                                      begin = 0, end = 0.9)
+      } else if (color_scheme %in% c("E", "H", "cividis",  "turbo")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE,)
+      } else if (color_scheme %in% c("A-1", "B-1", "C-1", "F-1", "G-1",
+                                     "magma-1", "inferno-1", "plasma-1", "rocket-1", "mako-1")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], discrete = TRUE,
+                                      begin = 0.2, end = 0.8, direction = -1)
+      } else if (color_scheme %in% c("D-1", "viridis-1")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], discrete = TRUE,
+                                      begin = 0, end = 0.9, direction = -1)
+      } else if (color_scheme %in% c("E-1", "H-1", "cividis-1",  "turbo-1")) {
+        graph_plot <- graph_plot +
+          ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], discrete = TRUE,
+                                      direction = -1)
       } else if (color_scheme %in% grDevices::hcl.pals()) {
         graph_plot <- graph_plot +
           ggplot2::scale_color_manual(
-            values = grDevices::hcl.colors(n = length(color_nodes_by),
+            values = grDevices::hcl.colors(n = length(unique(color_nodes_by)),
                                            palette = color_scheme))
-      } else { warning("'color_scheme' must be 'default' or one of the values contained in `grDevices::hcl.pals()`; using default color scheme instead") } }
+      } else { warning("value for 'color_scheme' is not a valid option for discrete variables; using default color scheme instead") } }
   }
 
 

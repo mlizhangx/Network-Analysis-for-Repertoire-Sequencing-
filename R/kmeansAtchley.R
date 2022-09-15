@@ -97,9 +97,21 @@ kmeansAtchley <- function(
     colors_corr <- grDevices::colorRampPalette(
       rev(RColorBrewer::brewer.pal(9, "RdBu")))(1000)
   }
+
   # Color palette for subject group
-  colors_subject_group <-
-    viridisLite::viridis(n = length(unique(sample_subject_group)))
+  num_group_levels <- length(unique(sample_subject_group))
+  if (use_viridis) {
+    colors_subject_group <-
+      viridisLite::viridis(n = num_group_levels)
+  } else {
+    colors_subject_group <-
+      RColorBrewer::brewer.pal(
+        n = max(3, num_group_levels), # requires 3 levels minimum
+        "Set1")
+    if (num_group_levels < 3) {
+      colors_subject_group <- colors_subject_group[1:num_group_levels]
+    }
+  }
   names(colors_subject_group) <- levels(as.factor(data[ , group_col]))
 
   # Generate heatmap for cluster share of TCRs in each sample
