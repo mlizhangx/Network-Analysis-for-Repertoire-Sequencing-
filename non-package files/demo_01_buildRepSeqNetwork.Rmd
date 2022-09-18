@@ -51,14 +51,16 @@ General network analysis on RepSeq data is performed using the `buildRepSeqNetwo
 * If desired for downstream analysis, can also return the network `igraph` and adjacency matrix, as well as the `ggraph` plot object
 
 
-For demonstration purposes, we load a public data set 
+### Load Data
+
+For demonstration purposes, we load a  [public data set](https://www.10xgenomics.com/resources/datasets/pbm-cs-of-a-healthy-donor-v-1-1-1-standard-3-1-0) hosted at 10xgenomics.com using Bioconductor.
 
 ```{r }
 if (!require("BiocFileCache", quietly = TRUE)) { 
-  if (!require("BiocManager", quietly = TRUE)) { 
-    install.packages("BiocManager") 
-  }
-  BiocManager::install("BiocFileCache") 
+  # if (!require("BiocManager", quietly = TRUE)) { 
+  #   install.packages("BiocManager") 
+  # }
+  BiocManager::install("BiocFileCache", update = FALSE) 
 }
 library(NAIR)
 library(BiocFileCache)
@@ -67,7 +69,7 @@ data_file <- bfcrpath(bfc, file.path(
   "http://cf.10xgenomics.com/samples/cell-vdj/3.1.0",
   "vdj_v1_hs_pbmc3/vdj_v1_hs_pbmc3_t_filtered_contig_annotations.csv"))
 data <- read.csv(data_file, stringsAsFactors = FALSE)
-
+head(data)
 
 # load data sets
 # dir_main <-
@@ -81,17 +83,17 @@ data <- read.csv(data_file, stringsAsFactors = FALSE)
 
 ```
 
+Each row corresponds to a TCR sequence from a single cell, with the cell ID contained in the first column, `barcode`. Sequences from both the beta and alpha chains are present, as denoted by the values `TRA` and `TRB` in the column `chain`. We consider the beta-chain CDR3 amino acid sequences.
 
-The RepSeq data has the following dimensions and variables:
-```{r }
-dim(data)
-(names(data))
+```{r}
+data <- data[data$chain == "TRB" & data$cdr3 != "None", ]
+nrow(data)
 head(data)
 ```
 
 
 
-# Basic Usage
+## Basic Usage
 
 We first demonstrate the `buildRepSeqNetwork()` function using the default settings. 
 
