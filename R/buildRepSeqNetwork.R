@@ -62,9 +62,9 @@ buildRepSeqNetwork <- function(
 
   #### INPUT CHECKS ####
 
-  # Atchley factor embedding only applicable to amino acid sequences
-  if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino acid") {
-    stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
+  # # Atchley factor embedding only applicable to amino acid sequences
+  # if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino acid") {
+  #   stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
 
   # aggregate_identical_clones only applicable to amino acid sequences
 
@@ -117,7 +117,7 @@ buildRepSeqNetwork <- function(
 
   # Filter seqs with special chars
   if (!is.null(drop_chars)) {
-    cat(paste0("Removing sequences with special characters (", drop_chars, ")..."))
+    cat(paste0("Removing sequences containing matches to the expression '", drop_chars, "'..."))
     drop_matches <- grep(drop_chars, data[ , clone_seq_col])
     if (length(drop_matches) > 0) { data <- data[-drop_matches, ] }
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n")) }
@@ -152,12 +152,12 @@ buildRepSeqNetwork <- function(
                       names(data))]
   }
 
-  if (nrow(data) < 2) { stop("insufficient clone sequences remaining; at least two are needed") }
+  if (nrow(data) < 2) { stop("insufficient receptor sequences remaining; at least two are needed") }
 
   #### BUILD NETWORK ####
   # Generate adjacency matrix for network
   adjacency_matrix <-
-    generateNetworkFromClones(data[ , clone_seq_col],
+    generateNetworkFromClones(data[ , seq_col],
                               dist_type, edge_dist,
                               contig_ids = rownames(data),
                               return_type = "adjacency_matrix",
@@ -193,7 +193,7 @@ buildRepSeqNetwork <- function(
     }
     degree_col <- NULL
     if ("degree" %in% names(data)) { degree_col <- "degree" }
-    cluster_info <- getClusterStats(data, adjacency_matrix, clone_seq_col,
+    cluster_info <- getClusterStats(data, adjacency_matrix, seq_col,
                                     count_col, "cluster_id", degree_col)
   }
 
@@ -202,16 +202,16 @@ buildRepSeqNetwork <- function(
   # Determine plot title/subtitle
   if (!is.null(plot_title)) {
     if (plot_title == "auto") {
-      plot_title <- paste("Network on", clone_seq_type, "sequence")
+      plot_title <- paste("Immune Repertoire Network Based on Similarity in Receptor Sequence")
     }
   }
   if (!is.null(plot_subtitle)) {
     if (plot_subtitle == "auto") {
       if (dist_type == "euclidean_on_atchley") {
         plot_subtitle <- paste(
-          "Clone sequences encoded as numeric vectors using deep learning based on Atchley factor representation\nEdges based on a maximum Euclidean distance of", edge_dist, "between encoded vectors\n")
+          "Each node denotes a single TCR/BCR cell or clone\nSequences encoded numerically using deep learning based on Atchley factor representation\nEdges denote a maximum Euclidean distance of", edge_dist, "between encoded values\n")
       } else {
-        plot_subtitle <- paste("Edges based on a maximum", dist_type, "distance of", edge_dist, "\n")
+        plot_subtitle <- paste("Each node denotes a single TCR/BCR cell or clone\nEdges denote a maximum", dist_type, "distance of", edge_dist, "between receptor sequences\n")
       }
     }
   }
@@ -288,29 +288,29 @@ buildRepSeqNetwork <- function(
 
 
   #### SAVE RESULTS ####
-  # Rename data columns
-  if (aggregate_identical_clones) {
-    colnames(data)[[1]] <- ifelse(clone_seq_type == "nucleotide",
-                                  yes = "NucleotideSeq",
-                                  no = "AminoAcidSeq")
-  } else {
-    colnames(data)[colnames(data) == nucleo_col] <- "NucleotideSeq"
-    colnames(data)[colnames(data) == amino_col] <- "AminoAcidSeq"
-    colnames(data)[colnames(data) == freq_col] <- "CloneFrequency"
-    colnames(data)[colnames(data) == count_col] <- "CloneCount"
-    if (!is.null(vgene_col)) {
-      colnames(data)[colnames(data) == vgene_col] <- "VGene"
-    }
-    if (!is.null(dgene_col)) {
-      colnames(data)[colnames(data) == dgene_col] <- "DGene"
-    }
-    if (!is.null(jgene_col)) {
-      colnames(data)[colnames(data) == jgene_col] <- "JGene"
-    }
-    if (!is.null(cdr3length_col)) {
-      colnames(data)[colnames(data) == cdr3length_col] <- "CDR3Length"
-    }
-  }
+  # # Rename data columns
+  # if (aggregate_identical_clones) {
+  #   colnames(data)[[1]] <- ifelse(clone_seq_type == "nucleotide",
+  #                                 yes = "NucleotideSeq",
+  #                                 no = "AminoAcidSeq")
+  # } else {
+  #   colnames(data)[colnames(data) == nucleo_col] <- "NucleotideSeq"
+  #   colnames(data)[colnames(data) == amino_col] <- "AminoAcidSeq"
+  #   colnames(data)[colnames(data) == freq_col] <- "CloneFrequency"
+  #   colnames(data)[colnames(data) == count_col] <- "CloneCount"
+  #   if (!is.null(vgene_col)) {
+  #     colnames(data)[colnames(data) == vgene_col] <- "VGene"
+  #   }
+  #   if (!is.null(dgene_col)) {
+  #     colnames(data)[colnames(data) == dgene_col] <- "DGene"
+  #   }
+  #   if (!is.null(jgene_col)) {
+  #     colnames(data)[colnames(data) == jgene_col] <- "JGene"
+  #   }
+  #   if (!is.null(cdr3length_col)) {
+  #     colnames(data)[colnames(data) == cdr3length_col] <- "CDR3Length"
+  #   }
+  # }
 
   # Save node [& cluster] data
   if (!is.null(output_dir)) {
