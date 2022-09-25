@@ -12,18 +12,19 @@ The `NAIR` package facilitates network analysis of the adaptive immune repertoir
 Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (under review).
 
 
-### What can it do?
+### What can `NAIR` do?
 
 `NAIR` allows the user to:
 
 * Perform general network analysis on immune repertoire sequence (RepSeq) data, including computing local and global network properties of nodes and clusters
 * Search across multiple RepSeq samples for:
-* Clones/clusters associated to a clinical outcome
-* Public clones/clusters 
-* Perform further downstream analysis 
+    * Clones/clusters associated to a clinical outcome
+    * Public clones/clusters 
+* Generate customized visualizations of the immune repertoire network
+* Perform further downstream analysis
 
 
-### What data does it support?
+### What data does `NAIR` support?
 
 `NAIR` supports bulk and single-cell immune repertoire sequence data for T-cell or B-cell receptors (TCR or BCR).
 
@@ -31,12 +32,14 @@ Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Ana
 * **Bulk data:** Each row is a distinct TCR/BCR clone (unique combination of V-D-J genes and nucleotide sequence) and typically includes a corresponding measurement of clonal abundance (e.g., count or frequency)
 
 
-### How does it model the immune repertoire as a network?
+### How does `NAIR` model the immune repertoire as a network?
 
 * Each TCR/BCR cell (single-cell data) or clone (bulk data) is modeled as a node (vertex) in the network
 * For each node, we consider the corresponding receptor sequence (nucleotide or amino acid)
 * For each pair of nodes, we measure the similarity in their receptor sequences (using the Hamming or Levenshtein distance)
 * An edge is drawn between two nodes if the distance is below a specified threshold 
+
+
 
 
 
@@ -47,7 +50,7 @@ General network analysis on RepSeq data is performed using the `buildRepSeqNetwo
 * Builds the network graph for the immune repertoire
 * Computes desired network properties
 * Prints a customized `ggraph` plot of the network graph
-* Returns meta-data for the TCR/BCR (nodes) in the network, including both biological and network properties
+* Returns meta-data for the TCR/BCR (nodes) in the network, including biological as well as network properties
 * If desired for downstream analysis, can also return the network `igraph` and adjacency matrix, as well as the `ggraph` plot object
 
 
@@ -68,8 +71,8 @@ bfc <- BiocFileCache(ask = FALSE)
 data_file <- bfcrpath(bfc, file.path(
   "http://cf.10xgenomics.com/samples/cell-vdj/3.1.0",
   "vdj_v1_hs_pbmc3/vdj_v1_hs_pbmc3_t_filtered_contig_annotations.csv"))
-data <- read.csv(data_file, stringsAsFactors = FALSE)
-head(data)
+tcr_data <- read.csv(data_file, stringsAsFactors = FALSE)
+head(tcr_data)
 
 # load data sets
 # dir_main <-
@@ -86,20 +89,29 @@ head(data)
 Each row corresponds to a TCR sequence from a single cell, with the cell ID contained in the first column, `barcode`. Sequences from both the beta and alpha chains are present, as denoted by the values `TRA` and `TRB` in the column `chain`. We consider the beta-chain CDR3 amino acid sequences.
 
 ```{r}
-data <- data[data$chain == "TRB" & data$cdr3 != "None", ]
-nrow(data)
-head(data)
+# Subset rows for valid beta-chain CDR3 amino acid sequences
+tcr_data <- tcr_data[tcr_data$chain == "TRB" & tcr_data$cdr3 != "None", ]
+
+# Number of sequences/cells (rows)
+nrow(tcr_data)
+
+head(tcr_data)
 ```
 
 
 
 ## Basic Usage
 
-We first demonstrate the `buildRepSeqNetwork()` function using the default settings. 
+Calling `buildRepSeqNetwork()` for our example can be as simple as executing the following line of code:
 
-The first argument, `data`, specifies the data frame containing the rep-seq data. Both bulk and single-cell rep-seq data are applicable. 
+```{r, eval = FALSE}
+buildRepSeqNetwork(tcr_data, "cdr3")
+```
 
-Each row of `data` is assumed to correspond to a single TCR/BCR. The nucleotide or amino acid sequence for each TCR/BCR (row) need not be unique.
+* The first argument specifies the data frame containing the rep-seq data, where each row corresponds to a single TCR/BCR clone (bulk data) or cell (single-cell data).
+* The second argument specifies the column name or number of the data frame that contains the receptor sequences to be used as the basis of similarity between two cells or clones.
+
+
 
 The following arguments each specify the column name or number of `data` corresponding to a particular variable:
 
