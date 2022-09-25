@@ -328,9 +328,9 @@ getClusterStats <- function(
   out$mean_degree <- 0
   out$max_degree <- ""
   out$seq_w_max_degree <- ""
-  out$agg_clone_count <- 0
-  out$max_clone_count <- ""
-  out$seq_w_max_count <- ""
+  out$agg_clone_count <- NA
+  out$max_clone_count <- NA
+  out$seq_w_max_count <- NA
   out$diameter_length <- 0
   out$assortativity <- 0
   out$transitivity <- 0
@@ -361,17 +361,18 @@ getClusterStats <- function(
     out$seq_w_max_degree[[cluster_row]] <-
       as.character(data[node_id_max_deg, clone_col][[1]])
 
-    # Total aggregate clonotype count in cluster
-    out$agg_clone_count[[cluster_row]] <- sum(data[node_ids, count_col])
+    if (!is.null(count_col)) {
+      # Total aggregate clonotype count in cluster
+      out$agg_clone_count[[cluster_row]] <- sum(data[node_ids, count_col])
 
-    # Maximum clonotype count (and corresponding seq) within cluster
-    max_count <- max(data[node_ids, count_col])
-    out$max_clone_count[[cluster_row]] <- max_count
+      # Maximum clonotype count (and corresponding seq) within cluster
+      max_count <- max(data[node_ids, count_col])
+      out$max_clone_count[[cluster_row]] <- max_count
 
-    node_id_max_count <- which(node_ids & data[ , count_col] == max_count)
-    out$seq_w_max_count[[cluster_row]] <-
-      as.character(data[node_id_max_count, clone_col][[1]])
-
+      node_id_max_count <- which(node_ids & data[ , count_col] == max_count)
+      out$seq_w_max_count[[cluster_row]] <-
+        as.character(data[node_id_max_count, clone_col][[1]])
+    }
 
     # Build cluster network to get network properties for the cluster
     cluster_adjacency_matrix <- as.matrix(adjacency_matrix[node_ids, node_ids])
