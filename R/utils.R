@@ -510,7 +510,11 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
       ggplot2::guides(size = ggplot2::guide_legend(title = size_legend_title))
   }
 
-  color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
+  if (is.null(color_nodes_by)) {
+    color_type <- "continuous"
+  } else {
+    color_type <- ggplot2::scale_type(color_nodes_by)[[1]]
+  }
 
   # Convert node-color variable to factor if discrete
   # if (color_type == "discrete") { color_nodes_by <- as.factor(color_nodes_by) }
