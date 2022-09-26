@@ -36,7 +36,7 @@ generateNetworkFromSeqs(
       as numeric vectors using deep learning, and the Euclidean distance is measured
       between the encoded vectors; only applicable to TCR CDR3 amino acid sequences).
 }
-  \item{edge_dist}{
+  \item{dist_cutoff}{
 %%     ~~Describe \code{edge_dist} here~~
       Numeric; the maximum distance allowed between two receptor sequences that share a network edge.
 }
