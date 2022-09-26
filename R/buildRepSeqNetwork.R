@@ -226,27 +226,36 @@ buildRepSeqNetwork <- function(
     }
   }
 
-  # If multiple coloring variables, extend color scheme and legend title to vectors if needed
-  if (length(color_nodes_by) > 1) {
-    if (length(color_scheme) == 1) { # extend to vector
-      color_scheme <- rep(color_scheme, length(color_nodes_by)) }
-    if (!is.null(color_title)) {
-      if (length(color_title) == 1) { # extend to vector
-        color_title <- rep(color_title, length(color_nodes_by)) }
-    } else { # color_title is NULL
-      # vector of empty titles (hack, since can't have NULL vector entries)
-      color_title <- rep("", length(color_nodes_by))
-    }
-  }
 
-  # Set default color legend title if applicable
-  if (!is.null(color_title)) {
-    for (i in 1:length(color_title)) {
-      if (color_title[[i]] == "auto") {
-        color_title[[i]] <- color_nodes_by[[i]]
+
+  if (is.null(color_nodes_by)) {
+    color_title <- NULL
+  } else { # color_nodes_by is non NULL
+
+    # If multiple coloring variables, extend color scheme and legend title to vectors if needed
+    if (length(color_nodes_by) > 1) {
+      if (length(color_scheme) == 1) { # extend to vector
+        color_scheme <- rep(color_scheme, length(color_nodes_by)) }
+      if (!is.null(color_title)) {
+        if (length(color_title) == 1) { # extend to vector
+          color_title <- rep(color_title, length(color_nodes_by)) }
+      } else { # color_title is NULL
+        # vector of empty titles (hack, since can't have NULL vector entries)
+        color_title <- rep("", length(color_nodes_by))
       }
     }
+
+    # Set default color legend title if applicable
+    if (!is.null(color_title)) {
+      for (i in 1:length(color_title)) {
+        if (color_title[[i]] == "auto") {
+          color_title[[i]] <- color_nodes_by[[i]]
+        }
+      }
+    }
+
   }
+
   # Set default size legend title if applicable
   if (!is.null(size_title)) {
     if (size_title == "auto") {
@@ -266,21 +275,21 @@ buildRepSeqNetwork <- function(
 
   # Create one plot for each variable used to color the nodes
   temp_plotlist <- list()
-    if (is.null(color_nodes_by)) {
-      cat("Generating graph plot...")
-      temp_plotlist$uniform_color <-
-        plotNetworkGraph(
-          net, edge_width, title = plot_title, subtitle = plot_subtitle,
-          color_nodes_by = NULL,
-          color_legend_title = color_title[[j]],
-          color_scheme = color_scheme[[j]],
-          show_color_legend = color_legend,
-          size_nodes_by = size_nodes_by,
-          size_legend_title = size_title,
-          node_size_limits = node_size_limits)
-      if (print_plots) { print(temp_plotlist$uniform_color) }
-    } else {
-      for (j in 1:length(color_nodes_by)) {
+  if (is.null(color_nodes_by)) {
+    cat("Generating graph plot...")
+    temp_plotlist$uniform_color <-
+      plotNetworkGraph(
+        net, edge_width, title = plot_title, subtitle = plot_subtitle,
+        color_nodes_by = NULL,
+        color_legend_title = color_title[[j]],
+        color_scheme = color_scheme[[j]],
+        show_color_legend = color_legend,
+        size_nodes_by = size_nodes_by,
+        size_legend_title = size_title,
+        node_size_limits = node_size_limits)
+    if (print_plots) { print(temp_plotlist$uniform_color) }
+  } else {
+    for (j in 1:length(color_nodes_by)) {
       cat(paste0("Generating graph plot with nodes colored by ",
                  color_nodes_by[[j]], "..."))
       temp_plotlist$newplot <-
