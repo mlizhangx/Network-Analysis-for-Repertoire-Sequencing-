@@ -15,7 +15,7 @@
 generateNetworkFromSeqs(
     seqs,
     dist_type = "hamming",
-    edge_dist = 1,
+    dist_cutoff = 1,
     drop_isolated_nodes = TRUE,
     contig_ids = seq_along(seqs),
     outfile_adjacency_matrix = NULL,
