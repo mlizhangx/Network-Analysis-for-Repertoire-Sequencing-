@@ -99,8 +99,8 @@ data <- data.frame("clone_seq" = clone_seqs,
                    "group" = group_labels)
 
 # Generate network for data
-net <- generateNetworkFromClones(data$clone_seq,
-                                 drop_isolated_nodes = FALSE)
+net <- generateNetworkFromSeqs(data$clone_seq,
+                               drop_isolated_nodes = FALSE)
 
 # Add cluster ID
 data_w_clusterID <- addClusterMembership(data, net)
