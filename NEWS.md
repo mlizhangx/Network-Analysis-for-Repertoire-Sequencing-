@@ -19,6 +19,11 @@
     * The option to aggregate counts/frequencies for identical clones has been removed; this can be done as a data preprocessing step, either manually or using the `aggregateIdenticalClones()` function.
     * An argument `print_plots` has been added to allow the option not to print the plot(s) in `R`. The default is `TRUE`, which corresponds to the previous behavior (all plots are printed).
 * `findAssociatedClones()`, `getAssociatedClusters()` and `findPublicClusters()` have had their arguments revised according to the changes to `buildRepSeqNetwork()`.
+* R documentation files added for the following functions:
+    * `plotNetworkGraph`
+    * `sparseAdjacencyMatFromSeqs`
+    * `adjacencyMatAtchleyFromSeqs`
+    * `embedTCRSeqsByAtchleyFactor`
 
 
 # 0.0.9013
