@@ -79,9 +79,9 @@ for (i in 1:sample_size) {
                             collapse = "")
 }
 
-adjmat <- generateNetworkFromClones(clones = clone_seqs,
-                                    dist_type = "levenshtein",
-                                    return_type = "adjacency_matrix")
+adjmat <- generateNetworkFromSeqs(seqs = clone_seqs,
+                                  dist_type = "levenshtein",
+                                  return_type = "adjacency_matrix")
 net <- generateNetworkFromAdjacencyMat(adjmat)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

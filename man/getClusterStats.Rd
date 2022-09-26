@@ -149,7 +149,7 @@ data <- data.frame("clone_seq" = clone_seqs,
 
 # Generate adjacency matrix for data
 adjmat <-
-  generateNetworkFromClones(
+  generateNetworkFromSeqs(
     data$clone_seq,
     drop_isolated_nodes = FALSE,
     return_type = "adjacency_matrix"

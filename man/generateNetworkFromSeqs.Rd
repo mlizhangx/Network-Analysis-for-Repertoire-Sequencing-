@@ -120,7 +120,7 @@ for (i in 1:sample_size) {
 }
 
 net <- generateNetworkFromSeqs(seqs = clone_seqs,
-                                 dist_type = "levenshtein")
+                               dist_type = "levenshtein")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
