@@ -11,7 +11,7 @@
   with sequences below a specified minimum length
 }
 \usage{
-filterClonesBySequenceLength(data, clone_col, min_length = 3)
+filterClonesBySequenceLength(data, seq_col, min_length = 3)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,8 +20,8 @@ filterClonesBySequenceLength(data, clone_col, min_length = 3)
       A data frame containing the immune repertoire sequence data, with clones
       indexed by row.
 }
-  \item{clone_col}{
-%%     ~~Describe \code{clone_col} here~~
+  \item{seq_col}{
+%%     ~~Describe \code{seq_col} here~~
       The column name or number of `data` containing the sequence whose length
       is to be screened (e.g., TCR CDR3 nucleotide sequence or amino acid sequence).
       The column must be coercible to a character vector.
@@ -39,7 +39,7 @@ filterClonesBySequenceLength(data, clone_col, min_length = 3)
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
     A data frame containing the same columns as `data` and those rows of `data`
-    for which the sequence in `clone_col` has length at least `min_length`.
+    for which the sequence in `seq_col` has length at least `min_length`.
 }
 \references{
 %% ~put references to the literature/web site here ~

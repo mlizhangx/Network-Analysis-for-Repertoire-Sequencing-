@@ -14,10 +14,7 @@
 findAssociatedClones <- function(
 
   data,
-  nucleo_col,
-  amino_col,
-  clone_seq_type = "amino_acid",
-  # clone_seq_col,
+  seq_col,
   freq_col,
   sample_col,
   subject_col = sample_col,
@@ -31,8 +28,9 @@ findAssociatedClones <- function(
 
 ) {
 
-  clone_seq_col <- amino_col
-  if (clone_seq_type == "nucleotide") { clone_seq_col <- nucleo_col }
+
+  # clone_seq_col <- amino_col
+  # if (clone_seq_type == "nucleotide") { clone_seq_col <- nucleo_col }
 
   #### FILTER CLONES ####
 
@@ -40,16 +38,20 @@ findAssociatedClones <- function(
   samples_or_subjects <- "samples"
   if (subject_col != sample_col) { samples_or_subjects <- "subjects" }
 
-  # Drop sequences with specified chars
-  if (!is.null(drop_chars)) {
-    drop_matches <- grep(drop_chars, data[ , clone_seq_col])
-    if (length(drop_matches) > 0) { data <- data[-drop_matches, ] }
+  # Filter by seq length
+  if (!is.null(min_seq_length)) {
+    cat(paste0("Removing sequences with length less than ", min_seq_length, "..."))
+    data <- filterClonesBySequenceLength(data, seq_col,
+                                         min_length = min_seq_length)
+    cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
   }
 
-  # Drop sequences below specified length
-  data <- data[nchar(data[ , clone_seq_col]) >= min_seq_length, ]
-  cat(paste0(
-    "Data contains ", nrow(data), " clones after filtering for sequence length and special characters.\n"))
+  # Filter seqs with special chars
+  if (!is.null(drop_chars)) {
+    cat(paste0("Removing sequences containing matches to the expression '", drop_chars, "'..."))
+    drop_matches <- grep(drop_chars, data[ , seq_col])
+    if (length(drop_matches) > 0) { data <- data[-drop_matches, ] }
+    cat(paste0(" Done. ", nrow(data), " rows remaining.\n")) }
 
   # Get subject case/control counts
   n_subjects <- length(unique(data[ , subject_col]))
@@ -62,12 +64,14 @@ findAssociatedClones <- function(
     ", ", n_case_subjects, " of which belong to the specified case groups.\n"))
 
   # Get unique clone sequences and initialize output
-  out <- data.frame("AminoAcidSeq" = # list of unique clone seqs
-                      as.character(unique(data[ , clone_seq_col])))
-  output_clone_seq_col <- "AminoAcidSeq"
-  if (clone_seq_type == "nucleotide") {
-    names(out)[1] <- output_clone_seq_col <- "NucleotideSeq"
-  }
+  out <- data.frame("ReceptorSeq" = # list of unique clone seqs
+                      as.character(unique(data[ , seq_col])))
+  # out <- data.frame("AminoAcidSeq" = # list of unique clone seqs
+  #                     as.character(unique(data[ , seq_col])))
+  # output_clone_seq_col <- "AminoAcidSeq"
+  # if (clone_seq_type == "nucleotide") {
+  #   names(out)[1] <- output_clone_seq_col <- "NucleotideSeq"
+  # }
   out$fisher_pvalue <- rep(NA, nrow(out))
   out$shared_by_n_samples <- rep(NA, nrow(out))
   # out$shared_by_n_case_subjects <- rep(NA, nrow(out))
@@ -76,11 +80,12 @@ findAssociatedClones <- function(
 
 
   #### SAMPLE MEMBERSHIP ####
-  cat(paste0(nrow(out), " unique clone sequences found. Computing sample membership (this could take a while)..."))
+  cat(paste0(nrow(out), " unique receptor sequences found. Computing sample membership (this could take a while)..."))
   out$shared_by_n_samples <-
-    sapply(out[ , output_clone_seq_col],
+    sapply(out$ReceptorSeq,
+    # sapply(out[ , output_clone_seq_col],
            function(x) {
-             length(unique(data[data[ , clone_seq_col] == x, sample_col])) })
+             length(unique(data[data[ , seq_col] == x, sample_col])) })
   cat(" Done.\n")
 
   # Drop sequences shared by fewer samples than the specified minimum
@@ -92,8 +97,9 @@ findAssociatedClones <- function(
   # Iterate over filtered list of clones
   for (i in 1:nrow(out)) {
     # logical vector for rows of merged data corresponding to current clone seq
-    # grepl(pattern = paste0("^", clone, "$"), x = data[ , clone_seq_col])
-    rowids_clone <- data[ , clone_seq_col] == out[ , output_clone_seq_col][[i]]
+    # grepl(pattern = paste0("^", clone, "$"), x = data[ , seq_col])
+    rowids_clone <- data[ , seq_col] == out$ReceptorSeq[[i]]
+    # rowids_clone <- data[ , seq_col] == out[ , output_clone_seq_col][[i]]
 
     # Number of case subjects with target sequence
     shared_by_n_case_subjects <-
@@ -129,7 +135,7 @@ findAssociatedClones <- function(
     out$label[[i]] <- paste0(
       out$label[[i]], "(of which ", shared_by_n_case_subjects, " are categorized as case ", samples_or_subjects, ")",
       "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3),
-      ", Max clone frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
+      ", Max frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
   }
   cat(" Done.\n")
 

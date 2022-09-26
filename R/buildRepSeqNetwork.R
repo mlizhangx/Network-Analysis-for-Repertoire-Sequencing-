@@ -12,13 +12,11 @@
 
 buildRepSeqNetwork <- function(
 
-  # Input Data and Columns
+  # Input Data/Settings
   data,      # dataframe containing RepSeq data
   seq_col, # column name or number containing receptor sequences used as basis for network
   count_col = NULL, # optional column name or number containing measurements of clonal abundance
   other_cols = NULL, # other cols to keep (if NULL, all are kept); ignored if aggregate_identical_clones = TRUE
-
-  # Clone Sequence Settings
   min_seq_length = 3, # min clone seq length
   drop_chars = NULL, # regular expression, e.g. "[*|_]"
   # aggregate_identical_clones = FALSE,
@@ -28,8 +26,6 @@ buildRepSeqNetwork <- function(
   dist_type = "hamming", # or "levenshtein", "hamming", "euclidean_on_atchley"
   dist_cutoff = 1, # max dist for edges
   drop_isolated_nodes = TRUE,
-
-  # Network Statistics
   node_stats = FALSE,
   stats_to_include = node_stat_settings(), # can also select "all" or "cluster_id_only"
   cluster_stats = FALSE,
@@ -47,6 +43,7 @@ buildRepSeqNetwork <- function(
   size_title = "auto", # custom legend title
 
   # Output Settings
+  print_plots = TRUE,
   output_dir = NULL, # if NULL, output is not saved to file
   save_all = FALSE, # by default, only save pdf of plot and csv of node data
   data_outfile = "node_data.csv",
@@ -110,7 +107,7 @@ buildRepSeqNetwork <- function(
   # Filter by seq length
   if (!is.null(min_seq_length)) {
     cat(paste0("Removing sequences with length less than ", min_seq_length, "..."))
-    data <- filterClonesBySequenceLength(data, clone_seq_col,
+    data <- filterClonesBySequenceLength(data, seq_col,
                                          min_length = min_seq_length)
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
   }
@@ -118,7 +115,7 @@ buildRepSeqNetwork <- function(
   # Filter seqs with special chars
   if (!is.null(drop_chars)) {
     cat(paste0("Removing sequences containing matches to the expression '", drop_chars, "'..."))
-    drop_matches <- grep(drop_chars, data[ , clone_seq_col])
+    drop_matches <- grep(drop_chars, data[ , seq_col])
     if (length(drop_matches) > 0) { data <- data[-drop_matches, ] }
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n")) }
 
@@ -221,8 +218,11 @@ buildRepSeqNetwork <- function(
     if (color_nodes_by == "auto") {
       if ("degree" %in% names(data)) { # use network degree if available
         color_nodes_by <- "degree"
-      } else { # if degree unavailable, color the nodes by clone count
-        color_nodes_by <- count_col }
+      } else if (!is.null(count_col)) { # if degree unavailable, color the nodes by clone count
+        color_nodes_by <- count_col
+      } else {
+        color_nodes_by <- NULL
+      }
     }
   }
 
@@ -266,24 +266,36 @@ buildRepSeqNetwork <- function(
 
   # Create one plot for each variable used to color the nodes
   temp_plotlist <- list()
-  for (j in 1:length(color_nodes_by)) {
-    if (color_nodes_by[[j]] == "auto") { cat("Generating graph plot...")
+    if (is.null(color_nodes_by)) {
+      cat("Generating graph plot...")
+      temp_plotlist$uniform_color <-
+        plotNetworkGraph(
+          net, edge_width, title = plot_title, subtitle = plot_subtitle,
+          color_nodes_by = NULL,
+          color_legend_title = color_title[[j]],
+          color_scheme = color_scheme[[j]],
+          show_color_legend = color_legend,
+          size_nodes_by = size_nodes_by,
+          size_legend_title = size_title,
+          node_size_limits = node_size_limits)
+      if (print_plots) { print(temp_plotlist$uniform_color) }
     } else {
+      for (j in 1:length(color_nodes_by)) {
       cat(paste0("Generating graph plot with nodes colored by ",
                  color_nodes_by[[j]], "..."))
+      temp_plotlist$newplot <-
+        plotNetworkGraph(
+          net, edge_width, title = plot_title, subtitle = plot_subtitle,
+          color_nodes_by = data[ , color_nodes_by[[j]]],
+          color_legend_title = color_title[[j]],
+          color_scheme = color_scheme[[j]],
+          show_color_legend = color_legend,
+          size_nodes_by = size_nodes_by,
+          size_legend_title = size_title,
+          node_size_limits = node_size_limits)
+      if (print_plots) { print(temp_plotlist$newplot) }
+      names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
     }
-    temp_plotlist$newplot <-
-      plotNetworkGraph(
-        net, edge_width, title = plot_title, subtitle = plot_subtitle,
-        color_nodes_by = data[ , color_nodes_by[[j]]],
-        color_legend_title = color_title[[j]],
-        color_scheme = color_scheme[[j]],
-        show_color_legend = color_legend,
-        size_nodes_by = size_nodes_by,
-        size_legend_title = size_title,
-        node_size_limits = node_size_limits)
-    print(temp_plotlist$newplot)
-    names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
     cat(" Done.\n") }
 
 

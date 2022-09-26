@@ -1,3 +1,26 @@
+# 0.0.9014
+* The following argument names have been changed in functions in which they appear:
+    * `clone_col` to `seq_col`
+    * `clones` to `seqs`, (except for `embedClonesByAtchleyFactor()`, for which it was changed to `cdr3_AA`)
+    * `edge_dist` to `dist_cutoff`
+* The following functions have been renamed:
+    * `generateNetworkFromClones` to `generateNetworkFromSeqs`
+    * `sparseAdjacencyMatFromClones` to `sparseAdjacencyMatFromSeqs`
+    * `adjacencyMatAtchleyFromClones` to `adjacencyMatAtchleyFromSeqs`
+    * `embedClonesByAtchleyFactor` to `embedTCRSeqsByAtchleyFactor`
+* `getSimilarClones()`: changed default value to of `drop_chars` argument to `NULL`
+* `buildRepSeqNetwork()` had its usage revised, primarily regarding the arguments related to the input data:
+    * The `nucleo_col`, `amino_col` and `clone_seq_type` arguments have been replaced by a single `seq_col` argument; the function no longer requires both nucleotide and amino acid sequences in the data, and no longer distinguishes between the two
+    * The `count_col` is now optional
+        * By default, graph plots now use fixed node sizes
+    * Other column arguments (`freq_col`, `vgene_col`, `cdr3_length`, etc.) have been removed; these columns were not used for anything specific in the pipeline, so it is not necessary for them to each have their own dedicated argument.
+    * By default, all columns of the input data are now carried over to the output. If only some columns are desired, they can be specified using the `other_cols` argument.
+    * Input columns are no longer renamed in the output data.
+    * The option to aggregate counts/frequencies for identical clones has been removed; this can be done as a data preprocessing step, either manually or using the `aggregateIdenticalClones()` function.
+    * An argument `print_plots` has been added to allow the option not to print the plot(s) in `R`. The default is `TRUE`, which corresponds to the previous behavior (all plots are printed).
+* `findAssociatedClones()`, `getAssociatedClusters()` and `findPublicClusters()` have had their arguments revised according to the changes to `buildRepSeqNetwork()`.
+
+
 # 0.0.9013
 * R Documentation files added for package functions:
     * `aggregateIdenticalClones`
