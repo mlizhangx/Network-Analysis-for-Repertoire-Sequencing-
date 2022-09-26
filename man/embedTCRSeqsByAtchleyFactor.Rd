@@ -1,5 +1,5 @@
-\name{embedClonesByAtchleyFactor}
-\alias{embedClonesByAtchleyFactor}
+\name{embedTCRSeqsByAtchleyFactor}
+\alias{embedTCRSeqsByAtchleyFactor}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -10,19 +10,19 @@ Numerically Encode TCR CDR3 Amino Acid Sequences By Atchley Factor Representatio
 Given a list of T-cell receptor CDR3 amino acid sequences, encodes each sequence as a 30-dimensional numeric vector based on the Atchley factor representation of its terms using a trained encoder.
 }
 \usage{
-embedClonesByAtchleyFactor(
-    clones,
-    contig_ids = seq_along(clones))
+embedTCRSeqsByAtchleyFactor(
+    cdr3_AA,
+    contig_ids = seq_along(cdr3_AA))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{clones}{
-%%     ~~Describe \code{clones} here~~
+  \item{cdr3_AA}{
+%%     ~~Describe \code{cdr3_AA} here~~
 A character vector containing the TCR CDR3 amino acid sequences.
 }
   \item{contig_ids}{
 %%     ~~Describe \code{contig_ids} here~~
-A numeric vector of the same length as \code{clones}, used to uniquely identify its elements. By default, this is simply the sequence of integers from 1 to \code{length(clones)}.
+A numeric vector of the same length as \code{cdr3_AA}, used to uniquely identify its elements. By default, this is simply the sequence of integers from 1 to \code{length(cdr3_AA)}.
 }
 }
 \details{
@@ -35,7 +35,7 @@ Encoding is performed using the BriseisEncoder python script. Each amino acid is
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-A matrix with \code{length(clones)} rows and 31 columns. Each row corresponds to a TCR sequence; the first column is \code{contig_ids}, while the remaining columns contain the 30-dimensional numerical encoding for each TCR sequence.
+A matrix with \code{length(cdr3_AA)} rows and 31 columns. Each row corresponds to a TCR sequence; the first column is \code{contig_ids}, while the remaining columns contain the 30-dimensional numerical encoding for each TCR sequence.
 }
 \note{
 The encoder was trained specifically on TCR CDR3 amino acid sequences and is not appropriate for use with other amino acid sequences.
@@ -52,17 +52,17 @@ The encoder was trained specifically on TCR CDR3 amino acid sequences and is not
 }
 \examples{
 \dontrun{
-clones <- c("CASSEAQGSGSTDTQYF",
-            "CATTEGSNTGELFF",
-            "CASSIGDNEQFF",
-            "CATSRDPDRGQSDTQYF",
-            "CASSPTGLSGNTIYF",
-            "CASSEEAGKDTQYF",
-            "CASSGGADTQYF",
-            "CASSLGLATDTQYF",
-            "CASSEKEEVGELFF",
-            "CASSSRTSGGAGELFF")
-embedClonesByAtchleyFactor(clones)
+cdr3 <- c("CASSEAQGSGSTDTQYF",
+          "CATTEGSNTGELFF",
+          "CASSIGDNEQFF",
+          "CATSRDPDRGQSDTQYF",
+          "CASSPTGLSGNTIYF",
+          "CASSEEAGKDTQYF",
+          "CASSGGADTQYF",
+          "CASSLGLATDTQYF",
+          "CASSEKEEVGELFF",
+          "CASSSRTSGGAGELFF")
+embedTCRSeqsByAtchleyFactor(cdr3)
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

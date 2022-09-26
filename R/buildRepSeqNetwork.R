@@ -26,7 +26,7 @@ buildRepSeqNetwork <- function(
 
   # Network Settings
   dist_type = "hamming", # or "levenshtein", "hamming", "euclidean_on_atchley"
-  edge_dist = 1, # max dist for edges
+  dist_cutoff = 1, # max dist for edges
   drop_isolated_nodes = TRUE,
 
   # Network Statistics
@@ -157,11 +157,11 @@ buildRepSeqNetwork <- function(
   #### BUILD NETWORK ####
   # Generate adjacency matrix for network
   adjacency_matrix <-
-    generateNetworkFromClones(data[ , seq_col],
-                              dist_type, edge_dist,
-                              contig_ids = rownames(data),
-                              return_type = "adjacency_matrix",
-                              drop_isolated_nodes = drop_isolated_nodes)
+    generateNetworkFromSeqs(data[ , seq_col],
+                            dist_type, dist_cutoff,
+                            contig_ids = rownames(data),
+                            return_type = "adjacency_matrix",
+                            drop_isolated_nodes = drop_isolated_nodes)
 
   # Subset data to keep only those clones in the network (nonzero degree)
   if (drop_isolated_nodes & dist_type != "euclidean_on_atchley") {
@@ -209,9 +209,9 @@ buildRepSeqNetwork <- function(
     if (plot_subtitle == "auto") {
       if (dist_type == "euclidean_on_atchley") {
         plot_subtitle <- paste(
-          "Each node denotes a single TCR/BCR cell or clone\nSequences encoded numerically using deep learning based on Atchley factor representation\nEdges denote a maximum Euclidean distance of", edge_dist, "between encoded values\n")
+          "Each node denotes a single TCR/BCR cell or clone\nSequences encoded numerically using deep learning based on Atchley factor representation\nEdges denote a maximum Euclidean distance of", dist_cutoff, "between encoded values\n")
       } else {
-        plot_subtitle <- paste("Each node denotes a single TCR/BCR cell or clone\nEdges denote a maximum", dist_type, "distance of", edge_dist, "between receptor sequences\n")
+        plot_subtitle <- paste("Each node denotes a single TCR/BCR cell or clone\nEdges denote a maximum", dist_type, "distance of", dist_cutoff, "between receptor sequences\n")
       }
     }
   }

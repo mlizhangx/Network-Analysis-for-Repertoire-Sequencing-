@@ -3,17 +3,17 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Find Clones Similar to a Target by Receptor Sequence
+    Find Cells/Clones With Receptor Sequences Similar to a Target Sequence
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
     Given immune repertoire sequence data and a target receptor sequence, return
-    the subset of the data consiting of those clones whose receptor sequences are
+    the subset of the data consiting of those cells/clones whose receptor sequences are
     within a specified distance of the target.
 }
 \usage{
-getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
-                 dist_type = "hamming", max_dist = 1, drop_chars = "[*|_]")
+getSimilarClones(target_seq, data, seq_col, sample_col = NULL,
+                 dist_type = "hamming", max_dist = 1, drop_chars = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,18 +23,18 @@ getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
 }
   \item{data}{
 %%     ~~Describe \code{data} here~~
-      A data frame containing the immune repertoire sequence data, with clones
+      A data frame containing the immune repertoire sequence data, with cells/clones
       indexed by row.
 }
-  \item{clone_col}{
-%%     ~~Describe \code{clone_col} here~~
+  \item{seq_col}{
+%%     ~~Describe \code{seq_col} here~~
       The column name or number of `data` containing the receptor sequences (e.g.,
       TCR CDR3 nucleotide sequence or amino acid sequence).
 }
   \item{sample_col}{
 %%     ~~Describe \code{sample_col} here~~
       (Optional) The column name or number of `data` containing the sample ID.
-      If supplied, only clones from samples that contain the target sequence
+      If supplied, only cells/clones from samples that contain the target sequence
       will be included. The sample IDs can be either character or numeric.
 }
   \item{dist_type}{
@@ -45,14 +45,13 @@ getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
 }
   \item{max_dist}{
 %%     ~~Describe \code{max_dist} here~~
-      A numeric value used as a cutoff; clones whose receptor sequences have
+      A numeric value used as a cutoff; cells/clones whose receptor sequences have
       distance from the target sequence exceeding `max_dist` (where the distance
       type is specified by `dist_type`) will be removed.
 }
   \item{drop_chars}{
-      A regular expression; clones whose receptor sequences match the specified
-      expression will be removed. By default, this checks for sequences
-      containing any of the special characters `*`, `_`, or `|`.
+      An optional regular expression; cells/clones whose receptor sequences match the specified
+      expression will be removed.
 %%     ~~Describe \code{drop_chars} here~~
 }
 }
@@ -63,9 +62,9 @@ getSimilarClones(target_seq, data, clone_col, sample_col = NULL,
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
     A data frame containing the same columns as `data` and those rows of `data`
-    for which the sequence in `clone_col` has `dist_type` distance from
+    for which the sequence in `seq_col` has `dist_type` distance from
     `target_seq` of no greater than `max_dist` (and does not match the expression
-    specified by `drop_chars`). If `sample_col` is non-null, only clones belonging
+    specified by `drop_chars`). If `sample_col` is non-null, only cells/clones belonging
     to samples that possess the target sequence will be included.
 }
 \references{

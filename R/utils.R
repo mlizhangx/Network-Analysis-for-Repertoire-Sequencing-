@@ -84,11 +84,11 @@ filterClonesBySequenceLength <- function(data, clone_col, min_length = 3) {
 getSimilarClones <- function(
   target_seq, # specified candidate sequence for the neighborhood
   data, # data frame containing rep seq data, possibly from multiple samples
-  clone_col, # col name/# containing clone sequences
+  seq_col, # col name/# containing clone sequences
   sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
   dist_type = "hamming", # options are "hamming" and "levenshtein"
   max_dist = 1, # Maximum Levenshtein distance allowed for inclusion in neighborhood
-  drop_chars = "[*|_]" # regular expression for chars to filter sequences by
+  drop_chars = NULL # regular expression for chars to filter sequences by
 ) {
   if (!is.data.frame(data)) {
     data <- as.data.frame(data)
@@ -98,10 +98,10 @@ getSimilarClones <- function(
     data_samples_w_targetseq <- data
   } else {
     ### SUBSET DATA: SAMPLES WITH TARGET SEQ ###
-    cat("Finding samples that possess the specified sequence...")
+    cat("Finding all samples that possess the target sequence...")
     # Get row ids of merged data corresponding to target seq
     rows_for_targetseq <- grep(pattern = paste0("^", target_seq, "$"),
-                               x = data[ , clone_col])
+                               x = data[ , seq_col])
     # Extract rows of merged data corresponding to samples with target seq
     data_samples_w_targetseq <-
       data[
@@ -109,25 +109,27 @@ getSimilarClones <- function(
     cat(" Done.\n")
   }
   # Remove sequences that match expression in `drop_chars`
-  drop_matches <- grep(drop_chars, data_samples_w_targetseq[ , clone_col])
-  if (length(drop_matches) > 0) {
-    data_samples_w_targetseq <- data_samples_w_targetseq[-drop_matches, ]
+  if (!is.null(drop_chars)) {
+    drop_matches <- grep(drop_chars, data_samples_w_targetseq[ , seq_col])
+    if (length(drop_matches) > 0) {
+      data_samples_w_targetseq <- data_samples_w_targetseq[-drop_matches, ]
+    }
   }
   ### SUBSET DATA: NEIGHBORHOOD OF TARGET SEQUENCE ###
   # Compute list of bounded distances between target seq and seqs
   # possessed by samples with target seq (values are -1 where bound is exceeded)
   # returned vector will be of type integer; names will be the sequences
-  cat("Extracting clone sequences similar to the specified sequence...")
+  cat("Gathering all cells/clones with receptor sequences similar to the target sequence...")
   if (dist_type == "levenshtein") { dist_fun <- levDistBounded
   } else if (dist_type == "hamming") { dist_fun <- hamDistBounded
   } else { stop("invalid option for `dist_type`") }
   dists_to_targetseq <- sapply(
-    X = data_samples_w_targetseq[ , clone_col],
+    X = data_samples_w_targetseq[ , seq_col],
     FUN = dist_fun, b = target_seq, k = max_dist)
   # get data for sequences within the specified radius
   data_targetseq_neighborhood <-
     data_samples_w_targetseq[dists_to_targetseq != -1, ]
-  cat(paste0(" Done. ", nrow(data_targetseq_neighborhood), " similar clones found.\n"))
+  cat(paste0(" Done. ", nrow(data_targetseq_neighborhood), " similar cells/clones found.\n"))
   return(data_targetseq_neighborhood)
 }
 
@@ -136,13 +138,13 @@ getSimilarClones <- function(
 
 
 
-# FUNCTION: GENERATE NETWORK FOR A LIST OF CLONE SEQS USING SPECIFIED DISTANCE TYPE AND THRESHOLD
-generateNetworkFromClones <- function(
-  clones, # list of clonotype sequences
+# FUNCTION: GENERATE NETWORK FOR A LIST OF RECEPTOR SEQS USING SPECIFIED DISTANCE TYPE AND THRESHOLD
+generateNetworkFromSeqs <- function(
+  seqs, # character vector of receptor sequences
   dist_type = "hamming", # supports "levenshtein", "hamming", "euclidean_on_atchley"
-  edge_dist = 1, # max dist threshold for edges
+  dist_cutoff = 1, # max dist threshold for edges
   drop_isolated_nodes = TRUE, # forced to FALSE for dist_type = "euclidean_on_atchley"
-  contig_ids = seq_along(clones), # for dist_type = "euclidean_on_atchley"
+  contig_ids = seq_along(seqs), # for dist_type = "euclidean_on_atchley"
   outfile_adjacency_matrix = NULL, # save file for adjacency matrix
   outfile_distance_matrix = NULL, # save file for distance matrix (only for Euclidean on Atchley)
   return_type = "network" # can use "adjacency_matrix" to return the adjacency mat
@@ -150,19 +152,19 @@ generateNetworkFromClones <- function(
   ### COMPUTE ADJACENCY MATRIX ###
   if (dist_type %in% c("levenshtein", "hamming")) {
     adjacency_matrix <-
-      sparseAdjacencyMatFromClones(clones = clones,
+      sparseAdjacencyMatFromSeqs(seqs = seqs,
                                    dist_type = dist_type,
-                                   max_dist = edge_dist,
+                                   max_dist = dist_cutoff,
                                    drop_isolated_nodes = drop_isolated_nodes)
     if (!is.null(outfile_adjacency_matrix)) {
       Matrix::writeMM(adjacency_matrix, outfile_adjacency_matrix)
     }
   } else if (dist_type == "euclidean_on_atchley") {
     adjacency_matrix <-
-      adjacencyMatAtchleyFromClones(
-        clones = clones,
+      adjacencyMatAtchleyFromSeqs(
+        seqs = seqs,
         contig_ids = contig_ids,
-        max_dist = edge_dist,
+        max_dist = dist_cutoff,
         outfile_distance_matrix = outfile_distance_matrix)
   } else { stop("invalid option for argument `dist_type`") }
   if (return_type == "adjacency_matrix") {
@@ -295,7 +297,7 @@ addClusterMembership <- function(data, net) {
 getClusterStats <- function(
   data, # rep-seq data for network, with node-level network stats
   adjacency_matrix, # adjacency matrix for network
-  clone_col, # name or number of column of `data` containing the clone sequences
+  seq_col, # name or number of column of `data` containing the clone sequences
   count_col, # name or number of column of `data` containing the clone counts
   cluster_id_col = NULL, # optional name or number of column of `data` containing the cluster IDs
   degree_col = NULL, # optional name or number of column of `data` containing the network degree
@@ -314,7 +316,7 @@ getClusterStats <- function(
   }
   if (is.null(seq_length_col)) { # compute seq length if not provided
     seq_length_col <- "seq_length"
-    data$seq_length <- nchar(data[ , clone_col])
+    data$seq_length <- nchar(data[ , seq_col])
   }
 
   # Tabulate the number of nodes in each cluster
@@ -359,7 +361,7 @@ getClusterStats <- function(
 
     node_id_max_deg <- which(node_ids & data[ , degree_col] == max_deg)
     out$seq_w_max_degree[[cluster_row]] <-
-      as.character(data[node_id_max_deg, clone_col][[1]])
+      as.character(data[node_id_max_deg, seq_col][[1]])
 
     if (!is.null(count_col)) {
       # Total aggregate clonotype count in cluster
@@ -371,7 +373,7 @@ getClusterStats <- function(
 
       node_id_max_count <- which(node_ids & data[ , count_col] == max_count)
       out$seq_w_max_count[[cluster_row]] <-
-        as.character(data[node_id_max_count, clone_col][[1]])
+        as.character(data[node_id_max_count, seq_col][[1]])
     }
 
     # Build cluster network to get network properties for the cluster
@@ -594,25 +596,25 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
 # FUNCTION: COMPUTE ADJACENCY MATRIX FOR LEVENSHTEIN OR HAMMING DISTANCE
 # Intended for use with a large network where the adjacency matrix is sparse
 # Returns sparse matrix, includes only nodes with positive network degree
-sparseAdjacencyMatFromClones <- function(
-  clones, # List of tcr/clonotype sequences
+sparseAdjacencyMatFromSeqs <- function(
+  seqs, # List of tcr/clonotype sequences
   dist_type = "hamming", # supports "levenshtein" and "hamming"
   max_dist = 1, # Maximum distance threshold for edge/adjacency between two sequences
   drop_isolated_nodes = TRUE # Drop sequences/nodes with zero degree?
 ) {
-  # attempt to coerce clones to character vector
-  if (length(clones) == 0) stop("'clones' has zero length")
-  clones <- as.vector(clones, mode = "character")
-  if (!is.character(clones)) stop("'clones' must be cocercible to a character vector")
-  if (!is.vector(clones)) stop("'clones' must be cocercible to a character vector")
+  # attempt to coerce seqs to character vector
+  if (length(seqs) == 0) stop("'seqs' has zero length")
+  seqs <- as.vector(seqs, mode = "character")
+  if (!is.character(seqs)) stop("'seqs' must be cocercible to a character vector")
+  if (!is.vector(seqs)) stop("'seqs' must be cocercible to a character vector")
 
   # Compute adjacency matrix
   if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
     cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- levAdjacencyMatSparse(clones, max_dist, drop_isolated_nodes)
+    out <- levAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
   } else if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
     cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- hamAdjacencyMatSparse(clones, max_dist, drop_isolated_nodes)
+    out <- hamAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
   } else {
     stop('invalid option for `dist_type`')
   }
@@ -628,7 +630,7 @@ sparseAdjacencyMatFromClones <- function(
       # Import record of selected column IDs and use for matrix row names
       clone_ids <- utils::read.table("col_ids.txt")
       dimnames(out)[[1]] <- clone_ids$V1
-      dimnames(out)[[2]] <- clones[clone_ids$V1]
+      dimnames(out)[[2]] <- seqs[clone_ids$V1]
       # cat(paste0("The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
 
       # Remove temporary file of column ids
@@ -645,15 +647,15 @@ sparseAdjacencyMatFromClones <- function(
 # (Only applicable to TCR CDR3 Amino Acid Sequences)
 # This function is intended for building the network for a single cluster, where
 # the adjacency matrix is typically dense
-adjacencyMatAtchleyFromClones <- function(
-  clones, # List of TCR CDR3 amino acid sequences corresponding to the clones
-  contig_ids = seq_along(clones), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
+adjacencyMatAtchleyFromSeqs <- function(
+  seqs, # List of TCR CDR3 amino acid sequences corresponding to the seqs
+  contig_ids = seq_along(seqs), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
   max_dist, # Maximum Euclidean distance threshold for edge/adjacency between two sequences
   return_type = "adjacency_matrix", # can be set to "distance_matrix" to return the distance matrix instead
   outfile_distance_matrix = NULL # savefile for Euclidean distance matrix
 ) {
   # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
-  embedded_values <- embedClonesByAtchleyFactor(clones, contig_ids)
+  embedded_values <- embedTCRSeqsByAtchleyFactor(seqs, contig_ids)
 
   # Compute Euclidean distance matrix on embedded sequence values
   cat("Computing Euclidean distances between the embedded values...")
@@ -686,18 +688,18 @@ adjacencyMatAtchleyFromClones <- function(
 
 # Embed TCR CDR3 amino acid sequences in Euclidean 30-space based on the Atchley
 # factor representations of their elements, using a trained encoding model
-embedClonesByAtchleyFactor <- function(
-  clones, # List of TCR CDR3 amino acid sequences corresponding to the clones
-  contig_ids = seq_along(clones) # used by BriseisEncoder
+embedTCRSeqsByAtchleyFactor <- function(
+  cdr3_AA, # List of TCR CDR3 amino acid sequences
+  contig_ids = seq_along(cdr3_AA) # used by BriseisEncoder
 ) {
   .checkPythonModules()
-  if (length(clones) != length(contig_ids)) {
-    stop("length of `clones` and `contig_ids` must match")
+  if (length(cdr3_AA) != length(contig_ids)) {
+    stop("length of `cdr3_AA` and `contig_ids` must match")
   }
   # Write sequences and contig_ids to temporary file
   tempfile_clones <- file.path(getwd(),
                                "Atchley_factor_tcr_only_tmp.csv")
-  utils::write.csv(data.frame("contig_id" = contig_ids, "cdr3" = clones),
+  utils::write.csv(data.frame("contig_id" = contig_ids, "cdr3" = cdr3_AA),
                    file = tempfile_clones, row.names = FALSE)
 
   # Write files for trained encoder and Atchley factor table to working dir

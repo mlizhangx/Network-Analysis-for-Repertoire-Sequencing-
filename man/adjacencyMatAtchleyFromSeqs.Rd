@@ -1,5 +1,5 @@
-\name{adjacencyMatAtchleyFromClones}
-\alias{adjacencyMatAtchleyFromClones}
+\name{adjacencyMatAtchleyFromSeqs}
+\alias{adjacencyMatAtchleyFromSeqs}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -10,22 +10,22 @@ Network Adjacency Matrix Based on Clone Sequence Atchley Factor Representations
 Given a list of T-cell receptor CDR3 amino acid sequences, encodes each sequence as a 30-dimensional numeric vector based on the Atchley factor representation of its terms using a trained encoder, then computes the corresponding network adjacency matrix based on the Euclidean distance between encoded vectors using a specified cutoff.
 }
 \usage{
-adjacencyMatAtchleyFromClones(
-    clones,
-    contig_ids = seq_along(clones),
+adjacencyMatAtchleyFromSeqs(
+    seqs,
+    contig_ids = seq_along(seqs),
     max_dist,
     return_type = "adjacency_matrix",
     outfile_distance_matrix = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{clones}{
-%%     ~~Describe \code{clones} here~~
+  \item{seqs}{
+%%     ~~Describe \code{seqs} here~~
 A character vector containing the TCR CDR3 amino acid sequences.
 }
   \item{contig_ids}{
 %%     ~~Describe \code{contig_ids} here~~
-A numeric vector of the same length as \code{clones}, used to uniquely identify its elements. By default, this is simply the sequence of integers from 1 to \code{length(clones)}.
+A numeric vector of the same length as \code{seqs}, used to uniquely identify its elements. By default, this is simply the sequence of integers from 1 to \code{length(seqs)}.
 }
   \item{max_dist}{
 %%     ~~Describe \code{max_dist} here~~
@@ -44,7 +44,7 @@ An optional argument specifying a \code{csv} file to which the matrix will be wr
 %%  ~~ If necessary, more details than the description above ~~
 The adjacency matrix of a graph with \eqn{n} nodes/vertices is the symmetric \eqn{n \times n} matrix for which the \eqn{(i,j)}th entry is equal to 1 if nodes \eqn{i} and \eqn{j} are adjacent (joined by an edge in the graph) and 0 otherwise.
 
-Each element of \code{clones} represents a node in the corresponding network graph; two nodes are adjacent if the Euclidean distance between their numerically encoded values is at most \code{max_dist}.
+Each element of \code{seqs} represents a node in the corresponding network graph; two nodes are adjacent if the Euclidean distance between their numerically encoded values is at most \code{max_dist}.
 }
 \value{
 A matrix.
@@ -69,21 +69,21 @@ The encoder was trained specifically on TCR CDR3 amino acid sequences and is not
 }
 \examples{
 \dontrun{
-clones <- c("CASSEAQGSGSTDTQYF",
-            "CATTEGSNTGELFF",
-            "CASSIGDNEQFF",
-            "CATSRDPDRGQSDTQYF",
-            "CASSPTGLSGNTIYF",
-            "CASSEEAGKDTQYF",
-            "CASSGGADTQYF",
-            "CASSLGLATDTQYF",
-            "CASSEKEEVGELFF",
-            "CASSSRTSGGAGELFF")
-adjacencyMatAtchleyFromClones(
-    clones, max_dist = 3)
+cdr3 <- c("CASSEAQGSGSTDTQYF",
+          "CATTEGSNTGELFF",
+          "CASSIGDNEQFF",
+          "CATSRDPDRGQSDTQYF",
+          "CASSPTGLSGNTIYF",
+          "CASSEEAGKDTQYF",
+          "CASSGGADTQYF",
+          "CASSLGLATDTQYF",
+          "CASSEKEEVGELFF",
+          "CASSSRTSGGAGELFF")
+adjacencyMatAtchleyFromSeqs(
+    cdr3, max_dist = 3)
 
-adjacencyMatAtchleyFromClones(
-    clones,
+adjacencyMatAtchleyFromSeqs(
+    cdr3,
     return_type = "distance_matrix")
 }
 }

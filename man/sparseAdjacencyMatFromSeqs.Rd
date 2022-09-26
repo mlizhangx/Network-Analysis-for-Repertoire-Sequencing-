@@ -1,5 +1,5 @@
-\name{sparseAdjacencyMatFromClones}
-\alias{sparseAdjacencyMatFromClones}
+\name{sparseAdjacencyMatFromSeqs}
+\alias{sparseAdjacencyMatFromSeqs}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -10,16 +10,16 @@ Sparse Adjacency Matrix for Immune Repertoire Network by Clone Sequence Similari
 Given a list of T-cell or B-cell receptor sequences, generates the adjacency matrix (in sparse format) for the corresponding network graph based on either the Hamming or Levenshtein distance using a specified cutoff.
 }
 \usage{
-sparseAdjacencyMatFromClones(
-    clones,
+sparseAdjacencyMatFromSeqs(
+    seqs,
     dist_type = "hamming",
     max_dist = 1,
     drop_isolated_nodes = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{clones}{
-%%     ~~Describe \code{clones} here~~
+  \item{seqs}{
+%%     ~~Describe \code{seqs} here~~
 A character vector containing the TCR/BCR sequences.
 }
   \item{dist_type}{
@@ -39,7 +39,7 @@ A logical scalar; if \code{TRUE}, sequences with no adjacencies will have their 
 %%  ~~ If necessary, more details than the description above ~~
 The adjacency matrix of a graph with \eqn{n} nodes/vertices is the symmetric \eqn{n \times n} matrix for which the \eqn{(i,j)}th entry is equal to 1 if nodes \eqn{i} and \eqn{j} are adjacent (joined by an edge in the graph) and 0 otherwise.
 
-Each element of \code{clones} represents a node in the corresponding network graph; two nodes are adjacent if the similarity in their sequences, as measured by \code{dist_type}, is at most \code{max_dist}.
+Each element of \code{seqs} represents a node in the corresponding network graph; two nodes are adjacent if the similarity in their sequences, as measured by \code{dist_type}, is at most \code{max_dist}.
 }
 \value{
 %%  ~Describe the value returned
@@ -49,7 +49,7 @@ Each element of \code{clones} represents a node in the corresponding network gra
 %% ...
 A sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package.
 
-If \code{drop_isolated_nodes = TRUE}, the element of \code{clones} that corresponds to each row (equivalently, column) is specified in the \code{Dimnames} of this matrix. The \code{Dimnames} can be accessed using \code{dimnames()}. This returns a list with two elements, each a character vector whose length matches the row dimension of the matrix. These respectively specify the indices and the elements of \code{clones} corresponding to each row.
+If \code{drop_isolated_nodes = TRUE}, the element of \code{seqs} that corresponds to each row (equivalently, column) is specified in the \code{Dimnames} of this matrix. The \code{Dimnames} can be accessed using \code{dimnames()}. This returns a list with two elements, each a character vector whose length matches the row dimension of the matrix. These respectively specify the indices and the elements of \code{seqs} corresponding to each row.
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -62,7 +62,7 @@ If \code{drop_isolated_nodes = TRUE}, the element of \code{clones} that correspo
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \examples{
-sparseAdjacencyMatFromClones(
+sparseAdjacencyMatFromSeqs(
     c("fee", "fie", "foe", "fum", "foo"))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

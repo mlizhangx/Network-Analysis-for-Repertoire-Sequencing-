@@ -14,7 +14,7 @@
 \usage{
 getClusterStats(data,
                 adjacency_matrix,
-                clone_col,
+                seq_col,
                 count_col,
                 cluster_id_col = NULL,
                 degree_col = NULL,
@@ -33,8 +33,8 @@ getClusterStats(data,
     in `data`, with row dimension matching that of `data`. Sparse matrices
     created using the `Matrix` package are supported.
 }
-  \item{clone_col}{
-%%     ~~Describe \code{clone_col} here~~
+  \item{seq_col}{
+%%     ~~Describe \code{seq_col} here~~
       The column name or number of `data` containing the receptor sequences (e.g.,
       TCR CDR3 nucleotide sequence or amino acid sequence).
 }
@@ -52,7 +52,7 @@ getClusterStats(data,
 }
   \item{seq_length_col}{
 %%     ~~Describe \code{seq_length_col} here~~
-      The column name or number of `data` containing the sequence length for each clone. If `NULL`, the values will be computed based on the sequences in `clone_col`.
+      The column name or number of `data` containing the sequence length for each clone. If `NULL`, the values will be computed based on the sequences in `seq_col`.
 }
 }
 \details{
@@ -158,7 +158,7 @@ adjmat <-
 # Get cluster stats
 cluster_info <-
   getClusterStats(data, adjmat,
-                  clone_col = "clone_seq",
+                  seq_col = "clone_seq",
                   count_col = "count")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

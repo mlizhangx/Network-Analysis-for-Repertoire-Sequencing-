@@ -1,5 +1,5 @@
-\name{generateNetworkFromClones}
-\alias{generateNetworkFromClones}
+\name{generateNetworkFromSeqs}
+\alias{generateNetworkFromSeqs}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
@@ -12,20 +12,20 @@
     then generates the corresponding network.
 }
 \usage{
-generateNetworkFromClones(
-    clones,
+generateNetworkFromSeqs(
+    seqs,
     dist_type = "hamming",
     edge_dist = 1,
     drop_isolated_nodes = TRUE,
-    contig_ids = seq_along(clones),
+    contig_ids = seq_along(seqs),
     outfile_adjacency_matrix = NULL,
     outfile_distance_matrix = NULL,
     return_type = "network")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{clones}{
-%%     ~~Describe \code{clones} here~~
+  \item{seqs}{
+%%     ~~Describe \code{seqs} here~~
     A character vector containing the list of receptor sequences.
 }
   \item{dist_type}{
@@ -42,11 +42,11 @@ generateNetworkFromClones(
 }
   \item{drop_isolated_nodes}{
 %%     ~~Describe \code{drop_isolated_nodes} here~~
-      Logical. If TRUE, clones that are not incidental to any network edges are dropped from the network.
+      Logical. If TRUE, nodes that are not incidental to any network edges (i.e., cells/clones whose receptor sequences are not similar to any others) are dropped from the network.
 }
   \item{contig_ids}{
 %%     ~~Describe \code{contig_ids} here~~
-      Passed to `embedClonesByAtchleyFactor()`.
+      Passed to `embedTCRSeqsByAtchleyFactor()`.
 }
   \item{outfile_adjacency_matrix}{
 %%     ~~Describe \code{outfile_adjacency_matrix} here~~
@@ -119,7 +119,7 @@ for (i in 1:sample_size) {
                             collapse = "")
 }
 
-net <- generateNetworkFromClones(clones = clone_seqs,
+net <- generateNetworkFromSeqs(seqs = clone_seqs,
                                  dist_type = "levenshtein")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
