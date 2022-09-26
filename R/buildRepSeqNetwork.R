@@ -33,7 +33,7 @@ buildRepSeqNetwork <- function(
   # Plot Settings
   plot_title = "auto",
   plot_subtitle = "auto",
-  color_nodes_by = "auto", # uses degree if available, else clone count
+  color_nodes_by = "auto", # uses degree if available, else clone count if available, else nothing
   color_scheme = "default", #  (accepts vector of same length as color_nodes_by)
   color_legend = TRUE,
   color_title = "auto", # custom title (accepts vector of same length as color_nodes_by)
@@ -199,7 +199,7 @@ buildRepSeqNetwork <- function(
   # Determine plot title/subtitle
   if (!is.null(plot_title)) {
     if (plot_title == "auto") {
-      plot_title <- paste("Immune Repertoire Network Based on Similarity in Receptor Sequence")
+      plot_title <- paste("Immune Repertoire Network\nby Receptor Sequence Similarity")
     }
   }
   if (!is.null(plot_subtitle)) {
@@ -218,10 +218,10 @@ buildRepSeqNetwork <- function(
     if (color_nodes_by == "auto") {
       if ("degree" %in% names(data)) { # use network degree if available
         color_nodes_by <- "degree"
-      } else if (!is.null(count_col)) { # if degree unavailable, color the nodes by clone count
+      } else if (!is.null(count_col)) { # if degree unavailable, color the nodes by clone count if available
         color_nodes_by <- count_col
       } else {
-        color_nodes_by <- NULL
+        color_nodes_by <- NULL # default to uniform node colors
       }
     }
   }
