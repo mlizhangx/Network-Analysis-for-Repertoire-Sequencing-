@@ -431,7 +431,7 @@ plotNetworkGraph <- function(network, edge_width = 0.3,
                              show_color_legend = TRUE,
                              color_legend_title = "auto",
                              size_nodes_by = NULL,
-                             node_size_limits = "auto",
+                             node_size_limits = NULL,
                              size_legend_title = "auto",
                              outfile = NULL
 ) {
