@@ -281,9 +281,9 @@ buildRepSeqNetwork <- function(
       plotNetworkGraph(
         net, edge_width, title = plot_title, subtitle = plot_subtitle,
         color_nodes_by = NULL,
-        color_legend_title = color_title[[j]],
-        color_scheme = color_scheme[[j]],
-        show_color_legend = color_legend,
+        color_legend_title = NULL,
+        color_scheme = color_scheme,
+        show_color_legend = FALSE,
         size_nodes_by = size_nodes_by,
         size_legend_title = size_title,
         node_size_limits = node_size_limits)
