@@ -4,7 +4,7 @@ output:
   html_document:
     toc: yes
     toc_float: yes
-    toc_depth: 2
+    toc_depth: 3
     df_print: paged
 ---
 
@@ -217,4 +217,69 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 
 ### Adjust node sizes or size nodes using meta data
 
-The fixed size of the nodes can be adjusted by supplying a numeric value to the argument `size_nodes_by`. This argument also allows nodes to be sized dynamically based on node-level meta data by supplying a variable name, similarly to `color_nodes_by`. 
+The fixed size of the nodes (the default value is 0.5) can be adjusted by supplying a numeric value to the argument `size_nodes_by`:
+
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             size_nodes_by = 1)
+```
+
+A value of `NULL` can also be used for the default `ggraph` node sizes.
+
+The `size_nodes_by` argument also allows nodes to be sized dynamically based on node-level meta data by supplying a variable name, similarly to `color_nodes_by`. 
+
+When using dynamic node sizes, the minimum and maximum node sizes can be specified as a length-2 numeric vector to the `node_size_limits` argument. The default value of `NULL` uses the default range of node sizes in `ggraph`.
+
+```{r}
+# Size nodes dynamically by degree; use custom size range
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             size_nodes_by = "degree",
+                             node_size_limits = c(0.5, 2))
+```
+
+
+
+### Generate multiple graphs
+
+It is possible to generate multiple plots, each using a different variable to color the nodes, as follows:
+
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = c("transitivity", "eigen_centrality"),
+                             color_scheme = c("plasma-1", "default"),
+                             size_nodes_by = "degree",
+                             node_size_limits = c(0.5, 2))
+```
+
+If a single value is supplied for `color_scheme`, it will be used for all of the plots.
+
+
+
+### Plot title/subtitle
+
+The plot title and subtitle can be specified using the `plot_title` and `plot_subtitle` arguments, or omitted by supplying a `NULL` value:
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             plot_title = NULL,
+                             plot_subtitle = NULL)
+```
+
+
+
+### Legends and legend titles
+
+The legends for node color and size can be toggled using the logical arguments `color_legend` and `size_legend` (these are `TRUE` by default), while custom legend titles can be specified using the `color_title` and `size_title` arguments. Supplying a `NULL` value for a legend title will omit the legend title.
+
+
+
+### Edge width
+
+The thickness of the graph edges can be adjusted using the `edge_width` argument (the default value is 0.1):
+
+
+
+
+
