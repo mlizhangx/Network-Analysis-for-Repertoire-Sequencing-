@@ -47,7 +47,7 @@ findPublicClusters <- function(
   diff_test_cutoff = 0.05,
 
   # Settings for K-means clustering on Atchley factor
-  kmeans_atchley = TRUE, # include kmeans clustering? only applicable to TCRB CDR3 amino acid seqs
+  kmeans_atchley = FALSE, # include kmeans clustering? only applicable to TCRB CDR3 amino acid seqs
   k = 100, # number of clusters
   k_plot_width = 15,
   k_plot_height = 15,
