@@ -49,8 +49,8 @@ kmeansAtchley <- function(
   if (k > nrow(df)) { stop("the number 'k' of clusters to build exceeds the number of unique TCR sequences; try a smaller value of 'k'") }
 
   # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
-  embedded_values <- embedClonesByAtchleyFactor(df$cdr3,
-                                                contig_ids = rownames(df))[ , -1]
+  embedded_values <-
+    embedTCRSeqsByAtchleyFactor(df$cdr3, contig_ids = rownames(df))[ , -1]
   rownames(embedded_values) <- df$cdr3
 
   # Perform K-means clustering on embedded values
