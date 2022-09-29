@@ -16,7 +16,7 @@ getAssociatedClusters <- function(
   # cdr3length_col = NULL,
   sample_col,
   target_seqs,
-  count_col = NULL,
+  # count_col = NULL,
   # freq_col = NULL,
   other_cols = NULL,
   target_seq_labels = NULL, # added to single-cluster plot subtitles
