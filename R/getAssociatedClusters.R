@@ -301,6 +301,7 @@ getAssociatedClusters <- function(
             size_legend_title = nbd_size_title,
             node_size_limits = nbd_node_size_limits)
         if (print_plots) { print(temp_plotlist$uniform_color) }
+        cat(" Done.\n")
       } else {
         for (j in 1:length(nbd_color_nodes_by)) {
           cat(paste0(
@@ -321,10 +322,10 @@ getAssociatedClusters <- function(
           if (print_plots) { print(temp_plotlist$newplot) }
           names(temp_plotlist)[[length(names(temp_plotlist))]] <-
             nbd_color_nodes_by[[j]]
+          cat(" Done.\n")
         }
       }
 
-      cat(" Done.\n")
     }
     # # Save plots for current cluster to a single pdf if applicable
     # if (save_plots & !single_plot & !is.null(output_dir)) {

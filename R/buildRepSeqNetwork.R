@@ -288,6 +288,7 @@ buildRepSeqNetwork <- function(
         size_legend_title = size_title,
         node_size_limits = node_size_limits)
     if (print_plots) { print(temp_plotlist$uniform_color) }
+    cat(" Done.\n")
   } else {
     for (j in 1:length(color_nodes_by)) {
       cat(paste0("Generating graph plot with nodes colored by ",
@@ -304,8 +305,9 @@ buildRepSeqNetwork <- function(
           node_size_limits = node_size_limits)
       if (print_plots) { print(temp_plotlist$newplot) }
       names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
+      cat(" Done.\n")
     }
-    cat(" Done.\n") }
+  }
 
 
   #### SAVE RESULTS ####
@@ -561,7 +563,7 @@ buildRepSeqNetwork <- function(
 
 
 # buildRepSeqNetwork <- function(
-#
+    #
 #   # Input Data and Columns
 #   data,      # data frame containing req-seq data
 #   nucleo_col,
