@@ -95,7 +95,7 @@ getAssociatedClusters <- function(
   if (is.numeric(seq_col)) { seq_col <- names(data)[seq_col] }
   # if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
   # if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
-  if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
+  # if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
   # if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
   # if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
   # if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
@@ -120,7 +120,8 @@ getAssociatedClusters <- function(
       unique(c(other_cols, color_nodes_by, nbd_color_nodes_by)), names(data))
     data <-
       data[ , # Keep only the relevant columns, in specified order:
-            unique(c(seq_col, count_col,
+            unique(c(seq_col,
+                     # count_col,
                      # freq_col,
                      # vgene_col, dgene_col, jgene_col, cdr3length_col,
                      sample_col,
