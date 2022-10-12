@@ -298,7 +298,7 @@ getClusterStats <- function(
   data, # rep-seq data for network, with node-level network stats
   adjacency_matrix, # adjacency matrix for network
   seq_col, # name or number of column of `data` containing the clone sequences
-  count_col, # name or number of column of `data` containing the clone counts
+  count_col = NULL, # name or number of column of `data` containing the clone counts
   cluster_id_col = NULL, # optional name or number of column of `data` containing the cluster IDs
   degree_col = NULL, # optional name or number of column of `data` containing the network degree
   seq_length_col = NULL # optional name or number of col containing seq lengths
