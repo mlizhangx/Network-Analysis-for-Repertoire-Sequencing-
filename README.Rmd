@@ -295,6 +295,7 @@ When using dynamic node sizes, the minimum and maximum node sizes can be specifi
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
                              size_nodes_by = "degree",
                              node_size_limits = c(0.5, 1.5))
 ```
@@ -308,7 +309,8 @@ It is possible to generate multiple plots, each using a different variable to co
 ```{r}
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
-                             color_nodes_by = c("transitivity", "eigen_centrality"),
+                             stats_to_include = "all",
+                             color_nodes_by = c("transitivity", "closeness"),
                              color_scheme = c("plasma-1", "default"),
                              size_nodes_by = "degree",
                              node_size_limits = c(0.5, 1.5))
@@ -323,6 +325,11 @@ If a single value is supplied for `color_scheme`, it will be used for all of the
 The plot title and subtitle can be specified using the `plot_title` and `plot_subtitle` arguments, or omitted by supplying a `NULL` value:
 ```{r}
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
+                             size_nodes_by = "degree",
+                             node_size_limits = c(0.5, 1.5),
                              plot_title = NULL,
                              plot_subtitle = NULL)
 ```

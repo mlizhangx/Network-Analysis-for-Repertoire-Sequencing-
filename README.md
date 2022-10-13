@@ -568,6 +568,7 @@ sizes in `ggraph`.
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
                              size_nodes_by = "degree",
                              node_size_limits = c(0.5, 1.5))
 #> Input data contains 4206 rows.
@@ -591,7 +592,8 @@ variable to color the nodes, as follows:
 ``` r
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
-                             color_nodes_by = c("transitivity", "eigen_centrality"),
+                             stats_to_include = "all",
+                             color_nodes_by = c("transitivity", "closeness"),
                              color_scheme = c("plasma-1", "default"),
                              size_nodes_by = "degree",
                              node_size_limits = c(0.5, 1.5))
@@ -599,6 +601,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 #> Removing sequences with length less than 3... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> 588 nodes in the network (after removing nodes with degree zero).
+#> Computing cluster membership within the network... Done.
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...
 ```
@@ -606,7 +609,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 <img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
-    #> Generating graph plot with nodes colored by eigen_centrality...
+    #> Generating graph plot with nodes colored by closeness...
 
 <img src="man/figures/README-unnamed-chunk-17-2.png" width="100%" style="display: block; margin: auto;" />
 
@@ -623,13 +626,19 @@ The plot title and subtitle can be specified using the `plot_title` and
 
 ``` r
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
+                             size_nodes_by = "degree",
+                             node_size_limits = c(0.5, 1.5),
                              plot_title = NULL,
                              plot_subtitle = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length less than 3... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> 588 nodes in the network (after removing nodes with degree zero).
-#> Generating graph plot...
+#> Computing node-level network statistics... Done.
+#> Generating graph plot with nodes colored by transitivity...
 ```
 
 <img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;" />
