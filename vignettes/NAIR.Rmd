@@ -1,12 +1,24 @@
 ---
 title: "NAIR: Network Analysis of Immune Repertoire"
-output:
-  html_document:
-    toc: yes
-    toc_float: yes
-    toc_depth: 2
-    df_print: paged
+output: rmarkdown::html_vignette
+fig_width: 12
+fig_height: 10
+vignette: >
+  %\VignetteIndexEntry{NAIR: Network Analysis of Immune Repertoire}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
+)
+```
+
 
 The `NAIR` package facilitates network analysis of the adaptive immune repertoire based on similarities among the receptor sequences. It implements custom pipelines developed in the following paper:
 
@@ -95,8 +107,6 @@ tcr_data <- tcr_data[tcr_data$chain == "TRB" & tcr_data$cdr3 != "None", ]
 
 # Number of sequences/cells (rows)
 nrow(tcr_data)
-
-head(tcr_data)
 ```
 
 
@@ -125,19 +135,18 @@ The console messages indicate the following tasks being performed:
 * Isolated nodes (those not joined by an edge to any other node) are removed from the graph
 * A plot of the network graph is generated
 
-We examine the output returned by the function.
+By default, a data frame is returned with the same columns as the input data:
 ```{r}
-typeof(output)
-is.data.frame(output)
-head(output)
+names(output)
 ```
 
-The returned data frame contains the same variables as the input data. Only rows corresponding to nodes that remain in the network graph are included (those corresponding to the dropped isolated nodes have been removed):
+Only rows corresponding to nodes that remain in the network graph are included (those corresponding to the dropped isolated nodes have been removed):
 ```{r}
 nrow(output)
 ```
 
 Thus, this output data serves as biological meta-data for the nodes in the network graph, with each row corresponding to a node seen in the plot above.
+
 
 
 ## Network Properties
@@ -151,9 +160,13 @@ Use `node_stats = TRUE` to include node-level network properties.
 ```{r}
 # Node-level properties
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE)
-head(output)
 ```
-The output data now contains node-level network properties in addition to the biological meta-data.
+
+The output data now contains node-level network properties in addition to the biological meta-data:
+```{r}
+names(output)
+```
+
 
 We also notice in the plot that nodes are now colored by network degree, which is one of the included node-level network properties.
 
@@ -180,24 +193,13 @@ We can include cluster-level network properties using `cluster_stats = TRUE`:
 ```{r}
 # Node-level and cluster-level properties
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
-                             cluster_stats = TRUE)
+                             cluster_stats = TRUE, print_plots = FALSE)
 ```
 
-The output is no longer a single data frame; instead, it is now a list which contains two data frames, one for the node-level meta data and one for the cluster-level meta data:
+The output is no longer a single data frame; instead, it is now a list containing two data frames, one for the node-level meta data and one for the cluster-level meta data:
 
 ```{r}
-# Output is a list
-typeof(output)
-
-# Output is not a data frame
-is.data.frame(output)
-
-# Output list contains the following items:
 names(output)
-```
-
-```{r}
-# View variables in the cluster-level meta data
 head(output$cluster_stats)
 ```
 Each row of the cluster-level meta data corresponds to a single cluster in the network.
@@ -327,7 +329,7 @@ By default, similarity between TCR/BCR sequences is based on the Hamming distanc
 
 Our package also supports the Levenshtein (edit) distance, which measures the minimum number of single-character edits (insertions, deletions and transformations) required to transform one sequence into the other. It can be used in place of the Hamming distance with the argument `dist_type = "levenshtein"`. Here we use the Levenshtein distance to build a network based off of similarity in the CDR-3 nucleotide sequences.
 
-```{r}
+```{r, eval = FALSE}
 # Network based on Levenshtein distance
 output <- buildRepSeqNetwork(tcr_data, "cdr3_nt", dist_type = "levenshtein")
 ```
@@ -414,6 +416,20 @@ plotNetworkGraph(network = output$igraph,
 ```
 
 
+### Matching Output Data to Input Data
+
+If one wishes to match rows of the input data to rows of the node-level meta data returned by `buildRepSeqNetwork()`, this can be done by matching the row names, since these are preserved in the output data: 
+
+```{r}
+head(output$node_data[ , c("barcode", "cdr3")])
+head(tcr_data[rownames(output$node_data) , c("barcode", "cdr3")])
+
+```
+
+
+
+
+
 ### Generating `igraph` Network From Adjacency Matrix
 
 It is not necessary to save the `igraph` object for a network as long as one has the adjacency matrix returned by `buildRepSeqNetwork()`. Regenerating the `igraph` object from the adjacency matrix is extremely fast, and can be done using the `generateNetworkFromAdjacencyMat` function, which is a convenient wrapper to the `igraph` functions `graph_from_adjacency_matrix`, `simplify` and `as.undirected`.
@@ -429,7 +445,7 @@ This object can then be passed to `plotNetworkGraph()` or other functions that a
 
 If the adjacency matrix is unavailable and one wishes to regenerate the `igraph` network object directly from the TCR/BCR sequences without calling `buildRepSeqNetwork()` again, this can be done using the `generateNetworkFromSeqs` function. The column of the node-level meta data containing the TCR/BCR sequences is passed to the first argument:
 
-```{r}
+```{r, eval = FALSE}
 network <- generateNetworkFromSeqs(output$node_data$cdr3)
 ```
 
@@ -440,7 +456,7 @@ While this involves computing the adjacency matrix, it can be considerably faste
 ### Computing Network Properties
 
 Node-level network properties can be computed and added to the node-level meta data using the `igraph` network object:
-```{r}
+```{r, eval = FALSE}
 output <- buildRepSeqNetwork(tcr_data, "cdr3", 
                              return_all = TRUE, print_plots = FALSE)
 
@@ -451,7 +467,7 @@ output$node_data <- addNodeNetworkStats(output$node_data,
 
 Cluster-level properties can be computed using the node-level meta data and the adjacency matrix:
 
-```{r}
+```{r, eval = FALSE}
 output$cluster_stats <- 
   getClusterStats(data = output$node_data,
                   adjacency_matrix = output$adjacency_matrix,
@@ -463,9 +479,10 @@ output$cluster_stats <-
 
 If one wishes to regenerate the adjacency matrix for a network, this can be done by passing the column of the node-level meta data containing the TCR/BCR sequences to the `sparseAdjacencyMatFromSeqs` function. This function is also useful in general as a computationally fast and memory efficient tool for generating graph adjacency matrices based on the Hamming or Levenshtein distance, as the matrices are computed in C++ as sparse integer matrices and returned in `R` as sparse matrices of class `dgCMatrix` from the `Matrix` package.
 
-```{r}
+```{r, eval = FALSE}
 adjacency_matrix <- sparseAdjacencyMatFromSeqs(output$node_data$cdr3)
 ```
+
 
 
 
