@@ -408,8 +408,7 @@ Here we generate a new plot, coloring the nodes using the `c_gene` variable, and
 plotNetworkGraph(network = output$igraph,
                  color_nodes_by = output$node_data$c_gene,
                  color_legend_title = "C Gene",
-                 title = "New plot",
-                 size_nodes_by = 0.8) +
+                 size_nodes_by = 1) +
   scale_color_manual(values = c("grey", "limegreen", "red2"))
 ```
 

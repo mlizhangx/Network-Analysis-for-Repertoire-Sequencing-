@@ -833,8 +833,7 @@ variable, and manually specifying a color palette using the
 plotNetworkGraph(network = output$igraph,
                  color_nodes_by = output$node_data$c_gene,
                  color_legend_title = "C Gene",
-                 title = "New plot",
-                 size_nodes_by = 0.8) +
+                 size_nodes_by = 1) +
   scale_color_manual(values = c("grey", "limegreen", "red2"))
 ```
 
