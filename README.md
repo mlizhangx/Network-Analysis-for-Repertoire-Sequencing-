@@ -524,19 +524,25 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
     #>  Done.
     #> Finished building network.
 
-### Adjust node sizes or size nodes using meta data
+### Adjust node size
 
-The fixed size of the nodes (the default value is 0.5) can be adjusted
-by supplying a numeric value to the argument `size_nodes_by`:
+The default fixed node size is quite small, which is intended to prevent
+nodes from overlapping and obscuring edges in larger networks. The node
+size can be adjusted by supplying a numeric value to the argument
+`size_nodes_by` (the default value is 0.5):
 
 ``` r
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
                              size_nodes_by = 1)
 #> Input data contains 4206 rows.
 #> Removing sequences with length less than 3... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> 588 nodes in the network (after removing nodes with degree zero).
-#> Generating graph plot...
+#> Computing node-level network statistics... Done.
+#> Generating graph plot with nodes colored by transitivity...
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" />
@@ -544,7 +550,9 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
     #>  Done.
     #> Finished building network.
 
-A value of `NULL` can also be used for the default `ggraph` node sizes.
+A value of `NULL` will cause the default `ggraph` node sizes to be used.
+
+### Size nodes using meta data
 
 The `size_nodes_by` argument also allows nodes to be sized dynamically
 based on node-level meta data by supplying a variable name, similarly to
@@ -561,7 +569,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 2))
+                             node_size_limits = c(0.5, 1.5))
 #> Input data contains 4206 rows.
 #> Removing sequences with length less than 3... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
@@ -586,7 +594,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              color_nodes_by = c("transitivity", "eigen_centrality"),
                              color_scheme = c("plasma-1", "default"),
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 2))
+                             node_size_limits = c(0.5, 1.5))
 #> Input data contains 4206 rows.
 #> Removing sequences with length less than 3... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.

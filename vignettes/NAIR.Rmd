@@ -237,16 +237,22 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              color_scheme = "plasma-1")
 ```
 
-### Adjust node sizes or size nodes using meta data
+### Adjust node size
 
-The fixed size of the nodes (the default value is 0.5) can be adjusted by supplying a numeric value to the argument `size_nodes_by`:
+The default fixed node size is quite small, which is intended to prevent nodes from overlapping and obscuring edges in larger networks. The node size can be adjusted by supplying a numeric value to the argument `size_nodes_by` (the default value is 0.5):
 
 ```{r}
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
                              size_nodes_by = 1)
 ```
 
-A value of `NULL` can also be used for the default `ggraph` node sizes.
+A value of `NULL` will cause the default `ggraph` node sizes to be used.
+
+
+### Size nodes using meta data
 
 The `size_nodes_by` argument also allows nodes to be sized dynamically based on node-level meta data by supplying a variable name, similarly to `color_nodes_by`. 
 
@@ -258,7 +264,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 2))
+                             node_size_limits = c(0.5, 1.5))
 ```
 
 
@@ -273,7 +279,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              color_nodes_by = c("transitivity", "eigen_centrality"),
                              color_scheme = c("plasma-1", "default"),
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 2))
+                             node_size_limits = c(0.5, 1.5))
 ```
 
 If a single value is supplied for `color_scheme`, it will be used for all of the plots.
