@@ -102,12 +102,15 @@ If you wish to specify the Python environment to use, you can do so by
 using the `use_virtualenv()` function from the `reticulate` package
 prior to calling functions from `RepSeqNetworkAnalysis`.
 
-### Vignettes
+### Vignettes and Help Files
 
-Once the package is installed, you can view the introductory vignette
-for `NAIR` in your web browser by calling
-
-    browseVignettes("NAIR")
+Once the package is installed, you can view the help directory in the
+`R` help pane by calling `help(package = "NAIR")`. This contains a
+directory of documentation files for individual package functions, as
+well as an introductory vignette accessible via the item
+`User guides, package vignettes and other documentation`. This vignette,
+whose content is reproduced below, can also be viewed in your web
+browser by calling `browseVignettes("NAIR")`.
 
 # The `buildRepSeqNetwork()` function
 
@@ -805,7 +808,7 @@ output$plots$degree + # modify plot from output
   ggraph::geom_node_point(  # color nodes by coreness and set node size to 1
     aes(color = output$node_data$umis), size = 1) +
   guides(color = guide_legend(title = "UMIs")) + # change color legend title
-  scale_color_gradient(low = "cyan", high = "red")  # change color gradient
+  scale_color_gradient(low = "pink", high = "purple4")  # change color gradient
 ```
 
 <img src="man/figures/README-unnamed-chunk-21-1.png" width="100%" style="display: block; margin: auto;" />
@@ -832,7 +835,7 @@ plotNetworkGraph(network = output$igraph,
                  color_legend_title = "C Gene",
                  title = "New plot",
                  size_nodes_by = 0.8) +
-  scale_color_manual(values = c("grey", "red", "blue"))
+  scale_color_manual(values = c("grey", "limegreen", "red2"))
 ```
 
 <img src="man/figures/README-unnamed-chunk-22-1.png" width="100%" style="display: block; margin: auto;" />
@@ -936,3 +939,11 @@ sparse integer matrices and returned in `R` as sparse matrices of class
 ``` r
 adjacency_matrix <- sparseAdjacencyMatFromSeqs(output$node_data$cdr3)
 ```
+
+# Finding Associated Clones
+
+Vignette content coming soon.
+
+# Finding Public Clones
+
+Vignette content coming soon.

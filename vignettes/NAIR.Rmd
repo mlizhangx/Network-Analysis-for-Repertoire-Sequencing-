@@ -393,7 +393,7 @@ output$plots$degree + # modify plot from output
   ggraph::geom_node_point(  # color nodes by coreness and set node size to 1
     aes(color = output$node_data$umis), size = 1) +
   guides(color = guide_legend(title = "UMIs")) + # change color legend title
-  scale_color_gradient(low = "cyan", high = "red")  # change color gradient
+  scale_color_gradient(low = "pink", high = "purple4")  # change color gradient
 ```
 
 ### Generating New Plots
@@ -410,7 +410,7 @@ plotNetworkGraph(network = output$igraph,
                  color_legend_title = "C Gene",
                  title = "New plot",
                  size_nodes_by = 0.8) +
-  scale_color_manual(values = c("grey", "red", "blue"))
+  scale_color_manual(values = c("grey", "limegreen", "red2"))
 ```
 
 
