@@ -160,9 +160,13 @@ buildRepSeqNetwork <- function(
                             return_type = "adjacency_matrix",
                             drop_isolated_nodes = drop_isolated_nodes)
 
-  # Subset data to keep only those clones in the network (nonzero degree)
   if (drop_isolated_nodes & dist_type != "euclidean_on_atchley") {
-    data <- data[as.numeric(dimnames(adjacency_matrix)[[1]]), ] }
+    # Subset data to keep only those clones in the network (nonzero degree)
+    data <- data[as.numeric(dimnames(adjacency_matrix)[[1]]), ]
+
+    # Set row IDs of output data to match row IDs from original input data
+    rownames(data) <- dimnames(adjacency_matrix)[[1]]
+  }
 
   # Generate network from adjacency matrix
   net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
