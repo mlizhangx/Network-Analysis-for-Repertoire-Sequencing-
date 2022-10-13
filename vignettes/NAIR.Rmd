@@ -1,8 +1,6 @@
 ---
 title: "NAIR: Network Analysis of Immune Repertoire"
 output: rmarkdown::html_vignette
-fig_width: 12
-fig_height: 10
 vignette: >
   %\VignetteIndexEntry{NAIR: Network Analysis of Immune Repertoire}
   %\VignetteEngine{knitr::rmarkdown}
@@ -363,7 +361,7 @@ By default, the node-level meta data returned by `buildRepSeqNetwork()` includes
 
 
 
-## Downstream Analysis
+# Downstream Analysis
 
 The output returned by `buildRepSeqNetwork()` can be used to facilitate further downstream analysis, particularly if invoked with  `return_all = TRUE`. Doing so causes the function to return a list containing the following named components:
 
@@ -486,4 +484,10 @@ adjacency_matrix <- sparseAdjacencyMatFromSeqs(output$node_data$cdr3)
 
 
 
+# Finding Associated Clones
 
+Vignette content coming soon.
+
+# Finding Public Clones
+
+Vignette content coming soon.

@@ -9,7 +9,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
 )
 ```
 
@@ -523,3 +525,12 @@ adjacency_matrix <- sparseAdjacencyMatFromSeqs(output$node_data$cdr3)
 
 
 
+
+
+# Finding Associated Clones
+
+Vignette content coming soon.
+
+# Finding Public Clones
+
+Vignette content coming soon.

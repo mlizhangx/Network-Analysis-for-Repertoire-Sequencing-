@@ -226,7 +226,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3")
 #> Generating graph plot...
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -288,7 +288,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE)
 #> Generating graph plot with nodes colored by degree...
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -484,7 +484,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE,
 #> Generating graph plot with nodes colored by transitivity...
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -516,7 +516,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 #> Generating graph plot with nodes colored by transitivity...
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -536,7 +536,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 #> Generating graph plot...
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -567,7 +567,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 #> Generating graph plot with nodes colored by transitivity...
 ```
 
-<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -592,12 +592,12 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 #> Generating graph plot with nodes colored by transitivity...
 ```
 
-<img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Generating graph plot with nodes colored by eigen_centrality...
 
-<img src="man/figures/README-unnamed-chunk-17-2.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-17-2.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -621,7 +621,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 #> Generating graph plot...
 ```
 
-<img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -788,7 +788,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE,
 #> Generating graph plot with nodes colored by degree...
 ```
 
-<img src="man/figures/README-unnamed-chunk-20-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
     #> Finished building network.
@@ -808,7 +808,7 @@ output$plots$degree + # modify plot from output
   scale_color_gradient(low = "cyan", high = "red")  # change color gradient
 ```
 
-<img src="man/figures/README-unnamed-chunk-21-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-21-1.png" width="100%" style="display: block; margin: auto;" />
 
 ### Generating New Plots
 
@@ -835,7 +835,7 @@ plotNetworkGraph(network = output$igraph,
   scale_color_manual(values = c("grey", "red", "blue"))
 ```
 
-<img src="man/figures/README-unnamed-chunk-22-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-22-1.png" width="100%" style="display: block; margin: auto;" />
 
 ### Matching Output Data to Input Data
 
