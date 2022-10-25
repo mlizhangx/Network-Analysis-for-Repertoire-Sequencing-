@@ -15,7 +15,7 @@
 getClusterStats(data,
                 adjacency_matrix,
                 seq_col,
-                count_col,
+                count_col = NULL,
                 cluster_id_col = NULL,
                 degree_col = NULL,
                 seq_length_col = NULL)
@@ -40,7 +40,7 @@ getClusterStats(data,
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~
-      The column name or number of `data` containing the clone counts.
+      Optional. The column name or number of `data` containing the clone counts. If supplied, then related cluster-level properties will be computed.
 }
   \item{cluster_id_col}{
 %%     ~~Describe \code{cluster_id_col} here~~

@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Generate the Network for a List of Clone Sequences
+    Generate the Network for a List of Receptor Sequences
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
@@ -30,11 +30,11 @@ generateNetworkFromSeqs(
 }
   \item{dist_type}{
 %%     ~~Describe \code{dist_type} here~~
-      The distance metric to use as a measure of similarity between two receptor
-      sequences. Valid options are `"hamming"` (the default), `"levenshtein"`
-      (i.e., edit distance) and `"euclidean_on_atchley"` (sequences are encoded
-      as numeric vectors using deep learning, and the Euclidean distance is measured
-      between the encoded vectors; only applicable to TCR CDR3 amino acid sequences).
+    The distance metric to use as a measure of similarity between two receptor
+    sequences. Valid options are \code{"hamming"} (the default), \code{"levenshtein"}
+    (i.e., edit distance) and \code{"euclidean_on_atchley"} (sequences are encoded
+    as numeric vectors using deep learning, and the Euclidean distance is measured
+    between the encoded vectors; only applicable to TCR CDR3 amino acid sequences).
 }
   \item{dist_cutoff}{
 %%     ~~Describe \code{edge_dist} here~~
