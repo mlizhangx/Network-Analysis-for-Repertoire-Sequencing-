@@ -1,6 +1,7 @@
 # 0.0.9016
 
 * Identified and fixed an error related to `filterClonesBySequenceLength()` that occurs when the input data only has a single column; this was affecting higher-level functions including `buildRepSeqNetwork()`
+* Identified and fixed an error in `getAssociatedClusters()` that occurred when `neighborhood_plots = FALSE` and `return_all = TRUE` (the function tried to include output related to the neighborhood plots when none existed).
 * `findAssociatedClones()` now returns an informative error when no sequences pass the filter for minimum sample membership.
 
 # 0.0.9015

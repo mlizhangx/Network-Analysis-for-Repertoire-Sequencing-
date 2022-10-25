@@ -477,9 +477,10 @@ getAssociatedClusters <- function(
     if (cluster_stats) { out$cluster_stats <- global_net$cluster_stats }
     if (return_type == "all") {
       out$global_plots <- global_net$plots
-      out$cluster_plots <- nbd_plots
+      if (neighborhood_plots) { out$cluster_plots <- nbd_plots }
       out$adjacency_matrix <- adjacency_matrix
-      out$igraph <- global_net$igraph }
+      out$igraph <- global_net$igraph
+    }
     cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
                paste(names(out), collapse = ", "), "\n"))
 
