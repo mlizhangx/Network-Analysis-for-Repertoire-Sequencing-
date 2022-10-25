@@ -73,7 +73,13 @@ aggregateIdenticalClones <- function(
 # FUNCTION: Filter rep-seq data to remove rows for clonotype sequences with
 # length below the specified cutoff
 filterClonesBySequenceLength <- function(data, seq_col, min_length = 3) {
-  return(data[nchar(data[ , seq_col]) >= min_length, ])
+  if (ncol(data) == 1) {
+    out <- as.data.frame(data[nchar(data[ , seq_col]) >= min_length, ])
+    colnames(out) <- colnames(data)
+    return(out)
+  } else {
+    return(data[nchar(data[ , seq_col]) >= min_length, ])
+  }
 }
 
 

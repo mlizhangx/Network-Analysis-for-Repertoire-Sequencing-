@@ -1,3 +1,7 @@
+# 0.0.9016
+
+* Fixed an error related to `filterClonesBySequenceLength()` that occurs when the input data only has a single column; this was affecting higher-level functions including `buildRepSeqNetwork()`
+
 # 0.0.9015
 
 * Fixed minor bugs related to changes in 0.0.9014
