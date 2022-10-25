@@ -851,7 +851,7 @@ plotNetworkGraph(network = output$igraph,
                  color_nodes_by = output$node_data$c_gene,
                  color_legend_title = "C Gene",
                  size_nodes_by = 1) +
-  scale_color_manual(values = c("grey", "limegreen", "red2"))
+  scale_color_manual(values = c("grey", "deepskyblue", "red2"))
 ```
 
 <img src="man/figures/README-unnamed-chunk-22-1.png" width="100%" style="display: block; margin: auto;" />
