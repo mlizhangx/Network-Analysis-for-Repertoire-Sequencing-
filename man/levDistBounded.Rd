@@ -1,16 +1,16 @@
-\name{hamDistBounded}
-\alias{hamDistBounded}
+\name{levDistBounded}
+\alias{levDistBounded}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-Bounded Computation of Hamming Distance
+Bounded Computation of Levenshtein Distance
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-Computes the Hamming distance between two strings subject to a specified upper bound.
+Computes the Levenshtein distance between two strings subject to a specified upper bound.
 }
 \usage{
-hamDistBounded(a, b, k)
+levDistBounded(a, b, k)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,14 +24,14 @@ A character string to be compared to \code{a}.
 }
   \item{k}{
 %%     ~~Describe \code{k} here~~
-The upper bound on the Hamming distance between \code{a} and \code{b}.
+The upper bound on the Levenshtein distance between \code{a} and \code{b}.
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-The Hamming distance measures the number of single-character transformations required to transform one string into another. It is defined only for strings of equal length. If \code{a} and \code{b} differ in length, placeholder characters are appended to the shorter string until the lengths match; each placeholder character in the shorter string is treated as non-matching with the character in the corresponding position of the longer string.
+The Levenshtein (edit) distance measures the minimum number of single-character edits (which include insertions, deletions and transformations) required to change one string into another.
 
-Computation is halted if the Hamming distance is determined to exceed the upper bound \code{k}; this reduces the computation required when distinguishing between values above the upper bound is unnecessary.
+Computation is halted if the Levenshtein distance is determined to exceed the upper bound \code{k}; this reduces the computation required when distinguishing between values above the upper bound is unnecessary.
 }
 \value{
 %%  ~Describe the value returned
@@ -39,7 +39,7 @@ Computation is halted if the Hamming distance is determined to exceed the upper 
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-An integer whose value is the Hamming distance between \code{a} and \code{b} if this distance is at most \code{k}; otherwise the value is \code{-1}.
+An integer whose value is the Levenshtein distance between \code{a} and \code{b} if this distance is at most \code{k}; otherwise the value is \code{-1}.
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -52,9 +52,9 @@ An integer whose value is the Hamming distance between \code{a} and \code{b} if 
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \examples{
-hamDistBounded("foo", "bar", 1)
-
-hamDistBounded("foo", "bar", 10)
+levDistBounded("foo", "bar", 1)
+levDistBounded("foo", "bar", 10)
+levDistBounded("foobar", "fubar", 10)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

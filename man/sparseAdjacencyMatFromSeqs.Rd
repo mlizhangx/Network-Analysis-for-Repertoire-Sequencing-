@@ -39,7 +39,7 @@ A logical scalar; if \code{TRUE}, sequences with no adjacencies will have their 
 %%  ~~ If necessary, more details than the description above ~~
 The adjacency matrix of a graph with \eqn{n} nodes/vertices is the symmetric \eqn{n \times n} matrix for which the \eqn{(i,j)}th entry is equal to 1 if nodes \eqn{i} and \eqn{j} are adjacent (joined by an edge in the graph) and 0 otherwise.
 
-Each element of \code{seqs} represents a node in the corresponding network graph; two nodes are adjacent if the similarity in their sequences, as measured by \code{dist_type}, is at most \code{max_dist}.
+Each element of \code{seqs} represents a node in the corresponding network graph; two nodes are adjacent if the distance between their sequences, as measured by \code{dist_type}, is at most \code{max_dist}.
 }
 \value{
 %%  ~Describe the value returned
