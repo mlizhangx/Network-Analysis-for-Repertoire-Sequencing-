@@ -10,7 +10,8 @@ findPublicClusters <- function(
   file_list,
   sample_ids,
   sample_groups = NULL, #exactly one of sample_groups or group_col must be non-NULL
-  csv_files = FALSE, # use read.csv instead of read.table?
+  file_type = "csv", # c("csv", "table", "rda", "rds")
+  data_symbol = NULL,
   header = TRUE,
   sep = "",
   # nucleo_col,
@@ -159,8 +160,17 @@ findPublicClusters <- function(
     cat(paste0("Processing data for sample ", i, " of ", length(file_list), ": ", sample_ids[[i]], "\n"))
 
     # Load data
-    if (csv_files) {
+    if (file_type == "csv") {
       data <- utils::read.csv(file.path(input_dir, file_list[[i]]), header, sep)
+    } else if (file_type == "rds") {
+      data <- readRDS(file.path(input_dir, file_list[[i]]))
+    } else if (file_type %in% c("rda", "Rdata")) {
+      stopifnot(
+        "must specify data symbol via argument `data_symbol`" =
+          !is.null(data_symbol)
+      )
+      load(file.path(input_dir, file_list[[i]]))
+      assign(x = "data", value = get(data_symbol))
     } else {
       data <- utils::read.table(file.path(input_dir, file_list[[i]]), header, sep)
     }

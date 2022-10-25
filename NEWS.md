@@ -1,5 +1,6 @@
 # 0.0.9016
 
+* `findPublicClusters()` now supports `.rds` and `.rda` file types; the `csv_files` argument has been replaced with an argument named `file_type`.
 * Identified and fixed an error related to `filterClonesBySequenceLength()` that occurs when the input data only has a single column; this was affecting higher-level functions including `buildRepSeqNetwork()`
 * Identified and fixed an error in `getAssociatedClusters()` that occurred when `neighborhood_plots = FALSE` and `return_all = TRUE` (the function tried to include output related to the neighborhood plots when none existed).
 * `findAssociatedClones()` now returns an informative error when no sequences pass the filter for minimum sample membership.
