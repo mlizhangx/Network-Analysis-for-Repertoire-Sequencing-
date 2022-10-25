@@ -91,6 +91,8 @@ findAssociatedClones <- function(
   # Drop sequences shared by fewer samples than the specified minimum
   out <- out[out$shared_by_n_samples >= min_sample_membership, ]
   cat(paste0(nrow(out), " sequences remain after filtering by sample membership.\n"))
+  stopifnot("no sequences pass the filter for minimum sample membership" =
+              nrow(out) == 0)
 
   #### FISHER'S EXACT TESTS ####
   cat("Performing Fisher's exact tests...")

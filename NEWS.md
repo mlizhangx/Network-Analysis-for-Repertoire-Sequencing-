@@ -1,6 +1,7 @@
 # 0.0.9016
 
-* Fixed an error related to `filterClonesBySequenceLength()` that occurs when the input data only has a single column; this was affecting higher-level functions including `buildRepSeqNetwork()`
+* Identified and fixed an error related to `filterClonesBySequenceLength()` that occurs when the input data only has a single column; this was affecting higher-level functions including `buildRepSeqNetwork()`
+* `findAssociatedClones()` now returns an informative error when no sequences pass the filter for minimum sample membership.
 
 # 0.0.9015
 
