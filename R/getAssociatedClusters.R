@@ -151,8 +151,7 @@ getAssociatedClusters <- function(
   ### GLOBAL NETWORK PLOT SETTINGS ###
   # Title for global cluster network plot
   if (plot_title == "auto") {
-    main_title <- paste("Global network of ",
-                        length(target_seqs), "associated clusters")
+    main_title <- paste("Global network of associated clusters")
   } else { main_title <- plot_title }
 
   # Default fixed component of subtitle across all plots
