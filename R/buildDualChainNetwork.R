@@ -120,7 +120,7 @@ buildDualChainNetwork <- function(
 
   # Drop isolated nodes from final network if specified
   if (drop_isolated_nodes) { cat("Dropping isolated nodes...")
-    nodes_to_keep <- degree(net) > 0  # nodes with nonzero network degree
+    nodes_to_keep <- igraph::degree(net) > 0
     adjacency_matrix <- adjacency_matrix[nodes_to_keep, nodes_to_keep]
     data <- data[nodes_to_keep, ]
     # regenerate network without isolated nodes
