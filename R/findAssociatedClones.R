@@ -19,7 +19,7 @@ findAssociatedClones <- function(
   sample_col,
   subject_col = sample_col,
   group_col,
-  groups = c(group0, group1),  # 0 = reference, 1 = comparison
+  groups = c("group0", "group1"),  # 0 = reference, 1 = comparison
   min_seq_length = 7,
   min_sample_membership = 5,
   pval_cutoff = 0.05,
