@@ -19,7 +19,7 @@ findAssociatedClones <- function(
   sample_col,
   subject_col = sample_col,
   group_col,
-  case_groups,
+  groups = c(group0, group1),  # 0 = reference, 1 = comparison
   min_seq_length = 7,
   min_sample_membership = 5,
   pval_cutoff = 0.05,
@@ -55,13 +55,14 @@ findAssociatedClones <- function(
 
   # Get subject case/control counts
   n_subjects <- length(unique(data[ , subject_col]))
-  rowids_case_subjects <- data[ , group_col] %in% case_groups
+  rowids_case_subjects <- data[ , group_col] == groups[[1]]
   n_case_subjects <-
     length(unique(data[rowids_case_subjects, subject_col]))
   n_control_subjects <- n_subjects - n_case_subjects
   cat(paste0(
-    "Data contains ", n_subjects, " ", samples_or_subjects,
-    ", ", n_case_subjects, " of which belong to the specified case groups.\n"))
+    "Data contains ", n_subjects, " ", samples_or_subjects, ", ",
+    n_control_subjects, " of which belong to the reference group and ",
+    n_case_subjects, " of which belong to the comparison group.\n"))
 
   # Get unique clone sequences and initialize output
   out <- data.frame("ReceptorSeq" = # list of unique clone seqs
@@ -134,7 +135,7 @@ findAssociatedClones <- function(
         "and ", shared_by_n_case_subjects + shared_by_n_control_subjects, " subjects ")
     }
     out$label[[i]] <- paste0(
-      out$label[[i]], "(of which ", shared_by_n_case_subjects, " are categorized as case ", samples_or_subjects, ")",
+      out$label[[i]], "(of which ", shared_by_n_case_subjects, " are in the comparison group)",
       "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3),
       ", Max frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
   }
