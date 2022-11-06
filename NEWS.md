@@ -1,3 +1,9 @@
+# 0.0.9017
+
+* `buildDualChainNetwork()` function added
+* `buildRepSeqNetwork()` and other high-level functions that generate a network from sequences now coerce the list of sequences to a character vector if it is not already in this format (e.g., factors).
+
+
 # 0.0.9016
 
 * Package vignette added, which includes an introduction to the package and a tutorial of the `buildRepSeqNetwork()` function
