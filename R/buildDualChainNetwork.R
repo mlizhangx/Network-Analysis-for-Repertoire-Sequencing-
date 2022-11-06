@@ -70,7 +70,7 @@ buildDualChainNetwork <- function(
   if (!is.character(data[ , a_col])) {
     data[ , a_col] <- as.character(data[ , a_col]) }
   if (!is.character(data[ , b_col])) {
-    data[ , b_col] <- as.character(data[ , b_col])
+    data[ , b_col] <- as.character(data[ , b_col]) }
 
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
