@@ -33,6 +33,9 @@ findAssociatedClones <- function(
   # if (clone_seq_type == "nucleotide") { clone_seq_col <- nucleo_col }
 
   #### FILTER CLONES ####
+  # Coerce sequence column to character if needed
+  if (!is.character(data[ , seq_col])) {
+    data[ , seq_col] <- as.character(data[ , seq_col]) }
 
   # Determine if data distinguishes subject from sample
   samples_or_subjects <- "samples"
@@ -66,7 +69,7 @@ findAssociatedClones <- function(
 
   # Get unique clone sequences and initialize output
   out <- data.frame("ReceptorSeq" = # list of unique clone seqs
-                      as.character(unique(data[ , seq_col])))
+                      unique(data[ , seq_col]))
   # out <- data.frame("AminoAcidSeq" = # list of unique clone seqs
   #                     as.character(unique(data[ , seq_col])))
   # output_clone_seq_col <- "AminoAcidSeq"
@@ -84,7 +87,7 @@ findAssociatedClones <- function(
   cat(paste0(nrow(out), " unique receptor sequences found. Computing sample membership (this could take a while)..."))
   out$shared_by_n_samples <-
     sapply(out$ReceptorSeq,
-    # sapply(out[ , output_clone_seq_col],
+           # sapply(out[ , output_clone_seq_col],
            function(x) {
              length(unique(data[data[ , seq_col] == x, sample_col])) })
   cat(" Done.\n")

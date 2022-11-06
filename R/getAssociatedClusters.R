@@ -91,7 +91,7 @@ getAssociatedClusters <- function(
                 yes = "node_and_cluster_data",
                 no = "node_data_only"))
 
-  # Convert input columns to character if not already
+  # Convert column references to character if not already
   if (is.numeric(seq_col)) { seq_col <- names(data)[seq_col] }
   # if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
   # if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
@@ -115,6 +115,10 @@ getAssociatedClusters <- function(
   if (dist_type == "hamming") { neighborhood_radius_dist_type <- "hamming" }
 
   # Format the input data
+  # Coerce sequence column to character if needed
+  if (!is.character(data[ , seq_col])) {
+    data[ , seq_col] <- as.character(data[ , seq_col]) }
+
   if (!is.null(other_cols)) {
     extra_cols <- intersect(
       unique(c(other_cols, color_nodes_by, nbd_color_nodes_by)), names(data))

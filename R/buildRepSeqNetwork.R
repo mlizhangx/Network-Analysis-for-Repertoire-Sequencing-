@@ -75,7 +75,7 @@ buildRepSeqNetwork <- function(
   # Create output directory if applicable
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
-  # Convert input columns to character if not already
+  # Convert column references to character if not already
   if (is.numeric(seq_col)) { seq_col <- names(data)[seq_col] }
   # if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
   # if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
@@ -102,6 +102,10 @@ buildRepSeqNetwork <- function(
 
 
   #### FORMAT AND FILTER DATA ####
+  # Coerce sequence column to character if needed
+  if (!is.character(data[ , seq_col])) {
+    data[ , seq_col] <- as.character(data[ , seq_col]) }
+
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
   # Filter by seq length

@@ -56,7 +56,7 @@ buildDualChainNetwork <- function(
   # Create output directory if applicable
   if (!is.null(output_dir)) { .createOutputDir(output_dir) }
 
-  # Convert input columns to character if not already
+  # Convert column references to character if not already
   if (is.numeric(a_col)) { a_col <- names(data)[a_col] }
   if (is.numeric(b_col)) { b_col <- names(data)[b_col] }
   if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
@@ -66,6 +66,12 @@ buildDualChainNetwork <- function(
   }
 
   #### FORMAT AND FILTER DATA ####
+  # Coerce sequence columns to character if needed
+  if (!is.character(data[ , a_col])) {
+    data[ , a_col] <- as.character(data[ , a_col]) }
+  if (!is.character(data[ , b_col])) {
+    data[ , b_col] <- as.character(data[ , b_col])
+
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
   # Filter by seq length
