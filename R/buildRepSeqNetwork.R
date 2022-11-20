@@ -1,425 +1,82 @@
-# Main function -----------------------------------------------------------
-
-# INPUT:
-#   bulk rep-seq data
-#   specifications for filtering, network and output
-# DO:
-#   filter data according to user specifications
-#   build network to spec (dist type, edge dist)
-#   compute network stats (if desired)
-#   compute clusters (if desired)
-#   generate network graph plot
 
 buildRepSeqNetwork <- function(
 
-  # Input Data/Settings
-  data,      # dataframe containing RepSeq data
-  seq_col, # column name or number containing receptor sequences used as basis for network
-  count_col = NULL, # optional column name or number containing measurements of clonal abundance
-  other_cols = NULL, # other cols to keep (if NULL, all are kept); ignored if aggregate_identical_clones = TRUE
-  min_seq_length = 3, # min clone seq length
-  drop_chars = NULL, # regular expression, e.g. "[*|_]"
-  # aggregate_identical_clones = FALSE,
-  # grouping_cols = NULL,
+  ## Input ##
+  data, seq_col, count_col = NULL,
+  subset_cols = NULL,
+  min_seq_length = 3, drop_matches = NULL,
 
-  # Network Settings
-  dist_type = "hamming", # or "levenshtein", "hamming", "euclidean_on_atchley"
-  dist_cutoff = 1, # max dist for edges
+  ## Network ##
+  dist_type = "hamming", dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
-  node_stats = FALSE,
-  stats_to_include = node_stat_settings(), # can also select "all" or "cluster_id_only"
+  node_stats = FALSE, stats_to_include = node_stat_settings(),
   cluster_stats = FALSE,
 
-  # Plot Settings
-  plot_title = "auto",
-  plot_subtitle = "auto",
-  color_nodes_by = "auto", # uses degree if available, else clone count if available, else nothing
-  color_scheme = "default", #  (accepts vector of same length as color_nodes_by)
-  color_legend = TRUE,
-  color_title = "auto", # custom title (accepts vector of same length as color_nodes_by)
-  edge_width = 0.1,
-  size_nodes_by = 0.5, # can use a double, e.g., 1.0, for fixed size
-  node_size_limits = "auto", # numeric, length 2
-  size_title = "auto", # custom legend title
+  ## Visualization ##
+  plots = TRUE, print_plots = TRUE,
+  plot_title = "auto", plot_subtitle = "auto",
+  color_nodes_by = "auto", ...,
 
-  # Output Settings
-  print_plots = TRUE,
-  output_dir = NULL, # if NULL, output is not saved to file
-  save_all = FALSE, # by default, only save pdf of plot and csv of node data
-  data_outfile = "node_data.csv",
-  plot_outfile = "network_graph.pdf",
-  plot_width = 12, # passed to pdf()
-  plot_height = 10, # passed to pdf()
-  cluster_outfile = "cluster_info.csv", # only saved if save_all = TRUE
-  igraph_outfile = "network_edgelist.txt", # .txt
-  matrix_outfile = "auto",
-  return_all = FALSE # if false, only the node data is returned (unless cluster_stats = TRUE and output_dir = NULL, in which case a list containing the node data and cluster info is returned, with a warning)
+  ## Output ##
+  output_dir = getwd(), output_type = "individual",
+  output_name = "MyRepSeqNetwork",
+  pdf_width = 12, pdf_height = 10
 
 ) {
-
-  #### INPUT CHECKS ####
-
-  # # Atchley factor embedding only applicable to amino acid sequences
-  # if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino acid") {
-  #   stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
-
-  # aggregate_identical_clones only applicable to amino acid sequences
-
-  # each elem of color_nodes_by is a data column or a node stat to be added
-
-  # for each elem of other_cols not present in data, warn that not found
-
-  # if color_nodes_by is not a scalar/vector of column names/numbers from data, force to "auto" with warning
-
-  #### PREPARE WORKING ENVIRONMENT ####
-  # Create output directory if applicable
-  if (!is.null(output_dir)) { .createOutputDir(output_dir) }
+  .createOutputDir(output_dir)
 
   # Convert column references to character if not already
-  if (is.numeric(seq_col)) { seq_col <- names(data)[seq_col] }
-  # if (is.numeric(nucleo_col)) { nucleo_col <- names(data)[nucleo_col] }
-  # if (is.numeric(amino_col)) { amino_col <- names(data)[amino_col] }
-  if (is.numeric(count_col)) { count_col <- names(data)[count_col] }
-  # if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
-  if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
-  if (is.numeric(color_nodes_by)) {
-    color_nodes_by <- names(data)[color_nodes_by]
+  seq_col <- .convertColRef(seq_col, data)
+  count_col <- .convertColRef(count_col, data)
+  color_nodes_by <- .convertColRef(color_nodes_by, data)
+  subset_cols <- .convertColRef(subset_cols, data)
+
+  data <- .filterInputData(data, seq_col, min_seq_length, drop_matches,
+                           subset_cols, count_col, color_nodes_by)
+  if (nrow(data) < 2) {
+    warning("insufficient remaining receptor sequences; at least two needed")
+    return(invisible(NULL))
   }
-  # if (!aggregate_identical_clones) {
-  #   # if (is.numeric(vgene_col)) { vgene_col <- names(data)[vgene_col] }
-  #   # if (is.numeric(dgene_col)) { dgene_col <- names(data)[dgene_col] }
-  #   # if (is.numeric(jgene_col)) { jgene_col <- names(data)[jgene_col] }
-  #   # if (is.numeric(cdr3length_col)) { cdr3length_col <- names(data)[cdr3length_col] }
-  #   if (is.numeric(other_cols)) { other_cols <- names(data)[other_cols] }
-  # } else {
-  #   if (is.numeric(grouping_cols)) {
-  #     grouping_cols <- names(data)[grouping_cols] }
-  # }
+  ### BUILD NETWORK ###
+  out <- .generateNetworkObjects(
+    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes)
 
-  # Designate amino acid or nucleotide for clone sequence
-  # clone_seq_col <- amino_col
-  # if (clone_seq_type == "nucleotide") { clone_seq_col <- nucleo_col }
+  ### NODE/CLUSTER STATS ###
+  if (node_stats) { out$node_data <- addNodeNetworkStats(
+      out$node_data, out$igraph, stats_to_include) }
+  if (cluster_stats) { out$cluster_data <-
+    .getClusterStats2(out$node_data, out$adjacency_matrix, seq_col, count_col) }
 
-
-  #### FORMAT AND FILTER DATA ####
-  # Coerce sequence column to character if needed
-  if (!is.character(data[ , seq_col])) {
-    data[ , seq_col] <- as.character(data[ , seq_col]) }
-
-  cat(paste0("Input data contains ", nrow(data), " rows.\n"))
-
-  # Filter by seq length
-  if (!is.null(min_seq_length)) {
-    cat(paste0("Removing sequences with length less than ", min_seq_length, "..."))
-    data <- filterClonesBySequenceLength(data, seq_col,
-                                         min_length = min_seq_length)
-    cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
+  ### GRAPH PLOTS ###
+  if (plots) {
+    out$plots <- .generateNetworkGraphPlotsGuarded(
+      out$igraph, out$node_data, print_plots,
+      .makePlotTitle(plot_title, seq_col = seq_col),
+      .makePlotSubtitle(plot_subtitle, seq_col = seq_col,
+                        dist_type = dist_type, dist_cutoff = dist_cutoff),
+      .passColorNodesBy(color_nodes_by, out$node_data, count_col),
+      ...)
+    if (is.null(out$plots)) { plots <- FALSE }
   }
 
-  # Filter seqs with special chars
-  if (!is.null(drop_chars)) {
-    cat(paste0("Removing sequences containing matches to the expression '", drop_chars, "'..."))
-    drop_matches <- grep(drop_chars, data[ , seq_col])
-    if (length(drop_matches) > 0) { data <- data[-drop_matches, ] }
-    cat(paste0(" Done. ", nrow(data), " rows remaining.\n")) }
-
-  # Format input data
-  # if (aggregate_identical_clones) { # Aggregate the counts if specified
-  #   data <- aggregateIdenticalClones(data, clone_seq_col,
-  #                                    count_col, freq_col, grouping_cols)
-  #   # Update column name references for count and freq
-  #   if (size_nodes_by == count_col) { size_nodes_by <- "AggregatedCloneCount" }
-  #   if (size_nodes_by == freq_col) { size_nodes_by <- "AggregatedCloneFrequency" }
-  #   if (count_col %in% color_nodes_by) {
-  #     color_nodes_by[which(color_nodes_by == count_col)] <- "AggregatedCloneCount" }
-  #   if (freq_col %in% color_nodes_by) {
-  #     color_nodes_by[which(color_nodes_by == freq_col)] <- "AggregatedCloneFrequency" }
-  #   count_col <- "AggregatedCloneCount"
-  #   freq_col <- "AggregatedCloneFrequency"
-  # } else { # Copy the relevant columns from the input data
-  #   data <-
-  #     data[ , # Keep only the relevant columns:
-  #           intersect(
-  #             unique(
-  #               c(nucleo_col, amino_col, count_col, freq_col,
-  #                 vgene_col, dgene_col, jgene_col, cdr3length_col,
-  #                 other_cols, color_nodes_by)),
-  #             names(data))]
-  # }
-  if (!is.null(other_cols)) {
-    data <-
-      data[ , # Keep only the relevant columns:
-            intersect(unique(c(seq_col, count_col, other_cols, color_nodes_by)),
-                      names(data))]
-  }
-
-  if (nrow(data) < 2) { stop("insufficient receptor sequences remaining; at least two are needed") }
-
-  #### BUILD NETWORK ####
-  # Generate adjacency matrix for network
-  adjacency_matrix <-
-    generateNetworkFromSeqs(data[ , seq_col],
-                            dist_type, dist_cutoff,
-                            contig_ids = rownames(data),
-                            return_type = "adjacency_matrix",
-                            drop_isolated_nodes = drop_isolated_nodes)
-
-  if (drop_isolated_nodes & dist_type != "euclidean_on_atchley") {
-    # Subset data to keep only those clones in the network (nonzero degree)
-    data <- data[as.numeric(dimnames(adjacency_matrix)[[1]]), ]
-  }
-
-  # Generate network from adjacency matrix
-  net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
-
-
-  #### NODE/CLUSTER STATS ####
-  # Add node-level network characteristics
-  if (node_stats) {
-    if (typeof(stats_to_include) != "list") {
-      if (stats_to_include == "cluster_id_only") {
-        stats_to_include <- node_stat_settings(
-          degree = FALSE, cluster_id = TRUE, transitivity = FALSE,
-          eigen_centrality = FALSE, centrality_by_eigen = FALSE,
-          betweenness = FALSE, centrality_by_betweenness = FALSE,
-          authority_score = FALSE, coreness = FALSE, page_rank = FALSE)
-      }
-    }
-    data <- addNodeNetworkStats(data, net, stats_to_include)
-  }
-
-  # Compute cluster-level network characteristics
-  if (cluster_stats) {
-    if (!"cluster_id" %in% names(data)) {
-      data <- addClusterMembership(data, net)
-    }
-    degree_col <- NULL
-    if ("degree" %in% names(data)) { degree_col <- "degree" }
-    cluster_info <- getClusterStats(data, adjacency_matrix, seq_col,
-                                    count_col, "cluster_id", degree_col)
-  }
-
-
-  ### PLOT(S) OF NETWORK GRAPH ####
-  # Determine plot title/subtitle
-  if (!is.null(plot_title)) {
-    if (plot_title == "auto") {
-      plot_title <- paste("Immune Repertoire Network\nby Receptor Sequence Similarity")
-    }
-  }
-  if (!is.null(plot_subtitle)) {
-    if (plot_subtitle == "auto") {
-      if (dist_type == "euclidean_on_atchley") {
-        plot_subtitle <- paste(
-          "Each node denotes a single TCR/BCR cell or clone\nSequences encoded numerically using deep learning based on Atchley factor representation\nEdges denote a maximum Euclidean distance of", dist_cutoff, "between encoded values\n")
-      } else {
-        plot_subtitle <- paste("Each node denotes a single TCR/BCR cell or clone\nEdges denote a maximum", dist_type, "distance of", dist_cutoff, "between receptor sequences\n")
-      }
-    }
-  }
-
-  # Assign default variable for node colors if applicable
-  if (length(color_nodes_by) == 1) {
-    if (color_nodes_by == "auto") {
-      if ("degree" %in% names(data)) { # use network degree if available
-        color_nodes_by <- "degree"
-      } else if (!is.null(count_col)) { # if degree unavailable, color the nodes by clone count if available
-        color_nodes_by <- count_col
-      } else {
-        color_nodes_by <- NULL # default to uniform node colors
-      }
-    }
-  }
-
-
-
-  if (is.null(color_nodes_by)) {
-    color_title <- NULL
-  } else { # color_nodes_by is non NULL
-
-    # If multiple coloring variables, extend color scheme and legend title to vectors if needed
-    if (length(color_nodes_by) > 1) {
-      if (length(color_scheme) == 1) { # extend to vector
-        color_scheme <- rep(color_scheme, length(color_nodes_by)) }
-      if (!is.null(color_title)) {
-        if (length(color_title) == 1) { # extend to vector
-          color_title <- rep(color_title, length(color_nodes_by)) }
-      } else { # color_title is NULL
-        # vector of empty titles (hack, since can't have NULL vector entries)
-        color_title <- rep("", length(color_nodes_by))
-      }
-    }
-
-    # Set default color legend title if applicable
-    if (!is.null(color_title)) {
-      for (i in 1:length(color_title)) {
-        if (color_title[[i]] == "auto") {
-          color_title[[i]] <- color_nodes_by[[i]]
-        }
-      }
-    }
-
-  }
-
-  # Set default size legend title if applicable
-  if (!is.null(size_title)) {
-    if (size_title == "auto") {
-      if (is.numeric(size_nodes_by)) {
-        size_title <- NULL
-      }
-      if (is.character(size_nodes_by)) {
-        size_title <- size_nodes_by
-      }
-    }
-  }
-
-  # If using a variable to size nodes, get the vector by column name
-  if (is.character(size_nodes_by)) {
-    size_nodes_by <- data[ , size_nodes_by]
-  }
-
-  # Create one plot for each variable used to color the nodes
-  temp_plotlist <- list()
-  if (is.null(color_nodes_by)) {
-    cat("Generating graph plot...")
-    temp_plotlist$uniform_color <-
-      plotNetworkGraph(
-        net, edge_width, title = plot_title, subtitle = plot_subtitle,
-        color_nodes_by = NULL,
-        color_legend_title = NULL,
-        color_scheme = color_scheme,
-        show_color_legend = FALSE,
-        size_nodes_by = size_nodes_by,
-        size_legend_title = size_title,
-        node_size_limits = node_size_limits)
-    if (print_plots) { print(temp_plotlist$uniform_color) }
-    cat(" Done.\n")
-  } else {
-    for (j in 1:length(color_nodes_by)) {
-      cat(paste0("Generating graph plot with nodes colored by ",
-                 color_nodes_by[[j]], "..."))
-      temp_plotlist$newplot <-
-        plotNetworkGraph(
-          net, edge_width, title = plot_title, subtitle = plot_subtitle,
-          color_nodes_by = data[ , color_nodes_by[[j]]],
-          color_legend_title = color_title[[j]],
-          color_scheme = color_scheme[[j]],
-          show_color_legend = color_legend,
-          size_nodes_by = size_nodes_by,
-          size_legend_title = size_title,
-          node_size_limits = node_size_limits)
-      if (print_plots) { print(temp_plotlist$newplot) }
-      names(temp_plotlist)[[length(names(temp_plotlist))]] <- color_nodes_by[[j]]
-      cat(" Done.\n")
-    }
-  }
-
-
-  #### SAVE RESULTS ####
-  # # Rename data columns
-  # if (aggregate_identical_clones) {
-  #   colnames(data)[[1]] <- ifelse(clone_seq_type == "nucleotide",
-  #                                 yes = "NucleotideSeq",
-  #                                 no = "AminoAcidSeq")
-  # } else {
-  #   colnames(data)[colnames(data) == nucleo_col] <- "NucleotideSeq"
-  #   colnames(data)[colnames(data) == amino_col] <- "AminoAcidSeq"
-  #   colnames(data)[colnames(data) == freq_col] <- "CloneFrequency"
-  #   colnames(data)[colnames(data) == count_col] <- "CloneCount"
-  #   if (!is.null(vgene_col)) {
-  #     colnames(data)[colnames(data) == vgene_col] <- "VGene"
-  #   }
-  #   if (!is.null(dgene_col)) {
-  #     colnames(data)[colnames(data) == dgene_col] <- "DGene"
-  #   }
-  #   if (!is.null(jgene_col)) {
-  #     colnames(data)[colnames(data) == jgene_col] <- "JGene"
-  #   }
-  #   if (!is.null(cdr3length_col)) {
-  #     colnames(data)[colnames(data) == cdr3length_col] <- "CDR3Length"
-  #   }
-  # }
-
-  # Save node [& cluster] data
-  if (!is.null(output_dir)) {
-    if (!is.null(data_outfile)) {
-      utils::write.csv(data, file = file.path(output_dir, data_outfile),
-                       row.names = FALSE)
-      cat(paste0("Node-level data saved to file:\n  ", data_outfile, "\n")) }
-    if (cluster_stats) {
-      utils::write.csv(cluster_info,
-                       file = file.path(output_dir, cluster_outfile),
-                       row.names = FALSE)
-      cat(paste0("Cluster-level data saved to file:\n  ",
-                 file.path(output_dir, cluster_outfile), "\n")) } }
-
-  # Save plots to a single pdf
-  if (!is.null(output_dir) & !is.null(plot_outfile)) {
-    grDevices::pdf(file = file.path(output_dir, plot_outfile),
-                   width = plot_width, height = plot_height)
-    for (j in 1:length(color_nodes_by)) { print(temp_plotlist[[j]]) }
-    grDevices::dev.off()
-    cat(paste0("Network graph plot saved to file:\n  ",
-               file.path(output_dir, plot_outfile), "\n")) }
-
-  # Save igraph
-  if (!is.null(output_dir) & save_all & !is.null(igraph_outfile)) {
-    igraph::write_graph(net,
-                        file = file.path(output_dir, igraph_outfile),
-                        format = "edgelist")
-    cat(paste0("Network igraph saved in edgelist format to file:\n  ",
-               file.path(output_dir, igraph_outfile), "\n")) }
-
-  # Save adjacency matrix
-  if (!is.null(output_dir) & save_all & !is.null(matrix_outfile)) {
-    if (matrix_outfile == "auto") {
-      if (dist_type == "euclidean_on_atchley") {
-        matrix_outfile <- "adjacency_matrix.csv"
-      } else {
-        matrix_outfile <- "adjacency_matrix.mtx"
-      }
-    }
-    if (dist_type == "euclidean_on_atchley") {
-      utils::write.csv(adjacency_matrix,
-                       file.path(output_dir, matrix_outfile),
-                       row.names = FALSE)
-      cat(paste0("Adjacency matrix saved to file:\n  ",
-                 file.path(output_dir, matrix_outfile), "\n"))
-    } else {
-      Matrix::writeMM(adjacency_matrix,
-                      file.path(output_dir, matrix_outfile))
-      cat(paste0("Adjacency matrix saved to file:\n  ",
-                 file.path(output_dir, matrix_outfile), "\n")) } }
-
-
-  #### RETURN OUTPUT ####
-  cat("Finished building network.\n")
-  return_type <- ifelse(return_all,
-                        yes = "all",
-                        no = ifelse(cluster_stats & is.null(output_dir),
-                                    yes = "node_and_cluster_data",
-                                    no = "node_data_only"))
-  if (return_type == "node_data_only") {
-    return(data)
-  } else {
-    out <- list("node_data" = data)
-    if (cluster_stats) { out$cluster_stats <- cluster_info }
-    if (return_type == "all") {
-      out$plots <- temp_plotlist
-      out$adjacency_matrix <- adjacency_matrix
-      out$igraph <- net
-    }
-    # cat(paste0("All tasks complete. Returning a list containing the following items:\n  ",
-    #            paste(names(out), collapse = ", "), "\n"))
-    return(out)
-  }
+  ### SAVE & RETURN RESULTS ###
+  .saveNetwork(out, output_dir, output_type, output_name,
+               plots, pdf_width, pdf_height, cluster_stats, dist_type)
+  return(invisible(out))
 }
 
 
 
 # Helper functions --------------------------------------------------------
 
-
+# ## Input checks ##
+# # Atchley factor embedding only applicable to amino acid sequences
+# if (dist_type == "euclidean_on_atchley" & clone_seq_type != "amino acid") {
+#   stop("distance type 'euclidean_on_atchley' only applicable to amino acid sequences") }
+# aggregate_identical_clones only applicable to amino acid sequences
+# each elem of color_nodes_by is a data column or a node stat to be added
+# for each elem of other_cols not present in data, warn that not found
+# if color_nodes_by is not a scalar/vector of column names/numbers from data, force to "auto" with warning
 
 # .saveNetworkResults <- function(node_data, cluster_data, net, adjacency_matrix,
 #                                 graph_plot, output_dir, dist_type, edge_dist,

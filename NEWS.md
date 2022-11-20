@@ -1,7 +1,39 @@
+# 0.0.9018
+
+* Changes to `buildRepSeqNetwork()` (many of these changes carry over to other functions):
+    * Changed arguments and functionality for saving output. A new `output_type` argument can be used to save the output list to a rds or rda file, rather than the default behavior of saving each item in an individual, uncompressed file. Rather than specifying the filename of each item individually, the `output_name` argument accepts a character string to be used as a common prefix for any files saved. All items are now saved, and the `save_all` argument has been removed.
+    * Changed name of argument `other_cols` to `subset_cols` to more accurately reflect its current role (for keeping only certain input columns rather than all)
+    * Changed name of argument `drop_chars` to `drop_matches` to better imply that it takes regular expressions and character strings
+    * Changed names of arguments `plot_width` and `plot_height` to `pdf_width` and `pdf_height` to more clearly indicate that they affect the dimensions of the saved pdf file, but not those of the plot at the `R` object level (`ggplot`) or as it appears in the R plotting window.
+    * Added logical argument `plots` which can be used to prevent plots from being generated.
+    * Many of the plotting arguments are now passed to `generateNetworkGraphPlots` via elipses (`...`)
+    * The returned value is now always a list and always contains the igraph, adjacency matrix and plots in addition to the node data. The `return_all` argument has been removed.
+    * When computing cluster-level properties (`cluster_stats = TRUE`), the corresponding data frame in the output list is now named `cluster_data` (previously was `cluster_stats`)
+    * Now invisibly returns its output, such that it can be assigned but will not be printed when the function is called without assigning its output.
+    * Now invisibly returns `NULL` with a warning when fewer than 2 sequences exist after filtering; previously it returned an error.
+* `buildRepSeqNetwork` now supports a dual-chain approach to analyzing single-cell RepSeq data: two cells (nodes) are considered adjacent if and only if they possess similar receptor sequences in *both* of two chains (e.g., alpha chain and beta chain). This is done by supplying a vector with two column references to `seq_col` instead of a single column reference, where the two columns each contain the receptor sequence from a different chain (e.g., CDR3 sequences from alpha and beta chains) and each row corresponds to a unique cell. This functionality can more generally be used to perform network analysis where similarity is based on any two types of sequences instead of one.
+* The functions for the public clusters workflow have been redesigned. Where previously the workflow was handled by a single function, `findPublicClusters`, it is now split across multiple functions in a manner that reduces memory usage and increases the flexibility of the workflow.
+    * `findPublicClusters` now performs network analysis on each sample individually to search for public clusters
+    * `buildPublicClusterNetwork` combines the public clusters across samples and performs network analysis
+    * `buildPublicClusterNetworkByRepresentative` can be used to perform network analysis on the combined public clusters using only a single representative clone from each cluster
+    * The optional step for K-means clustering based on numeric encoding of TCR sequences is now performed directly using the `kmeansAtchley` function
+* The functions for the associated clusters workflow have been redesigned in a manner similar to those for the public cluster workflow, and now use the same input format as the public cluster functions (one file per sample instead of a single data frame containing all samples):
+    * `findAssociatedSeqs` searches across samples for associated clone sequences based on sample membership and Fisher's exact test P-value
+    * `findAssociatedClones` searches across samples for clones within a neighborhood of each associated clone sequence
+    * `buildAssociatedClusterNetwork` combines the neighborhoods and performs network analysis and clustering
+    * Building networks for individual associated clusters/neighborhoods is now done directly using the `buildRepSeqNetwork` function on the desired subset of the output from `buildAssociatedClusterNetwork`
+    * K-means clustering on numerically encoded TCR sequences is now done directly using the `kmeansAtchley` function
+* A new function `generateNetworkGraphPlots()` has been added, which is capable of generating multiple plots with argument usage similar to that used in `buildRepSeqNetwork` (e.g., multiple color-code variables can be supplied, in which case color scheme and color legend title arguments will meaningfully accept either a scalar or vector valued argument)
+* Changes to `plotNetworkGraph()`:
+    * Some arguments were renamed and reordered to conform with the arguments of `buildRepSeqNetwork()`
+    * Now accepts the argument `show_color_legend = "auto"`, which will show the color legend if `color_nodes_by` is a continuous variable or a discrete variable with at most 20 distinct values.
+* `getClusterStats()` can now be used with `seq_col = NULL`, as the sequence variable is only used for a small number of statistics; similar to when `count_col = NULL`, the dependent statistics will be `NA` in the returned data frame, but other cluster properties will still be computed.
+* `buildRepSeqNetwork()` and other high-level functions that generate a network from sequences now coerce the list of sequences to a character vector if it is not already in this format (e.g., factors).
+* `buildRepSeqNetwork()` and other top-level functions now skip automatic plot generation when more than 1 million nodes are present in the network. This is done to avoid a potential error when calling `ggplot` that occurs when the combined nodes and edges exceed its limitations. After the network is generated and returned, the user can still attempt to manually generate the plot using `plotNetworkGraph()`; in this manner, the potential error will not interfere with completion of building the network.
+
 # 0.0.9017
 
 * `buildDualChainNetwork()` function added
-* `buildRepSeqNetwork()` and other high-level functions that generate a network from sequences now coerce the list of sequences to a character vector if it is not already in this format (e.g., factors).
 
 
 # 0.0.9016

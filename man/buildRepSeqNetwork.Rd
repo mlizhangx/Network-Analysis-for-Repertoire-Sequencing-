@@ -14,46 +14,28 @@
 \usage{
 buildRepSeqNetwork(
 
-    ## Input Data
-    data,
-    seq_col,
-    count_col = NULL,
-    other_cols = NULL,
-    min_seq_length = 3,
-    drop_chars = NULL,
+  ## Input ##
+  data, seq_col, count_col = NULL,
+  subset_cols = NULL,
+  min_seq_length = 3, drop_matches = NULL,
 
-    ## Network
-    dist_type = "hamming",
-    dist_cutoff = 1,
-    drop_isolated_nodes = TRUE,
-    node_stats = FALSE,
-    stats_to_include = node_stat_settings(),
-    cluster_stats = FALSE,
+  ## Network ##
+  dist_type = "hamming", dist_cutoff = 1,
+  drop_isolated_nodes = TRUE,
+  node_stats = FALSE, stats_to_include = node_stat_settings(),
+  cluster_stats = FALSE,
 
-    ## Visualization
-    plot_title = "auto",
-    plot_subtitle = "auto",
-    color_nodes_by = "auto",
-    color_scheme = "default",
-    color_legend = TRUE,
-    color_title = "auto",
-    edge_width = 0.1,
-    size_nodes_by = 0.5,
-    node_size_limits = "auto",
-    size_title = "auto",
+  ## Visualization ##
+  plots = TRUE, print_plots = TRUE,
+  plot_title = "auto", plot_subtitle = "auto",
+  color_nodes_by = "auto", ...,
 
-    ## Output
-    print_plots = TRUE,
-    output_dir = NULL,
-    save_all = FALSE,
-    data_outfile = "node_data.csv",
-    plot_outfile = "network_graph.pdf",
-    plot_width = 12,
-    plot_height = 10,
-    cluster_outfile = "cluster_info.csv",
-    igraph_outfile = "network_edgelist.txt",
-    matrix_outfile = "auto",
-    return_all = FALSE)
+  ## Output ##
+  output_dir = getwd(), output_type = "individual",
+  output_name = "MyRepSeqNetwork",
+  pdf_width = 12, pdf_height = 10
+
+)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -63,19 +45,19 @@ buildRepSeqNetwork(
 }
   \item{seq_col}{
 %%     ~~Describe \code{seq_col} here~~
-    The column name or number of \code{data} containing the receptor sequences to be used as the basis of similarity in the network.
+    The column name or number of \code{data} containing the receptor sequences to be used as the basis of similarity between rows. Also accepts a vector of length 2 specifying distinct sequence columns (e.g., alpha, beta chains); then two rows are similar only if both types of sequences are similar.
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~
     Optional column name or number of \code{data} containing a measure of abundance, e.g., clone count. Passed to \code{getClusterStats}; only relevant if \code{cluster_stats = TRUE}.
 }
-  \item{other_cols}{
+  \item{subset_cols}{
 %%     ~~Describe \code{other_cols} here~~
     Optional vector of column names or numbers of \code{data}; if supplied, only these plus other relevant columns are included in the output. If \code{NULL} (the default), all columns of \code{data} are included.
 }
   \item{min_seq_length}{
 %%     ~~Describe \code{min_seq_length} here~~
-    A numeric scalar. Observations whose receptor sequences have fewer than \code{min_seq_length} characters are removed prior to network analysis.
+    A numeric scalar, or \code{NULL}. Observations whose receptor sequences have fewer than \code{min_seq_length} characters are removed prior to network analysis.
 }
   \item{drop_chars}{
 %%     ~~Describe \code{drop_chars} here~~
@@ -111,6 +93,13 @@ buildRepSeqNetwork(
 %%     ~~Describe \code{cluster_stats} here~~
     A logical scalar; should cluster-level network properties be computed?
 }
+  \item{plots}{
+    A logical scalar; should plot(s) of the network graph be generated?
+}
+  \item{print_plots}{
+%%     ~~Describe \code{print_plots} here~~
+    A logical scalar; should visualizations be printed in the \code{R} plotting window?
+}
   \item{plot_title}{
 %%     ~~Describe \code{plot_title} here~~
     A character string (or \code{NULL} value) to be used as the title in
@@ -127,100 +116,30 @@ buildRepSeqNetwork(
 %%     ~~Describe \code{color_nodes_by} here~~
     Optional. Column name or number of \code{data} used to color network nodes
     in visualizations. If a vector of values is supplied, one plot will be
-    generated for each value.
+    generated for each value. The value \code{"auto"} attempts to use one of several        variables (e.g., cluster ID) to color the nodes, depending on what is available.
 }
-  \item{color_scheme}{
-%%     ~~Describe \code{color_scheme} here~~
-    Passed to \code{plotNetworkGraph}. If a vector is supplied to \code{color_nodes_by},
-    this argument will optionally accept a vector of matching length; if supplied,
-    corresponding values of \code{color_scheme} and \code{color_nodes_by} will
-    be used together in each call to \code{plotNetworkGraph}.
-}
-  \item{color_legend}{
-%%     ~~Describe \code{color_legend} here~~
-    A logical scalar; passed to the \code{show_color_legend} argument of \code{plotNetworkGraph}.
-}
-  \item{color_title}{
-%%     ~~Describe \code{color_title} here~~
-    A logical scalar; passed to the \code{color_legend_title} argument of \code{plotNetworkGraph}.
-}
-  \item{edge_width}{
-%%     ~~Describe \code{edge_width} here~~
-    Passed to \code{plotNetworkGraph}.
-}
-  \item{size_nodes_by}{
-%%     ~~Describe \code{size_nodes_by} here~~
-    Optional. Numeric value specifying the node size in visualizations, or a
-    column name or number of \code{data} for dynamically sizing the network nodes
-    in visualizations. If a vector of values is supplied, one plot will be
-    generated for each value.
-}
-  \item{node_size_limits}{
-%%     ~~Describe \code{node_size_limits} here~~
-    Optional. Numeric vector of length 2, specifying the minimum and maximum
-    node size for visualizations. Only relevant when dynamically sizing nodes.
-}
-  \item{size_title}{
-%%     ~~Describe \code{size_title} here~~
-    A logical scalar; passed to the \code{size_legend_title} argument of \code{plotNetworkGraph}.
-}
-  \item{print_plots}{
-%%     ~~Describe \code{print_plots} here~~
-    A logical scalar; should visualizations be printed in the \code{R} plotting window?
+  \item{...}{
+  Other arguments to \code{generateNetworkGraphPlots}.
 }
   \item{output_dir}{
 %%     ~~Describe \code{output_dir} here~~
-    An optional output directory; if non-\code{NULL}, output will be saved here.
+  The output directory; if \code{NULL}, output will not be written to file.
 }
-  \item{save_all}{
-%%     ~~Describe \code{save_all} here~~
-    A logical scalar; save all network-related objects to file? If \code{FALSE},
-    only the node-level meta-data and plot are saved. Only relevant if
-    \code{output_dir} is non-\code{NULL}.
+  \item{output_type}{
+%%     ~~Describe \code{output_dir} here~~
+  A character string specifying the file format to use when writing output to file. Default \code{"individual"} saves each item as a separate, uncompressed file, with data frames saved in csv format. \code{"rda"} and \code{"rds"} save the output list as a rda and rds file, respectively. For all output types, any plots generated will also be saved in a pdf file.
 }
-  \item{data_outfile}{
-%%     ~~Describe \code{data_outfile} here~~
-    A filename (not including directory)  ending in \code{".csv"} for saving the node-level meta data.
-    If \code{NULL}, this item is not saved to file. Only relevant if
-    \code{output_dir} is non-\code{NULL}.
+  \item{output_name}{
+%%     ~~Describe \code{output_dir} here~~
+  A character string to be used as a common filename prefix for any files saved.
 }
-  \item{plot_outfile}{
-%%     ~~Describe \code{plot_outfile} here~~
-    A filename (not including directory)  ending in \code{".pdf"} for saving the node-level meta data.
-    If \code{NULL}, this item is not saved to file. Only relevant if
-    \code{output_dir} is non-\code{NULL}.
-}
-  \item{plot_width}{
+  \item{pdf_width}{
 %%     ~~Describe \code{plot_width} here~~
     Passed to the \code{width} argument of \code{grDevices::pdf()}.
 }
-  \item{plot_height}{
+  \item{pdf_height}{
 %%     ~~Describe \code{plot_height} here~~
     Passed to the \code{height} argument of \code{grDevices::pdf()}.
-}
-  \item{cluster_outfile}{
-%%     ~~Describe \code{cluster_outfile} here~~
-    A filename (not including directory)  ending in \code{".csv"} for saving the cluster-level meta data.
-    If \code{NULL}, this item is not saved to file. Only relevant if
-    \code{output_dir} is non-\code{NULL}.
-}
-  \item{igraph_outfile}{
-%%     ~~Describe \code{igraph_outfile} here~~
-    A filename (not including directory)  ending in \code{".txt"} for saving the node-level meta data.
-    If \code{NULL}, this item is not saved to file. Only relevant if
-    \code{output_dir} is non-\code{NULL}.
-}
-  \item{matrix_outfile}{
-%%     ~~Describe \code{matrix_outfile} here~~
-    A filename (not including directory) ending in \code{".mtx"} for saving the
-    network graph adjacency matrix. If \code{NULL}, this item is not saved to
-    file. Only relevant if \code{output_dir} is non-\code{NULL}.
-}
-  \item{return_all}{
-%%     ~~Describe \code{return_all} here~~
-    A logical scalar; should all network-related objects be returned? If
-    \code{FALSE}, only the node-level meta-data is returned (as well as the
-    cluster-level properties, if \code{cluster_stats = TRUE}).
 }
 }
 \details{
@@ -251,26 +170,25 @@ buildRepSeqNetwork(
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    If \code{cluster_stats} and \code{return_all} are both \code{FALSE}, a data
+    A list containing some or all of the following items:
+
+    \item{igraph}{An \code{igraph} object containing the edge list for the network.}
+    \item{adjacency_matrix}{The network graph adjacency matrix, stored as a sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package.}
+    \item{node_data}{ A data
     frame containing the node-level meta-data for the network. This data frame contains
-    all column names of \code{data} unless \code{other_cols} is non-null, in which
-    case only the column names of \code{data} specified by \code{other_cols}, along
+    all column names of \code{data} unless \code{subset_cols} is non-null, in which
+    case only the column names of \code{data} specified by \code{subset_cols}, along
     with other relevant ones (e.g., \code{seq_col}), will be present in the returned
     data frame. The data frame will additionally contain columns for any node-level
     network properties computed (as specified through the \code{node_stats} and
     \code{stats_to_include} arguments). The data frame will contain one row for
     each node that remains in the network after all filtering has occurred,
     including any filtering based on \code{drop_isolated_nodes}. The row names
-    of the original input data will be preserved.
+    of the original input data will be preserved. }
+    \item{cluster_data}{A data frame containing the cluster-level properties, with one row per cluster. Only included if \code{cluster_stats = TRUE}.}
+    \item{plots}{A list containing the graph plot(s) as \code{ggraph} objects. Only included if \code{plots = TRUE}.}
 
-    If either of \code{cluster_stats} or \code{return_all} is \code{TRUE}, a list
-    containing some or all of the following items:
-
-    \item{node_data}{ A data frame containing the node-level meta-data, as described above.}
-    \item{cluster_stats}{A data frame containing the cluster-level properties, with one row per cluster. Only included if \code{cluster_stats = TRUE}.}
-    \item{plots}{A list containing the graph plot(s) as \code{ggraph} objects. Only included if \code{return_all = TRUE}.}
-    \item{adjacency_matrix}{The network graph adjacency matrix, stored as a sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package. Only included if \code{return_all = TRUE}.}
-    \item{igraph}{An \code{igraph} object containing the edge list for the network. Only included if \code{return_all = TRUE}.}
+    The output of \code{buildRepSeqNetwork} is returned invisibly (it will not be printed to console when the output is not assigned).
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -320,7 +238,7 @@ for (i in 1:sample_size) {
                             collapse = "")
 }
 data <- data.frame(seqs = clone_seqs)
-node_metadata <- buildRepSeqNetwork(data, "seqs")
+net <- buildRepSeqNetwork(data, "seqs", output_dir = NULL)
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

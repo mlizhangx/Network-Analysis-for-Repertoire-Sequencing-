@@ -1,7 +1,7 @@
 Package: NAIR
 Type: Package
 Title: Network Analysis for Immune Repertoire
-Version: 0.0.9017
+Version: 0.0.9018
 Authors@R: c(
     person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
@@ -18,7 +18,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.8), Matrix, reticulate, igraph, ggraph, ggplot2, stats, 
-    utils, grDevices, dplyr, reshape2, gplots, RColorBrewer, viridisLite, graphics
+    utils, grDevices, plyr, dplyr, reshape2, gplots, RColorBrewer, viridisLite, graphics
 LinkingTo: Rcpp (>= 1.0.8), RcppArmadillo (>= 0.10.8.0.0)
 Suggests: knitr, rmarkdown, BiocManager, testthat (>= 3.0.0)
 VignetteBuilder: knitr

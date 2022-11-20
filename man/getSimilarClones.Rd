@@ -13,7 +13,7 @@
 }
 \usage{
 getSimilarClones(target_seq, data, seq_col, sample_col = NULL,
-                 dist_type = "hamming", max_dist = 1, drop_chars = NULL)
+                 dist_type = "hamming", max_dist = 1, drop_matches = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -49,10 +49,10 @@ getSimilarClones(target_seq, data, seq_col, sample_col = NULL,
       distance from the target sequence exceeding `max_dist` (where the distance
       type is specified by `dist_type`) will be removed.
 }
-  \item{drop_chars}{
+  \item{drop_matches}{
       An optional regular expression; cells/clones whose receptor sequences match the specified
       expression will be removed.
-%%     ~~Describe \code{drop_chars} here~~
+%%     ~~Describe \code{drop_matches} here~~
 }
 }
 \value{
@@ -64,7 +64,7 @@ getSimilarClones(target_seq, data, seq_col, sample_col = NULL,
     A data frame containing the same columns as `data` and those rows of `data`
     for which the sequence in `seq_col` has `dist_type` distance from
     `target_seq` of no greater than `max_dist` (and does not match the expression
-    specified by `drop_chars`). If `sample_col` is non-null, only cells/clones belonging
+    specified by `drop_matches`). If `sample_col` is non-null, only cells/clones belonging
     to samples that possess the target sequence will be included.
 }
 \references{

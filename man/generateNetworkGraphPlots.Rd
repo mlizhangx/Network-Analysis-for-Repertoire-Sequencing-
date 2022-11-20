@@ -1,80 +1,91 @@
-\name{plotNetworkGraph}
-\alias{plotNetworkGraph}
+\name{generateNetworkGraphPlots}
+\alias{generateNetworkGraphPlots}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-  Plot the Graph of an Immune Repertoire Network
+  Generate Multiple Plots of a Network
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-  A wrapper function for customized calling of functions from the `ggraph` package.
-  Given an `igraph` network object, generates a `ggraph` according to the user
-  specifications.
+  Generate multiple plots using an igraph and corresponding node-level meta data.
 }
 \usage{
-plotNetworkGraph(igraph,
-                 plot_title = NULL,
-                 plot_subtitle = NULL,
-                 color_nodes_by = NULL,
-                 color_scheme = "default",
-                 color_legend = "auto",
-                 color_title = "auto",
-                 edge_width = 0.1,
-                 size_nodes_by = 0.5,
-                 node_size_limits = NULL,
-                 size_title = "auto",
-                 outfile = NULL)
+generateNetworkGraphPlots(
+  igraph, data, print_plots = TRUE,
+  plot_title = NULL, plot_subtitle = NULL,
+  color_nodes_by = NULL, color_scheme = "default",
+  color_legend = "auto", color_title = "auto",
+  edge_width = 0.1, size_nodes_by = 0.5,
+  node_size_limits = NULL, size_title = "auto")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{igraph}{
-%%     ~~Describe \code{network} here~~
-      An `igraph` object containing the network graph to be plotted.
+%%     ~~Describe \code{igraph} here~~
+  An \code{igraph} object containing the edge list for the network.
+}
+  \item{data}{
+%%     ~~Describe \code{data} here~~A data
+    A data frame containing the node-level meta-data for the network, with each row corresponding to a node.
+}
+  \item{print_plots}{
+%%     ~~Describe \code{print_plots} here~~
+    A logical scalar; should visualizations be printed in the \code{R} plotting window?
 }
   \item{plot_title}{
-%%     ~~Describe \code{title} here~~
-      A character string or `NULL`. The plot title, to be passed to `ggplot2::labs`.
+%%     ~~Describe \code{plot_title} here~~
+    Passed to \code{plotNetworkGraph()}.
 }
   \item{plot_subtitle}{
 %%     ~~Describe \code{plot_subtitle} here~~
-      A character string or `NULL`. The plot subtitle, to be passed to `ggplot2::labs`.
+    Passed to \code{plotNetworkGraph()}.
 }
   \item{color_nodes_by}{
 %%     ~~Describe \code{color_nodes_by} here~~
-      Passed to the color aesthetic mapping of `ggraph::geom_node_point`, used to encode the color of each node. Either a vector whose length matches the number of nodes in `network`, or `NULL`. If the vector is numeric and contains non-integer values, a continuous color scale will be used; otherwise, a discrete color scale will be used.
+    Optional. Column name or number of \code{data} used to color network nodes
+    in visualizations. If a vector of values is supplied, one plot will be
+    generated for each value.
 }
   \item{color_scheme}{
 %%     ~~Describe \code{color_scheme} here~~
-    A character string specifying the color palette used to color the nodes: either "default" for default `ggplot2` colors, a viridis color map option (e.g., `"viridis"`, `"plasma"`, etc., or one the corresponding strings "A" through "H"; see `?viridis` for details), or a palette from `grDevices::hcl.pals()` (these can only be used with discrete color scales).
+    Passed to \code{plotNetworkGraph}. If a vector is supplied to \code{color_nodes_by},
+    this argument will optionally accept a vector of matching length; if supplied,
+    corresponding values of \code{color_scheme} and \code{color_nodes_by} will
+    be used together in each call to \code{plotNetworkGraph}.
 }
   \item{color_legend}{
-%%     ~~Describe \code{color_title} here~~
-    Accepts a logical scalar specifying whether to display the color legend on the plot. The default value of \code{"auto"} shows the color legend if \code{color_nodes_by} is a continuous variable or a discrete variable with at most 20 distinct values.
+%%     ~~Describe \code{color_legend} here~~
+    Passed to \code{plotNetworkGraph()}.
 }
   \item{color_title}{
 %%     ~~Describe \code{color_title} here~~
-    A character string or `NULL` specifying the title for the color legend. If "auto" and a vector was supplied for `color_nodes_by`, the color legend title will attempt to use the name of the supplied vector.
+    Passed to \code{plotNetworkGraph}. If a vector is supplied to \code{color_nodes_by},
+    this argument will optionally accept a vector of matching length; if supplied,
+    corresponding values of \code{color_title} and \code{color_nodes_by} will
+    be used together in each call to \code{plotNetworkGraph}.
 }
   \item{edge_width}{
 %%     ~~Describe \code{edge_width} here~~
-      A numeric scalar specifying the width of the graph edges in the plot. Passed to the `width` argument of `ggraph::geom_edge_link0`.
+    Passed to \code{plotNetworkGraph}.
 }
   \item{size_nodes_by}{
 %%     ~~Describe \code{size_nodes_by} here~~
-    Passed to the size aesthetic mapping of `ggraph::geom_node_point`, used to encode the size of each node. Either a numeric vector with positive entires whose length matches the number of nodes in `network`, a positive-valued number (denoting a fixed constant size for each node), or `NULL`.
-}
-  \item{size_title}{
-%%     ~~Describe \code{size_title} here~~
-    A character string or `NULL` specifying the title for the size legend. The size legend is only displayed if a vector was supplied for `size_nodes_by`, in which case `size_title = "auto"` will attempt to use the name of the supplied vector.
+    Numeric value specifying the node size in visualizations, or a
+    column name or number of \code{data} for dynamically sizing the network nodes
+    in visualizations.
 }
   \item{node_size_limits}{
 %%     ~~Describe \code{node_size_limits} here~~
-    A numeric vector of length 2 with positive entries, or `NULL`. If a vector of values is provided, the node sizes will be rescaled using the first value for the minimum node size and the second value for the maximum node sizes. Only applicable if a vector is supplied for `size_nodes_by`.
+    Passed to \code{plotNetworkGraph()}.
 }
-  \item{outfile}{
-%%     ~~Describe \code{outfile} here~
-    A character string containing a valid file name ending in `".pdf"`, or `NULL`. If a file name is supplied, the plot will be saved to the file.
+  \item{size_title}{
+%%     ~~Describe \code{size_title} here~~
+    Passed to \code{plotNetworkGraph()}.
 }
+}
+\details{
+%%  ~~ If necessary, more details than the description above ~~
+  This function's primary use is to generate multiple plots of a single network, each using a different variable to color-code the nodes.
 }
 \value{
 %%  ~Describe the value returned
@@ -82,8 +93,9 @@ plotNetworkGraph(igraph,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-  A `ggraph` object.
+  A list containing one item for each plot generated. Each plot is stored as a \code{ggraph} object.
 }
+%% ~Make other sections like Warning with \section{Warning }{....} ~
 \references{
 %% ~put references to the literature/web site here ~
     Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
@@ -93,6 +105,10 @@ plotNetworkGraph(igraph,
 \author{
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+}
+\seealso{
+%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{plotNetworkGraph}}
 }
 \examples{
 \dontrun{
@@ -143,15 +159,12 @@ data <- data.frame("clone_seq" = clone_seqs,
 
 # Generate network for data
 net <- generateNetworkFromSeqs(data$clone_seq,
-                               drop_isolated_nodes = FALSE)
+                               drop_isolated_nodes = FALSE,
+                               output_dir = NULL)
 
 # Plot network graph
-net_plot <- plotNetworkGraph(
-  net,
-  color_nodes_by = data$group,
-  color_scheme = "viridis",
-  size_nodes_by = data$count,
-  node_size_limits = c(0.5, 5))
+net_plot <- generateNetworkGraphPlots(
+  net, color_nodes_by = c("group", "count"))
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

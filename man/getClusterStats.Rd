@@ -14,7 +14,7 @@
 \usage{
 getClusterStats(data,
                 adjacency_matrix,
-                seq_col,
+                seq_col = NULL,
                 count_col = NULL,
                 cluster_id_col = NULL,
                 degree_col = NULL,
@@ -35,8 +35,8 @@ getClusterStats(data,
 }
   \item{seq_col}{
 %%     ~~Describe \code{seq_col} here~~
-      The column name or number of `data` containing the receptor sequences (e.g.,
-      TCR CDR3 nucleotide sequence or amino acid sequence).
+      Optional. The column name or number of `data` containing the receptor sequences (e.g.,
+      TCR CDR3 nucleotide sequence or amino acid sequence). If supplied, then related cluster-level properties will be computed.
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~

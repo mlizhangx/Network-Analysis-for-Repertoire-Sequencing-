@@ -70,6 +70,8 @@ General network analysis on RepSeq data is performed using the `buildRepSeqNetwo
 For demonstration purposes, we load a  [public data set](https://www.10xgenomics.com/resources/datasets/pbm-cs-of-a-healthy-donor-v-1-1-1-standard-3-1-0) hosted at 10xgenomics.com using Bioconductor.
 
 ```{r }
+dir_out <- tempdir()
+
 if (!require("BiocFileCache", quietly = TRUE)) { 
   if (!require("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
@@ -120,10 +122,10 @@ buildRepSeqNetwork(tcr_data, "cdr3")
 * The first argument specifies the data frame containing the rep-seq data, where each row corresponds to a single TCR/BCR clone (bulk data) or cell (single-cell data).
 * The second argument specifies the column name or number of the data frame that contains the receptor sequences to be used as the basis of similarity between two cells or clones.
 
-What does it do by default? Let's observe the side effects and output when we call the function using the default settings:
+What does it do by default? Let's observe the side effects and output when we call the function using the default settings (here we also specify the output directory; by default, the function writes to the current working directory):
 
 ```{r}
-output <- buildRepSeqNetwork(tcr_data, "cdr3")
+output <- buildRepSeqNetwork(tcr_data, "cdr3", output_dir = dir_out)
 ```
 
 The console messages indicate the following tasks being performed:
@@ -133,14 +135,20 @@ The console messages indicate the following tasks being performed:
 * Isolated nodes (those not joined by an edge to any other node) are removed from the graph
 * A plot of the network graph is generated
 
-By default, a data frame is returned with the same columns as the input data:
+The function returns a list containing the following items:
 ```{r}
 names(output)
 ```
 
+The item `node_data` is a data frame containing the same columns as the input data:
+
+```{r}
+names(output$node_data)
+```
+
 Only rows corresponding to nodes that remain in the network graph are included (those corresponding to the dropped isolated nodes have been removed):
 ```{r}
-nrow(output)
+nrow(output$node_data)
 ```
 
 Thus, this output data serves as biological meta-data for the nodes in the network graph, with each row corresponding to a node seen in the plot above.
@@ -157,16 +165,18 @@ Use `node_stats = TRUE` to include node-level network properties.
 
 ```{r}
 # Node-level properties
-output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE)
+output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
+                             output_dir = NULL)
 ```
 
-The output data now contains node-level network properties in addition to the biological meta-data:
+The node data now contains node-level network properties in addition to the biological meta-data:
 ```{r}
-names(output)
+names(output$node_data)
 ```
 
 
-We also notice in the plot that nodes are now colored by network degree, which is one of the included node-level network properties.
+We also notice that the plot now has nodes automatically colored using one of the available network properties. See the section on visualization for details on customizing the plot.
+
 
 #### Choosing Node-Level Properties
 
@@ -177,11 +187,29 @@ node_stat_settings()
 
 See `?node_stat_settings()` for more details on the individual properties.
 
+```{r, eval = FALSE}
+# example usage of node_stat_settings()
+output <- buildRepSeqNetwork(
+  tcr_data, "cdr3", node_stats = TRUE,
+  stats_to_include = node_stat_settings(cluster_id = TRUE, closeness = FALSE))
+```
+
+
 #### Include All Node-Level Properties
 
 A convenient way to include all node-level network stats when calling `node_stat_settings()` is to simply use the argument `all_stats = TRUE`, which overrides the values of its other arguments. 
 
 When calling `buildRepSeqNetwork()` with `node_stats = TRUE`, a further shortcut to include all node-level network stats is simply to use `stats_to_include = "all"`.
+
+```{r, eval = FALSE}
+# the following two calls are equivalent:
+buildRepSeqNetwork(
+  tcr_data, "cdr3", node_stats = TRUE, 
+  stats_to_include = node_stat_settings(all_stats = TRUE))
+
+buildRepSeqNetwork(
+  tcr_data, "cdr3", node_stats = TRUE, stats_to_include = "all")
+```
 
 
 ### Cluster-Level Network Properties
@@ -191,14 +219,15 @@ We can include cluster-level network properties using `cluster_stats = TRUE`:
 ```{r}
 # Node-level and cluster-level properties
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
-                             cluster_stats = TRUE, print_plots = FALSE)
+                             cluster_stats = TRUE, print_plots = FALSE,
+                             output_dir = NULL)
 ```
 
-The output is no longer a single data frame; instead, it is now a list containing two data frames, one for the node-level meta data and one for the cluster-level meta data:
+The output list now contains an additional data frame for the cluster-level meta data:
 
 ```{r}
 names(output)
-head(output$cluster_stats)
+head(output$cluster_data)
 ```
 Each row of the cluster-level meta data corresponds to a single cluster in the network.
 
@@ -215,10 +244,10 @@ The network graph plot produced by `buildRepSeqNetwork()` can be customized in v
 
 The nodes in the graph can be colored according to node-level meta-data by specifying a variable name in the `color_nodes_by` argument. This can be a variable from the input data or one of the node-level network properties included in the output.
 
-For example, we can color the nodes based on the `transitivity` network property:
+For example, we can color the nodes based on the variable `umis`:
 ```{r}
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE,
-                             color_nodes_by = "transitivity")
+                             color_nodes_by = "umis", output_dir = NULL)
 ```
 
 ### Adjust node color palette
@@ -234,7 +263,8 @@ The color palette used to color the nodes can be specified using the `color_sche
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
-                             color_scheme = "plasma-1")
+                             color_scheme = "plasma-1",
+                             output_dir = NULL)
 ```
 
 ### Adjust node size
@@ -246,7 +276,8 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
                              color_scheme = "plasma-1",
-                             size_nodes_by = 1)
+                             size_nodes_by = 1,
+                             output_dir = NULL)
 ```
 
 A value of `NULL` will cause the default `ggraph` node sizes to be used.
@@ -265,7 +296,8 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              color_nodes_by = "transitivity",
                              color_scheme = "plasma-1",
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 1.5))
+                             node_size_limits = c(0.5, 1.5),
+                             output_dir = NULL)
 ```
 
 
@@ -281,7 +313,8 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              color_nodes_by = c("transitivity", "closeness"),
                              color_scheme = c("plasma-1", "default"),
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 1.5))
+                             node_size_limits = c(0.5, 1.5),
+                             output_dir = NULL)
 ```
 
 If a single value is supplied for `color_scheme`, it will be used for all of the plots.
@@ -299,7 +332,8 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              size_nodes_by = "degree",
                              node_size_limits = c(0.5, 1.5),
                              plot_title = NULL,
-                             plot_subtitle = NULL)
+                             plot_subtitle = NULL,
+                             output_dir = NULL)
 ```
 
 
@@ -308,7 +342,7 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 
 The legends for node color and size can be toggled using the logical arguments `color_legend` and `size_legend` (these are `TRUE` by default), while custom legend titles can be specified using the `color_title` and `size_title` arguments. Supplying a `NULL` value for a legend title will omit the legend title.
 
-
+Setting `color_legend = "auto"` will show the color legend if `color_nodes_by` references a continuous variable or a discrete variable with at most 20 distinct values, and hide the color legend otherwise, in which case the name of the variable used to color the nodes is automatically appended to the plot subtitle in a new line.
 
 ### Edge width
 
@@ -320,6 +354,9 @@ The thickness of the graph edges can be adjusted using the `edge_width` argument
 The `ggraph` object for each plot generated by `buildRepSeqNetwork()` can be returned for downstream use with the argument `return_all = TRUE`. It can be manipulated using functions from the `ggplot2` package much like any plot created with the `ggplot` function. This provides the user total control to modify plots to their liking. 
 
 
+### Excluding Plots
+
+Use `print_plots = FALSE` to prevent plots from being printed to the R plotting window. Use `plots = FALSE` to prevent plots from being generated at all.
 
 
 ## Network Settings
@@ -360,48 +397,43 @@ The distance function specified in the `dist_type` argument is used to model the
 ### Input Filtering
 
 * `min_seq_length` can be used to filter out TCR/BCR sequences by minimum length. Data rows with sequence lengths below this value will be dropped before computing the network graph. The default is 3.
-* `drop_chars` can be used to filter out TCR/BCR sequences by content. It takes a character string or regular expression and checks each TCR/BCR sequence for a match; data rows with matches are dropped before computing the network graph. 
+* `drop_matches` can be used to filter out TCR/BCR sequences by content. It takes a character string or regular expression and checks each TCR/BCR sequence for a match; data rows with matches are dropped before computing the network graph. 
 
 ### Only Keep Specific Columns of Input Data
 
-By default, the node-level meta data returned by `buildRepSeqNetwork()` includes all columns of the input data. If you only wish for specific columns to be retained, specify these in a vector of column names or column numbers to the `other_cols` argument. Any relevant columns used by `buildRepSeqNetwork()`, such as the TCR/BCR sequence column specified by `seq_col`, as well as any columns specified in other arguments, such as `color_nodes_by`, will automatically be included.
+By default, the node-level meta data returned by `buildRepSeqNetwork()` includes all columns of the input data. If you only wish for specific columns to be retained, specify these in a vector of column names or column numbers to the `subset_cols` argument. Any relevant columns used by `buildRepSeqNetwork()`, such as the TCR/BCR sequence column specified by `seq_col`, as well as any columns specified in other arguments, such as `color_nodes_by`, will automatically be included.
 
 ### Output and Side Effects
 
-* A complete set of intermediate and final outputs can be returned using `return_all = TRUE`. This can be useful for downstream analysis; see the `Downstream Analysis` section for more.
-* Output can be saved to file by specifying a directory to the `output_dir` argument. By default, only a .csv file containing the node-level meta data and a .pdf file containing the network graph plot are saved. Use `save_all = TRUE` to save all output. The filenames used for each item can be changed from their default values using the arguments `data_outfile`, `plot_outfile`, `cluster_outfile`, `igraph_outfile` and `matrix_outfile`. The dimensions (in inches) for the pdf of the network graph plot can be adjusted using `plot_width` and `plot_height`, with the defaults being `12` and `10`.
-* `print_plots = FALSE` can be used to prevent the plots from being printed to the `R` plotting window.
+* The function returns its output invisibly, so when calling the function without assigning its output, the returned list will not be shown in the console.
+* Output can be saved to file by specifying a directory to the `output_dir` argument. The file type can be specified via the `output_type` argument: by default, each component of the returned list is saved to its own file, with the `output_name` argument used as a common file name prefix.
+* For better compression, use a value of `"rds"` or `"rda"` for `output_type`, which will save the output list to a .rds or .rda file; the file will be named `output_name` with the appropriate file extension appended. 
+* A pdf file of the graph plot(s) will be saved if `plots = TRUE`, regardless of the value of `output_type`. The dimensions (in inches) for the pdf can be adjusted using `plot_width` and `plot_height`, with the defaults being `12` and `10`.
 
 
 
 # Downstream Analysis
 
-The output returned by `buildRepSeqNetwork()` can be used to facilitate further downstream analysis, particularly if invoked with  `return_all = TRUE`. Doing so causes the function to return a list containing the following named components:
-
-* `node_data`: A data frame containing the node-level biological and network meta data.
-* `cluster_stats`: A data frame containing the cluster-level meta data (only included if `cluster_stats = TRUE`).
-* `plots`: A list containing all plots generated, with each plot stored in as a separate list element named according to the variable used to color the nodes. Each plot is a `ggraph` object, which is a special kind of `ggplot` object.
-* `adjacency_matrix`: The adjacency matrix for the network graph, stored as a sparse matrix of class `dgCMatrix` from the `Matrix` package.
-* `igraph`: An object of the `igraph` class from the `igraph` package. This contains the list of nodes and edges for the network, and can be used to generate a `ggraph` plot using the `plotNetworkGraph` function.
+The output returned by `buildRepSeqNetwork()` can be used to facilitate further downstream analysis. Some common cases follow.
 
 
 ### Downstream Customization of Plots
 
 While the arguments of `buildRepSeqNetwork()` allow for substantial customization of the plots generated, you may occasionally find yourself wanting full control over all aspects of a plot. Or you may want to modify a plot further downstream based on the initial analysis.
 
-When you use `return_all = TRUE`, all plots generated by `buildRepSeqNetwork()` are included in the output as `ggraph` objects. These are special kinds of `ggplot` objects, and their properties can be manipulated like any plot created with `ggplot()` using the same functions from the `ggplot2` package.
+All plots generated by `buildRepSeqNetwork()` are included in the output as `ggraph` objects. These are special kinds of `ggplot` objects, and their properties can be manipulated like any plot created with `ggplot()` using the same functions from the `ggplot2` package.
 
 For example, suppose we have previously run the following:
 ```{r}
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
                              stats_to_include = "all",
-                             return_all = TRUE)
+                             output_dir = NULL)
 ```
 Now, suppose we want to remove the plot title/subtitle, adjust the node size, color the nodes using the `umis` variable and change the color palette. We can do so using standard `ggplot2` functions (along with the `geom_node_point` function from the `ggraph` package) as follows:
 
 ```{r}
 library(ggplot2)
-output$plots$degree + # modify plot from output
+output$plots[[1]] + # modify plot from output
   labs(title = NULL, subtitle = NULL) +  # remove title/subtitle
   ggraph::geom_node_point(  # color nodes by coreness and set node size to 1
     aes(color = output$node_data$umis), size = 1) +
@@ -418,9 +450,9 @@ The `igraph` object can be passed to the `plotNetworkGraph` function in order to
 Here we generate a new plot, coloring the nodes using the `c_gene` variable, and manually specifying a color palette using the `scale_color_manual` function from the `ggplot2` package:
 
 ```{r}
-plotNetworkGraph(network = output$igraph,
+plotNetworkGraph(igraph = output$igraph,
                  color_nodes_by = output$node_data$c_gene,
-                 color_legend_title = "C Gene",
+                 color_title = "C Gene",
                  size_nodes_by = 1) +
   scale_color_manual(values = c("grey", "deepskyblue", "red2"))
 ```
@@ -467,8 +499,8 @@ While this involves computing the adjacency matrix, it can be considerably faste
 
 Node-level network properties can be computed and added to the node-level meta data using the `igraph` network object:
 ```{r, eval = FALSE}
-output <- buildRepSeqNetwork(tcr_data, "cdr3", 
-                             return_all = TRUE, print_plots = FALSE)
+output <- buildRepSeqNetwork(tcr_data, "cdr3", print_plots = FALSE,
+                             output_dir = NULL)
 
 output$node_data <- addNodeNetworkStats(output$node_data,
                                         net = output$igraph,
@@ -478,7 +510,7 @@ output$node_data <- addNodeNetworkStats(output$node_data,
 Cluster-level properties can be computed using the node-level meta data and the adjacency matrix:
 
 ```{r, eval = FALSE}
-output$cluster_stats <- 
+output$cluster_data <- 
   getClusterStats(data = output$node_data,
                   adjacency_matrix = output$adjacency_matrix,
                   seq_col = "cdr3")
@@ -498,8 +530,131 @@ adjacency_matrix <- sparseAdjacencyMatFromSeqs(output$node_data$cdr3)
 
 # Finding Associated Clones
 
-Vignette content coming soon.
+A set of functions has been provided to search across samples for TCR/BCR clones associated to a sample- or subject-level binary outcome/characteristic. An example usage is seen below. A detailed tutorial and documentation are forthcoming.
+
+## 1. Find Associated Sequences
+
+Search for associated sequences based on sample membership and Fisher's exact test $P$-value.
+
+```{r, eval = FALSE}
+associated_seqs <- findAssociatedSeqs(
+  file_list = file.path(dir_samples, list.files(dir_samples, pattern = ".tsv")),
+  input_type = "table", sample_ids = sample_id_list,
+  subject_ids = subject_id_list, group_ids = group_id_list,
+  groups = c("reference", "comparison"),
+  seq_col = "aaSeqCDR3", freq_col = "cloneFraction")
+```
+
+
+## 2. Find Associated Clones
+
+Search across samples for all clones within a neighborhood of each associated sequence identified in the previous step.
+
+```{r, eval = FALSE}
+findAssociatedClones(
+  file_list = file.path(dir_samples, list.files(dir_samples, pattern = ".tsv")),
+  input_type = "table", sample_ids = sample_id_list,
+  subject_ids = subject_id_list, group_ids = group_id_list,
+  seq_col = "aaSeqCDR3",
+  assoc_seqs = associated_seqs$ReceptorSeq[1:20],
+  output_dir = dir_assoc_clust)
+```
+
+
+
+## 3. Build Associated Cluster Network
+
+Combine all of the clones obtained in the previous step; perform network analysis and clustering.
+
+```{r, eval = FALSE}
+all_clusters <- buildAssociatedClusterNetwork(
+  file_list = file.path(dir_assoc_clust, list.files(dir_assoc_clust)),
+  seq_col = "aaSeqCDR3", output_dir = dir_out)
+```
+
+Perform more detailed network analysis for particular clusters of interest.
+
+```{r, eval = FALSE}
+# focus on a particular cluster
+cluster_1 <- buildRepSeqNetwork(
+  data = all_clusters$node_data[all_clusters$node_data$cluster_id == 1, ],
+  seq_col = "aaSeqCDR3")
+```
+
+
+## 4. (Optional) K-means on Atchley factor encoding
+
+(For TCR CDR3 amino acid sequences only) Take the clone sequences from the network in step 3 and embed them in 30-dimensional Euclidean space using a deep learning algorithm with a trained encoder. Perform $K$-means clustering on the embedded values; for each sample, compute the fraction of the sample's total unique TCR sequences that belong to each cluster, yielding a $K$-dimensional vector for each sample. Use heatmaps to compare these vectors' values and their correlation across samples. 
+
+```{r, eval = FALSE}
+kmeansAtchley(
+  data = all_clusters$node_data,
+  amino_col = "aaSeqCDR3", sample_col = "SampleID", group_col = "GroupID",
+  k = 50, output_dir = dir_out)
+```
+
 
 # Finding Public Clones
 
-Vignette content coming soon.
+A set of functions has been provided to search across samples for public clones. An example usage is seen below. A detailed tutorial and documentation are forthcoming.
+
+## 1. Find Public Clusters in Each Sample
+
+Perform network analysis on each sample individually to search for public clusters based on node count and clone count.
+
+```{r, eval = FALSE}
+# inputs
+filenames <- list.files(dir_samples, pattern = ".tsv")
+file_list <- file.path(dir_samples, filenames)
+sample_id_list <- as.character(strsplit(filenames, ".tsv"))
+
+findPublicClusters(
+  top_n_clusters = 20, min_node_count = 10, min_clone_count = 100,
+  file_list = file_list, input_type = "table", sample_ids = sample_id_list,
+  seq_col = "aaSeqCDR3", count_col = "cloneCount",
+  plots = TRUE, color_scheme = "turbo",
+  output_dir = dir_samples_filtered,
+  output_dir_unfiltered = file.path(dir_out, "sample_networks") # optional
+  )
+```
+
+## 2. Build Public Cluster Network
+
+Take the public clusters from the previous step and combine them across samples; perform network analysis.
+
+```{r, eval = FALSE}
+filenames <- list.files(file.path(dir_samples_filtered, "node_meta_data"))
+file_list <- file.path(dir_samples_filtered, "node_meta_data", filenames)
+
+pub_clust_full <-
+  buildPublicClusterNetwork(
+    file_list = file_list, seq_col = "aaSeqCDR3", count_col = "cloneCount",
+    color_nodes_by = c("ClusterIDPublic", "subject_id", "disease_status"),
+    color_title = c("public cluster ID", "subject ID", "disease status"))
+```
+
+## 3. (Optional) Public Cluster Network by Representative Sequence
+
+Perform network analysis using a single representative clone sequence from each public cluster (by default, the sequence with the highest clone count).
+
+```{r, eval = FALSE}
+filenames <- list.files(file.path(dir_samples_filtered, "cluster_meta_data"))
+file_list <- file.path(dir_samples_filtered, "cluster_meta_data", filenames)
+
+buildPublicClusterNetworkByRepresentative(
+  file_list = file_list, output_dir = dir_out)
+```
+
+
+## 4. (Optional) K-means clustering via Atchley factor encoding
+
+(For TCR CDR3 amino acid sequences only) Take the clone sequences from the network in step 3 and embed them in 30-dimensional Euclidean space using a deep learning algorithm with a trained encoder. Perform $K$-means clustering on the embedded values; for each sample, compute the fraction of the sample's total unique TCR sequences that belong to each cluster, yielding a $K$-dimensional vector for each sample. Use heatmaps to compare these vectors' values and their correlation across samples. 
+
+```{r, eval = FALSE}
+kmeansAtchley(
+  pub_clust_full$node_data, amino_col = "aaSeqCDR3", sample_col = "SampleID",
+  group_col = "subject_group", k = 100, output_dir = dir_out,
+  file_cluster_heatmap = "atchley_kmeans_relative_clust_sizes.pdf",
+  file_corr_heatmap = "atchley_kmeans_corr_in_relative_clust_sizes.pdf",
+  return_output = FALSE)
+```
