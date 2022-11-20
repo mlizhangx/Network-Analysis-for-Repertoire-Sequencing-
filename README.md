@@ -69,6 +69,8 @@ set](https://www.10xgenomics.com/resources/datasets/pbm-cs-of-a-healthy-donor-v-
 hosted at 10xgenomics.com using Bioconductor.
 
 ``` r
+dir_out <- tempdir()
+
 if (!require("BiocFileCache", quietly = TRUE)) { 
   if (!require("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
@@ -155,10 +157,12 @@ buildRepSeqNetwork(tcr_data, "cdr3")
   similarity between two cells or clones.
 
 What does it do by default? Let’s observe the side effects and output
-when we call the function using the default settings:
+when we call the function using the default settings (here we also
+specify the output directory; by default, the function writes to the
+current working directory):
 
 ``` r
-output <- buildRepSeqNetwork(tcr_data, "cdr3")
+output <- buildRepSeqNetwork(tcr_data, "cdr3", output_dir = dir_out)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
@@ -166,17 +170,17 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3")
 #> Generating graph plot...
 #>  Done.
 #> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\Rtmp0k4CST/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
 
     #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
+    #>   C:\Users\Brian\AppData\Local\Temp\Rtmp0k4CST/MyRepSeqNetwork.pdf
     #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
+    #>   C:\Users\Brian\AppData\Local\Temp\Rtmp0k4CST/MyRepSeqNetwork_EdgeList.txt
     #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>   C:\Users\Brian\AppData\Local\Temp\Rtmp0k4CST/MyRepSeqNetwork_AdjacencyMatrix.mtx
 
 The console messages indicate the following tasks being performed:
 
@@ -233,26 +237,19 @@ Use `node_stats = TRUE` to include node-level network properties.
 
 ``` r
 # Node-level properties
-output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE)
+output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> Network contains 588 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...
-#>  Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 The node data now contains node-level network properties in addition to
 the biological meta-data:
@@ -340,7 +337,6 @@ properties.
 output <- buildRepSeqNetwork(
   tcr_data, "cdr3", node_stats = TRUE,
   stats_to_include = node_stat_settings(cluster_id = TRUE, closeness = FALSE))
-# default values for all other properties
 ```
 
 #### Include All Node-Level Properties
@@ -371,7 +367,8 @@ We can include cluster-level network properties using
 ``` r
 # Node-level and cluster-level properties
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
-                             cluster_stats = TRUE, print_plots = FALSE)
+                             cluster_stats = TRUE, print_plots = FALSE,
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
@@ -380,16 +377,6 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE,
 #> Computing cluster membership within the network... Done.
 #> Computing statistics for the 212 clusters in the network... Done.
 #> Generating graph plot with nodes colored by transitivity... Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
-#> Cluster-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_ClusterMetadata.csv
-#> Network graph plots saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-#> Network igraph saved in edgelist format to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-#> Adjacency matrix saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
 ```
 
 The output list now contains an additional data frame for the
@@ -463,26 +450,18 @@ For example, we can color the nodes based on the variable `umis`:
 
 ``` r
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE,
-                             color_nodes_by = "umis")
+                             color_nodes_by = "umis", output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> Network contains 588 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by umis...
-#>  Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 ### Adjust node color palette
 
@@ -502,26 +481,19 @@ The color palette used to color the nodes can be specified using the
 output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
-                             color_scheme = "plasma-1")
+                             color_scheme = "plasma-1",
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> Network contains 588 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...
-#>  Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 ### Adjust node size
 
@@ -535,26 +507,19 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              node_stats = TRUE,
                              color_nodes_by = "transitivity",
                              color_scheme = "plasma-1",
-                             size_nodes_by = 1)
+                             size_nodes_by = 1,
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> Network contains 588 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...
-#>  Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 A value of `NULL` will cause the default `ggraph` node sizes to be used.
 
@@ -576,26 +541,19 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              color_nodes_by = "transitivity",
                              color_scheme = "plasma-1",
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 1.5))
+                             node_size_limits = c(0.5, 1.5),
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> Network contains 588 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...
-#>  Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 ### Generate multiple graphs
 
@@ -609,7 +567,8 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              color_nodes_by = c("transitivity", "closeness"),
                              color_scheme = c("plasma-1", "default"),
                              size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 1.5))
+                             node_size_limits = c(0.5, 1.5),
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
@@ -623,18 +582,10 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
 
     #>  Done.
     #> Generating graph plot with nodes colored by closeness...
-    #>  Done.
-    #> Node-level meta-data saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 
 <img src="man/figures/README-unnamed-chunk-20-2.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 If a single value is supplied for `color_scheme`, it will be used for
 all of the plots.
@@ -652,26 +603,19 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3",
                              size_nodes_by = "degree",
                              node_size_limits = c(0.5, 1.5),
                              plot_title = NULL,
-                             plot_subtitle = NULL)
+                             plot_subtitle = NULL,
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
 #> Network contains 588 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...
-#>  Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-21-1.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 ### Legends and legend titles
 
@@ -820,7 +764,8 @@ For example, suppose we have previously run the following:
 
 ``` r
 output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
-                             stats_to_include = "all")
+                             stats_to_include = "all",
+                             output_dir = NULL)
 #> Input data contains 4206 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 4206 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
@@ -828,19 +773,11 @@ output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE,
 #> Computing cluster membership within the network... Done.
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...
-#>  Done.
-#> Node-level meta-data saved to file:
-#>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-23-1.png" width="100%" style="display: block; margin: auto;" />
 
-    #> Network graph plots saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork.pdf
-    #> Network igraph saved in edgelist format to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_EdgeList.txt
-    #> Adjacency matrix saved to file:
-    #>   D:/tcr-bcr_network_analysis/Network-Analysis-for-Repertoire-Sequencing/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>  Done.
 
 Now, suppose we want to remove the plot title/subtitle, adjust the node
 size, color the nodes using the `umis` variable and change the color
@@ -953,7 +890,8 @@ Node-level network properties can be computed and added to the
 node-level meta data using the `igraph` network object:
 
 ``` r
-output <- buildRepSeqNetwork(tcr_data, "cdr3", print_plots = FALSE)
+output <- buildRepSeqNetwork(tcr_data, "cdr3", print_plots = FALSE,
+                             output_dir = NULL)
 
 output$node_data <- addNodeNetworkStats(output$node_data,
                                         net = output$igraph,
@@ -1014,8 +952,10 @@ associated sequence identified in the previous step.
 ``` r
 findAssociatedClones(
   file_list = file.path(dir_samples, list.files(dir_samples, pattern = ".tsv")),
-  input_type = "table", seq_col = "aaSeqCDR3",
-  associated_seqs = associated_seqs$ReceptorSeq[1:20],
+  input_type = "table", sample_ids = sample_id_list,
+  subject_ids = subject_id_list, group_ids = group_id_list,
+  seq_col = "aaSeqCDR3",
+  assoc_seqs = associated_seqs$ReceptorSeq[1:20],
   output_dir = dir_assoc_clust)
 ```
 
