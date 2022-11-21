@@ -3,12 +3,19 @@
 # Top-Level Functions -----------------------------------------------------
 
 findAssociatedSeqs <- function(
-    file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
-    sample_ids = 1:length(file_list), subject_ids = sample_ids,
-    group_ids, groups = c("group0", "group1"), seq_col, freq_col = NULL,
-    min_seq_length = 7, drop_matches = "[*|_]",
-    min_sample_membership = 5, pval_cutoff = 0.05,
-    outfile = "associated_seqs.csv"
+
+  ## Input ##
+  file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
+  sample_ids = 1:length(file_list), subject_ids = sample_ids,
+  group_ids, groups = c("group0", "group1"), seq_col, freq_col = NULL,
+
+  ## Search Criteria ##
+  min_seq_length = 7, drop_matches = "[*|_]",
+  min_sample_membership = 5, pval_cutoff = 0.05,
+
+  ## Output ##
+  outfile = "associated_seqs.csv"
+
 ) {
   stopifnot("lengths of file_list and sample_ids must match" =
               length(file_list) == length(sample_ids))
@@ -57,10 +64,17 @@ findAssociatedSeqs <- function(
 
 # alternate version using a single R data frame for all samples
 findAssociatedSeqs2 <- function(
-    data, seq_col, sample_col, subject_col = sample_col, group_col,
-    groups = c("group0", "group1"), freq_col = NULL,
-    min_seq_length = 7, min_sample_membership = 5, pval_cutoff = 0.05,
-    drop_matches = "[*|_]", outfile = "associated_seqs.csv"
+
+  ## Input ##
+  data, seq_col, sample_col, subject_col = sample_col, group_col,
+  groups = c("group0", "group1"), freq_col = NULL,
+
+  ## Search Criteria ##
+  min_seq_length = 7, drop_matches = "[*|_]",
+  min_sample_membership = 5, pval_cutoff = 0.05,
+
+  ## Ouptut ##
+  outfile = "associated_seqs.csv"
 ) {
 
   # Convert column references to character if not already
@@ -109,12 +123,20 @@ findAssociatedSeqs2 <- function(
 
 
 findAssociatedClones <- function(
-    file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
-    sample_ids = 1:length(file_list), subject_ids = sample_ids, group_ids,
-    seq_col, assoc_seqs, nbd_radius = 1, dist_type = "hamming",
-    min_seq_length = 6, drop_matches = "[*|_]", subset_cols = NULL,
-    output_dir = file.path(getwd(), "associated_clone_neighborhoods"),
-    output_type = "csv"
+
+  ## Input ##
+  file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
+  sample_ids = 1:length(file_list), subject_ids = sample_ids, group_ids,
+  seq_col,
+
+  ## Search Criteria ##
+  assoc_seqs, nbd_radius = 1, dist_type = "hamming",
+  min_seq_length = 6, drop_matches = "[*|_]",
+
+  ## Output ##
+  subset_cols = NULL,
+  output_dir = file.path(getwd(), "associated_clone_neighborhoods"),
+  output_type = "csv"
 ) {
   .ensureOutputDir(output_dir)
 
