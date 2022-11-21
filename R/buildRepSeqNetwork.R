@@ -51,7 +51,7 @@ buildRepSeqNetwork <- function(
   if (plots) {
     out$plots <- .generateNetworkGraphPlotsGuarded(
       out$igraph, out$node_data, print_plots,
-      .makePlotTitle(plot_title, seq_col = seq_col),
+      .makePlotTitle(plot_title, network_name = output_name),
       .makePlotSubtitle(plot_subtitle, seq_col = seq_col,
                         dist_type = dist_type, dist_cutoff = dist_cutoff),
       .passColorNodesBy(color_nodes_by, out$node_data, count_col),

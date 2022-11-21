@@ -3,21 +3,11 @@
 # Top-Level Functions -----------------------------------------------------
 
 findAssociatedSeqs <- function(
-    file_list,
-    input_type = "csv", # c("csv", "table", "rda", "rds")
-    data_symbols = NULL, # for rda, object name of input data
-    header = TRUE,  # csv, table
-    sep = "",  # csv, table
-    sample_ids = 1:length(file_list),
-    subject_ids = sample_ids,
-    group_ids,
-    groups = c("group0", "group1"),  # 0 = reference, 1 = comparison
-    seq_col,
-    freq_col = NULL,
-    min_seq_length = 7,
-    min_sample_membership = 5,
-    pval_cutoff = 0.05,
-    drop_matches = "[*|_]",
+    file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
+    sample_ids = 1:length(file_list), subject_ids = sample_ids,
+    group_ids, groups = c("group0", "group1"), seq_col, freq_col = NULL,
+    min_seq_length = 7, drop_matches = "[*|_]",
+    min_sample_membership = 5, pval_cutoff = 0.05,
     outfile = "associated_seqs.csv"
 ) {
   stopifnot("lengths of file_list and sample_ids must match" =
@@ -65,21 +55,12 @@ findAssociatedSeqs <- function(
 
 }
 
-
+# alternate version using a single R data frame for all samples
 findAssociatedSeqs2 <- function(
-    data,
-    seq_col,
-    sample_col,
-    subject_col = sample_col,
-    group_col,
-    groups = c("group0", "group1"),  # 0 = reference, 1 = comparison
-    freq_col = NULL,
-    min_seq_length = 7,
-    min_sample_membership = 5,
-    pval_cutoff = 0.05,
-    drop_matches = "[*|_]",
-    outfile = "associated_seqs.csv"
-
+    data, seq_col, sample_col, subject_col = sample_col, group_col,
+    groups = c("group0", "group1"), freq_col = NULL,
+    min_seq_length = 7, min_sample_membership = 5, pval_cutoff = 0.05,
+    drop_matches = "[*|_]", outfile = "associated_seqs.csv"
 ) {
 
   # Convert column references to character if not already
@@ -128,25 +109,12 @@ findAssociatedSeqs2 <- function(
 
 
 findAssociatedClones <- function(
-
-  file_list,
-  input_type = "csv", # c("csv", "table", "rda", "rds")
-  data_symbols = NULL, # for rda, object name of input data (must be same for each sample)
-  header = TRUE,  # csv, table
-  sep = "",  # csv, table
-  sample_ids = 1:length(file_list),
-  subject_ids = sample_ids,
-  group_ids,
-  seq_col,
-  assoc_seqs,
-  nbd_radius = 1,
-  dist_type = "hamming",
-  min_seq_length = 6,
-  drop_matches = "[*|_]",
-  subset_cols = NULL,
-  output_dir = file.path(getwd(), "associated_clone_neighborhoods"),
-  output_type = "csv"  # rds, rda, csv, tsv
-
+    file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
+    sample_ids = 1:length(file_list), subject_ids = sample_ids, group_ids,
+    seq_col, assoc_seqs, nbd_radius = 1, dist_type = "hamming",
+    min_seq_length = 6, drop_matches = "[*|_]", subset_cols = NULL,
+    output_dir = file.path(getwd(), "associated_clone_neighborhoods"),
+    output_type = "csv"
 ) {
   .ensureOutputDir(output_dir)
 
@@ -162,10 +130,9 @@ findAssociatedClones <- function(
       file_list[[i]], input_type, data_symbols, header, sep, sample_ids[[i]],
       subject_ids[[i]], group_ids[[i]], seq_col, assoc_seqs, nbd_radius,
       dist_type, min_seq_length, drop_matches, subset_cols, tmpdirs)
-    cat("----------------------------------------------------------------------\n")
   }
 
-  cat(paste0("Done processing samples.\n"))
+  cat(paste0(">>> Done processing samples. Compiling results:\n"))
 
   for (i in 1:length(assoc_seqs)) {
     cat(paste0("Gathering data from all samples for sequence ", i, " (", assoc_seqs[[i]], ")..."))
@@ -174,27 +141,19 @@ findAssociatedClones <- function(
   }
 
   unlink(tmpdir)
-  cat(paste0("All tasks complete. Output is contained in the following directory:\n  ", output_dir, "\n"))
+  cat(paste0(">>> All tasks complete. Output is contained in the following directory:\n  ", output_dir, "\n"))
 }
 
 
 
 buildAssociatedClusterNetwork <- function(
-  file_list,
-  input_type = "csv", # c("csv", "table", "rda", "rds")
-  data_symbols = NULL, # for rda, object name of input data (must be same for each sample)
-  header = TRUE,  # csv, table
-  sep = "",  # csv, table
-  seq_col,
-  min_seq_length = NULL,
-  drop_matches = NULL,
-  drop_isolated_nodes = FALSE,
-  node_stats = TRUE,
-  stats_to_include = node_stat_settings(cluster_id = TRUE),
-  cluster_stats = TRUE,
-  color_nodes_by = "cluster_id",
-  output_name = "AssociatedClusterNetwork",
-  ...
+    file_list,
+    input_type = "csv", data_symbols = NULL, header = TRUE, sep = ",",
+    seq_col, min_seq_length = NULL, drop_matches = NULL,
+    drop_isolated_nodes = FALSE, node_stats = TRUE,
+    stats_to_include = node_stat_settings(cluster_id = TRUE),
+    cluster_stats = TRUE, color_nodes_by = "cluster_id",
+    output_name = "AssociatedClusterNetwork", ...
 ) {
 
   # Load data
@@ -230,13 +189,14 @@ buildAssociatedClusterNetwork <- function(
   data$SampleID <- sample_id; data$SubjectID <- subject_id;
   data$GroupID <- group_id
 
+  cat("Finding clones in a neighborhood of each associated sequence...")
   for (i in 1:length(assoc_seqs)) {
-    cat(paste0("Finding clones in a neighborhood of sequence ", i, " (", assoc_seqs[[i]], ")..."))
+    # cat(paste0("Finding clones in a neighborhood of sequence ", i, " (", assoc_seqs[[i]], ")..."))
     .getNbdOneSample(
       assoc_seqs[[i]], data, seq_col, dist_type, nbd_radius,
       file.path(output_dirs[[i]], paste0(sample_id, ".rds")))
-    cat(" Done.\n")
   }
+  cat(" Done.\n")
 }
 
 
@@ -244,14 +204,16 @@ buildAssociatedClusterNetwork <- function(
     seq, data, seq_col, dist_type, nbd_radius, outfile)
 {
   nbd <- .neighborhood(data, seq_col, seq, dist_type, nbd_radius)
-  nbd$AssocSeq <- seq
-  saveRDS(nbd, file = outfile)
+  if (nrow(nbd) > 0) {
+    nbd$AssocSeq <- seq
+    saveRDS(nbd, file = outfile)
+  }
 }
 
 .compileNeighborhood <- function(input_dir, sample_ids, output_dir, output_type)
 {
-data <- .loadDataFromFileList(
-  file_list = file.path(input_dir, paste0(sample_ids, ".rds")))
+  file_list <- file.path(input_dir, paste0(sample_ids, ".rds"))
+  data <- .loadDataFromFileList(file_list[file.exists(file_list)])
   .saveDataGeneric(data, output_dir, output_name = data$AssocSeq[[1]],
                    output_type = output_type)
 }
@@ -264,7 +226,7 @@ data <- .loadDataFromFileList(
 
 
 # getAssociatedClusters <- function(
-#
+    #
 #   # Input Data/Settings
 #   data, # merged bulk rep-seq data from all patients/samples
 #   seq_col,

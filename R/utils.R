@@ -128,11 +128,11 @@
   } else if (output_type == "csv") {
     data <- apply(data, MARGIN = 2, FUN = as.character)
     utils::write.csv(data, row.names = FALSE,
-                     file = file.path(output_dir, paste0(output_name, "csv")))
-  } else if (output_type == "tsv") {
+                     file = file.path(output_dir, paste0(output_name, ".csv")))
+  } else if (output_type %in% c("tsv", "table")) {
     data <- apply(data, MARGIN = 2, FUN = as.character)
     utils::write.table(data, row.names = FALSE,
-                       file = file.path(output_dir, paste0(output_name, "tsv")))
+                       file = file.path(output_dir, paste0(output_name, ".tsv")))
   } else {
     save(data, file = file.path(output_dir, paste0(output_name, ".rda")))
   }
@@ -1212,12 +1212,13 @@ generateNetworkGraphPlots <- function(
   return(color_nodes_by)
 }
 
-.makePlotTitle <- function(plot_title, type = "standard", seq_col = NULL) {
+.makePlotTitle <- function(plot_title, type = "standard", network_name = NULL) {
   if (is.null(plot_title)) { return(plot_title) }
   if (type == "standard") {
     if (plot_title == "auto") {
-      if (!is.null(seq_col)) { if (length(seq_col) == 2) { return("Immune Repertoire Network\nby Combined Dual-Chain Similarity") } }
-      return("Immune Repertoire Network\nby Receptor Sequence Similarity")
+      # if (!is.null(seq_col)) { if (length(seq_col) == 2) { return("Network\nby Dual-Chain Similarity") } }
+      if (!is.null(network_name)) { return(network_name)
+      } else { return("Network by Receptor Sequence Similarity") }
     }
   } else if (type == "pub_clust_rep") {
     if (plot_title == "auto") { return("Network of Public Clusters by Representative Sequence") }
