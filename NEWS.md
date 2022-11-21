@@ -1,8 +1,12 @@
-# 0.0.9019
+# 0.0.9020 (11/20/2022)
+
+* Internal function `.saveNetwork` changed to user-facing function `saveNetwork`, for use in saving output during downstream analysis
+
+# 0.0.9019 (11/20/2022)
 
 * Bug fixes to associated clones functions
 
-# 0.0.9018
+# 0.0.9018 (11/20/2022)
 
 * Changes to `buildRepSeqNetwork()` (many of these changes carry over to other functions):
     * Changed arguments and functionality for saving output. A new `output_type` argument can be used to save the output list to a rds or rda file, rather than the default behavior of saving each item in an individual, uncompressed file. Rather than specifying the filename of each item individually, the `output_name` argument accepts a character string to be used as a common prefix for any files saved. All items are now saved, and the `save_all` argument has been removed.

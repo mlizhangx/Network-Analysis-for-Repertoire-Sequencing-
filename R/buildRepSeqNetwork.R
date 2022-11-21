@@ -60,8 +60,7 @@ buildRepSeqNetwork <- function(
   }
 
   ### SAVE & RETURN RESULTS ###
-  .saveNetwork(out, output_dir, output_type, output_name,
-               plots, pdf_width, pdf_height, cluster_stats, dist_type)
+  saveNetwork(out, output_dir, output_type, output_name, pdf_width, pdf_height)
   return(invisible(out))
 }
 

@@ -138,24 +138,27 @@
   }
 }
 
-.saveNetwork <- function(
+saveNetwork <- function(
     net, output_dir = getwd(), output_type = "individual",
-    output_filename = "MyRepSeqNetwork", plots = TRUE,
-    pdf_width = 12, pdf_height = 10, cluster_stats = FALSE, dist_type = NULL)
+    output_filename = "MyRepSeqNetwork", pdf_width = 12, pdf_height = 10)
 {
   if (is.null(output_dir)) { return(invisible(NULL)) } # exit if no output dir
   .createOutputDir(output_dir)
   if (output_type == "rds") {
     .saveNetworkRDS(net, output_dir, output_filename)
-    if (plots) { .saveNetworkPlots(net$plots, output_dir,
-                                   output_filename, pdf_width, pdf_height) }
+    if ("plots" %in% names(net)) {
+      saveNetworkPlots(
+        net$plots, file.path(output_dir, paste0(output_filename, ".pdf")),
+        pdf_width, pdf_height) }
   } else if (output_type == "individual") {
-    .saveNetworkObjects(net, output_dir, output_filename, cluster_stats,
-                        plots, pdf_width, pdf_height, dist_type)
+    .saveNetworkObjects(net, output_dir, output_filename, pdf_width, pdf_height)
   } else {
     .saveNetworkRDA(net, output_dir, output_filename)
-    if (plots) { .saveNetworkPlots(net$plots, output_dir,
-                                   output_filename, pdf_width, pdf_height) } }
+    if ("plots" %in% names(net)) {
+      saveNetworkPlots(
+        net$plots, file.path(output_dir, paste0(output_filename, ".pdf")),
+        pdf_width, pdf_height) }
+  }
 }
 
 
@@ -173,8 +176,8 @@
 }
 
 
-.saveNetworkObjects <- function(net, output_dir, output_filename, cluster_stats,
-                                plots, pdf_width, pdf_height, dist_type)
+.saveNetworkObjects <- function(net, output_dir, output_filename,
+                                pdf_width, pdf_height)
 {
   # Save node & cluster data
   node_file <-
@@ -183,7 +186,7 @@
   utils::write.csv(net$node_data, file = node_file, row.names = FALSE)
   cat(paste0("Node-level meta-data saved to file:\n  ", node_file, "\n"))
 
-  if (cluster_stats) {
+  if ("cluster_data" %in% names(net)) {
     cluster_file <-
       file.path(output_dir, paste0(output_filename, "_ClusterMetadata.csv"))
     net$cluster_data <- apply(net$cluster_data, MARGIN = 2, FUN = as.character)
@@ -192,9 +195,10 @@
   }
 
   # Save plots to a single pdf
-  if (plots) {
-    .saveNetworkPlots(net$plots, output_dir, output_filename,
-                      pdf_width, pdf_height)
+  if ("plots" %in% names(net)) {
+    saveNetworkPlots(
+      net$plots, file.path(output_dir, paste0(output_filename, ".pdf")),
+      pdf_width, pdf_height)
   }
 
   # Save igraph
@@ -204,12 +208,12 @@
   cat(paste0("Network igraph saved in edgelist format to file:\n  ", igraph_outfile, "\n"))
 
   # Save adjacency matrix
-  if (dist_type == "euclidean_on_atchley") {
+  if (class(net$adjacency_matrix) == "matrix") {
     matrix_outfile <-
       file.path(output_dir, paste0(output_filename, "_AdjacencyMatrix.csv"))
     utils::write.csv(net$adjacency_matrix, matrix_outfile, row.names = FALSE)
     cat(paste0("Adjacency matrix saved to file:\n  ", matrix_outfile, "\n"))
-  } else {
+  } else if (class(net$adjacency_matrix) == "dgCMatrix" ) {
     matrix_outfile <-
       file.path(output_dir, paste0(output_filename, "_AdjacencyMatrix.mtx"))
     Matrix::writeMM(net$adjacency_matrix, matrix_outfile)
@@ -228,9 +232,8 @@
 
 }
 
-saveNetworkPlots <- function(plotlist, output_dir, output_filename,
+saveNetworkPlots <- function(plotlist, outfile,
                              pdf_width = 12, pdf_height = 10) {
-  outfile <- file.path(output_dir, paste0(output_filename, ".pdf"))
   grDevices::pdf(file = outfile, width = pdf_width, height = pdf_height)
   for (j in 1:length(plotlist)) { print(plotlist[[j]]) }
   grDevices::dev.off()
@@ -991,7 +994,7 @@ plotNetworkGraph <- function(igraph,
                                 yes = deparse(substitute(color_nodes_by)))
         subtitle_affix <- paste0("Nodes colored by ", color_varname)
         plot_subtitle <- ifelse(is.null(plot_subtitle), yes = subtitle_affix,
-                           no = paste0(plot_subtitle, "\n", subtitle_affix))
+                                no = paste0(plot_subtitle, "\n", subtitle_affix))
       }
     }
   }

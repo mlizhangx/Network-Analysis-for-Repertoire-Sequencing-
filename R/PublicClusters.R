@@ -154,8 +154,7 @@ buildPublicClusterNetworkByRepresentative <- function(
   }
 
   # Save & return output
-  .saveNetwork(net, output_dir, output_type, output_name, plots,
-               pdf_width, pdf_height, cluster_stats = TRUE, dist_type)
+  saveNetwork(out, output_dir, output_type, output_name, pdf_width, pdf_height)
   cat("All tasks complete.\n")
   return(invisible(net))
 }
