@@ -1,3 +1,8 @@
+# 0.0.9021 (11/21/2022)
+
+* Minor bug fixes to a few functions in `utils.R` that caused errors or warnings in rare cases
+
+
 # 0.0.9020 (11/20/2022)
 
 * Internal function `.saveNetwork` changed to user-facing function `saveNetwork`, for use in saving output during downstream analysis

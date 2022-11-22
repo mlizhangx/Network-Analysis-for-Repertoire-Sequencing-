@@ -257,8 +257,8 @@ saveNetworkPlots <- function(plotlist, outfile,
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
   # coerce sequence column(s) to character
-  if (!is.character(data[ , seq_col])) {
-    for (i in 1:length(seq_col)) {
+  for (i in 1:length(seq_col)) {
+    if (!is.character(data[ , seq_col[[i]]])) {
       data[ , seq_col[[i]]] <- as.character(data[ , seq_col[[i]]])
     }
   }
@@ -313,18 +313,18 @@ saveNetworkPlots <- function(plotlist, outfile,
 }
 
 .subsetColumns <- function(data, cols_to_keep) {
+  cols_to_keep <- intersect(unique(cols_to_keep), names(data))
   if (is.null(cols_to_keep)) {
-    warning("'cols_to_keep' is NULL: returning all columns")
-    return(data)
+    warning("'cols_to_keep' is NULL: returning all columns"); return(data)
   }
   if (length(cols_to_keep) == 0) {
-    warning("'cols_to_keep' is empty: returning all columns")
-    return(data)
+    out <- data; warning("'cols_to_keep' is empty: returning all columns")
   } else if (length(cols_to_keep) == 1) {
-    return(as.data.frame(data[ , intersect(unique(cols_to_keep), names(data))]))
+    out <- as.data.frame(data[ , cols_to_keep]); names(out) <- cols_to_keep
   } else {
-    return(data[ , intersect(unique(cols_to_keep), names(data))])
+    out <- data[ , cols_to_keep]
   }
+  return(out)
 }
 
 # FUNCTION: Filter rep-seq data to remove rows for clonotype sequences with
@@ -353,9 +353,15 @@ filterClonesBySequenceLength <- function(data, seq_col, min_length = 3) {
   for (i in 1:length(seq_col)) {
     drop_rows <- drop_rows | grepl(drop_matches, data[ , seq_col[[i]]])
   }
-  if (sum(drop_rows) > 0) { data <- data[-drop_rows, ] }
-  cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
-  return(data)
+  if (sum(drop_rows) > 0) {
+    if (ncol(data) == 1) {
+      out <- as.data.frame(data[-drop_rows, ]); names(out) <- names(data)
+    } else {
+      out <- data[-drop_rows, ]
+    }
+  }
+  cat(paste0(" Done. ", nrow(out), " rows remaining.\n"))
+  return(out)
 }
 
 
@@ -401,8 +407,11 @@ filterClonesBySequenceLength <- function(data, seq_col, min_length = 3) {
                                "and ", n_g0_with + n_g1_with, " subjects ") }
     out$label[[i]] <- paste0(
       out$label[[i]], "(of which ", n_g0_with, " are in the comparison group)",
-      "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3),
-      ", Max frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
+      "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3))
+    if (!is.null(freq_col)) {
+      out$label[[i]] <- paste0(
+        out$label[[i]], ", Max frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
+    }
   }
 
   out <- out[out$fisher_pvalue < pval_cutoff, ]

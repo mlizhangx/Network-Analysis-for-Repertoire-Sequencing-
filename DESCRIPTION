@@ -1,7 +1,7 @@
 Package: NAIR
 Type: Package
 Title: Network Analysis for Immune Repertoire
-Version: 0.0.9020
+Version: 0.0.9021
 Authors@R: c(
     person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
