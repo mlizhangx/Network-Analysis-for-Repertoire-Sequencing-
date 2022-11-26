@@ -103,21 +103,14 @@ package functions.
 library(NAIR)
 dir_out <- tempdir()
 toy_data <- simulateToyData()
-#> Warning in seqs[ranges[, i]] <- paste0(prefix, sample(affixes, size =
-#> sample_size, : number of items to replace is not a multiple of replacement
-#> length
-
-#> Warning in seqs[ranges[, i]] <- paste0(prefix, sample(affixes, size =
-#> sample_size, : number of items to replace is not a multiple of replacement
-#> length
 head(toy_data)
 #>        CloneSeq SampleID
 #> 1 TTGAGGAAATTCG        1
 #> 2 GGAGATGAATCGG        1
-#> 3  TTAAAAAAATTC        1
-#> 4 AAAATAAAATTGG        1
-#> 5                      1
-#> 6                      1
+#> 3 GTCGGGTAATTGG        1
+#> 4 GCCGGGTAATTCG        1
+#> 5 GAAAGAGAATTCG        1
+#> 6 AGGTGGGAATTCG        1
 ```
 
 ## Basic Usage
@@ -133,23 +126,23 @@ head(toy_data)
 output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", 
                              output_dir = dir_out)
 #> Input data contains 200 rows.
-#> Removing sequences with length fewer than 3 characters... Done. 199 rows remaining.
+#> Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
-#> Network contains 196 nodes (after removing isolated nodes).
+#> Network contains 122 nodes (after removing isolated nodes).
 #> Generating graph plot...
 #>  Done.
 #> Node-level meta-data saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIda8Nt/MyRepSeqNetwork_NodeMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
 
     #> Network graph plots saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIda8Nt/MyRepSeqNetwork.pdf
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork.pdf
     #> Network igraph saved in edgelist format to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIda8Nt/MyRepSeqNetwork_EdgeList.txt
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork_EdgeList.txt
     #> Adjacency matrix saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIda8Nt/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork_AdjacencyMatrix.mtx
 
 The function returns a list containing the following items:
 
@@ -172,7 +165,7 @@ removed):
 
 ``` r
 nrow(output$node_data)
-#> [1] 196
+#> [1] 122
 ```
 
 Thus, this output data serves as biological meta-data for the nodes in
@@ -228,12 +221,12 @@ output <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE,
                              cluster_stats = TRUE, print_plots = FALSE,
                              output_dir = NULL)
 #> Input data contains 200 rows.
-#> Removing sequences with length fewer than 3 characters... Done. 199 rows remaining.
+#> Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
-#> Network contains 196 nodes (after removing isolated nodes).
+#> Network contains 122 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
 #> Computing cluster membership within the network... Done.
-#> Computing statistics for the 2 clusters in the network... Done.
+#> Computing statistics for the 20 clusters in the network... Done.
 #> Generating graph plot with nodes colored by transitivity... Done.
 ```
 
@@ -246,17 +239,33 @@ names(output)
 #> [5] "plots"
 head(output$cluster_data)
 #>   cluster_id node_count mean_seq_length mean_degree max_degree seq_w_max_degree
-#> 1          1        195               0         195        195                 
-#> 2          2          1               0         195        195                 
+#> 1          1         14           13.00        3.36          9    AAAAAAAAATTGC
+#> 2          2         28           12.96        8.43         18    GGGGGGGAATTGG
+#> 3          3          9           12.67        2.22          4     AGAAGAAAATTC
+#> 4          4          6           13.00        3.33          9    GGGGGGAAATTGG
+#> 5          5          6           12.00        2.17          3     AGGGAGGAATTC
+#> 6          6         25           12.00        4.60         10     AAAAAAAAATTG
 #>   agg_clone_count max_clone_count seq_w_max_count diameter_length
-#> 1              NA              NA              NA               2
-#> 2              NA              NA              NA               1
+#> 1              NA              NA              NA               5
+#> 2              NA              NA              NA               6
+#> 3              NA              NA              NA               7
+#> 4              NA              NA              NA               4
+#> 5              NA              NA              NA               5
+#> 6              NA              NA              NA               6
 #>   global_transitivity assortativity edge_density degree_centrality_index
-#> 1                   1           NaN            1                       0
-#> 2                 NaN           NaN          NaN                     NaN
+#> 1           0.5454545   -0.13886606    0.2307692               0.3076923
+#> 2           0.6084437   -0.05857037    0.2962963               0.3333333
+#> 3           0.2727273   -0.68750000    0.2500000               0.1250000
+#> 4           0.3750000   -0.50000000    0.4000000               0.2000000
+#> 5           0.4285714   -0.09090909    0.4000000               0.2000000
+#> 6           0.3435115   -0.14219251    0.1766667               0.1983333
 #>   closeness_centrality_index eigen_centrality_index eigen_centrality_eigenvalue
-#> 1                          0           1.472627e-16                         194
-#> 2                        NaN           0.000000e+00                           0
+#> 1                  0.5584465              0.6572455                    3.627940
+#> 2                  0.4703335              0.5524239                   11.831606
+#> 3                  0.2311674              0.6748055                    2.238772
+#> 4                  0.4266234              0.5237142                    2.278414
+#> 5                  0.3301948              0.5707806                    2.228328
+#> 6                  0.4012791              0.6291788                    5.885769
 ```
 
 Each row of the cluster-level meta data corresponds to a single cluster
@@ -277,9 +286,9 @@ output <- buildRepSeqNetwork(toy_data, "CloneSeq",
                              node_size_limits = c(0.5, 1.5),
                              output_dir = NULL)
 #> Input data contains 200 rows.
-#> Removing sequences with length fewer than 3 characters... Done. 199 rows remaining.
+#> Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.
 #> Computing network edges based on a max hamming distance of 1... Done.
-#> Network contains 196 nodes (after removing isolated nodes).
+#> Network contains 122 nodes (after removing isolated nodes).
 #> Computing cluster membership within the network... Done.
 #> Computing node-level network statistics... Done.
 #> Generating graph plot with nodes colored by transitivity...

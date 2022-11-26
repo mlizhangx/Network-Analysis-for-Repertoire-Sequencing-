@@ -28,7 +28,7 @@ simulateToyData <- function(
 
   set.seed(seed_value)
   seqs <- character(samples * sample_size)
-  ranges <- (matrix(seq_len(samples * sample_size), nrow = samples))
+  ranges <- (matrix(seq_len(samples * sample_size), ncol = samples))
   if (num_edits > 0) {
     edit_op <- function(seq, pos, char) {
       op <- sample(edit_ops, size = 1, prob = edit_probs)
