@@ -32,8 +32,8 @@ Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. “NAIR: Net
 
 * Perform general network analysis on immune repertoire sequence (RepSeq) data, including computing local and global network properties of nodes and clusters
 * Search across multiple RepSeq samples for:
-    * Clones/clusters associated to a clinical outcome
-    * Public clones/clusters 
+* Clones/clusters associated to a clinical outcome
+* Public clones/clusters 
 * Generate customized visualizations of the immune repertoire network
 * Perform further downstream analysis
 
@@ -202,12 +202,11 @@ The network graph plot produced by `buildRepSeqNetwork()` can be customized in v
 
 ```{r}
 output <- buildRepSeqNetwork(toy_data, "CloneSeq",
+                             dist_type = "levenshtein",
                              node_stats = TRUE,
-                             stats_to_include = "all",
-                             color_nodes_by = c("transitivity", "closeness"),
-                             color_scheme = c("plasma-1", "default"),
-                             size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 1.5),
+                             color_nodes_by = "SampleID",
+                             size_nodes_by = "authority_score",
+                             node_size_limits = c(1, 3),
                              output_dir = NULL)
 ```
 
@@ -256,14 +255,14 @@ The distance function specified in the `dist_type` argument is used to model the
 
 For a more detailed tutorial on the `buildRepSeqNetwork` function:
 
-```{r}
+```{r, eval = FALSE}
 vignette(topic = "buildRepSeqNetwork", package = "NAIR")
 ```
 
 
 For more details on network visualization:
 
-```{r}
+```{r, eval = FALSE}
 vignette(topic = "Network Visualization", package = "NAIR")
 ```
 
@@ -275,7 +274,7 @@ vignette(topic = "Network Visualization", package = "NAIR")
 
 The output returned by `buildRepSeqNetwork()` and other top-level `NAIR` functions can be used to facilitate further downstream analysis with the help of auxiliary functions within the `NAIR` package. For more details:
 
-```{r}
+```{r, eval = FALSE}
 vignette(topic = "Downstream Analysis", package = "NAIR")
 ```
 
@@ -288,7 +287,7 @@ vignette(topic = "Downstream Analysis", package = "NAIR")
 A set of functions has been provided to search across samples for TCR/BCR clones associated to a sample- or subject-level binary outcome/characteristic. An example usage is seen below. 
 
 For a detailed tutorial:
-```{r}
+```{r, eval = FALSE}
 vignette(topic = "Finding Associated Clones", package = "NAIR")
 ```
 
@@ -359,7 +358,7 @@ kmeansAtchley(
 A set of functions has been provided to search across samples for public clones. An example usage is seen below. 
 
 For a detailed tutorial:
-```{r}
+```{r, eval = FALSE}
 vignette(topic = "Finding Public Clones", package = "NAIR")
 ```
 
@@ -382,7 +381,7 @@ findPublicClusters(
   plots = TRUE, color_scheme = "turbo",
   output_dir = dir_samples_filtered,
   output_dir_unfiltered = file.path(dir_out, "sample_networks") # optional
-  )
+)
 ```
 
 ## 2. Build Public Cluster Network

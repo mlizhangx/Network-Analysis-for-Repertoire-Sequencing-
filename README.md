@@ -21,8 +21,8 @@ Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang.
   (RepSeq) data, including computing local and global network properties
   of nodes and clusters
 - Search across multiple RepSeq samples for:
-  - Clones/clusters associated to a clinical outcome
-  - Public clones/clusters
+- Clones/clusters associated to a clinical outcome
+- Public clones/clusters
 - Generate customized visualizations of the immune repertoire network
 - Perform further downstream analysis
 
@@ -132,17 +132,17 @@ output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq",
 #> Generating graph plot...
 #>  Done.
 #> Node-level meta-data saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork_NodeMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpiGhDoy/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
 
     #> Network graph plots saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork.pdf
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpiGhDoy/MyRepSeqNetwork.pdf
     #> Network igraph saved in edgelist format to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork_EdgeList.txt
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpiGhDoy/MyRepSeqNetwork_EdgeList.txt
     #> Adjacency matrix saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpmuLNBx/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpiGhDoy/MyRepSeqNetwork_AdjacencyMatrix.mtx
 
 The function returns a list containing the following items:
 
@@ -278,28 +278,21 @@ customized in various ways.
 
 ``` r
 output <- buildRepSeqNetwork(toy_data, "CloneSeq",
+                             dist_type = "levenshtein",
                              node_stats = TRUE,
-                             stats_to_include = "all",
-                             color_nodes_by = c("transitivity", "closeness"),
-                             color_scheme = c("plasma-1", "default"),
-                             size_nodes_by = "degree",
-                             node_size_limits = c(0.5, 1.5),
+                             color_nodes_by = "SampleID",
+                             size_nodes_by = "authority_score",
+                             node_size_limits = c(1, 3),
                              output_dir = NULL)
 #> Input data contains 200 rows.
 #> Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.
-#> Computing network edges based on a max hamming distance of 1... Done.
-#> Network contains 122 nodes (after removing isolated nodes).
-#> Computing cluster membership within the network... Done.
+#> Computing network edges based on a max levenshtein distance of 1... Done.
+#> Network contains 124 nodes (after removing isolated nodes).
 #> Computing node-level network statistics... Done.
-#> Generating graph plot with nodes colored by transitivity...
+#> Generating graph plot with nodes colored by SampleID...
 ```
 
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;" />
-
-    #>  Done.
-    #> Generating graph plot with nodes colored by closeness...
-
-<img src="man/figures/README-unnamed-chunk-15-2.png" width="100%" style="display: block; margin: auto;" />
 
     #>  Done.
 
@@ -374,14 +367,12 @@ For a more detailed tutorial on the `buildRepSeqNetwork` function:
 
 ``` r
 vignette(topic = "buildRepSeqNetwork", package = "NAIR")
-#> Warning: vignette 'buildRepSeqNetwork' not found
 ```
 
 For more details on network visualization:
 
 ``` r
 vignette(topic = "Network Visualization", package = "NAIR")
-#> Warning: vignette 'Network Visualization' not found
 ```
 
 # Downstream Analysis
@@ -392,7 +383,6 @@ help of auxiliary functions within the `NAIR` package. For more details:
 
 ``` r
 vignette(topic = "Downstream Analysis", package = "NAIR")
-#> Warning: vignette 'Downstream Analysis' not found
 ```
 
 # Finding Associated Clones
@@ -405,7 +395,6 @@ For a detailed tutorial:
 
 ``` r
 vignette(topic = "Finding Associated Clones", package = "NAIR")
-#> Warning: vignette 'Finding Associated Clones' not found
 ```
 
 ## 1. Find Associated Sequences
@@ -485,7 +474,6 @@ For a detailed tutorial:
 
 ``` r
 vignette(topic = "Finding Public Clones", package = "NAIR")
-#> Warning: vignette 'Finding Public Clones' not found
 ```
 
 ## 1. Find Public Clusters in Each Sample
@@ -506,7 +494,7 @@ findPublicClusters(
   plots = TRUE, color_scheme = "turbo",
   output_dir = dir_samples_filtered,
   output_dir_unfiltered = file.path(dir_out, "sample_networks") # optional
-  )
+)
 ```
 
 ## 2. Build Public Cluster Network
