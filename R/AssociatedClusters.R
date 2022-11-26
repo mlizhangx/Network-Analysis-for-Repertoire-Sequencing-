@@ -5,7 +5,7 @@
 findAssociatedSeqs <- function(
 
   ## Input ##
-  file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
+  file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
   sample_ids = 1:length(file_list), subject_ids = sample_ids,
   group_ids, groups = c("group0", "group1"), seq_col, freq_col = NULL,
 
@@ -34,7 +34,7 @@ findAssociatedSeqs <- function(
   stopifnot("'group_ids' contains values not in 'groups'" = n_g0 + n_g1 == n)
   stopifnot("both groups must be nonempty" = n_g0 > 0 && n_g1 > 0)
 
-  data <- .compileSamples(
+  data <- combineSamples(
     file_list, input_type, data_symbols, header, sep, seq_col,
     min_seq_length, drop_matches, sample_ids, subject_ids, group_ids,
     subset_cols = c(seq_col, freq_col))
@@ -44,7 +44,6 @@ findAssociatedSeqs <- function(
     return(invisible(NULL))
   }
 
-  cat("All samples loaded. ")
   out <- .filterSeqsBySampleMembership(
     data, seq_col, sample_col = "SampleID", min_sample_membership)
 
@@ -81,9 +80,8 @@ findAssociatedSeqs2 <- function(
   seq_col <- .convertColRef(seq_col, data)
   freq_col <- .convertColRef(freq_col, data)
 
-  data <- .filterInputData(
-    data, seq_col, count_col = NULL, color_nodes_by = NULL, min_seq_length,
-    drop_matches, subset_cols = NULL)
+  data <- filterInputData(
+    data, seq_col, min_seq_length, drop_matches, subset_cols = NULL)
 
   if (nrow(data) < 2) {
     warning("insufficient remaining receptor sequences; at least two needed")
@@ -125,7 +123,7 @@ findAssociatedSeqs2 <- function(
 findAssociatedClones <- function(
 
   ## Input ##
-  file_list, input_type = "csv", data_symbols = NULL, header = TRUE, sep = "",
+  file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
   sample_ids = 1:length(file_list), subject_ids = sample_ids, group_ids,
   seq_col,
 
@@ -135,7 +133,7 @@ findAssociatedClones <- function(
 
   ## Output ##
   subset_cols = NULL,
-  output_dir = file.path(getwd(), "associated_clone_neighborhoods"),
+  output_dir = file.path(getwd(), "associated_neighborhoods"),
   output_type = "csv"
 ) {
   .ensureOutputDir(output_dir)
@@ -179,7 +177,7 @@ buildAssociatedClusterNetwork <- function(
 ) {
 
   # Load data
-  data <- .loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
+  data <- loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
 
   # Build network
   cat("<<< Building network of associated clones >>>\n")
@@ -206,8 +204,8 @@ buildAssociatedClusterNetwork <- function(
   data <- .loadDataFromFile(input_file, input_type, data_symbols, header, sep)
   seq_col <- .convertColRef(seq_col, data)
   subset_cols <- .convertColRef(subset_cols, data)
-  data <- .filterInputData(data, seq_col, min_seq_length, drop_matches,
-                           subset_cols)
+  data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
+                          subset_cols)
   data$SampleID <- sample_id; data$SubjectID <- subject_id;
   data$GroupID <- group_id
 
@@ -225,21 +223,81 @@ buildAssociatedClusterNetwork <- function(
 .getNbdOneSample <- function(
     seq, data, seq_col, dist_type, nbd_radius, outfile)
 {
-  nbd <- .neighborhood(data, seq_col, seq, dist_type, nbd_radius)
-  if (nrow(nbd) > 0) {
-    nbd$AssocSeq <- seq
-    saveRDS(nbd, file = outfile)
+  nbd <- getNeighborhood(data, seq_col, seq, dist_type, nbd_radius)
+  if (!is.null(nbd)) {
+    if (nrow(nbd) > 0) {
+      nbd$AssocSeq <- seq
+      saveRDS(nbd, file = outfile)
+    }
   }
 }
+
+
 
 .compileNeighborhood <- function(input_dir, sample_ids, output_dir, output_type)
 {
   file_list <- file.path(input_dir, paste0(sample_ids, ".rds"))
-  data <- .loadDataFromFileList(file_list[file.exists(file_list)])
+  data <- loadDataFromFileList(file_list[file.exists(file_list)], "rds")
   .saveDataGeneric(data, output_dir, output_name = data$AssocSeq[[1]],
                    output_type = output_type)
 }
 
+
+.filterSeqsBySampleMembership <- function(
+    data, seq_col, sample_col, min_sample_membership)
+{
+  cat(paste0("Extracting list of unique sequences... "))
+  out <- data.frame("ReceptorSeq" = unique(data[[seq_col]]))
+  cat("Done. ", paste0(nrow(out), " unique sequences present.\nFiltering by sample membership (this takes a while)..."))
+  out$shared_by_n_samples <- sapply(
+    out$ReceptorSeq,
+    function(x) { length(unique(data[data[[seq_col]] == x, sample_col])) } )
+  out <- out[out$shared_by_n_samples >= min_sample_membership, , drop = FALSE]
+  cat(paste0(" Done. ", nrow(out), " sequences remain.\n"))
+  stopifnot("no sequences pass filter for sample membership; try using a lower minimum value" = nrow(out) > 0)
+  return(out)
+}
+
+.filterByFisherPvalue <- function(
+    unique_seq_data,
+    unique_seq_col = "ReceptorSeq",
+    unique_membership_count_col = "shared_by_n_samples",
+    data, seq_col, subject_col, group_col, groups,
+    n_g0, n_g1, pval_cutoff, freq_col, samples_or_subjects = "subjects")
+{
+  out <- unique_seq_data; out$label <- out$fisher_pvalue <- NA
+  cat("Filtering by Fisher's exact test P-value...")
+  rowids_g0 <- data[[group_col]] == groups[[1]]
+  for (i in 1:nrow(out)) {
+    rowids_clone <- data[[seq_col]] == out[[i, unique_seq_col]]
+
+    n_g0_with <- length(unique(data[rowids_clone & rowids_g0, subject_col]))
+    n_g1_with <- length(unique(data[rowids_clone & !rowids_g0, subject_col]))
+
+    out$fisher_pvalue[[i]] <-
+      stats::fisher.test(data.frame("g0" = c(n_g1_with, n_g1 - n_g1_with),
+                                    "g1" = c(n_g0_with, n_g0 - n_g0_with))
+      )$p.value
+
+    out$label[[i]] <- paste0("Sequence present in ",
+                             out[i, unique_membership_count_col], " samples ")
+    if (samples_or_subjects == "subjects") {
+      out$label[[i]] <- paste0(out$label[[i]],
+                               "and ", n_g0_with + n_g1_with, " subjects ") }
+    out$label[[i]] <- paste0(
+      out$label[[i]], "(of which ", n_g0_with, " are in the comparison group)",
+      "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3))
+    if (!is.null(freq_col)) {
+      out$label[[i]] <- paste0(
+        out$label[[i]], ", Max frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
+    }
+  }
+
+  out <- out[out$fisher_pvalue < pval_cutoff, , drop = FALSE]
+  out <- out[order(out$fisher_pvalue), , drop = FALSE]  # sort by P-value
+  cat(paste0(" Done. ", nrow(out), " sequences remain.\n"))
+  return(out)
+}
 
 
 

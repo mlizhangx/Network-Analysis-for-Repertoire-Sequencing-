@@ -267,8 +267,7 @@ data <- data.frame("clone_seq" = clone_seqs,
                    "group" = group_labels)
 
 # Generate network for data
-net <- generateNetworkFromSeqs(data$clone_seq,
-                                 drop_isolated_nodes = FALSE)
+net <- generateNetworkObjects(data, "clone_seq")
 #
 # # Add default network statistics
 # data_w_default_stats <- addNodeNetworkStats(data, net)
@@ -316,12 +315,12 @@ net <- generateNetworkFromSeqs(data$clone_seq,
 #                   count_col = "count")
 
 # Plot network graph
-net_plot <- plotNetworkGraph(
-  net,
-  color_nodes_by = data$group,
-  color_scheme = "viridis",
-  size_nodes_by = data$count,
-  node_size_limits = c(0.5, 5))
+# net_plot <- plotNetworkGraph(
+#   net,
+#   color_nodes_by = data$group,
+#   color_scheme = "viridis",
+#   size_nodes_by = data$count,
+#   node_size_limits = c(0.5, 5))
 
 # library(AMKAT)
 #

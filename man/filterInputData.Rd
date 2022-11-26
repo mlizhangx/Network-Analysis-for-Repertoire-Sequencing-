@@ -1,0 +1,78 @@
+\name{filterInputData}
+\alias{filterInputData}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{
+%%  ~~function to do ... ~~
+    Filter RepSeq Data Rows and/or Subset Columns
+}
+\description{
+%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+    Filter data rows by sequence length and/or sequence content; subset data
+    columns using a numeric or character vector of column references.
+}
+\usage{
+filterInputData(data, seq_col, min_seq_length = NULL,
+                drop_matches = NULL,
+                subset_cols = NULL)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{data}{
+%%     ~~Describe \code{data} here~~
+    A data frame containing the immune repertoire sequencing data, with variables indexed by column and observations (e.g., clones or cells) indexed by row.
+}
+  \item{seq_col}{
+%%     ~~Describe \code{seq_col} here~~
+    The column name of \code{data} containing the receptor sequences for use in any filtering based on length or content.
+}
+  \item{min_seq_length}{
+%%     ~~Describe \code{min_seq_length} here~~
+    A numeric scalar, or \code{NULL}. Observations whose receptor sequences have fewer than \code{min_seq_length} characters are removed prior to network analysis.
+}
+  \item{drop_matches}{
+%%     ~~Describe \code{drop_chars} here~~
+    An optional regular expression or character string. Observations whose receptor sequences return a match are removed prior to network analysis.
+}
+  \item{subset_cols}{
+    Optional vector of column names or numbers of \code{data}; if supplied, only these (in addition to the column referenced by \code{seq_col}) are included in the output. If \code{NULL} (the default), all columns of \code{data} are included.
+}
+}
+\value{
+%%  ~Describe the value returned
+%%  If it is a LIST, use
+%%  \item{comp1 }{Description of 'comp1'}
+%%  \item{comp2 }{Description of 'comp2'}
+%% ...
+    A data frame containing the filtered rows and specified columns of \code{data}.
+}
+\references{
+%% ~put references to the literature/web site here ~
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+
+    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+}
+\author{
+%%  ~~who you are~~
+    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+}
+\examples{
+\dontrun{
+variables_to_keep <- c("CloneCount", "CloneFrequency",
+                       "VGene", "DGene", "JGene", "CDR3Length")
+filtered_data <-
+  filterInputData(data, seq_col = "seqs",
+                  min_seq_length = 5,
+                  drop_matches = "[*|_]",
+                  subset_cols = variables_to_keep)
+}
+
+}
+% Add one or more standard keywords, see file 'KEYWORDS' in the
+% R documentation directory (show via RShowDoc("KEYWORDS")):
+% \keyword{ ~kwd1 }
+% \keyword{ ~kwd2 }
+% Use only one keyword per line.
+% For non-standard keywords, use \concept instead of \keyword:
+% \concept{ ~cpt1 }
+% \concept{ ~cpt2 }
+% Use only one concept per line.

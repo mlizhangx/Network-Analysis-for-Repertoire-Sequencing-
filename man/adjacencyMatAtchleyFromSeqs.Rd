@@ -59,7 +59,7 @@ The encoder was trained specifically on TCR CDR3 amino acid sequences and is not
 }
 \references{
 %% ~put references to the literature/web site here ~
-    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
 
     https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }

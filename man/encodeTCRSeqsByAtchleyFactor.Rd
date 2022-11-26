@@ -1,16 +1,16 @@
-\name{embedTCRSeqsByAtchleyFactor}
-\alias{embedTCRSeqsByAtchleyFactor}
+\name{encodeTCRSeqsByAtchleyFactor}
+\alias{encodeTCRSeqsByAtchleyFactor}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-Numerically Encode TCR CDR3 Amino Acid Sequences By Atchley Factor Representation
+Numerically Encode TCR Sequences Using Deep Learning
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
 Given a list of T-cell receptor CDR3 amino acid sequences, encodes each sequence as a 30-dimensional numeric vector based on the Atchley factor representation of its terms using a trained encoder.
 }
 \usage{
-embedTCRSeqsByAtchleyFactor(
+encodeTCRSeqsByAtchleyFactor(
     cdr3_AA,
     contig_ids = seq_along(cdr3_AA))
 }
@@ -42,7 +42,7 @@ The encoder was trained specifically on TCR CDR3 amino acid sequences and is not
 }
 \references{
 %% ~put references to the literature/web site here ~
-    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
 
     https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }
@@ -62,7 +62,7 @@ cdr3 <- c("CASSEAQGSGSTDTQYF",
           "CASSLGLATDTQYF",
           "CASSEKEEVGELFF",
           "CASSSRTSGGAGELFF")
-embedTCRSeqsByAtchleyFactor(cdr3)
+encodeTCRSeqsByAtchleyFactor(cdr3)
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

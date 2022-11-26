@@ -1,0 +1,172 @@
+---
+title: "Network Visualization"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Network Visualization}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
+)
+```
+
+
+In this vignette, we cover arguments of the `buildRepSeqNetwork()` function that customize the visualization produced via `ggraph`.
+
+### Load Data
+
+For demonstration purposes, we load a  [public data set](https://www.10xgenomics.com/resources/datasets/pbm-cs-of-a-healthy-donor-v-1-1-1-standard-3-1-0) hosted at 10xgenomics.com using Bioconductor.
+
+```{r }
+dir_out <- tempdir()
+if (!require("BiocFileCache", quietly = TRUE)) { 
+  if (!require("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+  }
+  BiocManager::install("BiocFileCache", update = FALSE) 
+}
+library(NAIR)
+library(BiocFileCache)
+bfc <- BiocFileCache(ask = FALSE)
+data_file <- bfcrpath(bfc, file.path(
+  "http://cf.10xgenomics.com/samples/cell-vdj/3.1.0",
+  "vdj_v1_hs_pbmc3/vdj_v1_hs_pbmc3_t_filtered_contig_annotations.csv"))
+tcr_data <- read.csv(data_file, stringsAsFactors = FALSE)
+head(tcr_data)
+```
+
+Each row corresponds to a TCR sequence from a single cell, with the cell ID contained in the first column, `barcode`. Sequences from both the beta and alpha chains are present, as denoted by the values `TRA` and `TRB` in the column `chain`. We consider the beta-chain CDR3 amino acid sequences.
+
+```{r}
+# Subset rows for valid beta-chain CDR3 amino acid sequences
+tcr_data <- tcr_data[tcr_data$chain == "TRB" & tcr_data$cdr3 != "None", ]
+```
+
+
+### Color nodes using meta data
+
+The nodes in the graph can be colored according to node-level meta-data by specifying a variable name in the `color_nodes_by` argument. This can be a variable from the input data or one of the node-level network properties included in the output.
+
+For example, we can color the nodes based on the variable `umis`:
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE,
+                             color_nodes_by = "umis", output_dir = NULL)
+```
+
+### Adjust node color palette
+
+The color palette used to color the nodes can be specified using the `color_scheme` argument. Options include:
+
+* `"default"` for default `ggplot2` colors
+* A viridis color map option (e.g., `"viridis"`, `"plasma"`, etc., or one the corresponding strings "A" through "H"; see `?viridis` for details). The direction of the color gradient can be reversed by appending `"-1"`, as in `"viridis-1"`.
+* A palette from `grDevices::hcl.pals()` (these can only be used if the variable used to color the nodes is discrete).
+
+```{r}
+# Using the "plasma" color scheme with reversed color gradient
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
+                             output_dir = NULL)
+```
+
+### Adjust node size
+
+The default fixed node size is quite small, which is intended to prevent nodes from overlapping and obscuring edges in larger networks. The node size can be adjusted by supplying a numeric value to the argument `size_nodes_by` (the default value is 0.5):
+
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
+                             size_nodes_by = 1,
+                             output_dir = NULL)
+```
+
+A value of `NULL` will cause the default `ggraph` node sizes to be used.
+
+
+### Size nodes using meta data
+
+The `size_nodes_by` argument also allows nodes to be sized dynamically based on node-level meta data by supplying a variable name, similarly to `color_nodes_by`. 
+
+When using dynamic node sizes, the minimum and maximum node sizes can be specified as a length-2 numeric vector to the `node_size_limits` argument. The default value of `NULL` uses the default range of node sizes in `ggraph`.
+
+```{r}
+# Size nodes dynamically by degree; use custom size range
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
+                             size_nodes_by = "degree",
+                             node_size_limits = c(0.5, 1.5),
+                             output_dir = NULL)
+```
+
+
+
+### Generate multiple graphs
+
+It is possible to generate multiple plots, each using a different variable to color the nodes, as follows:
+
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             stats_to_include = "all",
+                             color_nodes_by = c("transitivity", "closeness"),
+                             color_scheme = c("plasma-1", "default"),
+                             size_nodes_by = "degree",
+                             node_size_limits = c(0.5, 1.5),
+                             output_dir = NULL)
+```
+
+If a single value is supplied for `color_scheme`, it will be used for all of the plots.
+
+
+
+### Plot title/subtitle
+
+The plot title and subtitle can be specified using the `plot_title` and `plot_subtitle` arguments, or omitted by supplying a `NULL` value:
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3",
+                             node_stats = TRUE,
+                             color_nodes_by = "transitivity",
+                             color_scheme = "plasma-1",
+                             size_nodes_by = "degree",
+                             node_size_limits = c(0.5, 1.5),
+                             plot_title = NULL,
+                             plot_subtitle = NULL,
+                             output_dir = NULL)
+```
+
+
+
+### Legends and legend titles
+
+The legends for node color and size can be toggled using the logical arguments `color_legend` and `size_legend` (these are `TRUE` by default), while custom legend titles can be specified using the `color_title` and `size_title` arguments. Supplying a `NULL` value for a legend title will omit the legend title.
+
+Setting `color_legend = "auto"` will show the color legend if `color_nodes_by` references a continuous variable or a discrete variable with at most 20 distinct values, and hide the color legend otherwise, in which case the name of the variable used to color the nodes is automatically appended to the plot subtitle in a new line.
+
+If `color_nodes_by` references multiple variables, `color_title` will accept a vector of matching length in the same fashion as the `color_scheme` argument.
+
+### Edge width
+
+The thickness of the graph edges can be adjusted using the `edge_width` argument (the default value is 0.1).
+
+
+### Further customization
+
+The `ggraph` object for each plot generated by `buildRepSeqNetwork()` is returned for downstream use. It can be manipulated using functions from the `ggplot2` package much like any plot created with the `ggplot` function. This provides the user total control to modify plots to their liking. See [this vignette](downstream_analysis.html) for further details.
+
+
+### Excluding Plots
+
+Use `print_plots = FALSE` to prevent plots from being printed to the R plotting window. Use `plots = FALSE` to prevent plots from being generated at all.
+

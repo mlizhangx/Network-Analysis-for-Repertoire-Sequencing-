@@ -59,7 +59,7 @@ buildRepSeqNetwork(
 %%     ~~Describe \code{min_seq_length} here~~
     A numeric scalar, or \code{NULL}. Observations whose receptor sequences have fewer than \code{min_seq_length} characters are removed prior to network analysis.
 }
-  \item{drop_chars}{
+  \item{drop_matches}{
 %%     ~~Describe \code{drop_chars} here~~
     An optional regular expression or character string. Observations whose receptor sequences return a match are removed prior to network analysis.
 }
@@ -192,7 +192,7 @@ buildRepSeqNetwork(
 }
 \references{
 %% ~put references to the literature/web site here ~
-    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
 
     https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }

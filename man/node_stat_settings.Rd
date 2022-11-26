@@ -91,7 +91,7 @@ node_stat_settings(degree = TRUE,
 }
 \references{
 %% ~put references to the literature/web site here ~
-    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
 
     https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }
@@ -146,13 +146,13 @@ data <- data.frame("clone_seq" = clone_seqs,
                    "group" = group_labels)
 
 # Generate network for data
-net <- generateNetworkFromSeqs(data$clone_seq,
-                               drop_isolated_nodes = FALSE)
+net <- generateNetworkObjects(data, "clone_seq",
+                              drop_isolated_nodes = FALSE)
 
 # Add custom network statistics
 data_w_stats <-
   addNodeNetworkStats(
-    data, net,
+    net$node_data, net$igraph,
     stats_to_include =
       node_stat_settings(
           cluster_id = TRUE,
@@ -168,7 +168,7 @@ data_w_stats <-
 # Add all network statistics
 data_w_all_stats <-
   addNodeNetworkStats(
-    data, net,
+    net$node_data, net$igraph,
     stats_to_include =
       node_stat_settings(all_stats = TRUE)
   )

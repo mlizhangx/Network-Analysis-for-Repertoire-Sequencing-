@@ -83,7 +83,7 @@ getClusterStats(data,
   \item{seq_w_max_count}{The clone sequence possessing the maximum clone count within the cluster.}
   \item{diameter_length}{The longest geodesic distance in the cluster, computed using `length(igraph::get_diameter())`.}
   \item{assortativity}{The assortativity coefficient of the cluster's graph, based on the degree (minus one) of each node in the cluster (with the degree computed based only upon the nodes within the cluster). Computed using `igraph::assortativity_degree`.}
-  \item{transitivity}{The transitivity (i.e., clustering coefficient) for the cluster's graph, which estimates the probability that adjacent vertices are connected. Computed using `igraph::transitivty()` with `type = "global"`.}
+  \item{global_transitivity}{The transitivity (i.e., clustering coefficient) for the cluster's graph, which estimates the probability that adjacent vertices are connected. Computed using `igraph::transitivty()` with `type = "global"`.}
   \item{edge_density}{The number of edges in the cluster as a fraction of the maximum possible number of edges. Computed using `igraph::edge_density()`.}
   \item{degree_centrality_index}{The cluster-level centrality index based on degree within the cluster graph. Computed using `igraph::centr_degree()$centralization`.}
   \item{closeness_centrality_index}{The cluster-level centrality index based on closeness, i.e., distance to other nodes in the cluster. Computed using `igraph::centr_clo()$centralization`.}
@@ -92,7 +92,7 @@ getClusterStats(data,
 }
 \references{
 %% ~put references to the literature/web site here ~
-    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
 
     https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }
@@ -148,18 +148,12 @@ data <- data.frame("clone_seq" = clone_seqs,
                    "group" = group_labels)
 
 # Generate adjacency matrix for data
-adjmat <-
-  generateNetworkFromSeqs(
-    data$clone_seq,
-    drop_isolated_nodes = FALSE,
-    return_type = "adjacency_matrix"
-  )
+net <- generateNetworkObjects(data, "clone_seq")
 
 # Get cluster stats
 cluster_info <-
-  getClusterStats(data, adjmat,
-                  seq_col = "clone_seq",
-                  count_col = "count")
+  getClusterStats(net$node_data, net$adjacency_matrix,
+                  seq_col = "clone_seq", count_col = "count")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

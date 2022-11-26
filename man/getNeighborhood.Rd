@@ -1,27 +1,46 @@
-\name{generateNetworkFromAdjacencyMat}
-\alias{generateNetworkFromAdjacencyMat}
+\name{getNeighborhood}
+\alias{getNeighborhood}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-  Generate the Network igraph for an Adjacency Matrix
+    Compute the Neighborhood Around a Cell/Clone
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-  A simple wrapper function used for convenience. Given an adjacency matrix for
-  an undirected network, generates the `igraph` object containing the undirected
-  network graph corresponding to the adjacency matrix after simplifying and
-  removing loops.
+    Given immune repertoire sequence data and a target receptor sequence, return
+    the subset of the data consiting of those cells/clones whose receptor sequences are
+    within a specified distance of the target.
 }
 \usage{
-generateNetworkFromAdjacencyMat(adjacency_matrix)
+getNeighborhood(data, seq_col, target_seq,
+                dist_type = "hamming", max_dist = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{adjacency_matrix}{
-%%     ~~Describe \code{adjacency_matrix} here~~
-    Passed to `igraph::graph_from_adjacency_matrix`. A square adjacency matrix.
-    Sparse matrices created using the `Matrix` package are supported.
+  \item{data}{
+%%     ~~Describe \code{x} here~~
+    Data frame containing the RepSeq data.
 }
+  \item{seq_col}{
+%%     ~~Describe \code{x} here~~
+    The column name or number of \code{data} containing the receptor sequences of the same type as \code{target_seq}.
+}
+  \item{target_seq}{
+%%     ~~Describe \code{x} here~~
+    A character string containing the receptor sequence of the cell/clone around which to form a neighborhood.
+}
+  \item{dist_type}{
+%%     ~~Describe \code{x} here~~
+    A character string specifying the distance type on which the neighborhood is based; valid options are \code{"hamming"} and \code{"levenshtein"}.
+}
+  \item{max_dist}{
+%%     ~~Describe \code{x} here~~
+    A numeric scalar specifying the neighborhood radius. The neighborhood consists of all clones whose receptor sequences are at most \code{max_dist} from the target sequence.
+}
+}
+\details{
+%%  ~~ If necessary, more details than the description above ~~
+    The neighborhood will only be computed if \code{target_seq} is present in the data, i.e., in the column of \code{data} referenced by \code{seq_col}.
 }
 \value{
 %%  ~Describe the value returned
@@ -29,7 +48,7 @@ generateNetworkFromAdjacencyMat(adjacency_matrix)
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    An `igraph` graph object.
+    If \code{target_seq} is present in the data, a data frame containing the subset corresponding to the neighborhood; otherwise, the function returns \code{NULL}.
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -41,11 +60,15 @@ generateNetworkFromAdjacencyMat(adjacency_matrix)
 %%  ~~who you are~~
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
+%% ~Make other sections like Warning with \section{Warning }{....} ~
+
 \examples{
 # Generate some data
 set.seed(42)
 sample_size <- 200
-assign_group <- sample(c(TRUE, FALSE), size = sample_size, replace = TRUE)
+assign_group <- sample(c(TRUE, FALSE),
+                       size = sample_size,
+                       replace = TRUE)
 base_seq_length <- 7
 characters <- c("G", "A", "T", "C")
 char_probs <- c(2/3, 2/9, 1/18, 1/18)
@@ -78,9 +101,9 @@ for (i in 1:sample_size) {
   clone_seqs[[i]] <- paste0(clone_seqs[[i]], clone_seqs_append[[i]],
                             collapse = "")
 }
-
-adjmat <- sparseAdjacencyMatFromSeqs(clone_seqs)
-net <- generateNetworkFromAdjacencyMat(adjmat)
+data <- data.frame(seqs = clone_seqs)
+nbd <- getNeighborhood(data, seq_col = "seqs",
+                       target_seq = data$seqs[[1]])
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

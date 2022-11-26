@@ -1,3 +1,12 @@
+# 0.0.9022 (11/25/2022)
+
+* Numerous utility functions that were previously internal have been renamed and exported to be available to the user. These include `generateNetworkObjects()`, `generateNetworkGraphPlots()`, `filterInputData()`, `getNeighborhood()`, `loadDataFromFileList()`, `combineSamples()`, `saveNetwork()`, and `saveNetworkPlots()`.
+* Remaining documentation added for all user-level functions.
+* The package vignette content has now been split across multiple vignettes, with the package vignette serving as an overview and hub linking to the other vignettes.
+* Removed some previously user-facing utility functions from the package's exported namespace that were redundant or unnecessary to expose to the user, including `levAdjacencyMatSparse`, `hamAdjacencyMatSparse`, `generateNetworkFromSeqs`, `getSimilarClones` and `filterClonesBySequenceLength`.
+
+
+
 # 0.0.9021 (11/21/2022)
 
 * Minor bug fixes to a few functions in `utils.R` that caused errors or warnings in rare cases

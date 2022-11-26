@@ -15,8 +15,8 @@ kmeansAtchley <- function(
   sample_col = "SampleID",
   group_col,
   k = 100,
-  plot_width = 15,
-  plot_height = 15,
+  pdf_width = 15,
+  pdf_height = 15,
   margin_cluster_heatmap = 25,
   margin_corr_heatmap = 15,
   use_viridis = FALSE, # use viridis color palettes for color-blindness robustness
@@ -25,7 +25,7 @@ kmeansAtchley <- function(
   file_corr_heatmap = "atchley_kmeans_corr_in_cluster_size_profile_between_samples.pdf",
   return_output = FALSE
 ) {
-
+  cdr3 <- kmeanClusterID <- NULL
   df <- as.data.frame(data[ , c(amino_col, sample_col, group_col)])
   names(df) <- c("cdr3", "sample_id", "subject_group")
 
@@ -50,7 +50,7 @@ kmeansAtchley <- function(
 
   # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
   embedded_values <-
-    embedTCRSeqsByAtchleyFactor(df$cdr3, contig_ids = rownames(df))[ , -1]
+    encodeTCRSeqsByAtchleyFactor(df$cdr3, contig_ids = rownames(df))[ , -1]
   rownames(embedded_values) <- df$cdr3
 
   # Perform K-means clustering on embedded values
@@ -118,7 +118,7 @@ kmeansAtchley <- function(
   if (!is.null(file_cluster_heatmap) & !is.null(output_dir)) { # write pdf to file
     cat("Generating a heatmap of each cluster's share of the TCRs in each sample...")
     grDevices::pdf(file.path(output_dir, file_cluster_heatmap),
-                   width = plot_width, height = plot_height)
+                   width = pdf_width, height = pdf_height)
     gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
                       margins = c(margin_cluster_heatmap, margin_cluster_heatmap),
                       lhei = c(1, 3), cexRow = 2, cexCol = 2,
@@ -140,7 +140,7 @@ kmeansAtchley <- function(
   if (!is.null(file_corr_heatmap) & !is.null(output_dir)) { # write pdf to file
     cat("Generating a heatmap of correlation between samples (based on each sample's profile of TCR shares for all k clusters)...")
     grDevices::pdf(file.path(output_dir, file_corr_heatmap),
-                   width = plot_width, height = plot_height)
+                   width = pdf_width, height = pdf_height)
     gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",
                       margins = c(margin_corr_heatmap, margin_corr_heatmap),
                       lhei = c(1, 3), cexRow = 2, cexCol = 2,
@@ -160,7 +160,7 @@ kmeansAtchley <- function(
 
   if (return_output) {
     return(list("kmeans_cluster_ids" = kmeans_cluster_ids,
-                "embedded_values" = embedded_values,
-                "cluster_TCR_shares" = df))
+                "encoded_values" = embedded_values,
+                "cluster_TCR_profiles" = as.matrix(df)))
   }
 }

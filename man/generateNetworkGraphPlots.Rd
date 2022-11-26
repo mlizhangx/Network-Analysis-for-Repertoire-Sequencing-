@@ -98,7 +98,7 @@ generateNetworkGraphPlots(
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 \references{
 %% ~put references to the literature/web site here ~
-    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
 
     https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }
@@ -111,7 +111,6 @@ generateNetworkGraphPlots(
   \code{\link{plotNetworkGraph}}
 }
 \examples{
-\dontrun{
 # Generate some data
 set.seed(42)
 sample_size <- 200
@@ -158,14 +157,11 @@ data <- data.frame("clone_seq" = clone_seqs,
                    "group" = group_labels)
 
 # Generate network for data
-net <- generateNetworkFromSeqs(data$clone_seq,
-                               drop_isolated_nodes = FALSE,
-                               output_dir = NULL)
+net <- generateNetworkObjects(data, "clone_seq")
 
 # Plot network graph
 net_plot <- generateNetworkGraphPlots(
-  net, color_nodes_by = c("group", "count"))
-}
+  net$igraph, net$node_data, color_nodes_by = c("group", "count"))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

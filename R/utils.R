@@ -1,34 +1,7 @@
 
-# Description -------------------------------------------------------------
 
-# General utility and helper functions, both public and internal
+# File Loading ------------------------------------------------------------
 
-
-# File Management ---------------------------------------------------------
-
-.ensureOutputDir <- function(output_dir) {
-  stopifnot("output_dir is required" = !is.null(output_dir))
-  if (!dir.exists(output_dir)) { .createOutputDir(output_dir) }
-  stopifnot("could not create output_dir" = dir.exists(output_dir))
-}
-
-.createOutputDir <- function(dirname) {
-  if (!is.null(dirname)) {
-    if (!dir.exists(dirname)) {
-      dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
-    }
-    if (!dir.exists(dirname)) {
-      stop(paste0("Unable to create directory ", dirname,
-                  ". Check to confirm that a valid directory name was provided."))
-    }
-  }
-}
-
-.createDirectories <- function(dirs) {
-  for (i in 1:length(dirs)) {
-    dir.create(dirs[[i]], showWarnings = FALSE, recursive = TRUE)
-  }
-}
 
 # load data from file
 .loadDataFromFile <- function(
@@ -51,8 +24,8 @@
 }
 
 # load and merge multiple samples from file list
-.loadDataFromFileList <- function(
-    file_list, input_type = "rds", data_symbols = NULL, header = TRUE, sep = "")
+loadDataFromFileList <- function(
+    file_list, input_type, data_symbols = NULL, header = TRUE, sep = "")
 {
   if (input_type == "csv") {
     data <- plyr::ldply(file_list, utils::read.csv, header = header, sep = sep)
@@ -79,10 +52,13 @@
 
 # load and compile data from multiple samples, adding variables for
 #  sample ID, subject ID, group ID
-.compileSamples <- function(
-    file_list, input_type, data_symbols, header, sep, seq_col,
-    min_seq_length, drop_matches, sample_ids = NULL, subject_ids = NULL,
-    group_ids = NULL, subset_cols = NULL) {
+combineSamples <- function(
+    file_list, input_type,
+    data_symbols = NULL, header = TRUE, sep = "",
+    seq_col,
+    min_seq_length = NULL, drop_matches = NULL, subset_cols = NULL,
+    sample_ids = NULL, subject_ids = NULL, group_ids = NULL
+) {
 
   cat(">>> Loading and compiling data from all samples:\n")
 
@@ -97,15 +73,15 @@
   temp_symbols <- paste0("data_for_sample", 1:length(file_list))
 
   for (i in 1:length(file_list)) {
-    cat(paste0("Loading sample number ", i, ": "))
+    cat(paste0("Loading sample ", i, ": "))
     tmp <- .loadDataFromFile(
       file_list[[i]], input_type, data_symbols[[i]], header, sep)
     if (i == 1) {
       seq_col <- .convertColRef(seq_col, tmp)
       subset_cols <- .convertColRef(subset_cols, tmp)
     }
-    tmp <- .filterInputData(tmp, seq_col, min_seq_length, drop_matches,
-                            subset_cols)
+    tmp <- filterInputData(tmp, seq_col, min_seq_length, drop_matches,
+                           subset_cols)
     if (!is.null(sample_ids)) { tmp$SampleID <- sample_ids[[i]] }
     if (!is.null(subject_ids)) { tmp$SubjectID <- subject_ids[[i]] }
     if (!is.null(group_ids)) { tmp$GroupID <- group_ids[[i]] }
@@ -115,28 +91,13 @@
 
   data_list <- mget(temp_symbols); rm(list = temp_symbols)
   data <- do.call(rbind, data_list)
+  cat("All samples loaded.\n")
   return(data)
 
 }
 
+# File Saving -------------------------------------------------------------
 
-.saveDataGeneric <- function(data, output_dir, output_name, output_type)
-{
-  if (output_type == "rds") {
-    saveRDS(object = data,
-            file = file.path(output_dir, paste0(output_name, ".rds")))
-  } else if (output_type == "csv") {
-    data <- apply(data, MARGIN = 2, FUN = as.character)
-    utils::write.csv(data, row.names = FALSE,
-                     file = file.path(output_dir, paste0(output_name, ".csv")))
-  } else if (output_type %in% c("tsv", "table")) {
-    data <- apply(data, MARGIN = 2, FUN = as.character)
-    utils::write.table(data, row.names = FALSE,
-                       file = file.path(output_dir, paste0(output_name, ".tsv")))
-  } else {
-    save(data, file = file.path(output_dir, paste0(output_name, ".rda")))
-  }
-}
 
 saveNetwork <- function(
     net, output_dir = getwd(), output_type = "individual",
@@ -158,6 +119,58 @@ saveNetwork <- function(
       saveNetworkPlots(
         net$plots, file.path(output_dir, paste0(output_filename, ".pdf")),
         pdf_width, pdf_height) }
+  }
+}
+
+
+saveNetworkPlots <- function(plotlist, outfile = "MyRepSeqNetwork.pdf",
+                             pdf_width = 12, pdf_height = 10) {
+  grDevices::pdf(file = outfile, width = pdf_width, height = pdf_height)
+  for (j in 1:length(plotlist)) { print(plotlist[[j]]) }
+  grDevices::dev.off()
+  cat(paste0("Network graph plots saved to file:\n  ", outfile, "\n"))
+}
+
+.ensureOutputDir <- function(output_dir) {
+  stopifnot("output_dir is required" = !is.null(output_dir))
+  if (!dir.exists(output_dir)) { .createOutputDir(output_dir) }
+  stopifnot("could not create output_dir" = dir.exists(output_dir))
+}
+
+.createOutputDir <- function(dirname) {
+  if (!is.null(dirname)) {
+    if (!dir.exists(dirname)) {
+      dir.create(dirname, showWarnings = FALSE, recursive = TRUE)
+    }
+    if (!dir.exists(dirname)) {
+      stop(paste0("Unable to create directory ", dirname,
+                  ". Check to confirm that a valid directory name was provided."))
+    }
+  }
+}
+
+.createDirectories <- function(dirs) {
+  for (i in 1:length(dirs)) {
+    dir.create(dirs[[i]], showWarnings = FALSE, recursive = TRUE)
+  }
+}
+
+
+.saveDataGeneric <- function(data, output_dir, output_name, output_type)
+{
+  if (output_type == "rds") {
+    saveRDS(object = data,
+            file = file.path(output_dir, paste0(output_name, ".rds")))
+  } else if (output_type == "csv") {
+    data <- apply(data, MARGIN = 2, FUN = as.character)
+    utils::write.csv(data, row.names = FALSE,
+                     file = file.path(output_dir, paste0(output_name, ".csv")))
+  } else if (output_type %in% c("tsv", "table")) {
+    data <- apply(data, MARGIN = 2, FUN = as.character)
+    utils::write.table(data, row.names = FALSE,
+                       file = file.path(output_dir, paste0(output_name, ".tsv")))
+  } else {
+    save(data, file = file.path(output_dir, paste0(output_name, ".rda")))
   }
 }
 
@@ -208,12 +221,12 @@ saveNetwork <- function(
   cat(paste0("Network igraph saved in edgelist format to file:\n  ", igraph_outfile, "\n"))
 
   # Save adjacency matrix
-  if (class(net$adjacency_matrix) == "matrix") {
+  if (inherits(net$adjacency_matrix, "matrix")) {
     matrix_outfile <-
       file.path(output_dir, paste0(output_filename, "_AdjacencyMatrix.csv"))
     utils::write.csv(net$adjacency_matrix, matrix_outfile, row.names = FALSE)
     cat(paste0("Adjacency matrix saved to file:\n  ", matrix_outfile, "\n"))
-  } else if (class(net$adjacency_matrix) == "dgCMatrix" ) {
+  } else if (inherits(net$adjacency_matrix, "dgCMatrix")) {
     matrix_outfile <-
       file.path(output_dir, paste0(output_filename, "_AdjacencyMatrix.mtx"))
     Matrix::writeMM(net$adjacency_matrix, matrix_outfile)
@@ -232,34 +245,21 @@ saveNetwork <- function(
 
 }
 
-saveNetworkPlots <- function(plotlist, outfile,
-                             pdf_width = 12, pdf_height = 10) {
-  grDevices::pdf(file = outfile, width = pdf_width, height = pdf_height)
-  for (j in 1:length(plotlist)) { print(plotlist[[j]]) }
-  grDevices::dev.off()
-  cat(paste0("Network graph plots saved to file:\n  ", outfile, "\n"))
-}
 
-.saveNetworkPlots <- saveNetworkPlots
 
-# Data Manipulation -------------------------------------------------------
 
-# convert one or more column references from numeric to character
-.convertColRef <- function(colrefs, data) {
-  if (is.numeric(colrefs)) { colrefs <- names(data)[colrefs] }
-  return(colrefs)
-}
+# Filtering and Subsetting ------------------------------------------------
 
-.filterInputData <- function(
+filterInputData <- function(
     data, seq_col, min_seq_length = NULL, drop_matches = NULL,
-    subset_cols = NULL, count_col = NULL, color_nodes_by = NULL) {
+    subset_cols = NULL) {
 
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
   # coerce sequence column(s) to character
   for (i in 1:length(seq_col)) {
-    if (!is.character(data[ , seq_col[[i]]])) {
-      data[ , seq_col[[i]]] <- as.character(data[ , seq_col[[i]]])
+    if (!is.character(data[[seq_col[[i]]]])) {
+      data[[seq_col[[i]]]] <- as.character(data[[seq_col[[i]]]])
     }
   }
 
@@ -267,10 +267,7 @@ saveNetworkPlots <- function(plotlist, outfile,
   if (!is.null(min_seq_length)) {
     cat(paste0("Removing sequences with length fewer than ", min_seq_length, " characters..."))
     drop_rows <- .RowDropsBySequenceLength(data, seq_col, min_seq_length)
-    if (sum(drop_rows) > 0) {
-      if (ncol(data) == 1) { data <- as.data.frame(data[-drop_rows, ])
-      } else { data <- data[-drop_rows, ] }
-    }
+    if (sum(drop_rows) > 0) { data <- data[-drop_rows, , drop = FALSE] }
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
   }
 
@@ -278,17 +275,36 @@ saveNetworkPlots <- function(plotlist, outfile,
   if (!is.null(drop_matches)) {
     cat(paste0("Removing sequences containing matches to the expression '", drop_matches, "'..."))
     drop_rows <- .RowDropsBySequenceContent(data, seq_col, drop_matches)
-    if (sum(drop_rows) > 0) { data <- data[-drop_rows, ] }
+    if (sum(drop_rows) > 0) { data <- data[-drop_rows, , drop = FALSE] }
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
   }
 
   # subset data columns
   if (!is.null(subset_cols)) {
-    data <- .subsetColumns(data,
-                           c(seq_col, count_col, subset_cols, color_nodes_by))
+    data <- .subsetColumns(data, c(seq_col, subset_cols))
   }
 
   return(data)
+}
+
+
+getNeighborhood <- function(
+    data, seq_col, target_seq, dist_type = "hamming", max_dist = 1)
+{
+  if (!target_seq %in% data[[seq_col]]) { return(NULL) }
+  dist_fun <- hamDistBounded
+  if (dist_type == "levenshtein") { dist_fun <- levDistBounded }
+  dists_to_targetseq <- sapply(
+    X = data[[seq_col]], FUN = dist_fun, b = target_seq, k = max_dist)
+  # get data for sequences within the specified radius
+  out <- data[dists_to_targetseq != -1, , drop = FALSE]
+  return(out)
+}
+
+# convert one or more column references from numeric to character
+.convertColRef <- function(colrefs, data) {
+  if (is.numeric(colrefs)) { colrefs <- names(data)[colrefs] }
+  return(colrefs)
 }
 
 
@@ -297,7 +313,7 @@ saveNetworkPlots <- function(plotlist, outfile,
 .RowDropsBySequenceLength <- function(data, seq_col, min_length = 3) {
   drop_rows <- rep(FALSE, nrow(data))
   for (i in 1:length(seq_col)) {
-    drop_rows <- drop_rows | nchar(data[ , seq_col[[i]]]) < min_length
+    drop_rows <- drop_rows | nchar(data[[seq_col[[i]]]]) < min_length
   }
   return(drop_rows)
 }
@@ -307,9 +323,14 @@ saveNetworkPlots <- function(plotlist, outfile,
 .RowDropsBySequenceContent <- function(data, seq_col, drop_matches) {
   drop_rows <- rep(FALSE, nrow(data))
   for (i in 1:length(seq_col)) {
-    drop_rows <- drop_rows | grepl(drop_matches, data[ , seq_col[[i]]])
+    drop_rows <- drop_rows | grepl(drop_matches, data[[seq_col[[i]]]])
   }
   return(drop_rows)
+}
+
+.processSubsetCols <- function(subset_cols, other_cols) {
+  if (is.null(subset_cols)) { return(NULL) }
+  return(c(subset_cols, other_cols))
 }
 
 .subsetColumns <- function(data, cols_to_keep) {
@@ -319,173 +340,102 @@ saveNetworkPlots <- function(plotlist, outfile,
   }
   if (length(cols_to_keep) == 0) {
     out <- data; warning("'cols_to_keep' is empty: returning all columns")
-  } else if (length(cols_to_keep) == 1) {
-    out <- as.data.frame(data[ , cols_to_keep]); names(out) <- cols_to_keep
-  } else {
-    out <- data[ , cols_to_keep]
-  }
-  return(out)
-}
-
-# FUNCTION: Filter rep-seq data to remove rows for clonotype sequences with
-# length below the specified cutoff
-filterClonesBySequenceLength <- function(data, seq_col, min_length = 3) {
-  drop_rows <- rep(FALSE, nrow(data))
-  for (i in 1:length(seq_col)) {
-    drop_rows <- drop_rows | nchar(data[ , seq_col[[i]]]) < min_length
-  }
-  if (sum(drop_rows) > 0) {
-    if (ncol(data) == 1) {
-      out <- as.data.frame(data[-drop_rows, ]); colnames(out) <- colnames(data)
-    } else {
-      out <- data[-drop_rows, ]
-    }
-    return(out)
-  } else {
-    return(data)
-  }
-}
-
-
-.filterClonesBySequenceContent <- function(data, seq_col, drop_matches) {
-  cat(paste0("Removing sequences containing matches to the expression '", drop_matches, "'..."))
-  drop_rows <- rep(FALSE, nrow(data))
-  for (i in 1:length(seq_col)) {
-    drop_rows <- drop_rows | grepl(drop_matches, data[ , seq_col[[i]]])
-  }
-  if (sum(drop_rows) > 0) {
-    if (ncol(data) == 1) {
-      out <- as.data.frame(data[-drop_rows, ]); names(out) <- names(data)
-    } else {
-      out <- data[-drop_rows, ]
-    }
-  }
-  cat(paste0(" Done. ", nrow(out), " rows remaining.\n"))
+  } else { out <- data[ , cols_to_keep, drop = FALSE] }
   return(out)
 }
 
 
-.filterSeqsBySampleMembership <- function(
-    data, seq_col, sample_col, min_sample_membership)
-{
-  out <- data.frame("ReceptorSeq" = unique(data[ , seq_col]))
-  cat(paste0(nrow(out), " unique sequences found.\nFiltering by sample membership (this takes a while)..."))
-  out$shared_by_n_samples <- sapply(
-    out$ReceptorSeq,
-    function(x) { length(unique(data[data[ , seq_col] == x, sample_col])) } )
-  out <- out[out$shared_by_n_samples >= min_sample_membership, ]
-  cat(paste0(" Done. ", nrow(out), " sequences remain.\n"))
-  stopifnot("no sequences pass filter for sample membership" = nrow(out) > 0)
-  return(out)
-}
+# .filterClonesBySequenceLength <- function(data, seq_col, min_length = 3) {
+#   drop_rows <- rep(FALSE, nrow(data))
+#   for (i in 1:length(seq_col)) {
+#     drop_rows <- drop_rows | nchar(data[ , seq_col[[i]]]) < min_length
+#   }
+#   if (sum(drop_rows) > 0) {
+#     if (ncol(data) == 1) {
+#       out <- as.data.frame(data[-drop_rows, ]); colnames(out) <- colnames(data)
+#     } else {
+#       out <- data[-drop_rows, ]
+#     }
+#     return(out)
+#   } else {
+#     return(data)
+#   }
+# }
+#
+#
+# .filterClonesBySequenceContent <- function(data, seq_col, drop_matches) {
+#   cat(paste0("Removing sequences containing matches to the expression '", drop_matches, "'..."))
+#   drop_rows <- rep(FALSE, nrow(data))
+#   for (i in 1:length(seq_col)) {
+#     drop_rows <- drop_rows | grepl(drop_matches, data[ , seq_col[[i]]])
+#   }
+#   if (sum(drop_rows) > 0) {
+#     if (ncol(data) == 1) {
+#       out <- as.data.frame(data[-drop_rows, ]); names(out) <- names(data)
+#     } else {
+#       out <- data[-drop_rows, ]
+#     }
+#   }
+#   cat(paste0(" Done. ", nrow(out), " rows remaining.\n"))
+#   return(out)
+# }
 
-.filterByFisherPvalue <- function(
-    unique_seq_data,
-    unique_seq_col = "ReceptorSeq",
-    unique_membership_count_col = "shared_by_n_samples",
-    data, seq_col, subject_col, group_col, groups,
-    n_g0, n_g1, pval_cutoff, freq_col, samples_or_subjects = "subjects")
-{
-  out <- unique_seq_data; out$label <- out$fisher_pvalue <- NA
-  cat("Filtering by Fisher's exact test P-value...")
-  rowids_g0 <- data[ , group_col] == groups[[1]]
-  for (i in 1:nrow(out)) {
-    rowids_clone <- data[ , seq_col] == out[i, unique_seq_col]
-
-    n_g0_with <- length(unique(data[rowids_clone & rowids_g0, subject_col]))
-    n_g1_with <- length(unique(data[rowids_clone & !rowids_g0, subject_col]))
-
-    out$fisher_pvalue[[i]] <-
-      stats::fisher.test(data.frame("g0" = c(n_g1_with, n_g1 - n_g1_with),
-                                    "g1" = c(n_g0_with, n_g0 - n_g0_with))
-      )$p.value
-
-    out$label[[i]] <- paste0("Sequence present in ",
-                             out[i, unique_membership_count_col], " samples ")
-    if (samples_or_subjects == "subjects") {
-      out$label[[i]] <- paste0(out$label[[i]],
-                               "and ", n_g0_with + n_g1_with, " subjects ") }
-    out$label[[i]] <- paste0(
-      out$label[[i]], "(of which ", n_g0_with, " are in the comparison group)",
-      "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3))
-    if (!is.null(freq_col)) {
-      out$label[[i]] <- paste0(
-        out$label[[i]], ", Max frequency across all samples: ", signif(max(data[rowids_clone, freq_col]), digits = 3))
-    }
-  }
-
-  out <- out[out$fisher_pvalue < pval_cutoff, ]
-  out <- out[order(out$fisher_pvalue), ]  # sort by P-value
-  cat(paste0(" Done. ", nrow(out), " sequences remain.\n"))
-  return(out)
-}
 
 # return subset of data corresponding to adjacency matrix
 .subsetDataForAdjacencyMatrix <- function(data, adjacency_matrix) {
-  return(data[as.numeric(dimnames(adjacency_matrix)[[1]]), ])
+  return(data[as.numeric(dimnames(adjacency_matrix)[[1]]), , drop = FALSE])
 }
 
 
-# FUNCTION: EXTRACT DATA SUBSET FOR ALL SEQUENCES WITHIN SPECIFIED RADIUS OF
-# TARGET SEQUENCE BY SPECIFIED DISTANCE TYPE
-# If a sample_col is provided, only samples that possess the target sequence
-# will be included
-getSimilarClones <- function(
-    target_seq, # specified candidate sequence for the neighborhood
-    data, # data frame containing rep seq data, possibly from multiple samples
-    seq_col, # col name/# containing clone sequences
-    sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
-    dist_type = "hamming", # options are "hamming" and "levenshtein"
-    max_dist = 1, # Maximum Levenshtein distance allowed for inclusion in neighborhood
-    drop_matches = NULL # regular expression for chars to filter sequences by
-) {
-  if (!is.data.frame(data)) {
-    data <- as.data.frame(data)
-  }
-  # If sample_id is supplied, subset data keeping only samples with target seq
-  if (is.null(sample_col)) {
-    data_samples_w_targetseq <- data
-  } else {
-    ### SUBSET DATA: SAMPLES WITH TARGET SEQ ###
-    cat("Finding all samples that possess the target sequence...")
-    # Get row ids of merged data corresponding to target seq
-    rows_for_targetseq <- grep(pattern = paste0("^", target_seq, "$"),
-                               x = data[ , seq_col])
-    # Extract rows of merged data corresponding to samples with target seq
-    data_samples_w_targetseq <-
-      data[
-        data[ , sample_col] %in% data[rows_for_targetseq, sample_col], ]
-    cat(" Done.\n")
-  }
-  # Remove sequences that match expression in `drop_matches`
-  if (!is.null(drop_matches)) {
-    drop_matches <- grep(drop_matches, data_samples_w_targetseq[ , seq_col])
-    if (length(drop_matches) > 0) {
-      data_samples_w_targetseq <- data_samples_w_targetseq[-drop_matches, ]
-    }
-  }
-  ### SUBSET DATA: NEIGHBORHOOD OF TARGET SEQUENCE ###
-  # Compute list of bounded distances between target seq and seqs
-  # possessed by samples with target seq (values are -1 where bound is exceeded)
-  # returned vector will be of type integer; names will be the sequences
-  cat("Gathering all cells/clones with receptor sequences similar to the target sequence...")
-  data_targetseq_neighborhood <- .neighborhood(
-    data_samples_w_targetseq, seq_col, target_seq, dist_type, max_dist)
-  cat(paste0(" Done. ", nrow(data_targetseq_neighborhood), " similar cells/clones found.\n"))
-  return(data_targetseq_neighborhood)
-}
+# # FUNCTION: EXTRACT DATA SUBSET FOR ALL SEQUENCES WITHIN SPECIFIED RADIUS OF
+# # TARGET SEQUENCE BY SPECIFIED DISTANCE TYPE
+# # If a sample_col is provided, only samples that possess the target sequence
+# # will be included
+# getSimilarClones <- function(
+    #     target_seq, # specified candidate sequence for the neighborhood
+#     data, # data frame containing rep seq data, possibly from multiple samples
+#     seq_col, # col name/# containing clone sequences
+#     sample_col = NULL, # optional col name/# containing sample IDs (only samples possessing target seq will be included)
+#     dist_type = "hamming", # options are "hamming" and "levenshtein"
+#     max_dist = 1, # Maximum Levenshtein distance allowed for inclusion in neighborhood
+#     drop_matches = NULL # regular expression for chars to filter sequences by
+# ) {
+#   if (!is.data.frame(data)) {
+#     data <- as.data.frame(data)
+#   }
+#   # If sample_id is supplied, subset data keeping only samples with target seq
+#   if (is.null(sample_col)) {
+#     data_samples_w_targetseq <- data
+#   } else {
+#     ### SUBSET DATA: SAMPLES WITH TARGET SEQ ###
+#     cat("Finding all samples that possess the target sequence...")
+#     # Get row ids of merged data corresponding to target seq
+#     rows_for_targetseq <- grep(pattern = paste0("^", target_seq, "$"),
+#                                x = data[ , seq_col])
+#     # Extract rows of merged data corresponding to samples with target seq
+#     data_samples_w_targetseq <-
+#       data[
+#         data[ , sample_col] %in% data[rows_for_targetseq, sample_col], ]
+#     cat(" Done.\n")
+#   }
+#   # Remove sequences that match expression in `drop_matches`
+#   if (!is.null(drop_matches)) {
+#     drop_matches <- grep(drop_matches, data_samples_w_targetseq[ , seq_col])
+#     if (length(drop_matches) > 0) {
+#       data_samples_w_targetseq <- data_samples_w_targetseq[-drop_matches, ]
+#     }
+#   }
+#   ### SUBSET DATA: NEIGHBORHOOD OF TARGET SEQUENCE ###
+#   # Compute list of bounded distances between target seq and seqs
+#   # possessed by samples with target seq (values are -1 where bound is exceeded)
+#   # returned vector will be of type integer; names will be the sequences
+#   cat("Gathering all cells/clones with receptor sequences similar to the target sequence...")
+#   data_targetseq_neighborhood <- .neighborhood(
+#     data_samples_w_targetseq, seq_col, target_seq, dist_type, max_dist)
+#   cat(paste0(" Done. ", nrow(data_targetseq_neighborhood), " similar cells/clones found.\n"))
+#   return(data_targetseq_neighborhood)
+# }
 
-
-.neighborhood <- function(
-    data, seq_col, target_seq, dist_type, max_dist)
-{
-  dist_fun <- hamDistBounded
-  if (dist_type == "levenshtein") { dist_fun <- levDistBounded }
-  dists_to_targetseq <- sapply(
-    X = data[ , seq_col], FUN = dist_fun, b = target_seq, k = max_dist)
-  # get data for sequences within the specified radius
-  return(data[dists_to_targetseq != -1, ])
-}
 
 # INPUT:
 #   rep-seq data w/ specification for count column and one or more grouping cols
@@ -507,12 +457,12 @@ aggregateIdenticalClones <- function(
   if (is.numeric(freq_col)) { freq_col <- names(data)[freq_col] }
 
   # Define grouping variable(s)
-  grouping_variables <- list(data[ , clone_col])
+  grouping_variables <- list(data[[clone_col]])
   names(grouping_variables) <- clone_col
   if (!is.null(grouping_cols)) {
     if (is.numeric(grouping_cols)) { grouping_cols <- names(data)[grouping_cols] }
     for (i in 1:length(grouping_cols)) {
-      grouping_variables$newvar <- data[ , grouping_cols[[i]]]
+      grouping_variables$newvar <- data[[grouping_cols[[i]]]]
       names(grouping_variables)[[length(grouping_variables)]] <-
         grouping_cols[[i]] } }
 
@@ -525,9 +475,9 @@ aggregateIdenticalClones <- function(
 
   # add variable for num reads (row count)
   groups <- as.data.frame(grouping_variables)
-  names(groups)[[1]] <- "temporary_placeholder_name" # for summarize function
+  # names(groups)[[1]] <- "temporary_placeholder_name" # for summarize function
   num_reads <- dplyr::summarize(dplyr::group_by_all(groups),
-                                UniqueCloneCount = length(temporary_placeholder_name))
+                                UniqueCloneCount = length({{ clone_col }}))
   names(num_reads)[[1]] <- clone_col # replace placeholder name with orig
 
   # Merge aggregate counts with num reads
@@ -542,9 +492,90 @@ aggregateIdenticalClones <- function(
 
 # Network Building --------------------------------------------------------
 
+# generate single or dual chain network
+generateNetworkObjects <- function(
+    data, seq_col, dist_type = "hamming", dist_cutoff = 1,
+    drop_isolated_nodes = TRUE
+) {
+  if (length(seq_col) == 1) {
+    return(.generateSingleChainNetwork(
+      data, seq_col,
+      dist_type, dist_cutoff, drop_isolated_nodes))
+  } else if (length(seq_col) == 2) {
+    return(.generateDualChainNetwork(
+      data, seq_col[[1]], seq_col[[2]],
+      dist_type, dist_cutoff, drop_isolated_nodes))
+  }
+}
+
+
+# Simple wrapper to igraph functions:
+# Use adjacency matrix to generate network graph
+generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
+  set.seed(9999)
+  net <- igraph::graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
+  net <- igraph::as.undirected(
+    igraph::simplify(net, remove.multiple = T, remove.loops = T))
+  return(net)
+}
+
+.generateSingleChainNetwork <- function(
+    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
+) {
+  adjacency_matrix <- .generateNetworkFromSeqs(
+    data[[seq_col]], dist_type, dist_cutoff, contig_ids = rownames(data),
+    return_type = "adjacency_matrix", drop_isolated_nodes = drop_isolated_nodes)
+  net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
+  if (drop_isolated_nodes & dist_type != "euclidean_on_atchley") {
+    data <- .subsetDataForAdjacencyMatrix(data, adjacency_matrix)
+  }
+
+  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
+              "node_data" = as.data.frame(data)))
+}
+
+.generateDualChainNetwork <- function(
+    data, a_col, b_col, dist_type, dist_cutoff, drop_isolated_nodes
+) {
+  # adjacency matrix for alpha chain
+  cat("Computing graph adjacency based on sequences in first chain:\n")
+  adj_mat_a <- sparseAdjacencyMatFromSeqs(
+    data[[a_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
+  # adjacency matrix for beta chain
+  cat("Computing graph adjacency based on sequences in second chain:\n")
+  adj_mat_b <- sparseAdjacencyMatFromSeqs(
+    data[[b_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
+
+  # Combine adjacency matrices for both chains
+  # (only edges present for both chains will become edges in the combined graph)
+  cat("Intersecting the adjacencies from both chains...")
+  adjacency_matrix <- adj_mat_a + adj_mat_b
+  adjacency_matrix[adjacency_matrix == 1] <- 0
+  adjacency_matrix[adjacency_matrix == 2] <- 1
+  cat(" Done.\n")
+
+  # Generate network from combined adjacency matrix
+  cat("Building network based on the combined adjacencies... ")
+  net <- generateNetworkFromAdjacencyMat(adjacency_matrix); cat(" Done.\n")
+
+  # Drop isolated nodes from final network if specified
+  if (drop_isolated_nodes) { cat("Dropping isolated nodes...")
+    nodes_to_keep <- igraph::degree(net) > 0
+    adjacency_matrix <- adjacency_matrix[nodes_to_keep, nodes_to_keep]
+    data <- data[nodes_to_keep, , drop = FALSE]
+    # regenerate network without isolated nodes
+    net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
+    cat(" Done.\n")
+  }
+  cat(paste("Network contains", nrow(data), "nodes.\n"))
+  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
+              "adj_mat_a" = adj_mat_a, "adj_mat_b" = adj_mat_b,
+              "node_data" = as.data.frame(data)))
+}
+
 
 # FUNCTION: GENERATE NETWORK FOR A LIST OF RECEPTOR SEQS USING SPECIFIED DISTANCE TYPE AND THRESHOLD
-generateNetworkFromSeqs <- function(
+.generateNetworkFromSeqs <- function(
     seqs, # character vector of receptor sequences
     dist_type = "hamming", # supports "levenshtein", "hamming", "euclidean_on_atchley"
     dist_cutoff = 1, # max dist threshold for edges
@@ -580,88 +611,9 @@ generateNetworkFromSeqs <- function(
   }
 }
 
-# Simple wrapper to igraph functions:
-# Use adjacency matrix to generate network graph
-generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
-  set.seed(9999)
-  net <- igraph::graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
-  net <- igraph::as.undirected(
-    igraph::simplify(net, remove.multiple = T, remove.loops = T))
-  return(net)
-}
-
-# generate single or dual chain network
-.generateNetworkObjects <- function(
-    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
-) {
-  if (length(seq_col) == 1) {
-    return(.generateSingleChainNetwork(
-      data, seq_col,
-      dist_type, dist_cutoff, drop_isolated_nodes))
-  } else if (length(seq_col) == 2) {
-    return(.generateDualChainNetwork(
-      data, seq_col[[1]], seq_col[[2]],
-      dist_type, dist_cutoff, drop_isolated_nodes))
-  }
-}
-
-.generateSingleChainNetwork <- function(
-    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
-) {
-  adjacency_matrix <- generateNetworkFromSeqs(
-    data[ , seq_col], dist_type, dist_cutoff, contig_ids = rownames(data),
-    return_type = "adjacency_matrix", drop_isolated_nodes = drop_isolated_nodes)
-  net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
-  if (drop_isolated_nodes & dist_type != "euclidean_on_atchley") {
-    data <- .subsetDataForAdjacencyMatrix(data, adjacency_matrix)
-  }
-
-  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
-              "node_data" = as.data.frame(data)))
-}
-
-.generateDualChainNetwork <- function(
-    data, a_col, b_col, dist_type, dist_cutoff, drop_isolated_nodes
-) {
-  # adjacency matrix for alpha chain
-  cat("Computing graph adjacency based on sequences in first chain:\n")
-  adj_mat_a <- sparseAdjacencyMatFromSeqs(
-    data[ , a_col], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
-  # adjacency matrix for beta chain
-  cat("Computing graph adjacency based on sequences in second chain:\n")
-  adj_mat_b <- sparseAdjacencyMatFromSeqs(
-    data[ , b_col], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
-
-  # Combine adjacency matrices for both chains
-  # (only edges present for both chains will become edges in the combined graph)
-  cat("Intersecting the adjacencies from both chains...")
-  adjacency_matrix <- adj_mat_a + adj_mat_b
-  adjacency_matrix[adjacency_matrix == 1] <- 0
-  adjacency_matrix[adjacency_matrix == 2] <- 1
-  cat(" Done.\n")
-
-  # Generate network from combined adjacency matrix
-  cat("Building network based on the combined adjacencies... ")
-  net <- generateNetworkFromAdjacencyMat(adjacency_matrix); cat(" Done.\n")
-
-  # Drop isolated nodes from final network if specified
-  if (drop_isolated_nodes) { cat("Dropping isolated nodes...")
-    nodes_to_keep <- igraph::degree(net) > 0
-    adjacency_matrix <- adjacency_matrix[nodes_to_keep, nodes_to_keep]
-    data <- data[nodes_to_keep, ]
-    # regenerate network without isolated nodes
-    net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
-    cat(" Done.\n")
-  }
-  cat(paste("Network contains", nrow(data), "nodes.\n"))
-  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
-              "adj_mat_a" = adj_mat_a, "adj_mat_b" = adj_mat_b,
-              "node_data" = as.data.frame(data)))
-}
 
 
-
-# Computing Network Statistics --------------------------------------------
+# Network Properties ------------------------------------------------------
 
 
 # input network and corresponding metadata;
@@ -763,8 +715,6 @@ node_stat_settings <- function(
 }
 
 
-# Computing Cluster Statistics --------------------------------------------
-
 # FUNCTION: Compute the clusters for a network and augment the corresponding
 # data with a variable containing the cluster membership ID
 addClusterMembership <- function(data, net) {
@@ -798,11 +748,11 @@ getClusterStats <- function(
   }
   if (all(!is.null(seq_col), is.null(seq_length_col))) {
     seq_length_col <- "seq_length"
-    data$seq_length <- nchar(data[ , seq_col])
+    data$seq_length <- nchar(data[[seq_col]])
   }
 
   # Tabulate the number of nodes in each cluster
-  out <- as.data.frame(table(data[ , cluster_id_col]))
+  out <- as.data.frame(table(data[[cluster_id_col]]))
   colnames(out) <- c("cluster_id", "node_count")
   num_clusters <- nrow(out) # Total number of clusters
   cat(paste0("Computing statistics for the ", num_clusters, " clusters in the network..."))
@@ -815,6 +765,7 @@ getClusterStats <- function(
     out$degree_centrality_index <-
     out$edge_density <-
     out$assortativity <-
+    out$global_transitivity <-
     out$diameter_length <-
     out$seq_w_max_count <-
     out$max_clone_count <-
@@ -844,7 +795,7 @@ getClusterStats <- function(
     out$max_degree[[cluster_row]] <- max_deg
 
     if (!is.null(seq_col)) {
-      node_id_max_deg <- which(node_ids & data[ , degree_col] == max_deg)
+      node_id_max_deg <- which(node_ids & data[[degree_col]] == max_deg)
       out$seq_w_max_degree[[cluster_row]] <-
         as.character(data[node_id_max_deg, seq_col][[1]])
     }
@@ -858,7 +809,7 @@ getClusterStats <- function(
       out$max_clone_count[[cluster_row]] <- max_count
 
       if (!is.null(seq_col)) {
-        node_id_max_count <- which(node_ids & data[ , count_col] == max_count)
+        node_id_max_count <- which(node_ids & data[[count_col]] == max_count)
         out$seq_w_max_count[[cluster_row]] <-
           as.character(data[node_id_max_count, seq_col][[1]])
       }
@@ -877,7 +828,7 @@ getClusterStats <- function(
       igraph::assortativity_degree(cluster, directed = F)
 
     # Transitivity
-    out$transitivity[[cluster_row]] <-
+    out$global_transitivity[[cluster_row]] <-
       igraph::transitivity(cluster, type = "global")  # cluster is treated as an undirected network
 
     # Density: The proportion of present edges from all possible ties.
@@ -917,7 +868,9 @@ getClusterStats <- function(
                          count_col, cluster_id_col, degree_col))
 }
 
-# Plotting Network Graphs -------------------------------------------------
+
+# Visualization -----------------------------------------------------------
+
 
 
 plotNetworkGraph <- function(igraph,
@@ -1110,25 +1063,6 @@ plotNetworkGraph <- function(igraph,
 }
 
 
-.generateNetworkGraphPlotsGuarded <- function(
-    igraph, data, print_plots,
-    plot_title = NULL, plot_subtitle = NULL,
-    color_nodes_by = NULL, color_scheme = "default",
-    color_legend = "auto", color_title = "auto",
-    edge_width = 0.1, size_nodes_by = 0.5,
-    node_size_limits = NULL, size_title = "auto")
-{
-  if (nrow(data) > 1e06) {
-    warning("network contains over 1 million nodes; depending on the number of network edges, this may exceed ggraph limitations. Skipping automatic generation of network graph; you can attempt to generate the graph manually using `plotNetworkGraph()`")
-    return(invisible(NULL))
-  } else {
-    return(generateNetworkGraphPlots(
-      igraph, data, print_plots, plot_title, plot_subtitle, color_nodes_by,
-      color_scheme, color_legend, color_title, edge_width, size_nodes_by,
-      node_size_limits, size_title))
-  }
-}
-
 generateNetworkGraphPlots <- function(
     igraph, data, print_plots = TRUE,
     plot_title = NULL, plot_subtitle = NULL,
@@ -1142,7 +1076,7 @@ generateNetworkGraphPlots <- function(
     color_nodes_by, color_scheme, color_title, size_nodes_by, size_title)
   color_scheme <- new_inputs$color_scheme
   color_title <- new_inputs$color_title; size_title <- new_inputs$size_title
-  if (is.character(size_nodes_by)) { size_nodes_by <- data[ , size_nodes_by] }
+  if (is.character(size_nodes_by)) { size_nodes_by <- data[[size_nodes_by]] }
 
   plotlist <- list()
   if (is.null(color_nodes_by)) {
@@ -1167,7 +1101,7 @@ generateNetworkGraphPlots <- function(
       plotlist$newplot <-
         plotNetworkGraph(
           igraph, plot_title = plot_title, plot_subtitle = plot_subtitle,
-          color_nodes_by = data[ , color_nodes_by[[j]]],
+          color_nodes_by = data[[color_nodes_by[[j]]]],
           color_title = color_title[[j]],
           color_scheme = color_scheme[[j]],
           color_legend = color_legend,
@@ -1183,6 +1117,25 @@ generateNetworkGraphPlots <- function(
   return(plotlist)
 }
 
+
+.generateNetworkGraphPlotsGuarded <- function(
+    igraph, data, print_plots,
+    plot_title = NULL, plot_subtitle = NULL,
+    color_nodes_by = NULL, color_scheme = "default",
+    color_legend = "auto", color_title = "auto",
+    edge_width = 0.1, size_nodes_by = 0.5,
+    node_size_limits = NULL, size_title = "auto")
+{
+  if (nrow(data) > 1e06) {
+    warning("network contains over 1 million nodes; depending on the number of network edges, this may exceed ggraph limitations. Skipping automatic generation of network graph; you can attempt to generate the graph manually using `plotNetworkGraph()`")
+    return(invisible(NULL))
+  } else {
+    return(generateNetworkGraphPlots(
+      igraph, data, print_plots, plot_title, plot_subtitle, color_nodes_by,
+      color_scheme, color_legend, color_title, edge_width, size_nodes_by,
+      node_size_limits, size_title))
+  }
+}
 
 .harmonizePlottingInputs <- function(
     color_nodes_by, color_scheme, color_title, size_nodes_by, size_title)
@@ -1214,10 +1167,15 @@ generateNetworkGraphPlots <- function(
 # check if color_nodes_by is "auto"; if so, look for variables to use
 .passColorNodesBy <- function(color_nodes_by, data, count_col) {
   if (length(color_nodes_by) == 1) { if (color_nodes_by == "auto") {
-    if ("transitivity" %in% names(data)) { color_nodes_by <- "transitivity"
-    } else if ("cluster_id" %in% names(data)) { color_nodes_by <- "cluster_id"
+    if ("cluster_id" %in% names(data)) { color_nodes_by <- "cluster_id"
+    } else if ("transitivity" %in% names(data)) { color_nodes_by <- "transitivity"
     } else if ("closeness" %in% names(data)) { color_nodes_by <- "closeness"
     } else if ("degree" %in% names(data)) { color_nodes_by <- "degree"
+    } else if ("eigen_centrality" %in% names(data)) { color_nodes_by <- "eigen_centrality"
+    } else if ("betweenness" %in% names(data)) { color_nodes_by <- "betweenness"
+    } else if ("coreness" %in% names(data)) { color_nodes_by <- "coreness"
+    } else if ("authority_score" %in% names(data)) { color_nodes_by <- "authority_score"
+    } else if ("page_rank" %in% names(data)) { color_nodes_by <- "page_rank"
     } else if (!is.null(count_col)) { color_nodes_by <- count_col
     } else { color_nodes_by <- NULL # default to uniform node colors
     } } }
@@ -1254,7 +1212,10 @@ generateNetworkGraphPlots <- function(
   }
   return(plot_subtitle)
 }
-# Adjacency and Distance Matrices -----------------------------------------
+
+
+# Adjacency Matrices ------------------------------------------------------
+
 
 # FUNCTION: COMPUTE ADJACENCY MATRIX FOR LEVENSHTEIN OR HAMMING DISTANCE
 # Intended for use with a large network where the adjacency matrix is sparse
@@ -1274,10 +1235,10 @@ sparseAdjacencyMatFromSeqs <- function(
   # Compute adjacency matrix
   if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
     cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- levAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
+    out <- .levAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
   } else if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
     cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- hamAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
+    out <- .hamAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
   } else {
     stop('invalid option for `dist_type`')
   }
@@ -1318,7 +1279,7 @@ adjacencyMatAtchleyFromSeqs <- function(
     outfile_distance_matrix = NULL # savefile for Euclidean distance matrix
 ) {
   # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
-  embedded_values <- embedTCRSeqsByAtchleyFactor(seqs, contig_ids)
+  embedded_values <- encodeTCRSeqsByAtchleyFactor(seqs, contig_ids)
 
   # Compute Euclidean distance matrix on embedded sequence values
   cat("Computing Euclidean distances between the embedded values...")
@@ -1351,7 +1312,7 @@ adjacencyMatAtchleyFromSeqs <- function(
 
 # Embed TCR CDR3 amino acid sequences in Euclidean 30-space based on the Atchley
 # factor representations of their elements, using a trained encoding model
-embedTCRSeqsByAtchleyFactor <- function(
+encodeTCRSeqsByAtchleyFactor <- function(
     cdr3_AA, # List of TCR CDR3 amino acid sequences
     contig_ids = seq_along(cdr3_AA) # used by BriseisEncoder
 ) {

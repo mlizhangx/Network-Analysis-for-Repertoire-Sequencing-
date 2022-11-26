@@ -30,15 +30,16 @@ buildRepSeqNetwork <- function(
   count_col <- .convertColRef(count_col, data)
   color_nodes_by <- .convertColRef(color_nodes_by, data)
   subset_cols <- .convertColRef(subset_cols, data)
+  subset_cols <- .processSubsetCols(subset_cols, c(count_col, color_nodes_by))
 
-  data <- .filterInputData(data, seq_col, min_seq_length, drop_matches,
-                           subset_cols, count_col, color_nodes_by)
+  data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
+                          subset_cols)
   if (nrow(data) < 2) {
     warning("insufficient remaining receptor sequences; at least two needed")
     return(invisible(NULL))
   }
   ### BUILD NETWORK ###
-  out <- .generateNetworkObjects(
+  out <- generateNetworkObjects(
     data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes)
 
   ### NODE/CLUSTER STATS ###

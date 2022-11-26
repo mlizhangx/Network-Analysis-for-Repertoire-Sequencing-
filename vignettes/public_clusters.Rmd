@@ -1,0 +1,82 @@
+---
+title: "Finding Public Clusters"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Finding Public Clusters}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
+)
+```
+
+
+A set of functions has been provided to search across samples for public clones. An example usage is seen below. A detailed tutorial and documentation are forthcoming.
+
+## 1. Find Public Clusters in Each Sample
+
+Perform network analysis on each sample individually to search for public clusters based on node count and clone count.
+
+```{r, eval = FALSE}
+# inputs
+filenames <- list.files(dir_samples, pattern = ".tsv")
+file_list <- file.path(dir_samples, filenames)
+sample_id_list <- as.character(strsplit(filenames, ".tsv"))
+
+findPublicClusters(
+  top_n_clusters = 20, min_node_count = 10, min_clone_count = 100,
+  file_list = file_list, input_type = "table", sample_ids = sample_id_list,
+  seq_col = "aaSeqCDR3", count_col = "cloneCount",
+  plots = TRUE, color_scheme = "turbo",
+  output_dir = dir_samples_filtered,
+  output_dir_unfiltered = file.path(dir_out, "sample_networks") # optional
+  )
+```
+
+## 2. Build Public Cluster Network
+
+Take the public clusters from the previous step and combine them across samples; perform network analysis.
+
+```{r, eval = FALSE}
+filenames <- list.files(file.path(dir_samples_filtered, "node_meta_data"))
+file_list <- file.path(dir_samples_filtered, "node_meta_data", filenames)
+
+pub_clust_full <-
+  buildPublicClusterNetwork(
+    file_list = file_list, seq_col = "aaSeqCDR3", count_col = "cloneCount",
+    color_nodes_by = c("ClusterIDPublic", "subject_id", "disease_status"),
+    color_title = c("public cluster ID", "subject ID", "disease status"))
+```
+
+## 3. (Optional) Public Cluster Network by Representative Sequence
+
+Perform network analysis using a single representative clone sequence from each public cluster (by default, the sequence with the highest clone count).
+
+```{r, eval = FALSE}
+filenames <- list.files(file.path(dir_samples_filtered, "cluster_meta_data"))
+file_list <- file.path(dir_samples_filtered, "cluster_meta_data", filenames)
+
+buildPublicClusterNetworkByRepresentative(
+  file_list = file_list, output_dir = dir_out)
+```
+
+
+## 4. (Optional) K-means clustering via Atchley factor encoding
+
+(For TCR CDR3 amino acid sequences only) Take the clone sequences from the network in step 3 and embed them in 30-dimensional Euclidean space using a deep learning algorithm with a trained encoder. Perform $K$-means clustering on the embedded values; for each sample, compute the fraction of the sample's total unique TCR sequences that belong to each cluster, yielding a $K$-dimensional vector for each sample. Use heatmaps to compare these vectors' values and their correlation across samples. 
+
+```{r, eval = FALSE}
+kmeansAtchley(
+  pub_clust_full$node_data, amino_col = "aaSeqCDR3", sample_col = "SampleID",
+  group_col = "subject_group", k = 100, output_dir = dir_out,
+  file_cluster_heatmap = "atchley_kmeans_relative_clust_sizes.pdf",
+  file_corr_heatmap = "atchley_kmeans_corr_in_relative_clust_sizes.pdf",
+  return_output = FALSE)
+```

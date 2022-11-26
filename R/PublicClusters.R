@@ -6,7 +6,7 @@ findPublicClusters <- function(
   ## Input ##
   file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
   sample_ids = 1:length(file_list), seq_col, count_col = NULL,
-  drop_matches = "[*|_]",
+  min_seq_length = 3, drop_matches = "[*|_]",
 
   ## Network ##
   top_n_clusters = 20, min_node_count = 10, min_clone_count = 100,
@@ -32,9 +32,9 @@ findPublicClusters <- function(
     .findPublicClustersOneSample(
       top_n_clusters, min_node_count, min_clone_count,
       file_list[[i]], sample_ids[[i]], input_type, data_symbols, header, sep,
-      seq_col, count_col, drop_matches, plots, print_plots, plot_title,
-      color_nodes_by, output_dir, output_type, output_dir_unfiltered,
-      output_type_unfiltered, ...)
+      seq_col, count_col, min_seq_length, drop_matches, plots, print_plots,
+      plot_title, color_nodes_by, output_dir, output_type,
+      output_dir_unfiltered, output_type_unfiltered, ...)
     cat("----------------------------------------------------------------------\n")
   }
   cat(paste0("All samples complete. Filtered data is located in the following directory:\n  ", output_dir, "\n"))
@@ -76,7 +76,7 @@ buildPublicClusterNetwork <- function(
   }
 
   # Load data
-  data <- .loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
+  data <- loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
 
   # Build network
   cat("Building network of public clusters:\n")
@@ -119,7 +119,7 @@ buildPublicClusterNetworkByRepresentative <- function(
   .createOutputDir(output_dir)
 
   # Load data
-  data <- .loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
+  data <- loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
 
   # Build network
   cat("Building network of public clusters using a representative sequence from each cluster:\n")
@@ -132,11 +132,11 @@ buildPublicClusterNetworkByRepresentative <- function(
     plots = FALSE, output_dir = NULL)
 
   ndat <- net$node_data
-  ndat$RepresentativeSeq <- ndat[ , seq_col]
+  ndat$RepresentativeSeq <- ndat[[seq_col]]
   names(ndat)[names(ndat) == "cluster_id"] <- "ClusterIDPublic"
 
   # Compute cluster stats
-  cdat <- as.data.frame(table(ndat[ , "ClusterIDPublic"]))
+  cdat <- as.data.frame(table(ndat[["ClusterIDPublic"]]))
   cat(paste0("Performing clustering on the nodes in the new network resulted in ", nrow(cdat), " clusters.\nComputing network properties of the new clusters..."))
   colnames(cdat) <- c("ClusterIDPublic", "NodeCount")
   cdat <- .addClusterOnClusterStats(ndat, cdat, net$adjacency_matrix)
@@ -154,7 +154,7 @@ buildPublicClusterNetworkByRepresentative <- function(
   }
 
   # Save & return output
-  saveNetwork(out, output_dir, output_type, output_name, pdf_width, pdf_height)
+  saveNetwork(net, output_dir, output_type, output_name, pdf_width, pdf_height)
   cat("All tasks complete.\n")
   return(invisible(net))
 }
@@ -169,8 +169,8 @@ buildPublicClusterNetworkByRepresentative <- function(
 .findPublicClustersOneSample <- function(
     top_n_clusters, min_node_count, min_clone_count,
     input_file, sample_id, input_type, data_symbols, header, sep,
-    seq_col, count_col, drop_matches, plots, print_plots, plot_title,
-    color_nodes_by, output_dir, output_type, output_dir_unfiltered,
+    seq_col, count_col, min_seq_length, drop_matches, plots, print_plots,
+    plot_title, color_nodes_by, output_dir, output_type, output_dir_unfiltered,
     output_type_unfiltered, ...)
 {
   data <- .loadDataFromFile(input_file, input_type, data_symbols, header, sep)
@@ -178,7 +178,7 @@ buildPublicClusterNetworkByRepresentative <- function(
     plot_title <- paste0("Sample: ", sample_id) } }
   net <- buildRepSeqNetwork(
     data = data, seq_col = seq_col, count_col = count_col,
-    drop_matches = drop_matches,
+    min_seq_length = min_seq_length, drop_matches = drop_matches,
     node_stats = TRUE, stats_to_include = "all", cluster_stats = TRUE,
     plots = plots, print_plots = print_plots, plot_title = plot_title,
     color_nodes_by = color_nodes_by, output_dir = output_dir_unfiltered,
@@ -336,7 +336,7 @@ buildPublicClusterNetworkByRepresentative <- function(
   cdat$SeqWithMaxAggCloneCount <- ""
   cdat$DiameterLength <- 0
   cdat$Assortativity <- 0
-  cdat$Transitivity <- 0
+  cdat$GlobalTransitivity <- 0
   cdat$EdgeDensity <- 0
   cdat$DegreeCentralityIndex <- 0
   cdat$ClosenessCentralityIndex <- 0
@@ -370,28 +370,27 @@ buildPublicClusterNetworkByRepresentative <- function(
     cdat$MaxDegreeInPublicNet[[cluster_id]] <- max_deg
     node_id_max_deg <-
       which(node_ids &
-              ndat[ , "degree"] == max_deg)[[1]]
+              ndat[["degree"]] == max_deg)[[1]]
     cdat$SeqWithMaxDegree[[cluster_id]] <-
       as.character(
-        ndat[node_id_max_deg, "RepresentativeSeq"])
+        ndat[[node_id_max_deg, "RepresentativeSeq"]])
 
     # max value of max clone count (and corresponding sample & seq)
     max_count <- max(ndat[node_ids, "max_clone_count"])
     cdat$MaxCloneCount[[cluster_id]] <- max_count
     node_id_max_count <-
-      which(node_ids &
-              ndat[ , "max_clone_count"] == max_count)[[1]]
+      which(node_ids & ndat[["max_clone_count"]] == max_count)[[1]]
     cdat$SampleWithMaxCloneCount[[cluster_id]] <-
-      ndat[node_id_max_count, "SampleID"]
+      ndat[[node_id_max_count, "SampleID"]]
     cdat$SeqWithMaxCloneCount[[cluster_id]] <-
-      ndat[node_id_max_count, "RepresentativeSeq"]
+      ndat[[node_id_max_count, "RepresentativeSeq"]]
 
     # max value of agg clone count (and corresponding sample & seq)
     max_agg_count <- max(ndat[node_ids, "agg_clone_count"])
     cdat$MaxAggCloneCount[[cluster_id]] <- max_agg_count
     node_id_max_agg_count <-
       which(node_ids &
-              ndat[ , "agg_clone_count"] == max_agg_count)[[1]]
+              ndat[["agg_clone_count"]] == max_agg_count)[[1]]
     cdat$SampleWithMaxAggCloneCount[[cluster_id]] <-
       ndat[node_id_max_agg_count, "SampleID"]
     cdat$SeqWithMaxAggCloneCount[[cluster_id]] <-
@@ -411,7 +410,7 @@ buildPublicClusterNetworkByRepresentative <- function(
       igraph::assortativity_degree(cluster, directed = F)
 
     # Transitivity
-    cdat$Transitivity[[cluster_id]] <-
+    cdat$GlobalTransitivity[[cluster_id]] <-
       igraph::transitivity(cluster, type = "global")  # cluster is treated as an undirected network
 
     # Density: The proportion of present edges from all possible ties.

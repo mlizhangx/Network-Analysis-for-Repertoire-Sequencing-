@@ -1,0 +1,248 @@
+---
+title: "buildRepSeqNetwork"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{buildRepSeqNetwork}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
+)
+```
+
+
+General network analysis on RepSeq data is performed using the `buildRepSeqNetwork()` function. This function does the following:
+
+* Builds the network graph for the immune repertoire
+* Computes desired network properties
+* Prints a customized `ggraph` plot of the network graph
+* Returns meta-data for the TCR/BCR (nodes) in the network, including biological as well as network properties
+* Also returns the network `igraph` and adjacency matrix, as well as the `ggraph` plot object, for use in downstream analysis
+
+In this vignette we demonstrate the function's basic usage.
+
+### Load Data
+
+For demonstration purposes, we load a  [public data set](https://www.10xgenomics.com/resources/datasets/pbm-cs-of-a-healthy-donor-v-1-1-1-standard-3-1-0) hosted at 10xgenomics.com using Bioconductor.
+
+```{r }
+dir_out <- tempdir()
+
+if (!require("BiocFileCache", quietly = TRUE)) { 
+  if (!require("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+  }
+  BiocManager::install("BiocFileCache", update = FALSE) 
+}
+library(NAIR)
+library(BiocFileCache)
+bfc <- BiocFileCache(ask = FALSE)
+data_file <- bfcrpath(bfc, file.path(
+  "http://cf.10xgenomics.com/samples/cell-vdj/3.1.0",
+  "vdj_v1_hs_pbmc3/vdj_v1_hs_pbmc3_t_filtered_contig_annotations.csv"))
+tcr_data <- read.csv(data_file, stringsAsFactors = FALSE)
+head(tcr_data)
+```
+
+Each row corresponds to a TCR sequence from a single cell, with the cell ID contained in the first column, `barcode`. Sequences from both the beta and alpha chains are present, as denoted by the values `TRA` and `TRB` in the column `chain`. We consider the beta-chain CDR3 amino acid sequences.
+
+```{r}
+# Subset rows for valid beta-chain CDR3 amino acid sequences
+tcr_data <- tcr_data[tcr_data$chain == "TRB" & tcr_data$cdr3 != "None", ]
+
+# Number of sequences/cells (rows)
+nrow(tcr_data)
+```
+
+
+
+## Basic Usage
+
+Calling `buildRepSeqNetwork()` for our example is as simple as executing the following line of code:
+
+```{r, eval = FALSE}
+buildRepSeqNetwork(tcr_data, "cdr3")
+```
+
+* The first argument specifies the data frame containing the rep-seq data, where each row corresponds to a single TCR/BCR clone (bulk data) or cell (single-cell data).
+* The second argument specifies the column name or number of the data frame that contains the receptor sequences to be used as the basis of similarity between two cells or clones.
+
+What does it do by default? Let's observe the side effects and output when we call the function using the default settings (here we also specify the output directory; by default, the function writes to the current working directory):
+
+```{r}
+output <- buildRepSeqNetwork(tcr_data, "cdr3", output_dir = dir_out)
+```
+
+The console messages indicate the following tasks being performed:
+
+* The input data is filtered to remove rows with sequences below 3 characters in length
+* The edges of the network graph are computed by calculating the Hamming distance between pairs of the receptor sequences in `tcr_data$cdr3`
+* Isolated nodes (those not joined by an edge to any other node) are removed from the graph
+* A plot of the network graph is generated
+
+The function returns a list containing the following items:
+```{r}
+names(output)
+```
+
+The item `node_data` is a data frame containing the same columns as the input data:
+
+```{r}
+names(output$node_data)
+```
+
+Only rows corresponding to nodes that remain in the network graph are included (those corresponding to the dropped isolated nodes have been removed):
+```{r}
+nrow(output$node_data)
+```
+
+Thus, this output data serves as biological meta-data for the nodes in the network graph, with each row corresponding to a node seen in the plot above.
+
+
+
+## Network Properties
+
+To include network properties in the output of `buildRepSeqNetwork()`, we use the `node_stats` and `cluster_stats` arguments; these respectively specify whether node-level and cluster-level properties are computed.
+
+### Node-Level Network Properties
+
+Use `node_stats = TRUE` to include node-level network properties. 
+
+```{r}
+# Node-level properties
+output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
+                             output_dir = NULL)
+```
+
+The node data now contains node-level network properties in addition to the biological meta-data:
+```{r}
+names(output$node_data)
+```
+
+
+We also notice that the plot now has nodes automatically colored using one of the available network properties. See the section on visualization for details on customizing the plot.
+
+
+#### Choosing Node-Level Properties
+
+To choose which node-level network properties are computed, use the `node_stat_settings()` function, passing its output to the `stats_to_include` argument of `buildRepSeqNetwork()`. The name of each node-level network property has a matching argument in `node_stat_settings()` that can be set to `TRUE` or `FALSE` to specify its inclusion. By default, calling `buildRepSeqNetwork()` with `node_stats = TRUE` uses the default values of `node_stat_settings()`, which are as follows:
+```{r}
+node_stat_settings()
+```
+
+See `?node_stat_settings()` for more details on the individual properties.
+
+```{r, eval = FALSE}
+# example usage of node_stat_settings()
+output <- buildRepSeqNetwork(
+  tcr_data, "cdr3", node_stats = TRUE,
+  stats_to_include = node_stat_settings(cluster_id = TRUE, closeness = FALSE))
+```
+
+
+#### Include All Node-Level Properties
+
+A convenient way to include all node-level network stats when calling `node_stat_settings()` is to simply use the argument `all_stats = TRUE`, which overrides the values of its other arguments. 
+
+When calling `buildRepSeqNetwork()` with `node_stats = TRUE`, a further shortcut to include all node-level network stats is simply to use `stats_to_include = "all"`.
+
+```{r, eval = FALSE}
+# the following two calls are equivalent:
+buildRepSeqNetwork(
+  tcr_data, "cdr3", node_stats = TRUE, 
+  stats_to_include = node_stat_settings(all_stats = TRUE))
+
+buildRepSeqNetwork(
+  tcr_data, "cdr3", node_stats = TRUE, stats_to_include = "all")
+```
+
+
+### Cluster-Level Network Properties
+
+We can include cluster-level network properties using `cluster_stats = TRUE`:
+
+```{r}
+# Node-level and cluster-level properties
+output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
+                             cluster_stats = TRUE, print_plots = FALSE,
+                             output_dir = NULL)
+```
+
+The output list now contains an additional data frame for the cluster-level meta data:
+
+```{r}
+names(output)
+head(output$cluster_data)
+```
+Each row of the cluster-level meta data corresponds to a single cluster in the network.
+
+Three of the cluster-level properties, `agg_clone_count`, `max_clone_count` and `seq_w_max_count`, were not computed, because they require us to specify the column name or number of our data containing measurements of clonal/cell abundance via the `count_col` argument. If the column name or number is supplied, these properties will be automatically computed along with the other cluster-level properties.
+
+
+
+## Network Settings
+
+Several arguments exist for customization of the settings used to build the network:
+
+### Keep Isolated Nodes (Single-Node Clusters)
+
+By default, any nodes in the network graph that do not share an edge with any other network node are removed, along with their corresponding rows in the data. There are typically many of these single, isolated nodes in a repertoire network; they are usually of little interest and their inclusion tends to clutter the visualization of the network graph.
+
+However, sometimes it is desirable to keep all nodes in the network, including the isolated nodes. This can be done using the argument `drop_isolated_nodes = FALSE`.
+
+
+
+### Distance Function
+
+By default, similarity between TCR/BCR sequences is based on the Hamming distance, i.e., the number of non-matching characters in two sequences of equal length. When sequence lengths do not match, we effectively extend the shorter sequence, with the additional terms treated as non-matching with those of the longer sequence.
+
+Our package also supports the Levenshtein (edit) distance, which measures the minimum number of single-character edits (insertions, deletions and transformations) required to transform one sequence into the other. It can be used in place of the Hamming distance with the argument `dist_type = "levenshtein"`. Here we use the Levenshtein distance to build a network based off of similarity in the CDR-3 nucleotide sequences.
+
+```{r, eval = FALSE}
+# Network based on Levenshtein distance
+output <- buildRepSeqNetwork(tcr_data, "cdr3_nt", dist_type = "levenshtein")
+```
+
+The Levenshtein distance innately applies to sequences of differing lengths and can correctly account for insertions and deletions, but is more computationally expensive, which could potentially pose challenges when working with very large data sets and using very long TCR/BCR sequences.
+
+
+### Distance Cutoff
+
+The distance function specified in the `dist_type` argument is used to model the similarity between TCR/BCR sequences. By default, two nodes in the network graph share an edge if their distance, as measured by this function, is at most 1. This cutoff value of 1 can be set to a different value, if desired, using the `dist_cutoff` argument.
+
+
+
+
+## Other Arguments
+
+### Input Filtering
+
+* `min_seq_length` can be used to filter out TCR/BCR sequences by minimum length. Data rows with sequence lengths below this value will be dropped before computing the network graph. The default is 3.
+* `drop_matches` can be used to filter out TCR/BCR sequences by content. It takes a character string or regular expression and checks each TCR/BCR sequence for a match; data rows with matches are dropped before computing the network graph. 
+
+### Only Keep Specific Columns of Input Data
+
+By default, the node-level meta data returned by `buildRepSeqNetwork()` includes all columns of the input data. If you only wish for specific columns to be retained, specify these in a vector of column names or column numbers to the `subset_cols` argument. Any relevant columns used by `buildRepSeqNetwork()`, such as the TCR/BCR sequence column specified by `seq_col`, as well as any columns specified in other arguments, such as `color_nodes_by`, will automatically be included.
+
+
+### Output
+
+* The function returns its output invisibly, so when calling the function without assigning its output, the returned list will not be shown in the console.
+* Output is saved to the current working directory by default; a directory can be specified using the `output_dir` argument. The file type can be specified via the `output_type` argument: by default, each component of the returned list is saved to its own file, with the `output_name` argument used as a common file name prefix.
+* For better compression, use a value of `"rds"` or `"rda"` for `output_type`, which will save the output list to a .rds or .rda file; the file will be named `output_name` with the appropriate file extension appended. 
+* A pdf file of the graph plot(s) will be saved if `plots = TRUE`, regardless of the value of `output_type`. The dimensions (in inches) for the pdf can be adjusted using `plot_width` and `plot_height`, with the defaults being `12` and `10`.
+
+
+### Visualization
+
+Use  `print_plots = FALSE` to prevent plots from being printed to the R plotting window, and use `plots = FALSE` to prevent plots from being generated entirely. 
+
+Numerous arguments exist that allow customization of the network visualization. See [this vignette](network_visualization.html) for further details.
+

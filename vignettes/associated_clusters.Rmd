@@ -1,0 +1,82 @@
+---
+title: "Finding Associated Clones"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Finding Associated Clones}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
+)
+```
+
+
+A set of functions has been provided to search across samples for TCR/BCR clones associated to a sample- or subject-level binary outcome/characteristic. An example usage is seen below. A detailed tutorial and documentation are forthcoming.
+
+## 1. Find Associated Sequences
+
+Search for associated sequences based on Fisher's exact test $P$-value.
+
+```{r, eval = FALSE}
+associated_seqs <- findAssociatedSeqs(
+  file_list = file.path(dir_samples, list.files(dir_samples, pattern = ".tsv")),
+  input_type = "table", sample_ids = sample_id_list,
+  subject_ids = subject_id_list, group_ids = group_id_list,
+  groups = c("reference", "comparison"),
+  seq_col = "aaSeqCDR3", freq_col = "cloneFraction")
+```
+
+
+## 2. Find Associated Clones
+
+Search across samples for all clones within a neighborhood of each associated sequence identified in the previous step.
+
+```{r, eval = FALSE}
+findAssociatedClones(
+  file_list = file.path(dir_samples, list.files(dir_samples, pattern = ".tsv")),
+  input_type = "table", sample_ids = sample_id_list,
+  subject_ids = subject_id_list, group_ids = group_id_list,
+  seq_col = "aaSeqCDR3",
+  assoc_seqs = associated_seqs$ReceptorSeq[1:20],
+  output_dir = dir_assoc_clust)
+```
+
+
+
+## 3. Build Associated Cluster Network
+
+Combine all of the clones obtained in the previous step; perform network analysis and clustering.
+
+```{r, eval = FALSE}
+all_clusters <- buildAssociatedClusterNetwork(
+  file_list = file.path(dir_assoc_clust, list.files(dir_assoc_clust)),
+  seq_col = "aaSeqCDR3", output_dir = dir_out)
+```
+
+Perform more detailed network analysis for particular clusters of interest.
+
+```{r, eval = FALSE}
+# focus on a particular cluster
+cluster_1 <- buildRepSeqNetwork(
+  data = all_clusters$node_data[all_clusters$node_data$cluster_id == 1, ],
+  seq_col = "aaSeqCDR3")
+```
+
+
+## 4. (Optional) K-means on Atchley factor encoding
+
+(For TCR CDR3 amino acid sequences only) Take the clone sequences from the network in step 3 and embed them in 30-dimensional Euclidean space using a deep learning algorithm with a trained encoder. Perform $K$-means clustering on the embedded values; for each sample, compute the fraction of the sample's total unique TCR sequences that belong to each cluster, yielding a $K$-dimensional vector for each sample. Use heatmaps to compare these vectors' values and their correlation across samples. 
+
+```{r, eval = FALSE}
+kmeansAtchley(
+  data = all_clusters$node_data,
+  amino_col = "aaSeqCDR3", sample_col = "SampleID", group_col = "GroupID",
+  k = 50, output_dir = dir_out)
+```

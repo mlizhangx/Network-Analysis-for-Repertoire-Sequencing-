@@ -29,9 +29,10 @@ addNodeNetworkStats(data, net, stats_to_include = node_stat_settings())
 }
   \item{stats_to_include}{
 %%     ~~Describe \code{stats_to_include} here~~
-      A list generated using `node_stat_settings()` that specifies the network
-      statistics to compute. Alternatively, `stats_to_include = "all"` will
-      compute all node-level network stats.
+      A list generated using \code{node_stat_settings()} that specifies the network
+      statistics to compute. Alternatively, \code{stats_to_include = "all"} will
+      compute all node-level network stats, and \code{stats_to_include = "cluster_id_only"}
+      will compute cluster membership only.
 }
 }
 \value{
@@ -45,7 +46,7 @@ addNodeNetworkStats(data, net, stats_to_include = node_stat_settings())
 }
 \references{
 %% ~put references to the literature/web site here ~
-    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
 
     https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }
@@ -100,11 +101,10 @@ data <- data.frame("clone_seq" = clone_seqs,
                    "group" = group_labels)
 
 # Generate network for data
-net <- generateNetworkFromSeqs(data$clone_seq,
-                               drop_isolated_nodes = FALSE)
+net <- generateNetworkObjects(data, "clone_seq")
 
 # Add default network statistics
-data <- addNodeNetworkStats(data, net)
+data <- addNodeNetworkStats(net$node_data, net$igraph)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

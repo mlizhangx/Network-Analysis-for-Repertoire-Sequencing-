@@ -1,45 +1,58 @@
-\name{addClusterMembership}
-\alias{addClusterMembership}
+\name{saveNetwork}
+\alias{saveNetwork}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Compute Cluster Membership of Network Nodes
+    Save List of RepSeq Network Objects
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given immune repertoire sequence data with clones indexed by row and the
-    `igraph` object containing the corresponding network by sequence similarity,
-    performs clustering and adds a variable for cluster membership to the
-    repertoire sequence data.
+    Given a list conforming to the output of \code{buildRepSeqNetwork()}, saves
+    its contents according to the specified file format scheme. Also saves
+    any graph plots present to a single pdf.
 }
 \usage{
-addClusterMembership(data, net)
+saveNetwork(net, output_dir = getwd(),
+            output_type = "individual",
+            output_filename = "MyRepSeqNetwork",
+            pdf_width = 12, pdf_height = 10)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{data}{
-%%     ~~Describe \code{data} here~~
-      A data frame containing the immune repertoire sequence data, with clones
-      indexed by row.
-}
   \item{net}{
 %%     ~~Describe \code{net} here~~
-      An `igraph` igraph object containing the network corresponding to the
-      clones in `data`. The number of nodes in the network must match the number
-      of rows in `data`.
+    A list conforming to the format of the value returned by \code{buildRepSeqNetwork}. Must contain at least the components \code{igraph} (an igraph object), \code{adjacency_matrix} (a matrix or dgCMatrix) and \code{node_data} (a data frame); the components \code{cluster_data} (a data frame) and \code{plots} (a list of \code{ggraph} objects) are optional, and will also be saved if present.
+}
+  \item{output_dir}{
+%%     ~~Describe \code{output_dir} here~~
+    The directory in which to save the file(s).
+}
+  \item{output_type}{
+%%     ~~Describe \code{output_dir} here~~
+  A character string specifying the file format to use when writing output to file. Default \code{"individual"} saves each item as a separate, uncompressed file, with data frames saved in csv format. \code{"rda"} and \code{"rds"} save the output list as a rda and rds file, respectively. For all output types, any plots present will also be saved in a pdf file.
+}
+  \item{output_filename}{
+%%     ~~Describe \code{output_filename} here~~
+  A character string to be used as a common filename prefix for any files saved.
+}
+  \item{pdf_width}{
+%%     ~~Describe \code{plot_width} here~~
+    Passed to the \code{width} argument of \code{grDevices::pdf()}.
+}
+  \item{pdf_height}{
+%%     ~~Describe \code{plot_height} here~~
+    Passed to the \code{height} argument of \code{grDevices::pdf()}.
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-    Clustering is performed using `igraph::cluster_fast_greedy()`.
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-    A copy of `data` with an additional column named `cluster_id` that contains the cluster membership for each clone.
+    When \code{output_type = "individual"}, the igraph is saved in edgelist
+    format as a .txt file; the adjacency matrix is saved either in .csv format
+    (for dense matrices) or .mtx format (for sparse matrices); and plots are
+    saved only in a .pdf file, meaning that any plots will need to be generated
+    again in order to be modified. If \code{output_type} is \code{"rds"} or
+    \code{"rda"}, the entire list \code{net} will be saved (the R symbol for the
+    object will be \code{net} if saving as .rda).
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -52,11 +65,9 @@ addClusterMembership(data, net)
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \examples{
-
 # Generate some data
 set.seed(42)
 sample_size <- 200
-group_labels <- rep("Control", times = sample_size)
 assign_group <- sample(c(TRUE, FALSE), size = sample_size, replace = TRUE)
 base_seq_length <- 7
 characters <- c("G", "A", "T", "C")
@@ -71,7 +82,6 @@ clone_seqs_append <- rep("AATC", times = sample_size)
 append_latent_prob <- runif(sample_size, min = 0, max = 1)
 for (i in 1:sample_size) {
   case_group <- assign_group[[i]]
-  if (case_group) group_labels[[i]] <- "Case"
   if ((case_group & append_latent_prob[[i]] > 0.9) |
       (!case_group & append_latent_prob[[i]] > 0.5)) {
     clone_seqs_append[[i]] <- "AATCGGGG"
@@ -91,25 +101,8 @@ for (i in 1:sample_size) {
   clone_seqs[[i]] <- paste0(clone_seqs[[i]], clone_seqs_append[[i]],
                             collapse = "")
 }
-counts <- rbinom(sample_size, size = 300, prob = 0.1)
-frequencies <- counts/sum(counts)
-data <- data.frame("clone_seq" = clone_seqs,
-                   "count" = counts,
-                   "frequency" = frequencies,
-                   "group" = group_labels)
+data <- data.frame(seqs = clone_seqs)
+net <- generateNetworkObjects(data, "seqs")
+saveNetwork(net, output_dir = tempdir())
 
-# Generate network for data
-net <- generateNetworkObjects(data, "clone_seq")
-
-# Add cluster ID
-data_w_clusterID <- addClusterMembership(net$node_data, net$igraph)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
