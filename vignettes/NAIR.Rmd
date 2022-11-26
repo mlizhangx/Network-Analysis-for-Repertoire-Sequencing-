@@ -18,7 +18,9 @@ knitr::opts_chunk$set(
 ```
 
 
-The `NAIR` package facilitates network analysis of the adaptive immune repertoire based on similarities among the receptor sequences.
+The `NAIR` package facilitates network analysis of the adaptive immune repertoire based on similarities among the receptor sequences. It implements methods from the following paper:
+
+Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. “NAIR: Network Analysis of Immune Repertoire” (Submitted).
 
 
 ### What can `NAIR` do?

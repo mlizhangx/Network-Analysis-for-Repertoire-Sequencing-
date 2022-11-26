@@ -26,6 +26,7 @@ export(loadDataFromFileList)
 export(combineSamples)
 export(saveNetwork)
 export(saveNetworkPlots)
+export(simulateToyData)
 
 
 useDynLib(NAIR, .registration=TRUE)

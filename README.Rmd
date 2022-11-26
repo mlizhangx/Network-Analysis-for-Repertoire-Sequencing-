@@ -20,7 +20,10 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The `NAIR` package facilitates network analysis of the adaptive immune repertoire based on similarities among the receptor sequences. 
+
+The `NAIR` package facilitates network analysis of the adaptive immune repertoire based on similarities among the receptor sequences. It implements methods from the following paper:
+
+Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. “NAIR: Network Analysis of Immune Repertoire” (Submitted).
 
 
 ### What can `NAIR` do?
@@ -56,9 +59,11 @@ The `NAIR` package facilitates network analysis of the adaptive immune repertoir
 # Installation
 
 The current development version of `NAIR` can be installed from github using the following commands:
-```{r}
+```{r, eval = FALSE}
 install.packages("devtools")
-devtools::install_github("mlizhangx/Network-Analysis-for-Repertoire-Sequencing-")
+devtools::install_github(
+  "mlizhangx/Network-Analysis-for-Repertoire-Sequencing-",
+  build_vignettes = TRUE)
 ```
 
 Installing the development version requires a toolchain compiler. On Windows, this means downloading and installing Rtools. On MacOS, this entails installing XCode Command Line Tools ("XCode CLI") and the correct version of gfortran for your macOS version (instructions [here](https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/)).
@@ -90,47 +95,15 @@ General network analysis on RepSeq data is performed using the `buildRepSeqNetwo
 
 ### Load Data
 
-For demonstration purposes, we load a  [public data set](https://www.10xgenomics.com/resources/datasets/pbm-cs-of-a-healthy-donor-v-1-1-1-standard-3-1-0) hosted at 10xgenomics.com using Bioconductor.
+For demonstration purposes, we simulate some toy data using built-in package functions.
 
 ```{r }
-dir_out <- tempdir()
-
-if (!require("BiocFileCache", quietly = TRUE)) { 
-  if (!require("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-  }
-  BiocManager::install("BiocFileCache", update = FALSE) 
-}
 library(NAIR)
-library(BiocFileCache)
-bfc <- BiocFileCache(ask = FALSE)
-data_file <- bfcrpath(bfc, file.path(
-  "http://cf.10xgenomics.com/samples/cell-vdj/3.1.0",
-  "vdj_v1_hs_pbmc3/vdj_v1_hs_pbmc3_t_filtered_contig_annotations.csv"))
-tcr_data <- read.csv(data_file, stringsAsFactors = FALSE)
-head(tcr_data)
-
-# load data sets
-# dir_main <-
-#   dirname(dirname(rstudioapi::getActiveDocumentContext()$path))
-# dir_data <- file.path(dir_main, "input_data")
-# dir_out <- file.path(dir_data, "dummy_output")
-# 
-# data <- read.table(
-#   file.path(dir_data, "TRB-Pt-10-2-500ng-15-04-2020-gDNA_S48.clones.txt"),
-#   sep = '\t', header = TRUE)
-
+dir_out <- tempdir()
+toy_data <- simulateToyData()
+head(toy_data)
 ```
 
-Each row corresponds to a TCR sequence from a single cell, with the cell ID contained in the first column, `barcode`. Sequences from both the beta and alpha chains are present, as denoted by the values `TRA` and `TRB` in the column `chain`. We consider the beta-chain CDR3 amino acid sequences.
-
-```{r}
-# Subset rows for valid beta-chain CDR3 amino acid sequences
-tcr_data <- tcr_data[tcr_data$chain == "TRB" & tcr_data$cdr3 != "None", ]
-
-# Number of sequences/cells (rows)
-nrow(tcr_data)
-```
 
 
 
@@ -140,7 +113,8 @@ nrow(tcr_data)
 * The second argument specifies the column name or number of the data frame that contains the receptor sequences to be used as the basis of similarity between two cells or clones.
 
 ```{r}
-output <- buildRepSeqNetwork(tcr_data, "cdr3", output_dir = dir_out)
+output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", 
+                             output_dir = dir_out)
 ```
 
 
@@ -170,7 +144,7 @@ Thus, this output data serves as biological meta-data for the nodes in the netwo
 
 ```{r, eval = FALSE}
 # Node-level properties
-output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
+output <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
                              output_dir = NULL)
 ```
 
@@ -185,7 +159,7 @@ To choose which node-level network properties are computed, use the `node_stat_s
 ```{r, eval = FALSE}
 # example usage of node_stat_settings()
 output <- buildRepSeqNetwork(
-  tcr_data, "cdr3", node_stats = TRUE,
+  toy_data, "CloneSeq", node_stats = TRUE,
   stats_to_include = node_stat_settings(cluster_id = TRUE, closeness = FALSE))
 ```
 
@@ -194,11 +168,11 @@ output <- buildRepSeqNetwork(
 ```{r, eval = FALSE}
 # the following two calls are equivalent:
 buildRepSeqNetwork(
-  tcr_data, "cdr3", node_stats = TRUE, 
+  toy_data, "CloneSeq", node_stats = TRUE, 
   stats_to_include = node_stat_settings(all_stats = TRUE))
 
 buildRepSeqNetwork(
-  tcr_data, "cdr3", node_stats = TRUE, stats_to_include = "all")
+  toy_data, "CloneSeq", node_stats = TRUE, stats_to_include = "all")
 ```
 
 
@@ -206,7 +180,7 @@ buildRepSeqNetwork(
 
 ```{r}
 # Node-level and cluster-level properties
-output <- buildRepSeqNetwork(tcr_data, "cdr3", node_stats = TRUE, 
+output <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
                              cluster_stats = TRUE, print_plots = FALSE,
                              output_dir = NULL)
 ```
@@ -227,7 +201,7 @@ Each row of the cluster-level meta data corresponds to a single cluster in the n
 The network graph plot produced by `buildRepSeqNetwork()` can be customized in various ways.
 
 ```{r}
-output <- buildRepSeqNetwork(tcr_data, "cdr3",
+output <- buildRepSeqNetwork(toy_data, "CloneSeq",
                              node_stats = TRUE,
                              stats_to_include = "all",
                              color_nodes_by = c("transitivity", "closeness"),
@@ -249,7 +223,7 @@ Our package also supports the Levenshtein (edit) distance, which measures the mi
 
 ```{r, eval = FALSE}
 # Network based on Levenshtein distance
-output <- buildRepSeqNetwork(tcr_data, "cdr3_nt", dist_type = "levenshtein")
+output <- buildRepSeqNetwork(toy_data, "cdr3_nt", dist_type = "levenshtein")
 ```
 
 The Levenshtein distance innately applies to sequences of differing lengths and can correctly account for insertions and deletions, but is more computationally expensive, which could potentially pose challenges when working with very large data sets and using very long TCR/BCR sequences.

@@ -1,3 +1,8 @@
+# 0.0.9023 (11/26/2022)
+
+* Added user-level function `simulateToyData` for generating example (toy) data, primarily for use in vignettes, examples and tests.
+* Converted README to use `simulateToyData`
+
 # 0.0.9022 (11/25/2022)
 
 * Numerous utility functions that were previously internal have been renamed and exported to be available to the user. These include `generateNetworkObjects()`, `generateNetworkGraphPlots()`, `filterInputData()`, `getNeighborhood()`, `loadDataFromFileList()`, `combineSamples()`, `saveNetwork()`, and `saveNetworkPlots()`.
