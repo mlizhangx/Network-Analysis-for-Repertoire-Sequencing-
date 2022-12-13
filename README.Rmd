@@ -439,7 +439,7 @@ all_clusters <- buildAssociatedClusterNetwork(
 
 If desired, we can then perform more detailed network analysis for particular clusters of interest.
 
-```{r, eval = FALSE}
+```{r}
 # focus on a particular cluster
 buildRepSeqNetwork(
   data = all_clusters$node_data[all_clusters$node_data$cluster_id == 3, ],
