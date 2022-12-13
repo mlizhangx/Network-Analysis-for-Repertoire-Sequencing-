@@ -17,66 +17,145 @@ knitr::opts_chunk$set(
 )
 ```
 
+The `NAIR` package contains a set of functions that can be used to search across samples for public clones/clusters.
 
-A set of functions has been provided to search across samples for public clones. An example usage is seen below. A detailed tutorial and documentation are forthcoming.
+### Load Data
+
+For demonstration purposes, we simulate some toy data using built-in package functions.
+
+```{r }
+# Use temp dir
+data_dir <- tempdir()
+
+# Directory to store input files
+dir_input_samples <- file.path(data_dir, "input_samples")
+dir.create(dir_input_samples, showWarnings = FALSE)
+
+library(NAIR)
+
+samples <- 30
+affixes <- c("AAAA", "AASA", "AACA", "AAQA", "AAQ", "AAA", "AASAA", "AAAAA")
+affix_probs_g0 <- rep(1 / length(affixes), 
+                      times = length(affixes) * samples / 2)
+affix_probs_g1 <- rep(c(1, 5, 1, 1, 1, 1, 5, 1), times = samples / 2)
+affix_probs <- matrix(c(affix_probs_g0, affix_probs_g1),
+                      nrow = samples, byrow = TRUE)
+new_probs_g0 <- rep(c(1/2, 1/6, 1/6, 1/6), times = samples / 2)
+new_probs_g1 <- rep(c(1/3, 1/6, 1/6, 1/3), times = samples / 2)
+new_probs <- matrix(c(new_probs_g0, new_probs_g1),
+                    nrow = samples, byrow = TRUE)
+
+simulateToyData(
+  samples = samples,
+  sample_size = 30,
+  prefix_length = 1,
+  prefix_chars = c("A", "C"),
+  prefix_probs = cbind(rep(1, samples), rep(0, samples)),
+  affixes = affixes,
+  affix_probs = affix_probs,
+  num_edits = 4,
+  edit_pos_probs = function(seq_length) {
+    dnorm(seq(-4, 4, length.out = seq_length))
+  },
+  edit_ops = c("insertion", "deletion", "transmutation"),
+  edit_probs = c(5, 1, 4),
+  new_chars = c("A", "S", "C", "Q"),
+  new_probs = new_probs,
+  output_dir = dir_input_samples,
+  no_return = TRUE
+)
+```
+
 
 ## 1. Find Public Clusters in Each Sample
 
-Perform network analysis on each sample individually to search for public clusters based on node count and clone count.
+First, we use `findPublicClusters()` to perform network analysis on each sample individually and search for public clusters based on node count and clone count. The primary argument `file_list` accepts a character vector of file paths, each containing the RepSeq data for an individual sample.
+
+When we simulated our data, 30 samples were created as individual data frames, with each saved to a separate file using the .rds file format. We create the vector of file paths for these input files below:
+
+```{r}
+# input files for step 1 (one per sample)
+input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
+head(input_files)
+```
+
+When calling `findPublicClusters()`, we specify the file format of our input files using `input_type = "rds"`; other supported formats include rda, csv, and files that can be read using `read.table()`, such as tsv and txt files.
+
+The `sample_ids` argument can be used to assign custom sample IDs; by default, the samples are labeled numerically according to the order they appear in `file_list`.
+
+Most other arguments are passed to `buildRepSeqNetwork()` when performing network analysis on each sample.
+
+```{r}
+# Search across samples for public clusters
+dir_filtered_samples <- file.path(data_dir, "filtered_samples")
+findPublicClusters(
+  file_list = input_files, input_type = "rds",
+  sample_ids = paste0("Sample", 1:samples),
+  seq_col = "CloneSeq", count_col = "CloneCount",
+  min_seq_length = NULL, drop_matches = NULL,
+  output_dir = dir_filtered_samples)
+```
+
+The search criteria for the public clusters can be adjusted using the arguments `top_n_clusters`, `min_node_count` and `min_clone_count` as seen below, which are shown with their default values:
 
 ```{r, eval = FALSE}
-# inputs
-filenames <- list.files(dir_samples, pattern = ".tsv")
-file_list <- file.path(dir_samples, filenames)
-sample_id_list <- as.character(strsplit(filenames, ".tsv"))
-
 findPublicClusters(
+  file_list = input_files, input_type = "rds",
+  seq_col = "CloneSeq", count_col = "CloneCount",
   top_n_clusters = 20, min_node_count = 10, min_clone_count = 100,
-  file_list = file_list, input_type = "table", sample_ids = sample_id_list,
-  seq_col = "aaSeqCDR3", count_col = "cloneCount",
-  plots = TRUE, color_scheme = "turbo",
-  output_dir = dir_samples_filtered,
-  output_dir_unfiltered = file.path(dir_out, "sample_networks") # optional
-  )
+  min_seq_length = NULL, drop_matches = NULL,
+  output_dir = dir_filtered_samples)
 ```
+
+The top `top_n_clusters` clusters by node count within each sample will automatically be included as public clusters. The criteria are mutually inclusive, so any cluster satisfying any one of the three conditions will be included as a public cluster.
+
+Note that this function does not return any output; instead, it creates two subdirectories within `output_dir`, named `node_meta_data` and `cluster_meta_data`, and writes each sample's filtered node-level and cluster-level data to a separate file in the appropriate subdirectory, resulting in two files per sample (one for the node-level data and one for the cluster-level data).
+
+```{r}
+# Node-level meta data for each sample's public clusters
+dir_filtered_samples_node <- file.path(dir_filtered_samples, "node_meta_data")
+files_filtered_samples_node <- file.path(
+  dir_filtered_samples_node, list.files(dir_filtered_samples_node))
+head(files_filtered_samples_node)
+
+# Cluster-level meta data for each sample's public clusters
+dir_filtered_samples_cluster <- file.path(dir_filtered_samples, "cluster_meta_data")
+files_filtered_samples_cluster <- file.path(
+  dir_filtered_samples_cluster, list.files(dir_filtered_samples_cluster))
+head(files_filtered_samples_cluster)
+```
+
+If one wishes to also save the unfiltered network data for each sample (containing all results from performing network analysis on each sample, including information on all nodes, not just those in the public clusters), this can be done by specifying a directory to the `output_dir_unfiltered` argument.
+
 
 ## 2. Build Public Cluster Network
 
-Take the public clusters from the previous step and combine them across samples; perform network analysis.
+Next, we can use the `buildPublicClusterNetwork` function to gather the public clusters from all samples, combining the clones into a single network and and performing network analysis.
 
-```{r, eval = FALSE}
-filenames <- list.files(file.path(dir_samples_filtered, "node_meta_data"))
-file_list <- file.path(dir_samples_filtered, "node_meta_data", filenames)
+To do this, we input the files in the `node_meta_data` subdirectory created in step 1.
 
-pub_clust_full <-
-  buildPublicClusterNetwork(
-    file_list = file_list, seq_col = "aaSeqCDR3", count_col = "cloneCount",
-    color_nodes_by = c("ClusterIDPublic", "subject_id", "disease_status"),
-    color_title = c("public cluster ID", "subject ID", "disease status"))
+```{r}
+dir_out <- file.path(data_dir, "public_clusters")
+
+# Collect clones from all public clusters and perform network analysis
+buildPublicClusterNetwork(
+  file_list = files_filtered_samples_node,
+  seq_col = "CloneSeq", count_col = "CloneCount",
+  color_nodes_by = "cluster_id", output_dir = dir_out)
 ```
+
+The function arguments and their behavior largely match those of `buildRepSeqNetwork()`.
+
 
 ## 3. (Optional) Public Cluster Network by Representative Sequence
 
-Perform network analysis using a single representative clone sequence from each public cluster (by default, the sequence with the highest clone count).
+After performing step 1, we may find that the number of clones across all public clusters makes performing a full network analysis (step 2) impractical. In this case, we can rerun step 1 with more stringent search criteria to reduce the number of public clusters. Another approach is to use the `buildPublicClusterNetworkByRepresentative` function to perform network analysis using a single representative clone sequence from each public cluster (by default, the sequence with the highest clone count).
 
-```{r, eval = FALSE}
-filenames <- list.files(file.path(dir_samples_filtered, "cluster_meta_data"))
-file_list <- file.path(dir_samples_filtered, "cluster_meta_data", filenames)
+To do this, we input the files in the `cluster_meta_data` subdirectory created in step 1.
 
+```{r}
 buildPublicClusterNetworkByRepresentative(
-  file_list = file_list, output_dir = dir_out)
-```
-
-
-## 4. (Optional) K-means clustering via Atchley factor encoding
-
-(For TCR CDR3 amino acid sequences only) Take the clone sequences from the network in step 3 and embed them in 30-dimensional Euclidean space using a deep learning algorithm with a trained encoder. Perform $K$-means clustering on the embedded values; for each sample, compute the fraction of the sample's total unique TCR sequences that belong to each cluster, yielding a $K$-dimensional vector for each sample. Use heatmaps to compare these vectors' values and their correlation across samples. 
-
-```{r, eval = FALSE}
-kmeansAtchley(
-  pub_clust_full$node_data, amino_col = "aaSeqCDR3", sample_col = "SampleID",
-  group_col = "subject_group", k = 100, output_dir = dir_out,
-  file_cluster_heatmap = "atchley_kmeans_relative_clust_sizes.pdf",
-  file_corr_heatmap = "atchley_kmeans_corr_in_relative_clust_sizes.pdf",
-  return_output = FALSE)
+  file_list = files_filtered_samples_cluster,
+  color_nodes_by = "ClusterIDPublic", output_dir = dir_out,
+  size_nodes_by = 1)
 ```

@@ -1,3 +1,9 @@
+# 0.0.9024 (12/12/2022)
+
+* Converted all package vignettes to use data created with `simulateToyData()`
+* Additional detail added to vignettes for associated clones and public clones workflows
+
+
 # 0.0.9023 (11/26/2022)
 
 * Added user-level function `simulateToyData` for generating example (toy) data, primarily for use in vignettes, examples and tests.

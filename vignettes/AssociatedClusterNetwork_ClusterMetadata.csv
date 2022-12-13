@@ -1,0 +1,5 @@
+"cluster_id","node_count","mean_seq_length","mean_degree","max_degree","seq_w_max_degree","agg_clone_count","max_clone_count","seq_w_max_count","diameter_length","global_transitivity","assortativity","edge_density","degree_centrality_index","closeness_centrality_index","eigen_centrality_index","eigen_centrality_eigenvalue"
+"1","17","6.94","51.12","94","AAAAAA",NA,NA,NA,"2","1.0000000",NA,"1.0000000","0.0000000","0.0000000","0.000000e+00","16.00000"
+"2","15","6.00","54.73","94","AAAAAA",NA,NA,NA,"2","1.0000000",NA,"1.0000000","0.0000000","0.0000000","1.366428e-16","14.00000"
+"3","32","6.75","54.91","94","AAAAAA",NA,NA,NA,"3","0.8698293","-0.2992572","0.8185484","0.1814516","0.2823554","1.567748e-01","26.29676"
+"4","31","5.77","54.55","94","AAAAAA",NA,NA,NA,"3","0.8951417","-0.2639992","0.8408602","0.1591398","0.2515504","1.343839e-01","26.10287"

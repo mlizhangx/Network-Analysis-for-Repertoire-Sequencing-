@@ -30,7 +30,7 @@ generateNetworkGraphPlots(
 }
   \item{print_plots}{
 %%     ~~Describe \code{print_plots} here~~
-    A logical scalar; should visualizations be printed in the \code{R} plotting window?
+    A logical scalar; should plots be printed in the \code{R} plotting window?
 }
   \item{plot_title}{
 %%     ~~Describe \code{plot_title} here~~
@@ -42,8 +42,7 @@ generateNetworkGraphPlots(
 }
   \item{color_nodes_by}{
 %%     ~~Describe \code{color_nodes_by} here~~
-    Optional. Column name or number of \code{data} used to color network nodes
-    in visualizations. If a vector of values is supplied, one plot will be
+    Optional. Column name or number of \code{data} used to color network nodes. If a vector of values is supplied, one plot will be
     generated for each value.
 }
   \item{color_scheme}{
@@ -70,9 +69,8 @@ generateNetworkGraphPlots(
 }
   \item{size_nodes_by}{
 %%     ~~Describe \code{size_nodes_by} here~~
-    Numeric value specifying the node size in visualizations, or a
-    column name or number of \code{data} for dynamically sizing the network nodes
-    in visualizations.
+    Numeric value specifying the node size, or a
+    column name or number of \code{data} for dynamically sizing the nodes.
 }
   \item{node_size_limits}{
 %%     ~~Describe \code{node_size_limits} here~~

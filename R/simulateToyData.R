@@ -20,7 +20,6 @@ simulateToyData <- function(
     edit_probs = c(5, 1, 4),
     new_chars = prefix_chars,
     new_probs = prefix_probs,
-    include_counts = FALSE,
     output_dir = NULL,
     no_return = FALSE,
     seed_value = 42
@@ -68,19 +67,15 @@ simulateToyData <- function(
     }
   }
 
-  if (include_counts) {
-    counts <- stats::rbinom(samples * sample_size,
-                            size = 300, prob = 0.1)
-  }
+  counts <- stats::rgamma(samples * sample_size, shape = 100, rate = 1/100)
+  counts <- ceiling(max(counts) - counts) + 1
 
   if (chains == 1) {
     dat <- data.frame(CloneSeq = seqs)
-    if (include_counts) {
-      dat$CloneCount <- dat$CloneFrequency <- counts
-      for (i in 1:samples) {
-        dat$CloneFrequency[ranges[ , i]] <-
-          counts[ranges[ , i]] / sum(counts[ranges[ , i]])
-      }
+    dat$CloneCount <- dat$CloneFrequency <- counts
+    for (i in 1:samples) {
+      dat$CloneFrequency[ranges[ , i]] <-
+        counts[ranges[ , i]] / sum(counts[ranges[ , i]])
     }
   } else if (chains == 2) {
     alpha_seqs <- beta_seqs <- seqs
@@ -89,24 +84,22 @@ simulateToyData <- function(
     beta_seqs[modify_indices] <-
       paste0(beta_seqs[modify_indices], "G")
     dat <- data.frame(AlphaSeq = alpha_seqs, BetaSeq = beta_seqs)
-    if (include_counts) {
-      dat$Count <- counts
-      dat$UMIs <- pmax(1, stats::rbinom(sample_size * samples,
-                                        size = 100, prob = 0.03))
-    }
+    dat$Count <- counts
+    dat$UMIs <- pmax(1, stats::rbinom(sample_size * samples,
+                                      size = 100, prob = 0.03))
   } else {
     stop("`chains` must be 1 or 2")
   }
-  dat$SampleID <- as.character(rep(1:samples, each = sample_size))
+  dat$SampleID <- as.character(rep(paste0("Sample", 1:samples),
+                                   each = sample_size))
 
   if (!is.null(output_dir)) {
     for (i in 1:samples) {
       saveRDS(dat[ranges[ , i], , drop = FALSE],
-              file = file.path(output_dir, paste0(i, ".rds")))
+              file = file.path(output_dir, paste0("Sample", i, ".rds")))
     }
   }
 
   if (!no_return) { return(dat) } else { return(TRUE) }
 }
-
 
