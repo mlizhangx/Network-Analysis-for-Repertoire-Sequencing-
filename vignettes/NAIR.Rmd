@@ -82,14 +82,10 @@ The output returned by `buildRepSeqNetwork()` and other top-level `NAIR` functio
 
 # Finding Associated Clusters
 
-A set of functions has been provided to search across samples for TCR/BCR clones associated to a sample- or subject-level binary outcome/characteristic. An example usage is seen below. A detailed tutorial and documentation are forthcoming.
-
-See [this vignette](associated_clusters.html) for a tutorial on the function's usage.
+A set of functions has been provided to search across samples for TCR/BCR clones associated to a sample- or subject-level binary outcome/characteristic. See [this vignette](associated_clusters.html) for a tutorial on the function's usage.
 
 
 
 # Finding Public Clusters
 
-A set of functions has been provided to search across samples for public clones. An example usage is seen below. A detailed tutorial and documentation are forthcoming.
-
-See [this vignette](public_clusters.html) for a tutorial on the function's usage.
+A set of functions has been provided to search across samples for public clones. See [this vignette](public_clusters.html) for a tutorial on the function's usage.
