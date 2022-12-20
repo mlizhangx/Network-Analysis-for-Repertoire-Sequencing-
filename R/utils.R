@@ -267,7 +267,7 @@ filterInputData <- function(
   if (!is.null(min_seq_length)) {
     cat(paste0("Removing sequences with length fewer than ", min_seq_length, " characters..."))
     drop_rows <- .RowDropsBySequenceLength(data, seq_col, min_seq_length)
-    if (sum(drop_rows) > 0) { data <- data[-drop_rows, , drop = FALSE] }
+    if (sum(drop_rows) > 0) { data <- data[!drop_rows, , drop = FALSE] }
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
   }
 
@@ -275,7 +275,7 @@ filterInputData <- function(
   if (!is.null(drop_matches)) {
     cat(paste0("Removing sequences containing matches to the expression '", drop_matches, "'..."))
     drop_rows <- .RowDropsBySequenceContent(data, seq_col, drop_matches)
-    if (sum(drop_rows) > 0) { data <- data[-drop_rows, , drop = FALSE] }
+    if (sum(drop_rows) > 0) { data <- data[!drop_rows, , drop = FALSE] }
     cat(paste0(" Done. ", nrow(data), " rows remaining.\n"))
   }
 
@@ -313,7 +313,7 @@ getNeighborhood <- function(
 .RowDropsBySequenceLength <- function(data, seq_col, min_length = 3) {
   drop_rows <- rep(FALSE, nrow(data))
   for (i in 1:length(seq_col)) {
-    drop_rows <- drop_rows | nchar(data[[seq_col[[i]]]]) < min_length
+    drop_rows <- drop_rows | (nchar(data[[seq_col[[i]]]]) < min_length)
   }
   return(drop_rows)
 }

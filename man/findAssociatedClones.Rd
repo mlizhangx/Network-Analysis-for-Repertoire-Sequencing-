@@ -214,6 +214,7 @@ findAssociatedClones(
   file_list = files, input_type = "rds",
   group_ids = groups,
   seq_col = "seq",
+  min_seq_length = NULL,
   dist_type = "levenshtein",
   assoc_seqs = associated_seqs$ReceptorSeq,
   output_dir = data_dir)

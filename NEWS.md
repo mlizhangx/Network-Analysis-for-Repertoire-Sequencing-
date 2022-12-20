@@ -1,3 +1,8 @@
+# 0.0.9025 
+
+* Fixed a bug in `filterInputData()` that was preventing filtering by minimum sequence length
+* Removed `BiocManager` from `Suggests` field of DESCRIPTION, since it is no longer used to access demonstration data when building vignettes.
+
 # 0.0.9024 (12/12/2022)
 
 * Converted all package vignettes to use data created with `simulateToyData()`
