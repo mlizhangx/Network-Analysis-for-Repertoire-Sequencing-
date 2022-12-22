@@ -1,4 +1,4 @@
-# 0.0.9025 
+# 0.0.9025 (12/19/2022)
 
 * Fixed a bug in `filterInputData()` that was preventing filtering by minimum sequence length
 * Removed `BiocManager` from `Suggests` field of DESCRIPTION, since it is no longer used to access demonstration data when building vignettes.
