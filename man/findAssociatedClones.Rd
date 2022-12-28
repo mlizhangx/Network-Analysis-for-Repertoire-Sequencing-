@@ -41,7 +41,8 @@ findAssociatedClones(
   subset_cols = NULL,
   output_dir =
     file.path(getwd(), "associated_neighborhoods"),
-  output_type = "csv"
+  output_type = "csv",
+  verbose = FALSE
 )
 }
 %- maybe also 'usage' for other objects documented here.
@@ -115,6 +116,10 @@ findAssociatedClones(
   \item{output_type}{
 %%     ~~Describe \code{output_dir} here~~
   A character string specifying the file format to use when writing each file. Valid options include \code{"csv"}, \code{"tsv"}, \code{"rds"} and \code{"rda"}.
+}
+  \item{verbose}{
+%%     ~~Describe \code{output_dir} here~~
+  A logical scalar; if \code{TRUE}, additional console output will be printed reporting the number of clones in each sample belonging to the neighborhood for each associated sequence, as well as the total number of clones in each neighborhood across all samples.
 }
 }
 \details{

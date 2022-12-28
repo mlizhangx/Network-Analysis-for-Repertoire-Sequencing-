@@ -1,3 +1,10 @@
+# 0.0.9026 (12/27/2022)
+
+* Added an argument `verbose` to `findAssociatedClones()` that can be optionally set to `TRUE` in order to print additional console output reporting the number of clones in each neighborhood, both by sample and in total.
+* Discovered and fixed the following bugs that were present from 0.0.9018 onward:
+    * Fixed a bug whereby `findAssociatedSeqs()` was not correctly computing the counts used for Fisher's exact test
+    * Fixed a bug in `findPublicClones()` involving identification of the top n clusters by node count in each sample: when more than one cluster possessed the nth highest node count, all of these clusters were included in the top n clusters, resulting in more than n clusters identified by this criterion. This has been reverted to the behavior that existed prior to version 0.0.9018, whereby the first n clusters are selected after sorting data rows by descending node count using the `order` function.
+
 # 0.0.9025 (12/19/2022)
 
 * Fixed a bug in `filterInputData()` that was preventing filtering by minimum sequence length

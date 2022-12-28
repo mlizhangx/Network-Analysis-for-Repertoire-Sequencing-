@@ -221,12 +221,17 @@ buildPublicClusterNetworkByRepresentative <- function(
   # if fewer than n clusters, take all clusters
   if (nrow(cdat) < top_n_clusters) { return(cdat) }
 
-  cutoff_top_n <- sort(cdat$node_count, decreasing = TRUE)[[top_n_clusters]]
-  filtered_ids <- which(cdat$node_count >= min(min_node_count, cutoff_top_n))
+  ## This method includes ties for the cluster with the nth largest node count
+  # cutoff_top_n <- sort(cdat$node_count, decreasing = TRUE)[[top_n_clusters]]
+  # filtered_ids <- which(cdat$node_count >= min(min_node_count, cutoff_top_n))
+
+  ids_top_n_clusters <- order(-cdat$node_count)[1:top_n_clusters]
+  ids_by_node_count <- which(cdat$node_count >= min_node_count)
+  filtered_ids <- union(ids_top_n_clusters, ids_by_node_count)
 
   if (!is.null(min_clone_count)) {
-    filtered_ids <- union(filtered_ids,
-                          which(cdat$agg_clone_count >= min_clone_count))
+    ids_by_clone_count <- which(cdat$agg_clone_count >= min_clone_count)
+    filtered_ids <- union(filtered_ids, ids_by_clone_count)
   }
   return(cdat[filtered_ids, ])
 }

@@ -23,16 +23,27 @@ findAssociatedSeqs <- function(
               length(file_list) == length(subject_ids))
   stopifnot("lengths of file_list and group_ids must match" =
               length(file_list) == length(group_ids))
+  stopifnot("file_list contains duplicate values" =
+              length(file_list) == length(unique(file_list)))
+  stopifnot("sample_ids contains duplicate values" =
+              length(sample_ids) == length(unique(sample_ids)))
+  stopifnot("groups contains duplicate values" =
+              length(groups) == length(unique(groups)))
+  stopifnot("groups must be of length 2" = length(groups) == 2)
+  stopifnot("'group_ids' contains values not in 'groups'" =
+              all(unique(group_ids) %in% groups))
+  stopifnot("both groups must be nonempty" = all(groups %in% group_ids))
 
-  n <- length(subject_ids)
-  n_g0 <- sum(group_ids == groups[[1]]); n_g1 <- sum(group_ids == groups[[2]])
   samples_or_subjects <- "samples"
   if (!all(subject_ids == sample_ids)) { samples_or_subjects <- "subjects" }
+  ids_g0 <- group_ids == groups[[1]]  # indices of samples in reference group
+  ids_g1 <- group_ids == groups[[2]]  # indices of samples in comparison group
+  n_g0 <- length(unique(subject_ids[ids_g0])) # num subjects in reference group
+  n_g1 <- length(unique(subject_ids[ids_g1])) # num subjects in comparison group
+  n <- length(unique(subject_ids))  # number of subjects
   cat(paste0("Data contains ", n, " ", samples_or_subjects, ", ",
              n_g1, " of which belong to the reference group and ",
              n_g0, " of which belong to the comparison group.\n"))
-  stopifnot("'group_ids' contains values not in 'groups'" = n_g0 + n_g1 == n)
-  stopifnot("both groups must be nonempty" = n_g0 > 0 && n_g1 > 0)
 
   data <- combineSamples(
     file_list, input_type, data_symbols, header, sep, seq_col,
@@ -44,6 +55,7 @@ findAssociatedSeqs <- function(
     return(invisible(NULL))
   }
 
+  # list of unique sequences filtered by sample membership
   out <- .filterSeqsBySampleMembership(
     data, seq_col, sample_col = "SampleID", min_sample_membership)
 
@@ -134,7 +146,8 @@ findAssociatedClones <- function(
   ## Output ##
   subset_cols = NULL,
   output_dir = file.path(getwd(), "associated_neighborhoods"),
-  output_type = "csv"
+  output_type = "csv",
+  verbose = FALSE
 ) {
   .ensureOutputDir(output_dir)
 
@@ -145,18 +158,18 @@ findAssociatedClones <- function(
 
   # iterate over samples
   for (i in 1:length(file_list)) {
-    cat(paste0("Processing sample ", i, " of ", length(file_list), ":\n"))
+    cat(paste0("Processing sample ", i, " of ", length(file_list), " (", sample_ids[[i]], "):\n"))
     .findAssociatedClonesOneSample(
       file_list[[i]], input_type, data_symbols, header, sep, sample_ids[[i]],
       subject_ids[[i]], group_ids[[i]], seq_col, assoc_seqs, nbd_radius,
-      dist_type, min_seq_length, drop_matches, subset_cols, tmpdirs)
+      dist_type, min_seq_length, drop_matches, subset_cols, tmpdirs, verbose)
   }
 
   cat(paste0(">>> Done processing samples. Compiling results:\n"))
 
   for (i in 1:length(assoc_seqs)) {
     cat(paste0("Gathering data from all samples for sequence ", i, " (", assoc_seqs[[i]], ")..."))
-    .compileNeighborhood(tmpdirs[[i]], sample_ids, output_dir, output_type)
+    .compileNeighborhood(tmpdirs[[i]], sample_ids, output_dir, output_type, verbose)
     cat(" Done.\n")
   }
 
@@ -199,7 +212,7 @@ buildAssociatedClusterNetwork <- function(
 .findAssociatedClonesOneSample <- function(
     input_file, input_type, data_symbols, header, sep, sample_id,
     subject_id, group_id, seq_col, assoc_seqs, nbd_radius, dist_type,
-    min_seq_length, drop_matches, subset_cols, output_dirs)
+    min_seq_length, drop_matches, subset_cols, output_dirs, verbose)
 {
   data <- .loadDataFromFile(input_file, input_type, data_symbols, header, sep)
   seq_col <- .convertColRef(seq_col, data)
@@ -214,17 +227,21 @@ buildAssociatedClusterNetwork <- function(
     # cat(paste0("Finding clones in a neighborhood of sequence ", i, " (", assoc_seqs[[i]], ")..."))
     .getNbdOneSample(
       assoc_seqs[[i]], data, seq_col, dist_type, nbd_radius,
-      file.path(output_dirs[[i]], paste0(sample_id, ".rds")))
+      file.path(output_dirs[[i]], paste0(sample_id, ".rds")), verbose, i)
   }
+  if (verbose) { cat("\n") }
   cat(" Done.\n")
 }
 
 
 .getNbdOneSample <- function(
-    seq, data, seq_col, dist_type, nbd_radius, outfile)
+    seq, data, seq_col, dist_type, nbd_radius, outfile, verbose, i)
 {
   nbd <- getNeighborhood(data, seq_col, seq, dist_type, nbd_radius)
-  if (!is.null(nbd)) {
+  if (is.null(nbd)) {
+    if (verbose) { cat(paste0("\nSample does not possess sequence ", i, " (", seq, ").")) }
+  } else {
+    if (verbose) { cat(paste0("\n", nrow(nbd), " clones found in the neighborhood for sequence ", i, " (", seq, ").")) }
     if (nrow(nbd) > 0) {
       nbd$AssocSeq <- seq
       saveRDS(nbd, file = outfile)
@@ -234,10 +251,11 @@ buildAssociatedClusterNetwork <- function(
 
 
 
-.compileNeighborhood <- function(input_dir, sample_ids, output_dir, output_type)
+.compileNeighborhood <- function(input_dir, sample_ids, output_dir, output_type, verbose)
 {
   file_list <- file.path(input_dir, paste0(sample_ids, ".rds"))
   data <- loadDataFromFileList(file_list[file.exists(file_list)], "rds")
+  if (verbose) { cat("(", paste0(nrow(data), " clones)")) }
   .saveDataGeneric(data, output_dir, output_name = data$AssocSeq[[1]],
                    output_type = output_type)
 }
