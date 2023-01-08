@@ -178,6 +178,52 @@ findAssociatedClones <- function(
 }
 
 
+# findAssociatedClones2 <- function(
+#
+#   ## Input ##
+#   data, sample_col, seq_col,
+#
+#   ## Search Criteria ##
+#   assoc_seqs, nbd_radius = 1, dist_type = "hamming",
+#   min_seq_length = 6, drop_matches = "[*|_]",
+#
+#   ## Output ##
+#   subset_cols = NULL,
+#   output_dir = file.path(getwd(), "associated_neighborhoods"),
+#   output_type = "csv",
+#   verbose = FALSE
+# ) {
+#   .ensureOutputDir(output_dir)
+#
+#   cat(paste0("<<< Beginning search for associated clones >>>\n"))
+#
+#   tmpdir <- tempdir()
+#   tmpdirs <- file.path(tmpdir, assoc_seqs); .createDirectories(tmpdirs)
+#
+#   sample_col <- .convertColRef(sample_col, data)
+#   sample_list <- unique(data[ , sample_col])
+#
+#   for (i in 1:length(sample_list)) {
+#     cat(paste0("Processing sample ", i, " of ", length(sample_list), " (", sample_list[[i]], "):\n"))
+#     rows_current_sample <- data[ , sample_col] == sample_list[[i]]
+#     .findAssociatedClonesOneSample2(
+#       data[rows_current_sample, ], seq_col, assoc_seqs, nbd_radius,
+#       dist_type, min_seq_length, drop_matches, subset_cols, tmpdirs, verbose)
+#   }
+#
+#   cat(paste0(">>> Done processing samples. Compiling results:\n"))
+#
+#   for (i in 1:length(assoc_seqs)) {
+#     cat(paste0("Gathering data from all samples for sequence ", i, " (", assoc_seqs[[i]], ")..."))
+#     .compileNeighborhood(tmpdirs[[i]], sample_list, output_dir, output_type, verbose)
+#     cat(" Done.\n")
+#   }
+#
+#   unlink(tmpdir)
+#   cat(paste0(">>> All tasks complete. Output is contained in the following directory:\n  ", output_dir, "\n"))
+# }
+
+
 
 buildAssociatedClusterNetwork <- function(
     file_list,
@@ -232,6 +278,26 @@ buildAssociatedClusterNetwork <- function(
   if (verbose) { cat("\n") }
   cat(" Done.\n")
 }
+
+# .findAssociatedClonesOneSample2 <- function(
+#     data, seq_col, assoc_seqs, nbd_radius, dist_type,
+#     min_seq_length, drop_matches, subset_cols, output_dirs, verbose)
+# {
+#   seq_col <- .convertColRef(seq_col, data)
+#   subset_cols <- .convertColRef(subset_cols, data)
+#   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
+#                           subset_cols)
+#
+#   cat("Finding clones in a neighborhood of each associated sequence...")
+#   for (i in 1:length(assoc_seqs)) {
+#     # cat(paste0("Finding clones in a neighborhood of sequence ", i, " (", assoc_seqs[[i]], ")..."))
+#     .getNbdOneSample(
+#       assoc_seqs[[i]], data, seq_col, dist_type, nbd_radius,
+#       file.path(output_dirs[[i]], paste0(sample_id, ".rds")), verbose, i)
+#   }
+#   if (verbose) { cat("\n") }
+#   cat(" Done.\n")
+# }
 
 
 .getNbdOneSample <- function(
