@@ -1,3 +1,10 @@
+# 0.0.9027 (1/8/2023)
+
+* `getClusterStats()` now computes sequence-based statistics (e.g., sequence with max count) for dual-chain networks, including a separate set of such statistics for each chain. 
+* The name of some variables in the output of `getClusterStats()` have been changed to reflect broader applicability to single-cell data:
+    * `max_clone_count` changed to `max_count`
+    * `agg_clone_count` changed to `agg_count`
+
 # 0.0.9026 (12/27/2022)
 
 * Added an argument `verbose` to `findAssociatedClones()` that can be optionally set to `TRUE` in order to print additional console output reporting the number of clones in each neighborhood, both by sample and in total.

@@ -98,7 +98,7 @@ buildPublicClusterNetworkByRepresentative <- function(
   file_list =
     list.files(file.path(getwd(), "public_clusters", "cluster_meta_data")),
   input_type = "rds", data_symbols = "cdat", header = TRUE, sep = "",
-  seq_col = "seq_w_max_count", count_col = "agg_clone_count",
+  seq_col = "seq_w_max_count", count_col = "agg_count",
 
   ## Network ##
   dist_type = "hamming", dist_cutoff = 1,
@@ -230,7 +230,7 @@ buildPublicClusterNetworkByRepresentative <- function(
   filtered_ids <- union(ids_top_n_clusters, ids_by_node_count)
 
   if (!is.null(min_clone_count)) {
-    ids_by_clone_count <- which(cdat$agg_clone_count >= min_clone_count)
+    ids_by_clone_count <- which(cdat$agg_count >= min_clone_count)
     filtered_ids <- union(filtered_ids, ids_by_clone_count)
   }
   return(cdat[filtered_ids, ])
@@ -360,7 +360,7 @@ buildPublicClusterNetworkByRepresentative <- function(
 
     # Aggregate Sample-level Clone Count
     cdat$TotalCloneCount[[cluster_id]] <-
-      sum(ndat[node_ids, "agg_clone_count"])
+      sum(ndat[node_ids, "agg_count"])
 
     # Mean value of mean sequence length
     cdat$MeanOfMeanSeqLength[[cluster_id]] <-
@@ -381,21 +381,21 @@ buildPublicClusterNetworkByRepresentative <- function(
         ndat[[node_id_max_deg, "RepresentativeSeq"]])
 
     # max value of max clone count (and corresponding sample & seq)
-    max_count <- max(ndat[node_ids, "max_clone_count"])
+    max_count <- max(ndat[node_ids, "max_count"])
     cdat$MaxCloneCount[[cluster_id]] <- max_count
     node_id_max_count <-
-      which(node_ids & ndat[["max_clone_count"]] == max_count)[[1]]
+      which(node_ids & ndat[["max_count"]] == max_count)[[1]]
     cdat$SampleWithMaxCloneCount[[cluster_id]] <-
       ndat[[node_id_max_count, "SampleID"]]
     cdat$SeqWithMaxCloneCount[[cluster_id]] <-
       ndat[[node_id_max_count, "RepresentativeSeq"]]
 
     # max value of agg clone count (and corresponding sample & seq)
-    max_agg_count <- max(ndat[node_ids, "agg_clone_count"])
+    max_agg_count <- max(ndat[node_ids, "agg_count"])
     cdat$MaxAggCloneCount[[cluster_id]] <- max_agg_count
     node_id_max_agg_count <-
       which(node_ids &
-              ndat[["agg_clone_count"]] == max_agg_count)[[1]]
+              ndat[["agg_count"]] == max_agg_count)[[1]]
     cdat$SampleWithMaxAggCloneCount[[cluster_id]] <-
       ndat[node_id_max_agg_count, "SampleID"]
     cdat$SeqWithMaxAggCloneCount[[cluster_id]] <-
@@ -865,7 +865,7 @@ buildPublicClusterNetworkByRepresentative <- function(
 #   # } else { cores_amino_col <- "seq_w_max_count" }
 #   # cores_extra_cols <-
 #   #   c("SampleID", "SampleLevelClusterID", "node_count", "mean_seq_length",
-#   #     "mean_degree", "max_degree", "seq_w_max_degree", "max_clone_count",
+#   #     "mean_degree", "max_degree", "seq_w_max_degree", "max_count",
 #   #     "diameter_length", "assortativity", 'cluster_transitivity',
 #   #     "edge_density", "degree_centrality_index", "closeness_centrality_index",
 #   #     "eigen_centrality_index", "eigen_centrality_eigenvalue")
@@ -975,11 +975,11 @@ buildPublicClusterNetworkByRepresentative <- function(
 #         cores_network$node_data[node_id_max_deg, "RepresentativeSeq"])
 #
 #     # max value of max clone count (and corresponding sample & seq)
-#     max_count <- max(cores_network$node_data[node_ids, "max_clone_count"])
+#     max_count <- max(cores_network$node_data[node_ids, "max_count"])
 #     cores_network_cluster_info$MaxCloneCount[[cores_cluster_id]] <- max_count
 #     node_id_max_count <-
 #       which(node_ids &
-#               cores_network$node_data[ , "max_clone_count"] == max_count)[[1]]
+#               cores_network$node_data[ , "max_count"] == max_count)[[1]]
 #     cores_network_cluster_info$SampleWithMaxCloneCount[[cores_cluster_id]] <-
 #       cores_network$node_data[node_id_max_count, "SampleID"]
 #     cores_network_cluster_info$SeqWithMaxCloneCount[[cores_cluster_id]] <-

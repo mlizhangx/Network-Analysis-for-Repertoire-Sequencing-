@@ -17,19 +17,18 @@ getClusterStats(data,
                 seq_col = NULL,
                 count_col = NULL,
                 cluster_id_col = NULL,
-                degree_col = NULL,
-                seq_length_col = NULL)
+                degree_col = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
 %%     ~~Describe \code{data} here~~
-      A data frame containing the immune repertoire sequence data, with clones
+      A data frame containing the immune repertoire sequence data, with clones/cells
       indexed by row.
 }
   \item{adjacency_matrix}{
 %%     ~~Describe \code{adjacency_matrix} here~~
-    A square adjacency matrix corresponding to the repertoire network for the clones
+    A square adjacency matrix corresponding to the repertoire network for the rows
     in `data`, with row dimension matching that of `data`. Sparse matrices
     created using the `Matrix` package are supported.
 }
@@ -40,19 +39,15 @@ getClusterStats(data,
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~
-      Optional. The column name or number of `data` containing the clone counts. If supplied, then related cluster-level properties will be computed.
+      Optional. The column name or number of `data` containing the counts (i.e., clone count or UMI count). If supplied, then related cluster-level properties will be computed.
 }
   \item{cluster_id_col}{
 %%     ~~Describe \code{cluster_id_col} here~~
-      The column name or number of `data` containing the cluster membership for each clone. If `NULL`, clustering will be performed using `igraph::cluster_fast_greedy()` in order to determine cluster membership.
+      The column name or number of `data` containing the cluster membership for each node. If `NULL`, clustering will be performed using `igraph::cluster_fast_greedy()` in order to determine cluster membership.
 }
   \item{degree_col}{
 %%     ~~Describe \code{degree_col} here~~
-      The column name or number of `data` containing the network degree for each clone. If `NULL`, the network degree will be computed using `igraph::degree`.
-}
-  \item{seq_length_col}{
-%%     ~~Describe \code{seq_length_col} here~~
-      The column name or number of `data` containing the sequence length for each clone. If `NULL`, the values will be computed based on the sequences in `seq_col`.
+      The column name or number of `data` containing the network degree for each node. If `NULL`, the network degree will be computed using `igraph::degree`.
 }
 }
 \details{
@@ -77,10 +72,10 @@ getClusterStats(data,
   \item{mean_seq_length}{The mean sequence length in the cluster.}
   \item{mean_degree}{The mean network degree in the cluster.}
   \item{max_degree}{The maximum network degree in the cluster.}
-  \item{seq_w_max_degree}{The clone sequence possessing the maximum degree within the cluster.}
-  \item{agg_clone_count}{The aggregate clone count for all clones in the cluster.}
-  \item{max_clone_count}{The maximum clone count among all clones in the cluster.}
-  \item{seq_w_max_count}{The clone sequence possessing the maximum clone count within the cluster.}
+  \item{seq_w_max_degree}{The receptor sequence possessing the maximum degree within the cluster.}
+  \item{agg_count}{The aggregate count among all nodes in the cluster (based on the counts in \code{count_col}).}
+  \item{max_count}{The maximum count among all nodes in the cluster (based on the counts in \code{count_col}).}
+  \item{seq_w_max_count}{The receptor sequence possessing the maximum count within the cluster.}
   \item{diameter_length}{The longest geodesic distance in the cluster, computed using `length(igraph::get_diameter())`.}
   \item{assortativity}{The assortativity coefficient of the cluster's graph, based on the degree (minus one) of each node in the cluster (with the degree computed based only upon the nodes within the cluster). Computed using `igraph::assortativity_degree`.}
   \item{global_transitivity}{The transitivity (i.e., clustering coefficient) for the cluster's graph, which estimates the probability that adjacent vertices are connected. Computed using `igraph::transitivty()` with `type = "global"`.}

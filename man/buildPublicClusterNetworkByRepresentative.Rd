@@ -18,7 +18,7 @@ buildPublicClusterNetworkByRepresentative(
   file_list =
     list.files(file.path(getwd(), "public_clusters", "cluster_meta_data")),
   input_type = "rds", data_symbols = "cdat", header = TRUE, sep = "",
-  seq_col = "seq_w_max_count", count_col = "agg_clone_count",
+  seq_col = "seq_w_max_count", count_col = "agg_count",
 
   ## Network ##
   dist_type = "hamming", dist_cutoff = 1,
