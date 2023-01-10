@@ -1,3 +1,7 @@
+# 0.0.9028 (1/9/2023)
+
+* `buildRepSeqNetwork()` and `generateNetworkObjects()` now return `NULL` with a warning when the constructed network contains no edges.
+
 # 0.0.9027 (1/8/2023)
 
 * `getClusterStats()` now computes sequence-based statistics (e.g., sequence with max count) for dual-chain networks, including a separate set of such statistics for each chain. 

@@ -170,7 +170,7 @@ buildRepSeqNetwork(
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    A list containing some or all of the following items:
+    If the constructed network contains no edges, the function will return \code{NULL} with a warning. Otherwise, the function invisibly returns a list containing some or all of the following items:
 
     \item{igraph}{An \code{igraph} object containing the edge list for the network.}
     \item{adjacency_matrix}{The network graph adjacency matrix, stored as a sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package.}
@@ -187,8 +187,6 @@ buildRepSeqNetwork(
     of the original input data will be preserved. }
     \item{cluster_data}{A data frame containing the cluster-level properties, with one row per cluster. Only included if \code{cluster_stats = TRUE}.}
     \item{plots}{A list containing the graph plot(s) as \code{ggraph} objects. Only included if \code{plots = TRUE}.}
-
-    The output of \code{buildRepSeqNetwork} is returned invisibly (it will not be printed to console when the output is not assigned).
 }
 \references{
 %% ~put references to the literature/web site here ~

@@ -246,7 +246,7 @@ buildAssociatedClusterNetwork <- function(
     node_stats = node_stats, stats_to_include = stats_to_include,
     cluster_stats = cluster_stats, color_nodes_by = color_nodes_by,
     output_name = output_name, ...)
-
+  if (is.null(net)) { return(NULL) }
   return(invisible(net))
 }
 

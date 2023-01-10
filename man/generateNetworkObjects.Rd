@@ -56,7 +56,7 @@ generateNetworkObjects(data, seq_col,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    A list containing the following items:
+    If the constructed network contains no edges, the function will return \code{NULL} with a warning. Otherwise, a list containing the following items:
 
     \item{igraph}{An \code{igraph} object containing the edge list for the network.}
     \item{adjacency_matrix}{The network graph adjacency matrix, stored as a sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package.}

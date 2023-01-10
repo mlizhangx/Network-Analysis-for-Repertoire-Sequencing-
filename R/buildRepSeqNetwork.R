@@ -35,12 +35,19 @@ buildRepSeqNetwork <- function(
   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
                           subset_cols)
   if (nrow(data) < 2) {
-    warning("insufficient remaining receptor sequences; at least two needed")
-    return(invisible(NULL))
+    warning("Insufficient remaining receptor sequences; at least two needed")
+    return(NULL)
   }
   ### BUILD NETWORK ###
   out <- generateNetworkObjects(
     data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes)
+
+  if (is.null(out)) {
+    warning("Graph contains no edge connections; returning NULL")
+    cat("Graph contains no edge connections; returning NULL\n")
+    # if (file.exists("col_ids.txt")) { file.remove("col_ids.txt") } # cleanup
+    return(NULL)
+  }
 
   ### NODE/CLUSTER STATS ###
   if (node_stats) { out$node_data <- addNodeNetworkStats(
@@ -62,6 +69,7 @@ buildRepSeqNetwork <- function(
 
   ### SAVE & RETURN RESULTS ###
   saveNetwork(out, output_dir, output_type, output_name, pdf_width, pdf_height)
+  # if (file.exists("col_ids.txt")) { file.remove("col_ids.txt") } # cleanup
   return(invisible(out))
 }
 

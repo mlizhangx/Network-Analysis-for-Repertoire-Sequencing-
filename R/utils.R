@@ -487,30 +487,105 @@ aggregateIdenticalClones <- function(
   return(out)
 }
 
+# Adjacency Matrices ------------------------------------------------------
+
+
+# FUNCTION: COMPUTE ADJACENCY MATRIX FOR LEVENSHTEIN OR HAMMING DISTANCE
+# Returns sparse matrix
+sparseAdjacencyMatFromSeqs <- function(
+    seqs, # List of tcr/clonotype sequences
+    dist_type = "hamming", # supports "levenshtein" and "hamming"
+    max_dist = 1, # Maximum distance threshold for edge/adjacency between two sequences
+    drop_isolated_nodes = TRUE # Drop sequences/nodes with zero degree?
+) {
+  # attempt to coerce seqs to character vector
+  if (length(seqs) == 0) stop("'seqs' has zero length")
+  seqs <- as.vector(seqs, mode = "character")
+  if (!is.character(seqs)) stop("'seqs' must be cocercible to a character vector")
+  if (!is.vector(seqs)) stop("'seqs' must be cocercible to a character vector")
+
+  # Compute adjacency matrix
+  if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
+    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
+    out <- .levAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
+  } else if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
+    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
+    out <- .hamAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
+  } else {
+    stop('invalid option for `dist_type`')
+  }
+  cat(" Done.\n")
+  # Number of nodes with positive network degree
+  num_nodes <- dim(out)[[1]]
+  if (num_nodes == 0) {
+    warning("No edges exist using the specified distance cutoff")
+  } else {
+    if (drop_isolated_nodes) {
+      cat(paste("Network contains", num_nodes, "nodes (after removing isolated nodes).\n"))
+      # Import record of selected column IDs and use for matrix row names
+      clone_ids <- utils::read.table("col_ids.txt")
+      dimnames(out)[[1]] <- clone_ids$V1
+      dimnames(out)[[2]] <- seqs[clone_ids$V1]
+      # cat(paste0("The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
+    } else {
+      cat(paste("Network contains", num_nodes, "nodes.\n"))
+    }
+  }
+
+  if (file.exists("col_ids.txt")) { unlink("col_ids.txt") } # cleanup
+
+  return(out)
+}
+
+
+# Adjacency Matrix: Euclidean Distance on Atchley Factor Embedding
+# (Only applicable to TCR CDR3 Amino Acid Sequences)
+# This function is intended for building the network for a single cluster, where
+# the adjacency matrix is typically dense
+adjacencyMatAtchleyFromSeqs <- function(
+    seqs, # List of TCR CDR3 amino acid sequences corresponding to the seqs
+    contig_ids = seq_along(seqs), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
+    max_dist, # Maximum Euclidean distance threshold for edge/adjacency between two sequences
+    return_type = "adjacency_matrix", # can be set to "distance_matrix" to return the distance matrix instead
+    outfile_distance_matrix = NULL # savefile for Euclidean distance matrix
+) {
+  # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
+  embedded_values <- encodeTCRSeqsByAtchleyFactor(seqs, contig_ids)
+
+  # Compute Euclidean distance matrix on embedded sequence values
+  cat("Computing Euclidean distances between the embedded values...")
+  distance_matrix <- as.matrix(stats::dist(embedded_values[ , -1]))
+  cat(" Done.\n")
+
+  if (!is.null(outfile_distance_matrix)) {
+    # Save distance matrix to file
+    utils::write.csv(distance_matrix, outfile_distance_matrix)
+    cat(paste0("Distance matrix saved to file:\n  ", outfile_distance_matrix,
+               "\n")) }
+
+  if (return_type == "distance_matrix") {
+    return(distance_matrix)
+  } else {
+    # Convert distance matrix to adjacency matrix using specified bound
+    cat(paste0("Generating adjacency matrix based on a maximum distance of ",
+               max_dist, "..."))
+    adjacency_matrix <-
+      matrix(1, nrow = nrow(distance_matrix), ncol = ncol(distance_matrix))
+    adjacency_matrix[distance_matrix > max_dist] <- 0
+    cat(" Done.\n")
+    return(adjacency_matrix)
+  }
+}
+
+
 
 
 
 # Network Building --------------------------------------------------------
 
-# generate single or dual chain network
-generateNetworkObjects <- function(
-    data, seq_col, dist_type = "hamming", dist_cutoff = 1,
-    drop_isolated_nodes = TRUE
-) {
-  if (length(seq_col) == 1) {
-    return(.generateSingleChainNetwork(
-      data, seq_col,
-      dist_type, dist_cutoff, drop_isolated_nodes))
-  } else if (length(seq_col) == 2) {
-    return(.generateDualChainNetwork(
-      data, seq_col[[1]], seq_col[[2]],
-      dist_type, dist_cutoff, drop_isolated_nodes))
-  }
-}
 
-
-# Simple wrapper to igraph functions:
-# Use adjacency matrix to generate network graph
+# input adjacency matrix
+# returns igraph network
 generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
   set.seed(9999)
   net <- igraph::graph_from_adjacency_matrix(adjacency_matrix, weighted = TRUE)
@@ -519,62 +594,9 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
   return(net)
 }
 
-.generateSingleChainNetwork <- function(
-    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
-) {
-  adjacency_matrix <- .generateNetworkFromSeqs(
-    data[[seq_col]], dist_type, dist_cutoff, contig_ids = rownames(data),
-    return_type = "adjacency_matrix", drop_isolated_nodes = drop_isolated_nodes)
-  net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
-  if (drop_isolated_nodes & dist_type != "euclidean_on_atchley") {
-    data <- .subsetDataForAdjacencyMatrix(data, adjacency_matrix)
-  }
 
-  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
-              "node_data" = as.data.frame(data)))
-}
-
-.generateDualChainNetwork <- function(
-    data, a_col, b_col, dist_type, dist_cutoff, drop_isolated_nodes
-) {
-  # adjacency matrix for alpha chain
-  cat("Computing graph adjacency based on sequences in first chain:\n")
-  adj_mat_a <- sparseAdjacencyMatFromSeqs(
-    data[[a_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
-  # adjacency matrix for beta chain
-  cat("Computing graph adjacency based on sequences in second chain:\n")
-  adj_mat_b <- sparseAdjacencyMatFromSeqs(
-    data[[b_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
-
-  # Combine adjacency matrices for both chains
-  # (only edges present for both chains will become edges in the combined graph)
-  cat("Intersecting the adjacencies from both chains...")
-  adjacency_matrix <- adj_mat_a + adj_mat_b
-  adjacency_matrix[adjacency_matrix == 1] <- 0
-  adjacency_matrix[adjacency_matrix == 2] <- 1
-  cat(" Done.\n")
-
-  # Generate network from combined adjacency matrix
-  cat("Building network based on the combined adjacencies... ")
-  net <- generateNetworkFromAdjacencyMat(adjacency_matrix); cat(" Done.\n")
-
-  # Drop isolated nodes from final network if specified
-  if (drop_isolated_nodes) { cat("Dropping isolated nodes...")
-    nodes_to_keep <- igraph::degree(net) > 0
-    adjacency_matrix <- adjacency_matrix[nodes_to_keep, nodes_to_keep]
-    data <- data[nodes_to_keep, , drop = FALSE]
-    # regenerate network without isolated nodes
-    net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
-    cat(" Done.\n")
-  }
-  cat(paste("Network contains", nrow(data), "nodes.\n"))
-  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
-              "adj_mat_a" = adj_mat_a, "adj_mat_b" = adj_mat_b,
-              "node_data" = as.data.frame(data)))
-}
-
-
-# FUNCTION: GENERATE NETWORK FOR A LIST OF RECEPTOR SEQS USING SPECIFIED DISTANCE TYPE AND THRESHOLD
+# Input vector of sequences
+# return igraph network
 .generateNetworkFromSeqs <- function(
     seqs, # character vector of receptor sequences
     dist_type = "hamming", # supports "levenshtein", "hamming", "euclidean_on_atchley"
@@ -595,6 +617,8 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
     if (!is.null(outfile_adjacency_matrix)) {
       Matrix::writeMM(adjacency_matrix, outfile_adjacency_matrix)
     }
+    # If no nodes are connected (empty matrix), return NULL
+    if (sum(dim(adjacency_matrix)) == 0) { return(NULL) }
   } else if (dist_type == "euclidean_on_atchley") {
     adjacency_matrix <-
       adjacencyMatAtchleyFromSeqs(
@@ -611,13 +635,105 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
   }
 }
 
+# Input data frame
+# return list of network objects (single chain)
+.generateSingleChainNetwork <- function(
+    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
+) {
+  adjacency_matrix <- .generateNetworkFromSeqs(
+    data[[seq_col]], dist_type, dist_cutoff, contig_ids = rownames(data),
+    return_type = "adjacency_matrix", drop_isolated_nodes = drop_isolated_nodes)
+  if (is.null(adjacency_matrix)) { return(NULL) }
+  net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
+  if (drop_isolated_nodes & dist_type != "euclidean_on_atchley") {
+    data <- .subsetDataForAdjacencyMatrix(data, adjacency_matrix)
+  }
+
+  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
+              "node_data" = as.data.frame(data)))
+}
+
+# input data frame
+# return list of network objects (dual chain)
+.generateDualChainNetwork <- function(
+    data, a_col, b_col, dist_type, dist_cutoff, drop_isolated_nodes
+) {
+  # adjacency matrix for alpha chain
+  cat("Computing graph adjacency based on sequences in first chain:\n")
+  adj_mat_a <- sparseAdjacencyMatFromSeqs(
+    data[[a_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
+  # If no nodes are connected (empty matrix), return NULL
+  if (sum(dim(adj_mat_a)) == 0) {
+    warning("No edges exist in the network for the first chain using the specified distance type and cutoff")
+    return(NULL)
+  }
+  # adjacency matrix for beta chain
+  cat("Computing graph adjacency based on sequences in second chain:\n")
+  adj_mat_b <- sparseAdjacencyMatFromSeqs(
+    data[[b_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE)
+  # If no nodes are connected (empty matrix), return NULL
+  if (sum(dim(adj_mat_b)) == 0) {
+    warning("No edges exist in the network for the second chain using the specified distance type and cutoff")
+    return(NULL)
+  }
+
+  # Combine adjacency matrices for both chains
+  # (only edges present for both chains will become edges in the combined graph)
+  cat("Intersecting the adjacencies from both chains...")
+  adjacency_matrix <- adj_mat_a + adj_mat_b
+  adjacency_matrix[adjacency_matrix == 1] <- 0
+  adjacency_matrix[adjacency_matrix == 2] <- 1
+  cat(" Done.\n")
+
+  # Generate network from combined adjacency matrix
+  cat("Building network based on the combined adjacencies... ")
+  net <- generateNetworkFromAdjacencyMat(adjacency_matrix); cat(" Done.\n")
+
+  # Drop isolated nodes from final network if specified
+  if (drop_isolated_nodes) { cat("Dropping isolated nodes...")
+    nodes_to_keep <- igraph::degree(net) > 0
+    # If no edges exist, return NULL with warning
+    if (sum(nodes_to_keep) == 0) {
+      warning("No edges exist in the combined network for both chains using the specified distance type and cutoff")
+      return(NULL)
+    }
+    adjacency_matrix <- adjacency_matrix[nodes_to_keep, nodes_to_keep]
+    data <- data[nodes_to_keep, , drop = FALSE]
+    # regenerate network without isolated nodes
+    net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
+    cat(" Done.\n")
+  }
+  cat(paste("Network contains", nrow(data), "nodes.\n"))
+  return(list("igraph" = net, "adjacency_matrix" = adjacency_matrix,
+              "adj_mat_a" = adj_mat_a, "adj_mat_b" = adj_mat_b,
+              "node_data" = as.data.frame(data)))
+}
+
+# Input data frame
+# generate single or dual chain network
+# returns list of network objects
+generateNetworkObjects <- function(
+    data, seq_col, dist_type = "hamming", dist_cutoff = 1,
+    drop_isolated_nodes = TRUE
+) {
+  if (length(seq_col) == 1) {
+    return(.generateSingleChainNetwork(
+      data, seq_col,
+      dist_type, dist_cutoff, drop_isolated_nodes))
+  } else if (length(seq_col) == 2) {
+    return(.generateDualChainNetwork(
+      data, seq_col[[1]], seq_col[[2]],
+      dist_type, dist_cutoff, drop_isolated_nodes))
+  }
+  # if (file.exists("col_ids.txt")) { file.remove("col_ids.txt") } # cleanup
+}
 
 
 # Network Properties ------------------------------------------------------
 
 
-# input network and corresponding metadata;
-# augment metadata with node-level network info and return
+# input igraph network and data frame;
+# return input data frame augmented with node-level properties
 addNodeNetworkStats <- function(
     data, # rep-seq data corresponding to the network
     net, # igraph network object
@@ -682,8 +798,8 @@ addNodeNetworkStats <- function(
   return(data)
 }
 
-# Create list of which node-level network statistics to compute; to be used as
-# value for argument `stats_to_include` of function `computeNodeNetworkStats()`
+# return list specifying node-level properties by T/F
+# pass to `stats_to_include` argument of `computeNodeNetworkStats()`
 node_stat_settings <- function(
     degree = TRUE,
     cluster_id = FALSE,
@@ -715,8 +831,8 @@ node_stat_settings <- function(
 }
 
 
-# FUNCTION: Compute the clusters for a network and augment the corresponding
-# data with a variable containing the cluster membership ID
+# Input igraph network and data frame
+# return input data frame augmented with cluster ID
 addClusterMembership <- function(data, net) {
   cat("Computing cluster membership within the network...")
   data$cluster_id <-
@@ -725,7 +841,8 @@ addClusterMembership <- function(data, net) {
   return(data)
 }
 
-# FUNCTION: Compute cluster-level network stats
+# Input adjacency matrix and data frame
+# return new data frame containing cluster-level properties
 getClusterStats <- function(
     data, # rep-seq data for network, with node-level network stats
     adjacency_matrix, # adjacency matrix for network
@@ -762,6 +879,9 @@ getClusterStats <- function(
 
 }
 
+# Input adjacency matrix and data frame
+# return new data frame containing cluster-level properties
+# (single chain only)
 .computeClusterStats <- function(data, adjacency_matrix, seq_col, count_col,
                                  cluster_id_col, degree_col) {
 
@@ -878,6 +998,9 @@ getClusterStats <- function(
 }
 
 
+# Input adjacency matrix and data frame
+# return new data frame containing cluster-level properties
+# (dual chain only)
 .computeClusterStatsDualChain <- function(
     data, adjacency_matrix, seq_col, count_col,
     cluster_id_col, degree_col)
@@ -1153,7 +1276,7 @@ plotNetworkGraph <- function(igraph,
       } else if (color_scheme %in% c("E-1", "H-1", "cividis-1",  "turbo-1")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], direction = -1)
-      } else { warning("value for 'color_scheme' is not a valid option for continuous variables; using default color scheme instead") }
+      } else { warning("Value for 'color_scheme' is not a valid option for continuous variables; using default color scheme instead") }
 
     } else { # discrete color scheme
       if (color_scheme %in% c("A", "B", "C", "F", "G",
@@ -1186,7 +1309,7 @@ plotNetworkGraph <- function(igraph,
           ggplot2::scale_color_manual(
             values = grDevices::hcl.colors(n = length(unique(color_nodes_by)),
                                            palette = color_scheme))
-      } else { warning("value for 'color_scheme' is not a valid option for discrete variables; using default color scheme instead") } }
+      } else { warning("Value for 'color_scheme' is not a valid option for discrete variables; using default color scheme instead") } }
   }
 
 
@@ -1264,7 +1387,7 @@ generateNetworkGraphPlots <- function(
     node_size_limits = NULL, size_title = "auto")
 {
   if (nrow(data) > 1e06) {
-    warning("network contains over 1 million nodes; depending on the number of network edges, this may exceed ggraph limitations. Skipping automatic generation of network graph; you can attempt to generate the graph manually using `plotNetworkGraph()`")
+    warning("Network contains over 1 million nodes; depending on the number of network edges, this may exceed ggraph limitations. Skipping automatic generation of network graph; you can attempt to generate the graph manually using `plotNetworkGraph()`")
     return(invisible(NULL))
   } else {
     return(generateNetworkGraphPlots(
@@ -1351,99 +1474,6 @@ generateNetworkGraphPlots <- function(
 }
 
 
-# Adjacency Matrices ------------------------------------------------------
-
-
-# FUNCTION: COMPUTE ADJACENCY MATRIX FOR LEVENSHTEIN OR HAMMING DISTANCE
-# Intended for use with a large network where the adjacency matrix is sparse
-# Returns sparse matrix, includes only nodes with positive network degree
-sparseAdjacencyMatFromSeqs <- function(
-    seqs, # List of tcr/clonotype sequences
-    dist_type = "hamming", # supports "levenshtein" and "hamming"
-    max_dist = 1, # Maximum distance threshold for edge/adjacency between two sequences
-    drop_isolated_nodes = TRUE # Drop sequences/nodes with zero degree?
-) {
-  # attempt to coerce seqs to character vector
-  if (length(seqs) == 0) stop("'seqs' has zero length")
-  seqs <- as.vector(seqs, mode = "character")
-  if (!is.character(seqs)) stop("'seqs' must be cocercible to a character vector")
-  if (!is.vector(seqs)) stop("'seqs' must be cocercible to a character vector")
-
-  # Compute adjacency matrix
-  if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
-    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- .levAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
-  } else if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
-    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- .hamAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
-  } else {
-    stop('invalid option for `dist_type`')
-  }
-  cat(" Done.\n")
-  # Number of nodes with positive network degree
-  num_nodes <- dim(out)[[1]]
-  if (num_nodes == 0) {
-    warning(paste0(
-      "No edges exist using the specified distance cutoff; try a greater value of `max_dist`"))
-  } else {
-    if (drop_isolated_nodes) {
-      cat(paste("Network contains", num_nodes, "nodes (after removing isolated nodes).\n"))
-      # Import record of selected column IDs and use for matrix row names
-      clone_ids <- utils::read.table("col_ids.txt")
-      dimnames(out)[[1]] <- clone_ids$V1
-      dimnames(out)[[2]] <- seqs[clone_ids$V1]
-      # cat(paste0("The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
-
-      # Remove temporary file of column ids
-      file.remove("col_ids.txt")
-    } else {
-      cat(paste("Network contains", num_nodes, "nodes.\n"))
-    }
-  }
-  return(out)
-}
-
-
-# Adjacency Matrix: Euclidean Distance on Atchley Factor Embedding
-# (Only applicable to TCR CDR3 Amino Acid Sequences)
-# This function is intended for building the network for a single cluster, where
-# the adjacency matrix is typically dense
-adjacencyMatAtchleyFromSeqs <- function(
-    seqs, # List of TCR CDR3 amino acid sequences corresponding to the seqs
-    contig_ids = seq_along(seqs), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
-    max_dist, # Maximum Euclidean distance threshold for edge/adjacency between two sequences
-    return_type = "adjacency_matrix", # can be set to "distance_matrix" to return the distance matrix instead
-    outfile_distance_matrix = NULL # savefile for Euclidean distance matrix
-) {
-  # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
-  embedded_values <- encodeTCRSeqsByAtchleyFactor(seqs, contig_ids)
-
-  # Compute Euclidean distance matrix on embedded sequence values
-  cat("Computing Euclidean distances between the embedded values...")
-  distance_matrix <- as.matrix(stats::dist(embedded_values[ , -1]))
-  cat(" Done.\n")
-
-  if (!is.null(outfile_distance_matrix)) {
-    # Save distance matrix to file
-    utils::write.csv(distance_matrix, outfile_distance_matrix)
-    cat(paste0("Distance matrix saved to file:\n  ", outfile_distance_matrix,
-               "\n")) }
-
-  if (return_type == "distance_matrix") {
-    return(distance_matrix)
-  } else {
-    # Convert distance matrix to adjacency matrix using specified bound
-    cat(paste0("Generating adjacency matrix based on a maximum distance of ",
-               max_dist, "..."))
-    adjacency_matrix <-
-      matrix(1, nrow = nrow(distance_matrix), ncol = ncol(distance_matrix))
-    adjacency_matrix[distance_matrix > max_dist] <- 0
-    cat(" Done.\n")
-    return(adjacency_matrix)
-  }
-}
-
-
 
 # Atchley Factor Embedding ------------------------------------------------
 
@@ -1486,6 +1516,6 @@ encodeTCRSeqsByAtchleyFactor <- function(
   file.remove("Atchley_factor_tcr_only_tmp.csv", "temp_sysfiles.csv",
               "temp_atchley_factors_encoded.csv")
   cat("Embedding complete.\n")
-  warning("the encoder was trained on TCR CDR3 sequences; results not valid for other amino acid sequences")
+  warning("The encoder was trained on TCR CDR3 sequences; results not valid for other amino acid sequences")
   return(embedded_values)
 }

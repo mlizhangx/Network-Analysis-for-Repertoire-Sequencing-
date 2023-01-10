@@ -86,6 +86,7 @@ buildPublicClusterNetwork <- function(
     cluster_stats = cluster_stats, color_nodes_by = color_nodes_by,
     color_scheme = color_scheme, color_title = color_title,
     output_dir = output_dir, output_name = output_name, ...)
+  if (is.null(net)) { return(NULL) }
 
   names(net$node_data) <- .renamePublicNodeStats(names(net$node_data))
   return(invisible(net))
@@ -130,6 +131,7 @@ buildPublicClusterNetworkByRepresentative <- function(
     drop_isolated_nodes = FALSE,
     node_stats = TRUE, stats_to_include = "all", cluster_stats = FALSE,
     plots = FALSE, output_dir = NULL)
+  if (is.null(net)) { return(NULL) }
 
   ndat <- net$node_data
   ndat$RepresentativeSeq <- ndat[[seq_col]]
