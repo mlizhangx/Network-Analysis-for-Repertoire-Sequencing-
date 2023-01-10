@@ -43,8 +43,8 @@ buildRepSeqNetwork <- function(
     data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes)
 
   if (is.null(out)) {
-    warning("Graph contains no edge connections; returning NULL")
-    cat("Graph contains no edge connections; returning NULL\n")
+    warning("Graph contains no edge connections; returning NULL. You may wish to consider another distance type or a greater distance cutoff")
+    cat("Graph contains no edge connections; returning NULL.\n(You may wish to consider another distance type or a greater distance cutoff.)\n")
     # if (file.exists("col_ids.txt")) { file.remove("col_ids.txt") } # cleanup
     return(NULL)
   }
