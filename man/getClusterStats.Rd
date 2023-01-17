@@ -17,7 +17,8 @@ getClusterStats(data,
                 seq_col = NULL,
                 count_col = NULL,
                 cluster_id_col = NULL,
-                degree_col = NULL)
+                degree_col = NULL,
+                cluster_fun = cluster_fast_greedy)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -48,6 +49,10 @@ getClusterStats(data,
   \item{degree_col}{
 %%     ~~Describe \code{degree_col} here~~
       The column name or number of `data` containing the network degree for each node. If `NULL`, the network degree will be computed using `igraph::degree`.
+}
+  \item{cluster_fun}{
+%%     ~~Describe \code{net} here~~
+      Passed to \code{addClusterMembership}. Controls the algorithm used for cluster identification.
 }
 }
 \details{

@@ -15,24 +15,31 @@
 buildPublicClusterNetworkByRepresentative(
 
   ## Input ##
-  file_list =
-    list.files(file.path(getwd(), "public_clusters", "cluster_meta_data")),
-  input_type = "rds", data_symbols = "cdat", header = TRUE, sep = "",
-  seq_col = "seq_w_max_count", count_col = "agg_count",
+  file_list,
+  input_type = "rds", data_symbols = "cdat",
+  header = TRUE, sep = "",
+  seq_col = "seq_w_max_count",
+  count_col = "agg_count",
 
   ## Network ##
-  dist_type = "hamming", dist_cutoff = 1,
+  dist_type = "hamming",
+  dist_cutoff = 1,
+  cluster_fun = cluster_fast_greedy,
 
   ## Visualization ##
-  plots = TRUE, print_plots = TRUE,
-  plot_title = "auto", plot_subtitle = "auto",
+  plots = TRUE,
+  print_plots = TRUE,
+  plot_title = "auto",
+  plot_subtitle = "auto",
   color_nodes_by = c("ClusterIDPublic", "SampleID"),
-  color_scheme = "turbo", color_title = c("public cluster", "sample"),
+  color_scheme = "turbo",
+  color_title = c("public cluster", "sample"),
   ...,
 
   ## Output ##
   output_dir = file.path(getwd(), "public_clusters"),
-  output_type = "rda", output_name = "PubClustByRepresentative",
+  output_type = "rda",
+  output_name = "PubClustByRepresentative",
   pdf_width = 12, pdf_height = 10
 
 )
@@ -76,6 +83,10 @@ buildPublicClusterNetworkByRepresentative(
   \item{dist_cutoff}{
 %%     ~~Describe \code{dist_cutoff} here~~
     Passed to \code{buildRepSeqNetwork}.
+}
+  \item{cluster_fun}{
+%%     ~~Describe \code{net} here~~
+    Passed to \code{addClusterMembership}. Controls the algorithm used for cluster identification.
 }
   \item{plots}{
 %%     ~~Describe \code{plots} here~~

@@ -737,7 +737,8 @@ generateNetworkObjects <- function(
 addNodeNetworkStats <- function(
     data, # rep-seq data corresponding to the network
     net, # igraph network object
-    stats_to_include = node_stat_settings()
+    stats_to_include = node_stat_settings(),
+    cluster_fun = cluster_fast_greedy
 ) {
 
   if (typeof(stats_to_include) != "list")  {
@@ -755,9 +756,9 @@ addNodeNetworkStats <- function(
 
   if (stats_to_include$cluster_id | stats_to_include$all_stats) {
     cat("Computing cluster membership within the network...")
-    data$cluster_id <-
-      as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
-    cat(" Done.\n") }
+    data$cluster_id <- as.factor(as.integer(cluster_fun(net)$membership))
+    cat(" Done.\n")
+  }
 
   cat(paste0("Computing node-level network statistics..."))
   if (stats_to_include$transitivity | stats_to_include$all_stats) {
@@ -833,10 +834,10 @@ node_stat_settings <- function(
 
 # Input igraph network and data frame
 # return input data frame augmented with cluster ID
-addClusterMembership <- function(data, net) {
+addClusterMembership <- function(
+    data, net, fun = cluster_fast_greedy) {
   cat("Computing cluster membership within the network...")
-  data$cluster_id <-
-    as.factor(as.integer(igraph::cluster_fast_greedy(net)$membership))
+  data$cluster_id <- as.factor(as.integer(fun(net)$membership))
   cat(" Done.\n")
   return(data)
 }
@@ -849,7 +850,8 @@ getClusterStats <- function(
     seq_col = NULL, # name or number of column of `data` containing the clone sequences
     count_col = NULL, # name or number of column of `data` containing the clone counts
     cluster_id_col = NULL, # optional name or number of column of `data` containing the cluster IDs
-    degree_col = NULL # optional name or number of column of `data` containing the network degree
+    degree_col = NULL, # optional name or number of column of `data` containing the network degree
+    cluster_fun = cluster_fast_greedy
 ) {
 
   # Compute Cluster ID and network degree if not provided
@@ -857,7 +859,7 @@ getClusterStats <- function(
     net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
     if (is.null(cluster_id_col)) {
       cluster_id_col <- "cluster_id"
-      data <- addClusterMembership(data, net)
+      data <- addClusterMembership(data, net, cluster_fun)
     }
     if (is.null(degree_col)) {
       degree_col <- "deg"
@@ -1120,12 +1122,13 @@ getClusterStats <- function(
 
 # wrapper to getClusterStats, for potentially avoiding redoing clustering computation
 # after computing node level stats
-.getClusterStats2 <- function(data, adjacency_matrix, seq_col, count_col) {
+.getClusterStats2 <- function(data, adjacency_matrix, seq_col, count_col,
+                              cluster_fun = cluster_fast_greedy) {
   cluster_id_col <- degree_col <- NULL
   if ("cluster_id" %in% names(data)) { cluster_id_col <- "cluster_id" }
   if ("degree" %in% names(data)) { degree_col <- "degree" }
   return(getClusterStats(data, adjacency_matrix, seq_col,
-                         count_col, cluster_id_col, degree_col))
+                         count_col, cluster_id_col, degree_col, cluster_fun))
 }
 
 

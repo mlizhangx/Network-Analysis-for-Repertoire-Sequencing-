@@ -137,7 +137,7 @@ findPublicClusters(
 }
   \item{\dots}{
 %%     ~~Describe \code{\dots} here~~
-    Other arguments to \code{buildRepSeqNetwork()}.
+    Other arguments to \code{buildRepSeqNetwork()}, not including \code{node_stats}, \code{stats_to_include} or \code{cluster_stats} (see details).
 }
 }
 \details{

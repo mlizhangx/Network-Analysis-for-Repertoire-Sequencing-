@@ -1,3 +1,15 @@
+# 0.0.9029 (1/16/2023)
+
+* The algorithm used to identify clusters in `addClusterMembership()` can now be controlled via a new argument `fun`.
+* The following functions have a new argument `cluster_fun` that is passed to the `fun` argument of `addClusterMembership()`:
+    * `addNodeNetworkStats()`
+    * `getClusterStats()`
+    * `buildRepSeqNetwork()`
+    * `buildAssociatedClusterNetwork()`
+    * `findPublicClusters()`
+    * `buildPublicClusterNetwork()`
+    * `buildPublicClusterNetworkByRepresentative()`
+
 # 0.0.9028 (1/9/2023)
 
 * `buildRepSeqNetwork()` and `generateNetworkObjects()` now return `NULL` with a warning when the constructed network contains no edges.

@@ -58,6 +58,7 @@ buildPublicClusterNetwork <- function(
   drop_isolated_nodes = FALSE,
   node_stats = TRUE, stats_to_include = "all", cluster_stats = TRUE,
 
+
   ## Visualization ##
   color_nodes_by = c("ClusterIDPublic", "SampleID"),
   color_scheme = "turbo", color_title = c("public cluster", "sample"),
@@ -96,13 +97,12 @@ buildPublicClusterNetwork <- function(
 buildPublicClusterNetworkByRepresentative <- function(
 
   ## Input ##
-  file_list =
-    list.files(file.path(getwd(), "public_clusters", "cluster_meta_data")),
+  file_list,
   input_type = "rds", data_symbols = "cdat", header = TRUE, sep = "",
   seq_col = "seq_w_max_count", count_col = "agg_count",
 
   ## Network ##
-  dist_type = "hamming", dist_cutoff = 1,
+  dist_type = "hamming", dist_cutoff = 1, cluster_fun = cluster_fast_greedy,
 
   ## Visualization ##
   plots = TRUE, print_plots = TRUE,
@@ -129,8 +129,8 @@ buildPublicClusterNetworkByRepresentative <- function(
     min_seq_length = NULL, drop_matches = NULL,
     dist_type = dist_type, dist_cutoff = dist_cutoff,
     drop_isolated_nodes = FALSE,
-    node_stats = TRUE, stats_to_include = "all", cluster_stats = FALSE,
-    plots = FALSE, output_dir = NULL)
+    node_stats = TRUE, stats_to_include = "all", cluster_fun = cluster_fun,
+    cluster_stats = FALSE, plots = FALSE, output_dir = NULL)
   if (is.null(net)) { return(NULL) }
 
   ndat <- net$node_data

@@ -28,7 +28,20 @@ export(saveNetwork)
 export(saveNetworkPlots)
 export(simulateToyData)
 
-
 useDynLib(NAIR, .registration=TRUE)
+
 importFrom(Rcpp, evalCpp)
+
+importFrom(igraph, cluster_fast_greedy)
+importFrom(igraph, cluster_edge_betweenness)
+importFrom(igraph, cluster_fluid_communities)
+importFrom(igraph, cluster_infomap)
+importFrom(igraph, cluster_label_prop)
+importFrom(igraph, cluster_leading_eigen)
+importFrom(igraph, cluster_leiden)
+importFrom(igraph, cluster_louvain)
+importFrom(igraph, cluster_optimal)
+importFrom(igraph, cluster_spinglass)
+importFrom(igraph, cluster_walktrap)
+
 exportPattern("^[[:alpha:]]+")

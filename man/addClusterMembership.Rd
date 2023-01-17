@@ -7,31 +7,36 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given immune repertoire sequence data with clones indexed by row and the
-    `igraph` object containing the corresponding network by sequence similarity,
-    performs clustering and adds a variable for cluster membership to the
-    repertoire sequence data.
+    Given immune repertoire sequencing data and the
+    \code{igraph} object for the network by sequence similarity,
+    identifies dense clusters within the network and augments the data
+    with a cluster membership variable.
 }
 \usage{
-addClusterMembership(data, net)
+addClusterMembership(data, net, fun = cluster_fast_greedy)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
 %%     ~~Describe \code{data} here~~
-      A data frame containing the immune repertoire sequence data, with clones
+      A data frame containing the immune repertoire sequence data, with clones/cells
       indexed by row.
 }
   \item{net}{
 %%     ~~Describe \code{net} here~~
-      An `igraph` igraph object containing the network corresponding to the
-      clones in `data`. The number of nodes in the network must match the number
-      of rows in `data`.
+      An `igraph` object containing the network on the rows of the data.
+}
+  \item{fun}{
+%%     ~~Describe \code{net} here~~
+      A function from the `igraph` package that takes a graph as its primary argument, implements a community-detection algorithm and returns a community object. See details below.
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-    Clustering is performed using `igraph::cluster_fast_greedy()`.
+    The clusters are identified by searching for densely-connected subgraphs (with relatively many edge connections among their nodes), also called communities, within the network.
+
+    The \code{fun} argument controls the algorithm used to detect the community structure in the network. Following is a list of all functions in the \code{igraph} package (as of version 1.3.5) that can be used: \code{cluster_fast_greedy}, \code{cluster_edge_betweenness}, \code{cluster_fluid_communities}, \code{cluster_infomap}, \code{cluster_label_prop}, \code{cluster_leading_eigen}, \code{cluster_leiden}, \code{cluster_louvain}, \code{cluster_optimal}, \code{cluster_spinglass},  \code{cluster_walktrap}.
+
 }
 \value{
 %%  ~Describe the value returned
@@ -39,7 +44,7 @@ addClusterMembership(data, net)
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    A copy of `data` with an additional column named `cluster_id` that contains the cluster membership for each clone.
+    A copy of `data` with an additional column named `cluster_id` that contains the cluster membership for each row.
 }
 \references{
 %% ~put references to the literature/web site here ~

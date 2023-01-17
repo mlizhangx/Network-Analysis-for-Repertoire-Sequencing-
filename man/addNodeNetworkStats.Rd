@@ -13,7 +13,9 @@
 
 }
 \usage{
-addNodeNetworkStats(data, net, stats_to_include = node_stat_settings())
+addNodeNetworkStats(data, net,
+                    stats_to_include = node_stat_settings(),
+                    cluster_fun = cluster_fast_greedy)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -33,6 +35,10 @@ addNodeNetworkStats(data, net, stats_to_include = node_stat_settings())
       statistics to compute. Alternatively, \code{stats_to_include = "all"} will
       compute all node-level network stats, and \code{stats_to_include = "cluster_id_only"}
       will compute cluster membership only.
+}
+  \item{cluster_fun}{
+%%     ~~Describe \code{net} here~~
+      Passed to \code{addClusterMembership}. Controls the algorithm used for cluster identification.
 }
 }
 \value{

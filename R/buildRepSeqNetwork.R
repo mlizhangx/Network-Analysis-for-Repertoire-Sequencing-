@@ -11,6 +11,7 @@ buildRepSeqNetwork <- function(
   drop_isolated_nodes = TRUE,
   node_stats = FALSE, stats_to_include = node_stat_settings(),
   cluster_stats = FALSE,
+  cluster_fun = cluster_fast_greedy,
 
   ## Visualization ##
   plots = TRUE, print_plots = TRUE,
@@ -39,8 +40,8 @@ buildRepSeqNetwork <- function(
     return(NULL)
   }
   ### BUILD NETWORK ###
-  out <- generateNetworkObjects(
-    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes)
+  out <- generateNetworkObjects(data, seq_col, dist_type, dist_cutoff,
+                                drop_isolated_nodes)
 
   if (is.null(out)) {
     warning("Graph contains no edge connections; returning NULL. You may wish to consider another distance type or a greater distance cutoff")
@@ -50,10 +51,14 @@ buildRepSeqNetwork <- function(
   }
 
   ### NODE/CLUSTER STATS ###
-  if (node_stats) { out$node_data <- addNodeNetworkStats(
-      out$node_data, out$igraph, stats_to_include) }
-  if (cluster_stats) { out$cluster_data <-
-    .getClusterStats2(out$node_data, out$adjacency_matrix, seq_col, count_col) }
+  if (node_stats) {
+    out$node_data <- addNodeNetworkStats(out$node_data, out$igraph,
+                                         stats_to_include, cluster_fun)
+  }
+  if (cluster_stats) {
+    out$cluster_data <- .getClusterStats2(out$node_data, out$adjacency_matrix,
+                                          seq_col, count_col, cluster_fun)
+  }
 
   ### GRAPH PLOTS ###
   if (plots) {

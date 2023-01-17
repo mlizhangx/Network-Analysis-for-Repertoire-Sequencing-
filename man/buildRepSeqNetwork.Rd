@@ -22,16 +22,22 @@ buildRepSeqNetwork(
   ## Network ##
   dist_type = "hamming", dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
-  node_stats = FALSE, stats_to_include = node_stat_settings(),
+  node_stats = FALSE,
+  stats_to_include = node_stat_settings(),
   cluster_stats = FALSE,
+  cluster_fun = cluster_fast_greedy,
 
   ## Visualization ##
-  plots = TRUE, print_plots = TRUE,
-  plot_title = "auto", plot_subtitle = "auto",
-  color_nodes_by = "auto", ...,
+  plots = TRUE,
+  print_plots = TRUE,
+  plot_title = "auto",
+  plot_subtitle = "auto",
+  color_nodes_by = "auto",
+  ...,
 
   ## Output ##
-  output_dir = getwd(), output_type = "individual",
+  output_dir = getwd(),
+  output_type = "individual",
   output_name = "MyRepSeqNetwork",
   pdf_width = 12, pdf_height = 10
 
@@ -92,6 +98,10 @@ buildRepSeqNetwork(
   \item{cluster_stats}{
 %%     ~~Describe \code{cluster_stats} here~~
     A logical scalar; should cluster-level network properties be computed?
+}
+  \item{cluster_fun}{
+%%     ~~Describe \code{net} here~~
+    Passed to \code{addClusterMembership}. Controls the algorithm used for cluster identification.
 }
   \item{plots}{
     A logical scalar; should plot(s) of the network graph be generated?
