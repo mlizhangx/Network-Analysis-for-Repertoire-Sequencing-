@@ -1381,6 +1381,38 @@ generateNetworkGraphPlots <- function(
 }
 
 
+# Input graph plot and vector of node labels; return annotated plot
+addGraphLabels <- function(plot, node_labels, size = 5, color = "black") {
+  plot +
+    ggraph::geom_node_text(ggplot2::aes(label = node_labels),
+                           size = size, color = color)
+}
+
+
+# Input network list and graph plot;
+# return plot with top n clusters labeled
+addClusterLabels <- function(plot, net,
+                             top_n_clusters = 20, criterion = "node_count",
+                             size = 5, color = "black") {
+  dat <- net$node_data
+  cdat <- net$cluster_data
+
+  # Sort cluster stats by specified criterion
+  cdat <- cdat[order(-cdat[[criterion]]) , ]
+
+  # Identify the top n clusters by specified criterion
+  clusters <- as.integer(cdat$cluster_id[1:top_n_clusters])
+
+  # Create vector of node labels; only one node per top n cluster is labeled
+  node_labels <- as.integer(dat$cluster_id)
+  node_labels[duplicated(node_labels) | !node_labels %in% clusters] <- NA
+
+  # Annotate plot with cluster labels and return
+  return(addGraphLabels(plot, node_labels, size, color))
+
+}
+
+
 .generateNetworkGraphPlotsGuarded <- function(
     igraph, data, print_plots,
     plot_title = NULL, plot_subtitle = NULL,

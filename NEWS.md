@@ -1,3 +1,8 @@
+# 0.0.9030 (1/29/2023)
+
+* Added function `addGraphLabels` for adding text labels to the nodes of a graph plot
+* Added function `addClusterLabels` for adding labels to certain clusters in a graph plot
+
 # 0.0.9029 (1/16/2023)
 
 * The algorithm used to identify clusters in `addClusterMembership()` can now be controlled via a new argument `fun`.
