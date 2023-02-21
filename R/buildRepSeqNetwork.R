@@ -56,6 +56,10 @@ buildRepSeqNetwork <- function(
                                          stats_to_include, cluster_fun)
   }
   if (cluster_stats) {
+
+    # Compute Cluster ID and network degree if not done previously
+    out$node_data <- .addClusterAndDegree(out, cluster_fun)
+
     out$cluster_data <- .getClusterStats2(out$node_data, out$adjacency_matrix,
                                           seq_col, count_col, cluster_fun)
   }
@@ -81,6 +85,21 @@ buildRepSeqNetwork <- function(
 
 
 # Helper functions --------------------------------------------------------
+
+
+# Add Cluster ID and network degree to node-level data if not already present
+.addClusterAndDegree <- function(network, cluster_fun) {
+  if (!"cluster_id" %in% names(network$node_data)) {
+    network$node_data <-
+      addClusterMembership(network$node_data, network$igraph, cluster_fun)
+  }
+  if (!"degree" %in% names(network$node_data)) {
+    network$node_data$deg <- igraph::degree(network$igraph)
+  }
+  return(network$node_data)
+}
+
+
 
 # ## Input checks ##
 # # Atchley factor embedding only applicable to amino acid sequences

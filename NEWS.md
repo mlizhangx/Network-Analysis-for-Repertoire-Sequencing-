@@ -1,3 +1,19 @@
+# 0.0.9031 (2/20/2023)
+
+* Added documentation for the following functions:
+    * `addGraphLabels`
+    * `addClusterLabels`
+* Added the following content to the package vignettes:
+    * New vignette `Dual-Chain Network Analysis` for dual-chain network analysis on single-cell data
+    * `buildRepSeqNetwork` vignette:
+        * `cluster_fun` argument (clustering algorithm)
+    * `Network Visualization` vignette:
+        * `addClusterLabels` function
+    * `Downstream Analysis` vignette:
+        * `addClusterLabels` function
+    * `Finding Associated Clones` vignette:
+        * `addClusterLabels` function used to label the clusters
+
 # 0.0.9030 (1/29/2023)
 
 * Added function `addGraphLabels` for adding text labels to the nodes of a graph plot

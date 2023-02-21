@@ -1,0 +1,70 @@
+---
+title: "Dual-Chain Network Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Dual-Chain Network Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, collapse = TRUE, comment = "#>", 
+  fig.align = "center", fig.width = 10, fig.height = 10, out.width = "100%")
+```
+
+For single-cell data, cell-level network analysis can be performed based on joint similarity in alpha chain sequence and beta chain sequence.
+
+We simulate some toy data to demonstrate the usage.
+
+```{r}
+library(NAIR)
+dat <- simulateToyData(chains = 2)
+head(dat)
+```
+
+The input data is assumed to have the following format:
+
+* Each row corresponds to a unique cell
+* The data contains separate columns for alpha chain sequence and beta chain sequence
+
+Dual-chain network analysis can be performed using the `buildRepSeqNetwork` function (or `generateNetworkObjects` as a lower-level alternative) by supplying a length-2 vector to the `seq_col` argument:
+
+* First entry should reference the column for alpha chain sequence
+* Second entry should reference the column for beta chain sequence
+
+```{r}
+# Build network based on joint dual-chain similarity
+network <- buildRepSeqNetwork(dat, seq_col = c("AlphaSeq", "BetaSeq"),
+                              count_col = "UMIs",
+                              node_stats = TRUE, stats_to_include = "all",
+                              cluster_stats = TRUE, 
+                              color_nodes_by = "SampleID",
+                              size_nodes_by = "UMIs",
+                              node_size_limits = c(0.5, 3),
+                              print_plots = FALSE, output_dir = NULL)
+```
+
+We print the network graph plot with labels added for the largest two clusters:
+
+```{r}
+addClusterLabels(network$plots$SampleID, network, top_n_clusters = 2, size = 8)
+```
+
+The list returned by `buildRepSeqNetwork` contains the following items:
+
+```{r}
+names(network)
+```
+
+Notice that the list contains three adjacency matrices: `adjacency_matrix` corresponds to the network based on joint similarity in both chain sequences, while `adj_mat_a` corresponds to the network based only on similarity in the alpha-chain sequence (and similarly for `adj_mat_b`). 
+
+
+The cluster-level data contains sequence-based cluster statistics for each of the alpha and beta chain sequences:
+
+```{r}
+head(network$cluster_data)
+```
+
+
+The remainder of the output and customization follows the [general case for the buildRepSeqNetwork function](buildRepSeqNetwork.html).

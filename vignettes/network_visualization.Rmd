@@ -84,7 +84,34 @@ buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    size_nodes_by = "degree", 
                    node_size_limits = c(0.5, 1.5), output_dir = NULL)
 ```
+### Label Clusters
 
+If `buildRepSeqNetwork` is called with `cluster_stats = TRUE`, the results can be used to label particular clusters with the `addClusterLabels` function:
+
+```{r}
+# Generate network, but don't print the graph plot
+network <- buildRepSeqNetwork(
+  toy_data, seq_col = "CloneSeq", 
+  node_stats = TRUE, cluster_stats = TRUE,
+  color_nodes_by = "transitivity", color_scheme = "plasma-1",
+  size_nodes_by = "degree", node_size_limits = c(0.5, 1.5), 
+  print_plots = FALSE, output_dir = NULL)
+
+# Add labels to the two largest clusters and print the plot
+addClusterLabels(plot = network$plots$transitivity,
+                 net = network,
+                 top_n_clusters = 2,
+                 criterion = "node_count" # (the default)
+                 )
+```
+
+The `addClusterLabels` function has the following arguments:
+
+* `plot` is a ggraph object such as those contained in the output returned by `buildRepSeqNetwork`
+* `net` is a corresponding list of network objects, such as that returned by `buildRepSeqNetwork`, that includes the list items `node_data` and `cluster_data`
+* `top_n_clusters` specifies how many clusters to label (based on `criterion`).
+* `criterion` is the name of a numeric cluster statistic (see `?getClusterStats`) for ranking the clusters. The default is node count.
+* `size` and `color` control the size and color of the labels
 
 
 ### Generate multiple graphs

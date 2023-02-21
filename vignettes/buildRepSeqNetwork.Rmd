@@ -45,6 +45,8 @@ head(toy_data)
 * The first argument specifies the data frame containing the rep-seq data, where each row corresponds to a single TCR/BCR clone (bulk data) or cell (single-cell data).
 * The second argument specifies the column name or number of the data frame that contains the receptor sequences to be used as the basis of similarity between two cells or clones.
 
+*For single-cell data, see [this vignette](dual_chain.html) on building cell-level networks based on joint similarity between alpha chain sequence and beta chain sequence.*
+
 ```{r}
 output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", 
                              output_dir = dir_out)
@@ -131,6 +133,7 @@ head(output$cluster_data)
 
 Each row of the cluster-level meta data corresponds to a single cluster in the network.
 
+The `cluster_fun` argument controls the algorithm used to cluster the nodes; see `?addClusterMembership` for more details. The default value is `"cluster_fast_greedy"` (see `?igraph::cluster_fast_greedy`), but many other options exist.
 
 
 ## Network Settings

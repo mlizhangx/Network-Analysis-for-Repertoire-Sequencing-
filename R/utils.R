@@ -1131,7 +1131,6 @@ getClusterStats <- function(
                          count_col, cluster_id_col, degree_col, cluster_fun))
 }
 
-
 # Visualization -----------------------------------------------------------
 
 
