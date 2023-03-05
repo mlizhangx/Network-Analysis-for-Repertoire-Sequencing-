@@ -26,8 +26,8 @@ addNodeNetworkStats(data, net,
 }
   \item{net}{
 %%     ~~Describe \code{net} here~~
-      An `igraph` object containing the network corresponding to the
-      clones in `data`.
+      An \code{igraph} object containing the network corresponding to the
+      clones in \code{data}.
 }
   \item{stats_to_include}{
 %%     ~~Describe \code{stats_to_include} here~~
@@ -47,7 +47,7 @@ addNodeNetworkStats(data, net,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-  A data frame with the same rows and columns as `data`, with additional columns
+  A data frame with the same rows and columns as \code{data}, with additional columns
   containing the network statistics for the clone in each row.
 }
 \references{

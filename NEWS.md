@@ -1,3 +1,8 @@
+# 0.0.9032
+
+* Rdocumentation files
+    * Fixed instances where tildes were erroneously used in place of the `\code{}` environment
+
 # 0.0.9031 (2/20/2023)
 
 * Added documentation for the following functions:

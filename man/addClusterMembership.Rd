@@ -24,11 +24,11 @@ addClusterMembership(data, net, fun = cluster_fast_greedy)
 }
   \item{net}{
 %%     ~~Describe \code{net} here~~
-      An `igraph` object containing the network on the rows of the data.
+      An \code{igraph} object containing the network on the rows of the data.
 }
   \item{fun}{
 %%     ~~Describe \code{net} here~~
-      A function from the `igraph` package that takes a graph as its primary argument, implements a community-detection algorithm and returns a community object. See details below.
+      A function from the \code{igraph} package that takes a graph as its primary argument, implements a community-detection algorithm and returns a community object. See details below.
 }
 }
 \details{
@@ -44,7 +44,7 @@ addClusterMembership(data, net, fun = cluster_fast_greedy)
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    A copy of `data` with an additional column named `cluster_id` that contains the cluster membership for each row.
+    A copy of \code{data} with an additional column named \code{cluster_id} that contains the cluster membership for each row.
 }
 \references{
 %% ~put references to the literature/web site here ~

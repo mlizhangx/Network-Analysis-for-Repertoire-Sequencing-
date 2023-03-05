@@ -7,7 +7,7 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Create a list, for use by `addNodeNetworkStats()`, specifying the node-level
+    Create a list, for use by \code{addNodeNetworkStats()}, specifying the node-level
     network stats to be computed.
 }
 \usage{
@@ -33,52 +33,52 @@ node_stat_settings(degree = TRUE,
 }
   \item{cluster_id}{
 %%     ~~Describe \code{cluster_id} here~~
-    Logical. Whether to perform clustering, which is done using `igraph::cluster_fast_greedy()`, in order to determine the cluster membership of each node.
+    Logical. Whether to perform clustering, which is done using \code{igraph::cluster_fast_greedy()}, in order to determine the cluster membership of each node.
 }
   \item{transitivity}{
 %%     ~~Describe \code{transitivity} here~~
-    Logical. Whether to compute node-level network transitivity, which is done using `igraph::transitivity()`
-    with `type = "local"` The local transitivity of a node is the the number of triangles connected to the node relative to the number of triples centered on that node.
+    Logical. Whether to compute node-level network transitivity, which is done using \code{igraph::transitivity()}
+    with \code{type = "local"} The local transitivity of a node is the the number of triangles connected to the node relative to the number of triples centered on that node.
 }
   \item{closeness}{
 %%     ~~Describe \code{closeness} here~~
-    Logical. Whether to compute network closeness, which is done using `igraph::closeness()`.
+    Logical. Whether to compute network closeness, which is done using \code{igraph::closeness()}.
 }
   \item{centrality_by_closeness}{
 %%     ~~Describe \code{centrality_by_closeness} here~~
-    Logical. Whether to compute network centrality by closeness, which is done using `igraph::centr_clo()$res`.
+    Logical. Whether to compute network centrality by closeness, which is done using \code{igraph::centr_clo()$res}.
 }
   \item{eigen_centrality}{
 %%     ~~Describe \code{eigen_centrality} here~~
-    Logical. Whether to compute the eigenvector centrality scores of node network positions, which is done using `igraph::eigen_centrality()$vector` with `weights = NA`. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.
+    Logical. Whether to compute the eigenvector centrality scores of node network positions, which is done using \code{igraph::eigen_centrality()$vector} with \code{weights = NA}. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.
 }
   \item{centrality_by_eigen}{
 %%     ~~Describe \code{centrality_by_eigen} here~~
-    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores, which is done using `igraph::centr_eigen()$vector``.
+    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores, which is done using \code{igraph::centr_eigen()$vector}.
 }
   \item{betweenness}{
 %%     ~~Describe \code{betweenness} here~~
-    Logical. Whether to compute network betweenness, which is done using `igraph::betweenness()`.
+    Logical. Whether to compute network betweenness, which is done using \code{igraph::betweenness()}.
 }
   \item{centrality_by_betweenness}{
 %%     ~~Describe \code{centrality_by_betweenness} here~~
-    Logical. Whether to compute network centrality by betweenness, which is done using `igraph::centr_betw()$res`.
+    Logical. Whether to compute network centrality by betweenness, which is done using \code{igraph::centr_betw()$res}.
 }
   \item{authority_score}{
 %%     ~~Describe \code{authority_score} here~~
-    Logical. Whether to compute the authority score, which is done using `igraph::authority_score()`.
+    Logical. Whether to compute the authority score, which is done using \code{igraph::authority_score()}.
 }
   \item{coreness}{
 %%     ~~Describe \code{coreness} here~~
-    Logical. Whether to compute network coreness, which is done using `igraph::coreness()`.
+    Logical. Whether to compute network coreness, which is done using \code{igraph::coreness()}.
 }
   \item{page_rank}{
 %%     ~~Describe \code{page_rank} here~~
-    Logical. Whether to compute page rank, which is done using `igraph::page_rank()$vector`.
+    Logical. Whether to compute page rank, which is done using \code{igraph::page_rank()$vector}.
 }
   \item{all_stats}{
 %%     ~~Describe \code{all_stats} here~~
-    Logical. If `TRUE`, then `addNodeNetworkStats()` will disregard the values for the other settings and instead treat all of them as `TRUE`.
+    Logical. If \code{TRUE}, then \code{addNodeNetworkStats()} will disregard the values for the other settings and instead treat all of them as \code{TRUE}.
 }
 }
 \value{
@@ -87,7 +87,7 @@ node_stat_settings(degree = TRUE,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    An object of type `"list"`, for use with `addNodeNetworkStats()` as input to the `stats_to_include` argument.
+    An object of type \code{"list"}, for use with \code{addNodeNetworkStats()} as input to the \code{stats_to_include} argument.
 }
 \references{
 %% ~put references to the literature/web site here ~

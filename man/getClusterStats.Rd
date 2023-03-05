@@ -30,25 +30,25 @@ getClusterStats(data,
   \item{adjacency_matrix}{
 %%     ~~Describe \code{adjacency_matrix} here~~
     A square adjacency matrix corresponding to the repertoire network for the rows
-    in `data`, with row dimension matching that of `data`. Sparse matrices
-    created using the `Matrix` package are supported.
+    in \code{data}, with row dimension matching that of \code{data}. Sparse matrices
+    created using the \code{Matrix} package are supported.
 }
   \item{seq_col}{
 %%     ~~Describe \code{seq_col} here~~
-      Optional. The column name or number of `data` containing the receptor sequences (e.g.,
+      Optional. The column name or number of \code{data} containing the receptor sequences (e.g.,
       TCR CDR3 nucleotide sequence or amino acid sequence). If supplied, then related cluster-level properties will be computed.
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~
-      Optional. The column name or number of `data` containing the counts (i.e., clone count or UMI count). If supplied, then related cluster-level properties will be computed.
+      Optional. The column name or number of \code{data} containing the counts (i.e., clone count or UMI count). If supplied, then related cluster-level properties will be computed.
 }
   \item{cluster_id_col}{
 %%     ~~Describe \code{cluster_id_col} here~~
-      The column name or number of `data` containing the cluster membership for each node. If `NULL`, clustering will be performed using `igraph::cluster_fast_greedy()` in order to determine cluster membership.
+      The column name or number of \code{data} containing the cluster membership for each node. If \code{NULL}, clustering will be performed using \code{igraph::cluster_fast_greedy()} in order to determine cluster membership.
 }
   \item{degree_col}{
 %%     ~~Describe \code{degree_col} here~~
-      The column name or number of `data` containing the network degree for each node. If `NULL`, the network degree will be computed using `igraph::degree`.
+      The column name or number of \code{data} containing the network degree for each node. If \code{NULL}, the network degree will be computed using \code{igraph::degree}.
 }
   \item{cluster_fun}{
 %%     ~~Describe \code{net} here~~
@@ -57,9 +57,9 @@ getClusterStats(data,
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-    The cluster-level statistics `diameter_length`, `assortativity`, `transitivity`,
-    `edge_density`, `degree_centrality_index`, `closeness_centrality_index`,
-    `eigen_centrality_index`, and `eigen_centrality_eigenvalue` are computed for each cluster
+    The cluster-level statistics \code{diameter_length}, \code{assortativity}, \code{transitivity},
+    \code{edge_density}, \code{degree_centrality_index}, \code{closeness_centrality_index},
+    \code{eigen_centrality_index}, and \code{eigen_centrality_eigenvalue} are computed for each cluster
     by first generating the network graph for the cluster using the adjacency
     submatrix corresponding to that cluster. As a result, computing cluster statistics
     can potentially take some time for very large networks with many large clusters.
@@ -81,14 +81,14 @@ getClusterStats(data,
   \item{agg_count}{The aggregate count among all nodes in the cluster (based on the counts in \code{count_col}).}
   \item{max_count}{The maximum count among all nodes in the cluster (based on the counts in \code{count_col}).}
   \item{seq_w_max_count}{The receptor sequence possessing the maximum count within the cluster.}
-  \item{diameter_length}{The longest geodesic distance in the cluster, computed using `length(igraph::get_diameter())`.}
-  \item{assortativity}{The assortativity coefficient of the cluster's graph, based on the degree (minus one) of each node in the cluster (with the degree computed based only upon the nodes within the cluster). Computed using `igraph::assortativity_degree`.}
-  \item{global_transitivity}{The transitivity (i.e., clustering coefficient) for the cluster's graph, which estimates the probability that adjacent vertices are connected. Computed using `igraph::transitivty()` with `type = "global"`.}
-  \item{edge_density}{The number of edges in the cluster as a fraction of the maximum possible number of edges. Computed using `igraph::edge_density()`.}
-  \item{degree_centrality_index}{The cluster-level centrality index based on degree within the cluster graph. Computed using `igraph::centr_degree()$centralization`.}
-  \item{closeness_centrality_index}{The cluster-level centrality index based on closeness, i.e., distance to other nodes in the cluster. Computed using `igraph::centr_clo()$centralization`.}
-  \item{eigen_centrality_index}{The cluster-level centrality index based on the eigenvector centrality scores, i.e., values of the first eigenvector of the adjacency matrix for the cluster. Computed using `igraph::centr_eigen()$centralization`.}
-  \item{eigen_centrality_eigenvalue}{The eigenvalue corresponding to the first eigenvector of the adjacency matrix for the cluster. Computed using `igraph::eigen_centrality()$value`.}
+  \item{diameter_length}{The longest geodesic distance in the cluster, computed using \code{length(igraph::get_diameter())}.}
+  \item{assortativity}{The assortativity coefficient of the cluster's graph, based on the degree (minus one) of each node in the cluster (with the degree computed based only upon the nodes within the cluster). Computed using \code{igraph::assortativity_degree}.}
+  \item{global_transitivity}{The transitivity (i.e., clustering coefficient) for the cluster's graph, which estimates the probability that adjacent vertices are connected. Computed using \code{igraph::transitivty()} with \code{type = "global"}.}
+  \item{edge_density}{The number of edges in the cluster as a fraction of the maximum possible number of edges. Computed using \code{igraph::edge_density()}.}
+  \item{degree_centrality_index}{The cluster-level centrality index based on degree within the cluster graph. Computed using \code{igraph::centr_degree()$centralization}.}
+  \item{closeness_centrality_index}{The cluster-level centrality index based on closeness, i.e., distance to other nodes in the cluster. Computed using \code{igraph::centr_clo()$centralization}.}
+  \item{eigen_centrality_index}{The cluster-level centrality index based on the eigenvector centrality scores, i.e., values of the first eigenvector of the adjacency matrix for the cluster. Computed using \code{igraph::centr_eigen()$centralization}.}
+  \item{eigen_centrality_eigenvalue}{The eigenvalue corresponding to the first eigenvector of the adjacency matrix for the cluster. Computed using \code{igraph::eigen_centrality()$value}.}
 }
 \references{
 %% ~put references to the literature/web site here ~

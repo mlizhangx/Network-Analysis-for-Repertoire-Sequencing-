@@ -7,8 +7,8 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-  A wrapper function for customized calling of functions from the `ggraph` package.
-  Given an `igraph` network object, generates a `ggraph` according to the user
+  A wrapper function for customized calling of functions from the \code{ggraph} package.
+  Given an \code{igraph} network object, generates a \code{ggraph} according to the user
   specifications.
 }
 \usage{
@@ -29,23 +29,23 @@ plotNetworkGraph(igraph,
 \arguments{
   \item{igraph}{
 %%     ~~Describe \code{network} here~~
-      An `igraph` object containing the network graph to be plotted.
+      An \code{igraph} object containing the network graph to be plotted.
 }
   \item{plot_title}{
 %%     ~~Describe \code{title} here~~
-      A character string or `NULL`. The plot title, to be passed to `ggplot2::labs`.
+      A character string or \code{NULL}. The plot title, to be passed to \code{ggplot2::labs}.
 }
   \item{plot_subtitle}{
 %%     ~~Describe \code{plot_subtitle} here~~
-      A character string or `NULL`. The plot subtitle, to be passed to `ggplot2::labs`.
+      A character string or \code{NULL}. The plot subtitle, to be passed to \code{ggplot2::labs}.
 }
   \item{color_nodes_by}{
 %%     ~~Describe \code{color_nodes_by} here~~
-      Passed to the color aesthetic mapping of `ggraph::geom_node_point`, used to encode the color of each node. Either a vector whose length matches the number of nodes in `network`, or `NULL`. If the vector is numeric and contains non-integer values, a continuous color scale will be used; otherwise, a discrete color scale will be used.
+      Passed to the color aesthetic mapping of \code{ggraph::geom_node_point}, used to encode the color of each node. Either a vector whose length matches the number of nodes in \code{network}, or \code{NULL}. If the vector is numeric and contains non-integer values, a continuous color scale will be used; otherwise, a discrete color scale will be used.
 }
   \item{color_scheme}{
 %%     ~~Describe \code{color_scheme} here~~
-    A character string specifying the color palette used to color the nodes: either "default" for default `ggplot2` colors, a viridis color map option (e.g., `"viridis"`, `"plasma"`, etc., or one the corresponding strings "A" through "H"; see `?viridis` for details), or a palette from `grDevices::hcl.pals()` (these can only be used with discrete color scales).
+    A character string specifying the color palette used to color the nodes: either "default" for default \code{ggplot2} colors, a viridis color map option (e.g., \code{"viridis"}, \code{"plasma"}, etc., or one the corresponding strings "A" through "H"; see \code{?viridis} for details), or a palette from \code{grDevices::hcl.pals()} (these can only be used with discrete color scales).
 }
   \item{color_legend}{
 %%     ~~Describe \code{color_title} here~~
@@ -53,27 +53,27 @@ plotNetworkGraph(igraph,
 }
   \item{color_title}{
 %%     ~~Describe \code{color_title} here~~
-    A character string or `NULL` specifying the title for the color legend. If "auto" and a vector was supplied for `color_nodes_by`, the color legend title will attempt to use the name of the supplied vector.
+    A character string or \code{NULL} specifying the title for the color legend. If "auto" and a vector was supplied for \code{color_nodes_by}, the color legend title will attempt to use the name of the supplied vector.
 }
   \item{edge_width}{
 %%     ~~Describe \code{edge_width} here~~
-      A numeric scalar specifying the width of the graph edges in the plot. Passed to the `width` argument of `ggraph::geom_edge_link0`.
+      A numeric scalar specifying the width of the graph edges in the plot. Passed to the \code{width} argument of \code{ggraph::geom_edge_link0}.
 }
   \item{size_nodes_by}{
 %%     ~~Describe \code{size_nodes_by} here~~
-    Passed to the size aesthetic mapping of `ggraph::geom_node_point`, used to encode the size of each node. Either a numeric vector with positive entires whose length matches the number of nodes in `network`, a positive-valued number (denoting a fixed constant size for each node), or `NULL`.
+    Passed to the size aesthetic mapping of \code{ggraph::geom_node_point}, used to encode the size of each node. Either a numeric vector with positive entires whose length matches the number of nodes in \code{network}, a positive-valued number (denoting a fixed constant size for each node), or \code{NULL}.
 }
   \item{size_title}{
 %%     ~~Describe \code{size_title} here~~
-    A character string or `NULL` specifying the title for the size legend. The size legend is only displayed if a vector was supplied for `size_nodes_by`, in which case `size_title = "auto"` will attempt to use the name of the supplied vector.
+    A character string or \code{NULL} specifying the title for the size legend. The size legend is only displayed if a vector was supplied for \code{size_nodes_by}, in which case \code{size_title = "auto"} will attempt to use the name of the supplied vector.
 }
   \item{node_size_limits}{
 %%     ~~Describe \code{node_size_limits} here~~
-    A numeric vector of length 2 with positive entries, or `NULL`. If a vector of values is provided, the node sizes will be rescaled using the first value for the minimum node size and the second value for the maximum node sizes. Only applicable if a vector is supplied for `size_nodes_by`.
+    A numeric vector of length 2 with positive entries, or \code{NULL}. If a vector of values is provided, the node sizes will be rescaled using the first value for the minimum node size and the second value for the maximum node sizes. Only applicable if a vector is supplied for \code{size_nodes_by}.
 }
   \item{outfile}{
 %%     ~~Describe \code{outfile} here~
-    A character string containing a valid file name ending in `".pdf"`, or `NULL`. If a file name is supplied, the plot will be saved to the file.
+    A character string containing a valid file name ending in \code{".pdf"}, or \code{NULL}. If a file name is supplied, the plot will be saved to the file.
 }
 }
 \value{
@@ -82,7 +82,7 @@ plotNetworkGraph(igraph,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-  A `ggraph` object.
+  A \code{ggraph} object.
 }
 \references{
 %% ~put references to the literature/web site here ~

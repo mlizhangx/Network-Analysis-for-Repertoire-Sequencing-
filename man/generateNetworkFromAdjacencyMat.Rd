@@ -8,7 +8,7 @@
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
   A simple wrapper function used for convenience. Given an adjacency matrix for
-  an undirected network, generates the `igraph` object containing the undirected
+  an undirected network, generates the \code{igraph} object containing the undirected
   network graph corresponding to the adjacency matrix after simplifying and
   removing loops.
 }
@@ -19,8 +19,8 @@ generateNetworkFromAdjacencyMat(adjacency_matrix)
 \arguments{
   \item{adjacency_matrix}{
 %%     ~~Describe \code{adjacency_matrix} here~~
-    Passed to `igraph::graph_from_adjacency_matrix`. A square adjacency matrix.
-    Sparse matrices created using the `Matrix` package are supported.
+    Passed to \code{igraph::graph_from_adjacency_matrix}. A square adjacency matrix.
+    Sparse matrices created using the \code{Matrix} package are supported.
 }
 }
 \value{
@@ -29,7 +29,7 @@ generateNetworkFromAdjacencyMat(adjacency_matrix)
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    An `igraph` graph object.
+    An \code{igraph} graph object.
 }
 \references{
 %% ~put references to the literature/web site here ~

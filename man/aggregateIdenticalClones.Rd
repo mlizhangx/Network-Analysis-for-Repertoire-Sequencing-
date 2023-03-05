@@ -25,20 +25,20 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 }
   \item{clone_col}{
 %%     ~~Describe \code{clone_col} here~~
-      The column name or number of `data` containing the receptor sequences (e.g.,
+      The column name or number of \code{data} containing the receptor sequences (e.g.,
       TCR CDR3 nucleotide sequence or amino acid sequence).
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~
-      The column name or number of `data` containing the clone counts.
+      The column name or number of \code{data} containing the clone counts.
 }
   \item{freq_col}{
 %%     ~~Describe \code{freq_col} here~~
-      The column name or number of `data` containing the clone frequencies.
+      The column name or number of \code{data} containing the clone frequencies.
 }
   \item{grouping_cols}{
 %%     ~~Describe \code{grouping_cols} here~~
-      An optional charcter or integer vector specifying one or more columns of `data`,
+      An optional charcter or integer vector specifying one or more columns of \code{data},
       each of which is treated as a group/label variable. If supplied, clones
       belonging to distinct groups will be treated as having distinct receptor
       sequences, effectively aggregating only the identical clones within each group.
@@ -51,15 +51,15 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
     A data frame whose first column contains the receptor sequences and has the
-    same name as the column of `data` specified by `clone_col`. If additional
-    columns of `data` were supplied via the `grouping_cols` argument, these
+    same name as the column of \code{data} specified by \code{clone_col}. If additional
+    columns of \code{data} were supplied via the \code{grouping_cols} argument, these
     columns will also be inherited. The remaining columns are as follows:
 
     \item{AggregatedCloneCount}{The aggregated clone count for each receptor sequence.}
 
     \item{AggregatedCloneFrequency}{The aggregated clone frequency for each receptor sequence.}
 
-    \item{UniqueCloneCount}{The number of clones (rows) in `data` possessing the receptor sequence for the current row
+    \item{UniqueCloneCount}{The number of clones (rows) in \code{data} possessing the receptor sequence for the current row
     (if groups are supplied, this is a within-group count).}
 }
 \references{

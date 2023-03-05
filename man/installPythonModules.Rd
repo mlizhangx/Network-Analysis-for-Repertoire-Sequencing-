@@ -7,7 +7,7 @@
 }
 \description{
   %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Checks whether the Python modules used by the `NAIR` package are available, and automatically installs any that are missing via `reticulate::py_install()`.
+    Checks whether the Python modules used by the \code{NAIR} package are available, and automatically installs any that are missing via \code{reticulate::py_install()}.
 }
 \usage{
   installPythonModules(method = "auto", conda = "auto", pip = FALSE)
@@ -16,20 +16,20 @@
 \arguments{
   \item{method}{
     %%     ~~Describe \code{method} here~~
-      Passed to the `method` argument of `reticulate::py_install()`. See `?reticulate::py_install()` for details.
+      Passed to the \code{method} argument of \code{reticulate::py_install()}. See \code{?reticulate::py_install()} for details.
   }
   \item{conda}{
     %%     ~~Describe \code{conda} here~~
-      Passed to the `conda` argument of `reticulate::py_install()`. See `?reticulate::py_install()` for details.
+      Passed to the \code{conda} argument of \code{reticulate::py_install()}. See \code{?reticulate::py_install()} for details.
   }
   \item{pip}{
     %%     ~~Describe \code{pip} here~~
-      Passed to the `pip` argument of `reticulate::py_install()`. See `?reticulate::py_install()` for details. For the `levenshtein` Python module, the call to `reticulate::py_install()` always uses `pip = TRUE`.
+      Passed to the \code{pip} argument of \code{reticulate::py_install()}. See \code{?reticulate::py_install()} for details. For the \code{levenshtein} Python module, the call to \code{reticulate::py_install()} always uses \code{pip = TRUE}.
   }
 }
 \details{
   %%  ~~ If necessary, more details than the description above ~~
-    The modules checked for and installed are `numpy`, `pandas`, `tensorflow` and `keras`. Calling this function is equivalent to making individual calls to `recitulate::py_install()` for each of these modules.
+    The modules checked for and installed are \code{numpy}, \code{pandas}, \code{tensorflow} and \code{keras}. Calling this function is equivalent to making individual calls to \code{recitulate::py_install()} for each of these modules.
 }
 \author{
   %%  ~~who you are~~
