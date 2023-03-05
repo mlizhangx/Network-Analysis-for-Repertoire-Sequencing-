@@ -26,8 +26,12 @@ simulateToyData <- function(
 ) {
 
   set.seed(seed_value)
+
+  # Initialize storage objects
   seqs <- character(samples * sample_size)
   ranges <- (matrix(seq_len(samples * sample_size), ncol = samples))
+
+  # Define function for performing edit operations, if applicable
   if (num_edits > 0) {
     edit_op <- function(seq, pos, char) {
       op <- sample(edit_ops, size = 1, prob = edit_probs)
@@ -39,15 +43,19 @@ simulateToyData <- function(
   }
 
   for (i in 1:samples) {
+    # Randomly generate sequence prefix for each observation,
+    # according to specified prefix chars, length and generation probabilities
     prefix <- apply(matrix(sample(prefix_chars,
                                   size = prefix_length * sample_size,
                                   replace = TRUE, prob = prefix_probs[i, ]),
                            ncol = sample_size),
                     MARGIN = 2,
                     FUN = function(x) paste0(x, collapse = ""))
+    # Randomly generate sequence affix for each observation
     seqs[ranges[ , i]] <-
       paste0(prefix, sample(affixes, size = sample_size,
                             replace = TRUE, prob = affix_probs[i, ]))
+    # Apply randomized edit operations, if specified
     if (num_edits > 0) {
       for (j in 1:num_edits) {
         char_draws <- sample(new_chars, size = sample_size, replace = TRUE,
@@ -67,9 +75,9 @@ simulateToyData <- function(
     }
   }
 
+  # Generate count data
   counts <- stats::rgamma(samples * sample_size, shape = 100, rate = 1/100)
   counts <- ceiling(max(counts) - counts) + 1
-
   if (chains == 1) {
     dat <- data.frame(CloneSeq = seqs)
     dat$CloneCount <- dat$CloneFrequency <- counts
@@ -93,6 +101,7 @@ simulateToyData <- function(
   dat$SampleID <- as.character(rep(paste0("Sample", 1:samples),
                                    each = sample_size))
 
+  # Save to file if specified
   if (!is.null(output_dir)) {
     for (i in 1:samples) {
       saveRDS(dat[ranges[ , i], , drop = FALSE],

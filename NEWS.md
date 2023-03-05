@@ -1,3 +1,8 @@
+# 0.0.9033
+
+* Rdocumentation files
+    * Added documentation for `simulateToyData`
+
 # 0.0.9032
 
 * Rdocumentation files
