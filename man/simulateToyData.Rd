@@ -141,8 +141,9 @@ simulateToyData(
     \item{UMIs}{A "unique count" for each observation.}
     \item{Count}{The "count" for each observation.}
     \item{SampleID}{The sample ID for each observation.}
-}
+
     If \code{no_return = FALSE}, the function returns \code{TRUE} upon completion.
+}
 \references{
 %% ~put references to the literature/web site here ~
 %%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
@@ -158,12 +159,3 @@ simulateToyData(
     simulateToyData()
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
