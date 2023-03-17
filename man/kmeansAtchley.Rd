@@ -147,103 +147,29 @@ kmeansAtchley(
 }
 \examples{
 \dontrun{
-## Generate some data
-set.seed(42)
-num_samples <- 30; sample_size <- 30
-groups <- sample(c(0, 1), size = num_samples, replace = TRUE)
-init_chars <- c("AAAA", "AABA", "AACA", "AADA", "AAD", "AAA", "AABAA", "AAAAA")
-init_probs_g0 <- rep(1 / length(init_chars), length(init_chars))
-init_probs_g1 <- c(1, 5, 1, 1, 1, 1, 5, 1)
-init_probs_g1 <- init_probs_g1 / sum(init_probs_g1)
-samples <- matrix(nrow = sample_size, ncol = num_samples)
-for (j in 1:num_samples) {
-  init_probs <- init_probs_g0
-  if (groups[[j]] == 1) { init_probs <- init_probs_g1 }
-  samples[ , j] <- sample(init_chars, sample_size,
-                          replace = TRUE, prob = init_probs)
+toy_data <- simulateToyData(
+  samples = 20,
+  sample_size = 50,
+  prefix_length = 0,
+  prefix_chars = "",
+  prefix_probs = matrix(1, nrow = 20),
+  affixes = c("CASSLGYEQYF", "CASSLGETQYF",
+              "CASSLGTDTQYF", "CASSLGTEAFF",
+              "CASSLGGTEAFF", "CAGLGGRDQETQYF",
+              "CASSQETQYF", "CASSLTDTQYF",
+              "CANYGYTF", "CANTGELFF",
+              "CSANYGYTF"),
+  affix_probs = matrix(1, ncol = 11, nrow = 20),
+)
+toy_data$GroupID <- rep(c("G1", "G2"), each = 500)
+
+atchley <- kmeansAtchley(
+  data = toy_data,
+  k = 3,
+  amino_col = "CloneSeq",
+  sample_col = "SampleID",
+  group_col = "GroupID",
+  output_dir = tempdir(),
+  return_output = TRUE)
 }
-num_edits <- 4
-edit_ops <- c("insertion", "deletion", "transmutation")
-edit_probs <- c(10/20, 2/20, 8/20)
-chars <- c("A", "B", "C", "D")
-char_probs_g0 <- c(1/2, 1/6, 1/6, 1/6)
-char_probs_g1 <- c(1/3, 1/6, 1/6, 1/3)
-for (k in 1:num_edits) {
-  for (j in 1:num_samples) {
-    char_probs <- char_probs_g0
-    if ((groups[[j]] == 1)) { char_probs <- char_probs_g1 }
-    for (i in 1:sample_size) {
-      pos <- sample(1:nchar(samples[i, j]), size = 1)
-      op <- sample(edit_ops, size = 1, prob = edit_probs)
-      if (op == "insertion") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      } else if (op == "deletion") {
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, suffix)
-      } else if (op == "transmutation") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      }
-    }
-  }
 }
-sample_symbols <- paste0("sample", 1:num_samples)
-data_dir <- tempdir()
-for (j in 1:num_samples) {
-  dat <- data.frame(
-    "seq" = samples[ , j], "sample_id" = j, "group" = groups[[j]],
-    "count" = rbinom(sample_size, size = 1e5, prob = 0.5))
-  assign(x = sample_symbols[[j]], value = dat)
-  saveRDS(dat, file = file.path(data_dir, paste0(j, ".rds")))
-  }
-
-files <- file.path(data_dir, paste0(1:num_samples, ".rds"))
-
-## Find receptor sequences associated with comparison group
-associated_seqs <- findAssociatedSeqs(
-  file_list = files, input_type = "rds",
-  group_ids = groups,
-  min_seq_length = NULL,
-  drop_matches = NULL,
-  groups = c(0, 1),
-  seq_col = "seq",
-  outfile = NULL)
-
-## Gather clones in public neighborhoods of each associated sequence
-findAssociatedClones(
-  file_list = files, input_type = "rds",
-  group_ids = groups,
-  seq_col = "seq",
-  dist_type = "levenshtein",
-  assoc_seqs = associated_seqs$ReceptorSeq,
-  output_dir = data_dir)
-
-## Combine neighborhoods and perform clustering/network analysis
-all_clusters <- buildAssociatedClusterNetwork(
-  file_list = file.path(data_dir,
-                        paste0(associated_seqs$ReceptorSeq, ".csv")),
-  seq_col = "seq", dist_type = "levenshtein", size_nodes_by = 1.5,
-  output_dir = NULL)
-
-## Analysis by numeric encoding and K-means clustering
-store_results <- kmeansAtchley(
-  data = all_clusters$node_data,
-  amino_col = "seq", sample_col = "SampleID", group_col = "GroupID",
-  k = 5, output_dir = data_dir, return_output = TRUE)
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

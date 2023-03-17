@@ -114,14 +114,14 @@ Note that this function does not return any output; instead, it creates two subd
 ```{r}
 # Node-level meta data for each sample's public clusters
 dir_filtered_samples_node <- file.path(dir_filtered_samples, "node_meta_data")
-files_filtered_samples_node <- file.path(
-  dir_filtered_samples_node, list.files(dir_filtered_samples_node))
+files_filtered_samples_node <- list.files(dir_filtered_samples_node, 
+                                          full.names = TRUE)
 head(files_filtered_samples_node)
 
 # Cluster-level meta data for each sample's public clusters
 dir_filtered_samples_cluster <- file.path(dir_filtered_samples, "cluster_meta_data")
-files_filtered_samples_cluster <- file.path(
-  dir_filtered_samples_cluster, list.files(dir_filtered_samples_cluster))
+files_filtered_samples_cluster <- list.files(dir_filtered_samples_cluster,
+                                             full.names = TRUE)
 head(files_filtered_samples_cluster)
 ```
 

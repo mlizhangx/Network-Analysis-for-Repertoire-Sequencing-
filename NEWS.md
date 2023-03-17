@@ -1,7 +1,13 @@
+# 0.0.9034
+
+* Rdocumentation files
+    * All examples now use `simulateToyData` to generate data
+    
 # 0.0.9033
 
 * Rdocumentation files
     * Added documentation for `simulateToyData`
+    * All examples now use `simulateToyData` to generate data
 
 # 0.0.9032
 

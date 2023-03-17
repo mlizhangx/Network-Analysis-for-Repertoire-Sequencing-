@@ -7,7 +7,7 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given TCR/BCR repertoire sequence data with clones indexed by row, aggregates
+    Given bulk TCR/BCR repertoire sequence data with clones indexed by row, aggregates
     rows with identical receptor sequences. Clone count and frequency are summed,
     other information is discarded and a column is added to record the number of
     unique clones (rows) for each unique receptor sequence.
@@ -73,9 +73,6 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
   # Create some data
   data <- data.frame(
     clone_seq = c("ATCG", rep("ACAC", 2), rep("GGGG", 4)),

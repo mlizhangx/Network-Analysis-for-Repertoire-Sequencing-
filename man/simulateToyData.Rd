@@ -156,6 +156,30 @@ simulateToyData(
 }
 \examples{
 \dontrun{
-    simulateToyData()
+dat1 <- simulateToyData()
+
+dat2 <- simulateToyData(chains = 2)
+
+simulateToyData(sample_size = 500,
+                num_edits = 10,
+                seed_value = 1,
+                no_return = TRUE,
+                output_dir = tempdir())
+
+dat4 <-
+  simulateToyData(
+    samples = 5,
+    sample_size = 50,
+    prefix_length = 0,
+    prefix_chars = "",
+    prefix_probs = matrix(1, nrow = 5),
+    affixes = c("CASSLGYEQYF", "CASSLGETQYF",
+                "CASSLGTDTQYF", "CASSLGTEAFF",
+                "CASSLGGTEAFF", "CAGLGGRDQETQYF",
+                "CASSQETQYF", "CASSLTDTQYF",
+                "CANYGYTF", "CANTGELFF",
+                "CSANYGYTF"),
+    affix_probs = matrix(1, ncol = 11, nrow = 5),
+  )
 }
 }

@@ -151,7 +151,7 @@ Note that this function does not return any output; instead, it writes the data 
 
 ```{r}
 # Intermediate files created during this step
-nbd_files <- file.path(dir_nbds, list.files(dir_nbds))
+nbd_files <- list.files(dir_nbds, full.names = TRUE)
 nbd_files
 ```
 

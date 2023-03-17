@@ -113,90 +113,98 @@ buildAssociatedClusterNetwork(
 \code{\link{findAssociatedClones}}
 }
 \examples{
-# Generate some data
-set.seed(42)
-num_samples <- 30; sample_size <- 30
-groups <- sample(c(0, 1), size = num_samples, replace = TRUE)
-init_chars <- c("AAAA", "AABA", "AACA", "AADA", "AAD", "AAA", "AABAA", "AAAAA")
-init_probs_g0 <- rep(1 / length(init_chars), length(init_chars))
-init_probs_g1 <- c(1, 5, 1, 1, 1, 1, 5, 1)
-init_probs_g1 <- init_probs_g1 / sum(init_probs_g1)
-samples <- matrix(nrow = sample_size, ncol = num_samples)
-for (j in 1:num_samples) {
-  init_probs <- init_probs_g0
-  if (groups[[j]] == 1) { init_probs <- init_probs_g1 }
-  samples[ , j] <- sample(init_chars, sample_size,
-                          replace = TRUE, prob = init_probs)
-}
-num_edits <- 4
-edit_ops <- c("insertion", "deletion", "transmutation")
-edit_probs <- c(10/20, 2/20, 8/20)
-chars <- c("A", "B", "C", "D")
-char_probs_g0 <- c(1/2, 1/6, 1/6, 1/6)
-char_probs_g1 <- c(1/3, 1/6, 1/6, 1/3)
-for (k in 1:num_edits) {
-  for (j in 1:num_samples) {
-    char_probs <- char_probs_g0
-    if ((groups[[j]] == 1)) { char_probs <- char_probs_g1 }
-    for (i in 1:sample_size) {
-      pos <- sample(1:nchar(samples[i, j]), size = 1)
-      op <- sample(edit_ops, size = 1, prob = edit_probs)
-      if (op == "insertion") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      } else if (op == "deletion") {
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, suffix)
-      } else if (op == "transmutation") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      }
-    }
-  }
-}
-sample_symbols <- paste0("sample", 1:num_samples)
+\dontrun{
+## Generate some toy data for demonstration
+
+# Use temp dir
 data_dir <- tempdir()
-for (j in 1:num_samples) {
-  dat <- data.frame(
-    "seq" = samples[ , j], "sample_id" = j, "group" = groups[[j]],
-    "count" = rbinom(sample_size, size = 1e5, prob = 0.5))
-  assign(x = sample_symbols[[j]], value = dat)
-  saveRDS(dat, file = file.path(data_dir, paste0(j, ".rds")))
-  }
 
-files <- file.path(data_dir, paste0(1:num_samples, ".rds"))
+# Directory to store input files
+dir_input_samples <- file.path(data_dir, "input_samples")
+dir.create(dir_input_samples, showWarnings = FALSE)
 
-## Find receptor sequences associated with comparison group
+samples <- 30
+affixes <- c("AAAA", "AASA", "AACA", "AAQA", "AAQ", "AAA", "AASAA", "AAAAA")
+affix_probs_g0 <- rep(1 / length(affixes),
+                      times = length(affixes) * samples / 2)
+affix_probs_g1 <- rep(c(1, 5, 1, 1, 1, 1, 5, 1), times = samples / 2)
+affix_probs <- matrix(c(affix_probs_g0, affix_probs_g1),
+                      nrow = samples, byrow = TRUE)
+new_probs_g0 <- rep(c(1/2, 1/6, 1/6, 1/6), times = samples / 2)
+new_probs_g1 <- rep(c(1/3, 1/6, 1/6, 1/3), times = samples / 2)
+new_probs <- matrix(c(new_probs_g0, new_probs_g1),
+                    nrow = samples, byrow = TRUE)
+simulateToyData(
+  samples = samples,
+  sample_size = 30,
+  prefix_length = 1,
+  prefix_chars = c("A", "C"),
+  prefix_probs = cbind(rep(1, samples), rep(0, samples)),
+  affixes = affixes,
+  affix_probs = affix_probs,
+  num_edits = 4,
+  edit_pos_probs = function(seq_length) {
+    dnorm(seq(-4, 4, length.out = seq_length))
+  },
+  edit_ops = c("insertion", "deletion", "transmutation"),
+  edit_probs = c(5, 1, 4),
+  new_chars = c("A", "S", "C", "Q"),
+  new_probs = new_probs,
+  output_dir = dir_input_samples,
+  no_return = TRUE
+)
+
+
+## 1. Find Associated Sequences
+
+# input files for step 1 (one per sample)
+input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
+head(input_files)
+
+# group labels for the samples
+group_labels <- c(rep("reference", samples / 2), rep("comparison", samples / 2))
+
+# search across samples for associated sequences using Fisher's exact test
 associated_seqs <- findAssociatedSeqs(
-  file_list = files, input_type = "rds",
-  group_ids = groups,
-  min_seq_length = NULL,
-  drop_matches = NULL,
-  groups = c(0, 1),
-  seq_col = "seq",
-  outfile = NULL)
+  file_list = input_files, input_type = "rds",
+  group_ids = group_labels, groups = c("reference", "comparison"),
+  min_seq_length = NULL, drop_matches = NULL,
+  seq_col = "CloneSeq", outfile = NULL)
+head(associated_seqs)
 
-## Gather clones in public neighborhoods of each associated sequence
+
+## 2. Find Associated Clones
+
+# output directory for current step
+dir_nbds <- file.path(data_dir, "assoc_seq_nbds")
+
+# Identify neighborhood around each associated sequence
 findAssociatedClones(
-  file_list = files, input_type = "rds",
-  group_ids = groups,
-  seq_col = "seq",
-  min_seq_length = NULL,
-  dist_type = "levenshtein",
+  file_list = input_files, input_type = "rds", group_ids = group_labels,
+  seq_col = "CloneSeq", dist_type = "levenshtein",
   assoc_seqs = associated_seqs$ReceptorSeq,
-  output_dir = data_dir)
+  min_seq_length = NULL, drop_matches = NULL,
+  output_dir = dir_nbds)
 
-## Combine neighborhoods and perform clustering/network analysis
+
+## 3. Build Associated Cluster Network
+
+# Files created during previous step
+nbd_files <- list.files(dir_nbds, full.names = TRUE)
+nbd_files
+
+# Combine neighborhoods and perform network analysis
 all_clusters <- buildAssociatedClusterNetwork(
-  file_list = file.path(data_dir,
-                        paste0(associated_seqs$ReceptorSeq, ".csv")),
-  seq_col = "seq", dist_type = "levenshtein", size_nodes_by = 1.5,
-  output_dir = NULL)
+  file_list = nbd_files,
+  seq_col = "CloneSeq", dist_type = "levenshtein", size_nodes_by = 1.5,
+  output_dir = file.path(data_dir, "assoc_clusters"))
+
+# focus on a particular cluster
+buildRepSeqNetwork(
+  data = all_clusters$node_data[all_clusters$node_data$cluster_id == 3, ],
+  seq_col = "CloneSeq", color_nodes_by = "CloneSeq", size_nodes_by = 2,
+  output_dir = NULL, output_name = "Cluster 3")
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

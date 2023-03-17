@@ -64,6 +64,7 @@ addClusterLabels(
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \examples{
+\dontrun{
 # Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
@@ -81,6 +82,7 @@ addClusterLabels(plot = network$plots$transitivity,
                  top_n_clusters = 2,
                  criterion = "node_count" # (the default)
                  )
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

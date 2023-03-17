@@ -142,73 +142,79 @@ buildPublicClusterNetwork(
 \code{\link{buildPublicClusterNetworkByRepresentative}}
 }
 \examples{
-## Generate some data
-set.seed(42)
-num_samples <- 30; sample_size <- 30
-groups <- sample(c(0, 1), size = num_samples, replace = TRUE)
-init_chars <- c("AAAA", "AABA", "AACA", "AADA", "AAD", "AAA", "AABAA", "AAAAA")
-init_probs_g0 <- rep(1 / length(init_chars), length(init_chars))
-init_probs_g1 <- c(1, 5, 1, 1, 1, 1, 5, 1)
-init_probs_g1 <- init_probs_g1 / sum(init_probs_g1)
-samples <- matrix(nrow = sample_size, ncol = num_samples)
-for (j in 1:num_samples) {
-  init_probs <- init_probs_g0
-  if (groups[[j]] == 1) { init_probs <- init_probs_g1 }
-  samples[ , j] <- sample(init_chars, sample_size,
-                          replace = TRUE, prob = init_probs)
-}
-num_edits <- 4
-edit_ops <- c("insertion", "deletion", "transmutation")
-edit_probs <- c(10/20, 2/20, 8/20)
-chars <- c("A", "B", "C", "D")
-char_probs_g0 <- c(1/2, 1/6, 1/6, 1/6)
-char_probs_g1 <- c(1/3, 1/6, 1/6, 1/3)
-for (k in 1:num_edits) {
-  for (j in 1:num_samples) {
-    char_probs <- char_probs_g0
-    if ((groups[[j]] == 1)) { char_probs <- char_probs_g1 }
-    for (i in 1:sample_size) {
-      pos <- sample(1:nchar(samples[i, j]), size = 1)
-      op <- sample(edit_ops, size = 1, prob = edit_probs)
-      if (op == "insertion") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      } else if (op == "deletion") {
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, suffix)
-      } else if (op == "transmutation") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      }
-    }
-  }
-}
-sample_symbols <- paste0("sample", 1:num_samples)
+\dontrun{
+
+## Generate some toy data for demonstration
+
+# Use temp dir
 data_dir <- tempdir()
-for (j in 1:num_samples) {
-  dat <- data.frame(
-    "seq" = samples[ , j], "sample_id" = j, "group" = groups[[j]],
-    "count" = rbinom(sample_size, size = 1e5, prob = 0.5))
-  assign(x = sample_symbols[[j]], value = dat)
-  saveRDS(dat, file = file.path(data_dir, paste0(j, ".rds")))
-  }
 
-## Find public clusters
+# Directory to store input files
+dir_input_samples <- file.path(data_dir, "input_samples")
+dir.create(dir_input_samples, showWarnings = FALSE)
+
+samples <- 30
+affixes <- c("AAAA", "AASA", "AACA", "AAQA", "AAQ", "AAA", "AASAA", "AAAAA")
+affix_probs_g0 <- rep(1 / length(affixes),
+                      times = length(affixes) * samples / 2)
+affix_probs_g1 <- rep(c(1, 5, 1, 1, 1, 1, 5, 1), times = samples / 2)
+affix_probs <- matrix(c(affix_probs_g0, affix_probs_g1),
+                      nrow = samples, byrow = TRUE)
+new_probs_g0 <- rep(c(1/2, 1/6, 1/6, 1/6), times = samples / 2)
+new_probs_g1 <- rep(c(1/3, 1/6, 1/6, 1/3), times = samples / 2)
+new_probs <- matrix(c(new_probs_g0, new_probs_g1),
+                    nrow = samples, byrow = TRUE)
+simulateToyData(
+  samples = samples,
+  sample_size = 30,
+  prefix_length = 1,
+  prefix_chars = c("A", "C"),
+  prefix_probs = cbind(rep(1, samples), rep(0, samples)),
+  affixes = affixes,
+  affix_probs = affix_probs,
+  num_edits = 4,
+  edit_pos_probs = function(seq_length) {
+    dnorm(seq(-4, 4, length.out = seq_length))
+  },
+  edit_ops = c("insertion", "deletion", "transmutation"),
+  edit_probs = c(5, 1, 4),
+  new_chars = c("A", "S", "C", "Q"),
+  new_probs = new_probs,
+  output_dir = dir_input_samples,
+  no_return = TRUE
+)
+
+
+## 1. Find Public Clusters in Each Sample
+
+input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
+head(input_files)
+dir_filtered_samples <- file.path(data_dir, "filtered_samples")
 findPublicClusters(
-  file_list = file.path(data_dir, paste0(1:num_samples, ".rds")),
-  input_type = "rds", seq_col = "seq", count_col = "count",
-  output_dir = file.path(data_dir, "filtered_samples"))
+  file_list = input_files, input_type = "rds",
+  sample_ids = paste0("Sample", 1:samples),
+  seq_col = "CloneSeq", count_col = "CloneCount",
+  min_seq_length = NULL, drop_matches = NULL,
+  output_dir = dir_filtered_samples)
 
-## Build public cluster network
-input_dir <- file.path(data_dir, "filtered_samples", "node_meta_data")
+
+## 2. Build Public Cluster Network
+
+# Node-level meta data for each sample's public clusters
+dir_filtered_samples_node <- file.path(dir_filtered_samples, "node_meta_data")
+files_filtered_samples_node <- list.files(dir_filtered_samples_node,
+                                          full.names = TRUE)
+head(files_filtered_samples_node)
+
+dir_out <- file.path(data_dir, "public_clusters")
+
+# Collect clones from all public clusters and perform network analysis
 buildPublicClusterNetwork(
-  file_list = file.path(input_dir, list.files(input_dir)),
-  seq_col = "seq", count_col = "count", output_dir = NULL)
+  file_list = files_filtered_samples_node,
+  seq_col = "CloneSeq", count_col = "CloneCount",
+  color_nodes_by = "cluster_id", output_dir = dir_out)
+}
+
 }
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the

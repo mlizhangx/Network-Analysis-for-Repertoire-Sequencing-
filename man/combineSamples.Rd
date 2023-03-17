@@ -122,78 +122,34 @@ combineSamples(
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \examples{
-# Generate some data
-set.seed(42)
-num_samples <- 10; sample_size <- 10
-groups <- sample(c(0, 1), size = num_samples, replace = TRUE)
-init_chars <- c("AAAA", "AABA", "AACA", "AADA", "AAD", "AAA", "AABAA", "AAAAA")
-init_probs_g0 <- rep(1 / length(init_chars), length(init_chars))
-init_probs_g1 <- c(1, 5, 1, 1, 1, 1, 5, 1)
-init_probs_g1 <- init_probs_g1 / sum(init_probs_g1)
-samples <- matrix(nrow = sample_size, ncol = num_samples)
-for (j in 1:num_samples) {
-  init_probs <- init_probs_g0
-  if (groups[[j]] == 1) { init_probs <- init_probs_g1 }
-  samples[ , j] <- sample(init_chars, sample_size,
-                          replace = TRUE, prob = init_probs)
-}
-num_edits <- 1
-edit_ops <- c("insertion", "deletion", "transmutation")
-edit_probs <- c(10/20, 2/20, 8/20)
-chars <- c("A", "B", "C", "D")
-char_probs_g0 <- c(1/2, 1/6, 1/6, 1/6)
-char_probs_g1 <- c(1/3, 1/6, 1/6, 1/3)
-for (k in 1:num_edits) {
-  for (j in 1:num_samples) {
-    char_probs <- char_probs_g0
-    if ((groups[[j]] == 1)) { char_probs <- char_probs_g1 }
-    for (i in 1:sample_size) {
-      pos <- sample(1:nchar(samples[i, j]), size = 1)
-      op <- sample(edit_ops, size = 1, prob = edit_probs)
-      if (op == "insertion") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      } else if (op == "deletion") {
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, suffix)
-      } else if (op == "transmutation") {
-        char <- sample(chars, size = 1, prob = char_probs)
-        prefix <- substr(samples[i, j], 1, pos - 1)
-        suffix <- substr(samples[i, j], pos + 1, nchar(samples[i, j]))
-        samples[i, j] <- paste0(prefix, char, suffix)
-      }
-    }
-  }
-}
-sample_symbols <- paste0("sample", 1:num_samples)
+## Generate some toy data for demonstration
+
+# Use temp dir
 data_dir <- tempdir()
-for (j in 1:num_samples) {
-  dat <- data.frame(
-    "seq" = samples[ , j], "sample_id" = j, "group" = groups[[j]],
-    "count" = rbinom(sample_size, size = 100, prob = 0.5))
-  assign(x = sample_symbols[[j]], value = dat)
-  saveRDS(dat, file = file.path(data_dir, paste0(j, ".rds")))
-  }
+
+# Directory to store input files
+dir_samples <- file.path(data_dir, "samples")
+dir.create(dir_samples, showWarnings = FALSE)
+simulateToyData(sample_size = 5,
+                output_dir = dir_samples,
+                no_return = TRUE)
 
 
 # Load data frames and combine
 data <- loadDataFromFileList(
-  file_list = file.path(data_dir, paste0(1:num_samples, ".rds")),
+  file_list = list.files(dir_samples, full.names = TRUE),
   input_type = "rds")
 
 
 ## Same as above, but filter out seqs shorter than 3 characters,
-## drop the "count" column and add sample ID
+## drop the count/freq/sampleID columns & add new sample ID column
 data2 <- combineSamples(
-  file_list = file.path(data_dir, paste0(1:num_samples, ".rds")),
+  file_list = list.files(dir_samples, full.names = TRUE),
   input_type = "rds",
-  seq_col = "seq",
+  seq_col = "CloneSeq",
   min_seq_length = 3,
-  subset_cols = "seq",
-  sample_ids = as.character(1:num_samples))
+  subset_cols = "CloneSeq",
+  sample_ids = c("id01", "id02"))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

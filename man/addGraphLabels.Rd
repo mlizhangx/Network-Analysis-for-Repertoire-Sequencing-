@@ -54,3 +54,21 @@ addGraphLabels(plot, node_labels, size = 5, color = "black")
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 %% ~Make other sections like Warning with \section{Warning }{....} ~
+\examples{
+# Simulate some toy data for demonstration
+toy_data <- simulateToyData(samples = 1, sample_size = 10,
+                            prefix_length = 1)
+
+# Generate network, but don't print the plot yet
+network <- buildRepSeqNetwork(
+  toy_data, seq_col = "CloneSeq",
+  print_plots = FALSE, output_dir = NULL)
+
+# Annotate the plot, labeling each node with its clone sequence
+network$plots[[1]] <- addGraphLabels(network$plots[[1]],
+                                     network$node_data$CloneSeq,
+                                     size = 4)
+
+# View the plot
+network$plots[[1]]
+}

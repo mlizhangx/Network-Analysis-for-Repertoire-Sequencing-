@@ -56,16 +56,15 @@ filterInputData(data, seq_col, min_seq_length = NULL,
     Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
 }
 \examples{
-\dontrun{
-variables_to_keep <- c("CloneCount", "CloneFrequency",
-                       "VGene", "DGene", "JGene", "CDR3Length")
-filtered_data <-
-  filterInputData(data, seq_col = "seqs",
-                  min_seq_length = 5,
-                  drop_matches = "[*|_]",
-                  subset_cols = variables_to_keep)
-}
+## Generate some toy data for demonstration
+raw_data <- simulateToyData()
 
+# Filter data
+filtered_data <-
+  filterInputData(raw_data, seq_col = "CloneSeq",
+                  min_seq_length = 13,
+                  drop_matches = "[*|_]",
+                  subset_cols = c("CloneSeq", "CloneFrequency", "SampleID"))
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
