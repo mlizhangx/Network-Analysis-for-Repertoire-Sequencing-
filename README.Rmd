@@ -156,13 +156,13 @@ names(output$node_data)
 ```
 
 
-To choose which node-level network properties are computed, use the `node_stat_settings()` function, passing its output to the `stats_to_include` argument of `buildRepSeqNetwork()`...
+To choose which node-level network properties are computed, use the `chooseNodeStats()` function, passing its output to the `stats_to_include` argument of `buildRepSeqNetwork()`...
 
 ```{r, eval = FALSE}
-# example usage of node_stat_settings()
+# example usage of chooseNodeStats()
 buildRepSeqNetwork(
   toy_data, "CloneSeq", node_stats = TRUE,
-  stats_to_include = node_stat_settings(cluster_id = TRUE, closeness = FALSE))
+  stats_to_include = chooseNodeStats(cluster_id = TRUE, closeness = FALSE))
 ```
 
 ...or include all network properties using either of the following methods.
@@ -171,7 +171,7 @@ buildRepSeqNetwork(
 # the following two calls are equivalent:
 buildRepSeqNetwork(
   toy_data, "CloneSeq", node_stats = TRUE, 
-  stats_to_include = node_stat_settings(all_stats = TRUE))
+  stats_to_include = chooseNodeStats(all_stats = TRUE))
 
 buildRepSeqNetwork(
   toy_data, "CloneSeq", node_stats = TRUE, stats_to_include = "all")

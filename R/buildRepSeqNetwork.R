@@ -9,7 +9,7 @@ buildRepSeqNetwork <- function(
   ## Network ##
   dist_type = "hamming", dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
-  node_stats = FALSE, stats_to_include = node_stat_settings(),
+  node_stats = FALSE, stats_to_include = chooseNodeStats(),
   cluster_stats = FALSE,
   cluster_fun = cluster_fast_greedy,
 
@@ -24,21 +24,36 @@ buildRepSeqNetwork <- function(
   pdf_width = 12, pdf_height = 10
 
 ) {
-  .createOutputDir(output_dir)
 
-  # Convert column references to character if not already
+  ### CHECK INPUTS AND PREPARE DATA ###
+  # Coerce data to data frame
+  data <- as.data.frame(data)
+
+  # Initial argument checks
+  .checkArgs.buildRepSeqNetwork(
+    data, seq_col, count_col, subset_cols, min_seq_length, drop_matches,
+    dist_type, dist_cutoff, drop_isolated_nodes, node_stats, stats_to_include,
+    cluster_stats, plots, print_plots, plot_title, plot_subtitle,
+    color_nodes_by, output_type, output_name, pdf_width, pdf_height)
+
+  # Convert column references to character
   seq_col <- .convertColRef(seq_col, data)
   count_col <- .convertColRef(count_col, data)
   color_nodes_by <- .convertColRef(color_nodes_by, data)
   subset_cols <- .convertColRef(subset_cols, data)
   subset_cols <- .processSubsetCols(subset_cols, c(count_col, color_nodes_by))
 
+  # Filter data
   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
-                          subset_cols)
+                          subset_cols, count_col)
   if (nrow(data) < 2) {
     warning("Insufficient remaining receptor sequences; at least two needed")
     return(NULL)
   }
+
+  # Create output directory
+  .createOutputDir(output_dir)
+
   ### BUILD NETWORK ###
   out <- generateNetworkObjects(data, seq_col, dist_type, dist_cutoff,
                                 drop_isolated_nodes)

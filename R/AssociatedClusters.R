@@ -230,7 +230,7 @@ buildAssociatedClusterNetwork <- function(
     input_type = "csv", data_symbols = NULL, header = TRUE, sep = ",",
     seq_col, min_seq_length = NULL, drop_matches = NULL,
     drop_isolated_nodes = FALSE, node_stats = TRUE,
-    stats_to_include = node_stat_settings(cluster_id = TRUE),
+    stats_to_include = chooseNodeStats(cluster_id = TRUE),
     cluster_stats = TRUE, color_nodes_by = "cluster_id",
     output_name = "AssociatedClusterNetwork", ...
 ) {
@@ -405,7 +405,7 @@ buildAssociatedClusterNetwork <- function(
 #   dist_cutoff = 1,
 #   neighborhood_radius = 1,
 #   node_stats = TRUE, # cluster_id will always be computed even if FALSE
-#   stats_to_include = node_stat_settings(), # cluster_id forced to TRUE
+#   stats_to_include = chooseNodeStats(), # cluster_id forced to TRUE
 #   cluster_stats = FALSE,
 #
 #   # Plot Settings (global network)

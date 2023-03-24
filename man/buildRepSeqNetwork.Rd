@@ -23,7 +23,7 @@ buildRepSeqNetwork(
   dist_type = "hamming", dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
   node_stats = FALSE,
-  stats_to_include = node_stat_settings(),
+  stats_to_include = chooseNodeStats(),
   cluster_stats = FALSE,
   cluster_fun = cluster_fast_greedy,
 
@@ -91,7 +91,7 @@ buildRepSeqNetwork(
 }
   \item{stats_to_include}{
 %%     ~~Describe \code{stats_to_include} here~~
-    A list returned by \code{node_stat_settings()}, specifying the node-level
+    A logical vector returned by \code{chooseNodeStats()}, specifying the node-level
     properties to include. Also accepts the values \code{"all"} and
     \code{"cluster_id_only"}. Only relevant if \code{node_stats = TRUE}.
 }
@@ -126,7 +126,8 @@ buildRepSeqNetwork(
 %%     ~~Describe \code{color_nodes_by} here~~
     Optional. Column name or number of \code{data} used to color network nodes
     in visualizations. If a vector of values is supplied, one plot will be
-    generated for each value. The value \code{"auto"} attempts to use one of several        variables (e.g., cluster ID) to color the nodes, depending on what is available.
+    generated for each value. The value \code{"auto"} attempts to use one of several
+    variables (e.g., cluster ID) to color the nodes, depending on what is available.
 }
   \item{...}{
   Other arguments to \code{generateNetworkGraphPlots}.

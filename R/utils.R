@@ -252,7 +252,7 @@ saveNetworkPlots <- function(plotlist, outfile = "MyRepSeqNetwork.pdf",
 
 filterInputData <- function(
     data, seq_col, min_seq_length = NULL, drop_matches = NULL,
-    subset_cols = NULL) {
+    subset_cols = NULL, count_col = NULL) {
 
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
@@ -260,6 +260,12 @@ filterInputData <- function(
   for (i in 1:length(seq_col)) {
     if (!is.character(data[[seq_col[[i]]]])) {
       data[[seq_col[[i]]]] <- as.character(data[[seq_col[[i]]]])
+    }
+    # drop rows with NA values in sequence column
+    NA_indices <- is.na(data[[seq_col[[i]]]])
+    if (sum(NA_indices) > 0) {
+      warning(paste("Dropping", sum(NA_indices), "rows containing NA values in sequence column", i))
+      data <- data[!NA_indices, ]
     }
   }
 
@@ -282,6 +288,19 @@ filterInputData <- function(
   # subset data columns
   if (!is.null(subset_cols)) {
     data <- .subsetColumns(data, c(seq_col, subset_cols))
+  }
+
+  # Convert count column to numeric and check for NA/NaNs
+  if (!is.null(count_col)) {
+    if (!is.numeric(data[[count_col]])) {
+      data[[count_col]] <- as.numeric(data[[count_col]])
+    }
+    # drop rows with NA or NaN values in count column
+    NaN_indices <- is.na(data[[count_col]])
+    if (sum(NaN_indices) > 0) {
+      warning(paste("Dropping", sum(NaN_indices), "rows containing NA/NaN values in count column", i))
+      data <- data[!NaN_indices, ]
+    }
   }
 
   return(data)
@@ -608,7 +627,8 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
     return_type = "network" # can use "adjacency_matrix" to return the adjacency mat
 ) {
   ### COMPUTE ADJACENCY MATRIX ###
-  if (dist_type %in% c("levenshtein", "hamming")) {
+  if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L",
+                       "hamming", "Hamming", "ham", "Ham", "h", "H")) {
     adjacency_matrix <-
       sparseAdjacencyMatFromSeqs(seqs = seqs,
                                  dist_type = dist_type,
@@ -737,62 +757,62 @@ generateNetworkObjects <- function(
 addNodeNetworkStats <- function(
     data, # rep-seq data corresponding to the network
     net, # igraph network object
-    stats_to_include = node_stat_settings(),
+    stats_to_include = chooseNodeStats(),
     cluster_fun = cluster_fast_greedy
 ) {
 
-  if (typeof(stats_to_include) != "list")  {
+  if (!typeof(stats_to_include) %in% c("list", "logical"))  {
     if (stats_to_include == "all") {
-      stats_to_include <- node_stat_settings(all_stats = TRUE)
+      stats_to_include <- chooseNodeStats(all_stats = TRUE)
     } else if (stats_to_include == "cluster_id_only") {
-      stats_to_include <- node_stat_settings(
+      stats_to_include <- chooseNodeStats(
         degree = FALSE, cluster_id = TRUE, transitivity = FALSE,
         eigen_centrality = FALSE, centrality_by_eigen = FALSE,
         betweenness = FALSE, centrality_by_betweenness = FALSE,
         authority_score = FALSE, coreness = FALSE, page_rank = FALSE)
     } }
-  if (stats_to_include$degree | stats_to_include$all_stats) {
+  if (stats_to_include[["degree"]] | stats_to_include[["all_stats"]]) {
     data$degree <- igraph::degree(net) }
 
-  if (stats_to_include$cluster_id | stats_to_include$all_stats) {
+  if (stats_to_include[["cluster_id"]] | stats_to_include[["all_stats"]]) {
     cat("Computing cluster membership within the network...")
     data$cluster_id <- as.factor(as.integer(cluster_fun(net)$membership))
     cat(" Done.\n")
   }
 
   cat(paste0("Computing node-level network statistics..."))
-  if (stats_to_include$transitivity | stats_to_include$all_stats) {
+  if (stats_to_include[["transitivity"]] | stats_to_include[["all_stats"]]) {
     data$transitivity <- igraph::transitivity(net, type = "local")
   }
-  if (stats_to_include$closeness | stats_to_include$all_stats) {
+  if (stats_to_include[["closeness"]] | stats_to_include[["all_stats"]]) {
     data$closeness <- igraph::closeness(net, mode = "all", weights = NA)
   }
-  if (stats_to_include$centrality_by_closeness | stats_to_include$all_stats) {
+  if (stats_to_include[["centrality_by_closeness"]] | stats_to_include[["all_stats"]]) {
     data$centrality_by_closeness <-
       igraph::centr_clo(net, mode = "all", normalized = T)$res
   }
-  if (stats_to_include$eigen_centrality | stats_to_include$all_stats) {
+  if (stats_to_include[["eigen_centrality"]] | stats_to_include[["all_stats"]]) {
     data$eigen_centrality <-
       igraph::eigen_centrality(net, directed = T, weights = NA)$vector
   }
-  if (stats_to_include$centrality_by_eigen | stats_to_include$all_stats) {
+  if (stats_to_include[["centrality_by_eigen"]] | stats_to_include[["all_stats"]]) {
     data$centrality_by_eigen <-
       igraph::centr_eigen(net, directed = T, normalized = T)$vector
   }
-  if (stats_to_include$betweenness | stats_to_include$all_stats) {
+  if (stats_to_include[["betweenness"]] | stats_to_include[["all_stats"]]) {
     data$betweenness <- igraph::betweenness(net, directed = T, weights = NA) }
 
-  if (stats_to_include$centrality_by_betweenness | stats_to_include$all_stats) {
+  if (stats_to_include[["centrality_by_betweenness"]] | stats_to_include[["all_stats"]]) {
     data$centrality_by_betweenness <-
       igraph::centr_betw(net, directed = T, normalized = T)$res
   }
-  if (stats_to_include$authority_score | stats_to_include$all_stats) {
+  if (stats_to_include[["authority_score"]] | stats_to_include[["all_stats"]]) {
     data$authority_score <- igraph::authority_score(net, weights = NA)$vector
   }
-  if (stats_to_include$coreness | stats_to_include$all_stats) {
+  if (stats_to_include[["coreness"]] | stats_to_include[["all_stats"]]) {
     data$coreness <- igraph::coreness(net, mode = "all")
   }
-  if (stats_to_include$page_rank | stats_to_include$all_stats) {
+  if (stats_to_include[["page_rank"]] | stats_to_include[["all_stats"]]) {
     data$page_rank <- igraph::page_rank(net)$vector
   }
   cat(" Done.\n")
@@ -801,7 +821,7 @@ addNodeNetworkStats <- function(
 
 # return list specifying node-level properties by T/F
 # pass to `stats_to_include` argument of `computeNodeNetworkStats()`
-node_stat_settings <- function(
+chooseNodeStats <- node_stat_settings <- function(
     degree = TRUE,
     cluster_id = FALSE,
     transitivity = TRUE,
@@ -816,19 +836,19 @@ node_stat_settings <- function(
     page_rank = TRUE,
     all_stats = FALSE
 ) {
-  list(degree = degree,
-       cluster_id = cluster_id,
-       transitivity = transitivity,
-       closeness = closeness,
-       centrality_by_closeness = centrality_by_closeness,
-       eigen_centrality = eigen_centrality,
-       centrality_by_eigen = centrality_by_eigen,
-       betweenness = betweenness,
-       centrality_by_betweenness = centrality_by_betweenness,
-       authority_score = authority_score,
-       coreness = coreness,
-       page_rank = page_rank,
-       all_stats = all_stats)
+  c("degree" = degree,
+    "cluster_id" = cluster_id,
+    "transitivity" = transitivity,
+    "closeness" = closeness,
+    "centrality_by_closeness" = centrality_by_closeness,
+    "eigen_centrality" = eigen_centrality,
+    "centrality_by_eigen" = centrality_by_eigen,
+    "betweenness" = betweenness,
+    "centrality_by_betweenness" = centrality_by_betweenness,
+    "authority_score" = authority_score,
+    "coreness" = coreness,
+    "page_rank" = page_rank,
+    "all_stats" = all_stats)
 }
 
 

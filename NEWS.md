@@ -1,3 +1,18 @@
+# 0.0.9035
+    * Argument checks added to `buildRepSeqNetwork`
+    * `buildRepSeqNetwork` now automatically attempts to perform the following conversions:
+        * coerces the input data to a data frame
+        * coerces the sequence column to character
+        * coerces the count column to numeric, if provided
+    * `filterInputData`, which affect top-level functions such as `buildRepSeqNetwork` that call it:
+        * automatically drops data rows with `NA` values in the sequence column, with a warning produced
+        * added optional `count_col` arg; if provided, the count column will be coerced to numeric and rows with `NA/NaN` values in the count column will be dropped with a warning
+    * Changes related to choosing node-level network statistics:
+        * The `node_stat_settings` function now has a duplicate with the less-confusing name `chooseNodeStats`; the newer name is now used in place of `node_stat_settings` for defaults and in the tutorials
+        * The `stats_to_include` argument of `addNodeNetworkStats`, `buildRepSetNetwork`, etc., now also accepts a named logical vector with the same named elements as the list previously required. A list will still work, for backwards compatibility.
+        * `chooseNodeStats` / `node_stat_settings` now generate a named logical vector rather than a list.
+    * The `dist_type` argument is now more flexible in the values it will accept; for example `"lev"` or simply `"l"` is now equivalent to `"levenshtein"`
+
 # 0.0.9034
 
 * Rdocumentation files

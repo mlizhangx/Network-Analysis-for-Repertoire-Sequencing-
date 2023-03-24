@@ -1,4 +1,5 @@
-\name{node_stat_settings}
+\name{chooseNodeStats}
+\alias{chooseNodeStats}
 \alias{node_stat_settings}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -7,10 +8,26 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Create a list, for use by \code{addNodeNetworkStats()}, specifying the node-level
-    network stats to be computed.
+    Create a named logical vector specifying node-level
+    network stats to compute. The output is passed to the \code{stats_to_include} argument of functions
+    such as \code{\link{buildRepSeqNetwork}} and \code{\link{addNodeNetworkStats}}.
 }
 \usage{
+chooseNodeStats(degree = TRUE,
+                cluster_id = FALSE,
+                transitivity = TRUE,
+                closeness = FALSE,
+                centrality_by_closeness = FALSE,
+                eigen_centrality = TRUE,
+                centrality_by_eigen = TRUE,
+                betweenness = TRUE,
+                centrality_by_betweenness = TRUE,
+                authority_score = TRUE,
+                coreness = TRUE,
+                page_rank = TRUE,
+                all_stats = FALSE)
+
+# Original name (still exists for backward compatibility)
 node_stat_settings(degree = TRUE,
                    cluster_id = FALSE,
                    transitivity = TRUE,
@@ -78,7 +95,7 @@ node_stat_settings(degree = TRUE,
 }
   \item{all_stats}{
 %%     ~~Describe \code{all_stats} here~~
-    Logical. If \code{TRUE}, then \code{addNodeNetworkStats()} will disregard the values for the other settings and instead treat all of them as \code{TRUE}.
+    Logical. If \code{TRUE}, then \code{\link{addNodeNetworkStats}} will disregard the values for the other settings and instead treat all of them as \code{TRUE}.
 }
 }
 \value{
@@ -87,7 +104,7 @@ node_stat_settings(degree = TRUE,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    An object of type \code{"list"}, for use with \code{addNodeNetworkStats()} as input to the \code{stats_to_include} argument.
+    A logical vector for use with \code{\link{addNodeNetworkStats}} or \code{\link{buildRepSeqNetwork}} as input to the \code{stats_to_include} argument.
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -112,14 +129,11 @@ data_w_stats <-
   addNodeNetworkStats(
     net$node_data, net$igraph,
     stats_to_include =
-      node_stat_settings(
+      chooseNodeStats(
           cluster_id = TRUE,
           closeness = TRUE,
           centrality_by_closeness = TRUE,
-          betweenness = FALSE,
-          centrality_by_betweenness = FALSE,
-          authority_score = FALSE,
-          page_rank = FALSE
+          centrality_by_betweenness = FALSE
       )
   )
 
@@ -128,7 +142,7 @@ data_w_all_stats <-
   addNodeNetworkStats(
     net$node_data, net$igraph,
     stats_to_include =
-      node_stat_settings(all_stats = TRUE)
+      chooseNodeStats(all_stats = TRUE)
   )
 }
 }

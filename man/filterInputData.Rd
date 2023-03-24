@@ -13,7 +13,8 @@
 \usage{
 filterInputData(data, seq_col, min_seq_length = NULL,
                 drop_matches = NULL,
-                subset_cols = NULL)
+                subset_cols = NULL,
+                count_col = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -36,6 +37,12 @@ filterInputData(data, seq_col, min_seq_length = NULL,
   \item{subset_cols}{
     Optional vector of column names or numbers of \code{data}; if supplied, only these (in addition to the column referenced by \code{seq_col}) are included in the output. If \code{NULL} (the default), all columns of \code{data} are included.
 }
+  \item{count_col}{
+    Optional column name or number of \code{data}; if supplied, the specified column of the data will be coerced to numeric and data rows containing NA/NaNs in the count column will be dropped.
+}
+}
+\details{
+  The sequence column(s) of the data are coerced to character type and rows containing NA values in the sequence column(s) are dropped.
 }
 \value{
 %%  ~Describe the value returned

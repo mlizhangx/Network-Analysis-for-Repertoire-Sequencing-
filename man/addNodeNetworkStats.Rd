@@ -14,7 +14,7 @@
 }
 \usage{
 addNodeNetworkStats(data, net,
-                    stats_to_include = node_stat_settings(),
+                    stats_to_include = chooseNodeStats(),
                     cluster_fun = cluster_fast_greedy)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -31,7 +31,7 @@ addNodeNetworkStats(data, net,
 }
   \item{stats_to_include}{
 %%     ~~Describe \code{stats_to_include} here~~
-      A list generated using \code{node_stat_settings()} that specifies the network
+      A list generated using \code{\link{chooseNodeStats}} that specifies the network
       statistics to compute. Alternatively, \code{stats_to_include = "all"} will
       compute all node-level network stats, and \code{stats_to_include = "cluster_id_only"}
       will compute cluster membership only.

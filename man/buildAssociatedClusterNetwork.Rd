@@ -21,7 +21,7 @@ buildAssociatedClusterNetwork(
     drop_isolated_nodes = FALSE,
     node_stats = TRUE,
     stats_to_include =
-      node_stat_settings(cluster_id = TRUE),
+      chooseNodeStats(cluster_id = TRUE),
     cluster_stats = TRUE,
     color_nodes_by = "cluster_id",
     output_name = "AssociatedClusterNetwork",
