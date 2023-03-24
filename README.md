@@ -77,7 +77,6 @@ package vignettes and documentation:
 
 ``` r
 browseVignettes("NAIR")
-#> No vignettes found by browseVignettes("NAIR")
 help(package = "NAIR")
 ```
 
@@ -132,17 +131,17 @@ output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq",
 #> Generating graph plot...
 #>  Done.
 #> Node-level meta-data saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/MyRepSeqNetwork_NodeMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/MyRepSeqNetwork_NodeMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;" />
 
     #> Network graph plots saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/MyRepSeqNetwork.pdf
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/MyRepSeqNetwork.pdf
     #> Network igraph saved in edgelist format to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/MyRepSeqNetwork_EdgeList.txt
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/MyRepSeqNetwork_EdgeList.txt
     #> Adjacency matrix saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/MyRepSeqNetwork_AdjacencyMatrix.mtx
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/MyRepSeqNetwork_AdjacencyMatrix.mtx
 
 The function returns a list containing the following items:
 
@@ -456,12 +455,12 @@ We create the vector of file paths for these input files below:
 # input files for step 1 (one per sample)
 input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
 head(input_files)
-#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample1.rds"
-#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample2.rds"
-#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample3.rds"
-#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample4.rds"
-#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample5.rds"
-#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample6.rds"
+#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample1.rds"
+#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample2.rds"
+#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample3.rds"
+#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample4.rds"
+#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample5.rds"
+#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample6.rds"
 ```
 
 When calling `findAssociatedSeqs()`, we specify the file format of our
@@ -678,7 +677,7 @@ findAssociatedClones(
 #> >>> Done processing samples. Compiling results:
 #> Gathering data from all samples for sequence 1 (AAAAAA)... Done.
 #> >>> All tasks complete. Output is contained in the following directory:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/assoc_seq_nbds
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/assoc_seq_nbds
 ```
 
 For each associated sequence, its neighborhood consists of all clones
@@ -710,7 +709,7 @@ argument).
 # Intermediate files created during this step
 nbd_files <- file.path(dir_nbds, list.files(dir_nbds))
 nbd_files
-#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/assoc_seq_nbds/AAAAAA.csv"
+#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/assoc_seq_nbds/AAAAAA.csv"
 ```
 
 ## 3. Build Associated Cluster Network
@@ -739,19 +738,19 @@ all_clusters <- buildAssociatedClusterNetwork(
 #> Generating graph plot with nodes colored by cluster_id...
 #>  Done.
 #> Node-level meta-data saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv
 #> Cluster-level meta-data saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-28-1.png" width="100%" style="display: block; margin: auto;" />
 
     #> Network graph plots saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/assoc_clusters/AssociatedClusterNetwork.pdf
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/assoc_clusters/AssociatedClusterNetwork.pdf
     #> Network igraph saved in edgelist format to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt
     #> Adjacency matrix saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx
 
 If desired, we can then perform more detailed network analysis for
 particular clusters of interest.
@@ -826,12 +825,12 @@ We create the vector of file paths for these input files below:
 # input files for step 1 (one per sample)
 input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
 head(input_files)
-#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample1.rds"
-#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample2.rds"
-#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample3.rds"
-#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample4.rds"
-#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample5.rds"
-#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/input_samples/Sample6.rds"
+#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample1.rds"
+#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample2.rds"
+#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample3.rds"
+#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample4.rds"
+#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample5.rds"
+#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/input_samples/Sample6.rds"
 ```
 
 When calling `findPublicClusters()`, we specify the file format of our
@@ -1157,7 +1156,7 @@ findPublicClusters(
 #> * 4 clusters (10 nodes) remain. Saving results... Done.
 #> ----------------------------------------------------------------------
 #> All samples complete. Filtered data is located in the following directory:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/filtered_samples
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/filtered_samples
 ```
 
 The search criteria for the public clusters can be adjusted using the
@@ -1191,24 +1190,24 @@ dir_filtered_samples_node <- file.path(dir_filtered_samples, "node_meta_data")
 files_filtered_samples_node <- file.path(
   dir_filtered_samples_node, list.files(dir_filtered_samples_node))
 head(files_filtered_samples_node)
-#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/node_meta_data/Sample1.rds" 
-#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/node_meta_data/Sample10.rds"
-#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/node_meta_data/Sample11.rds"
-#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/node_meta_data/Sample12.rds"
-#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/node_meta_data/Sample13.rds"
-#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/node_meta_data/Sample14.rds"
+#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/node_meta_data/Sample1.rds" 
+#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/node_meta_data/Sample10.rds"
+#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/node_meta_data/Sample11.rds"
+#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/node_meta_data/Sample12.rds"
+#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/node_meta_data/Sample13.rds"
+#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/node_meta_data/Sample14.rds"
 
 # Cluster-level meta data for each sample's public clusters
 dir_filtered_samples_cluster <- file.path(dir_filtered_samples, "cluster_meta_data")
 files_filtered_samples_cluster <- file.path(
   dir_filtered_samples_cluster, list.files(dir_filtered_samples_cluster))
 head(files_filtered_samples_cluster)
-#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/cluster_meta_data/Sample1.rds" 
-#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/cluster_meta_data/Sample10.rds"
-#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/cluster_meta_data/Sample11.rds"
-#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/cluster_meta_data/Sample12.rds"
-#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/cluster_meta_data/Sample13.rds"
-#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpIr1Z9S/filtered_samples/cluster_meta_data/Sample14.rds"
+#> [1] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/cluster_meta_data/Sample1.rds" 
+#> [2] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/cluster_meta_data/Sample10.rds"
+#> [3] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/cluster_meta_data/Sample11.rds"
+#> [4] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/cluster_meta_data/Sample12.rds"
+#> [5] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/cluster_meta_data/Sample13.rds"
+#> [6] "C:\\Users\\Brian\\AppData\\Local\\Temp\\RtmpGSFFUr/filtered_samples/cluster_meta_data/Sample14.rds"
 ```
 
 If one wishes to also save the unfiltered network data for each sample
@@ -1245,19 +1244,19 @@ buildPublicClusterNetwork(
 #> Generating graph plot with nodes colored by cluster_id...
 #>  Done.
 #> Node-level meta-data saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/public_clusters/PublicClusterNetwork_NodeMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/public_clusters/PublicClusterNetwork_NodeMetadata.csv
 #> Cluster-level meta-data saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/public_clusters/PublicClusterNetwork_ClusterMetadata.csv
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/public_clusters/PublicClusterNetwork_ClusterMetadata.csv
 ```
 
 <img src="man/figures/README-unnamed-chunk-35-1.png" width="100%" style="display: block; margin: auto;" />
 
     #> Network graph plots saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/public_clusters/PublicClusterNetwork.pdf
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/public_clusters/PublicClusterNetwork.pdf
     #> Network igraph saved in edgelist format to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/public_clusters/PublicClusterNetwork_EdgeList.txt
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/public_clusters/PublicClusterNetwork_EdgeList.txt
     #> Adjacency matrix saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx
 
 The function arguments and their behavior largely match those of
 `buildRepSeqNetwork()`.
@@ -1292,11 +1291,11 @@ buildPublicClusterNetworkByRepresentative(
 #> Generating graph plot with nodes colored by ClusterIDPublic...
 #>  Done.
 #> Output saved to file:
-#>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/public_clusters/PubClustByRepresentative.rda
+#>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/public_clusters/PubClustByRepresentative.rda
 ```
 
 <img src="man/figures/README-unnamed-chunk-36-1.png" width="100%" style="display: block; margin: auto;" />
 
     #> Network graph plots saved to file:
-    #>   C:\Users\Brian\AppData\Local\Temp\RtmpIr1Z9S/public_clusters/PubClustByRepresentative.pdf
+    #>   C:\Users\Brian\AppData\Local\Temp\RtmpGSFFUr/public_clusters/PubClustByRepresentative.pdf
     #> All tasks complete.

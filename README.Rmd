@@ -74,7 +74,7 @@ Installing the development version requires a toolchain compiler. On Windows, th
 # Documentation
 
 Once the package is installed, type the following commands to access the package vignettes and documentation:
-```{r}
+```{r, eval = FALSE}
 browseVignettes("NAIR")
 help(package = "NAIR")
 ```
