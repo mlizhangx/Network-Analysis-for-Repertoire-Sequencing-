@@ -1,3 +1,6 @@
+# 0.0.9036
+    * `buildRepSeqNetwork` no longer returns an error with `dist_cutoff = 0` (fixed a bug involving the argument checks added in version 0.0.9035).
+
 # 0.0.9035
     * Argument checks added to `buildRepSeqNetwork`
     * `buildRepSeqNetwork` now automatically attempts to perform the following conversions:
