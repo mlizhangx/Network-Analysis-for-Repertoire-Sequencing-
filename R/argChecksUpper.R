@@ -26,7 +26,7 @@
 
   .isPosIntOrNull(min_seq_length, "min_seq_length")
 
-  .isPos(dist_cutoff, "dist_cutoff")
+  .isNonneg(dist_cutoff, "dist_cutoff")
   .isPos(pdf_width, "pdf_width")
   .isPos(pdf_height, "pdf_height")
 

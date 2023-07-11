@@ -25,8 +25,6 @@
 
 # Type Checks -------------------------------------------------------------
 
-
-
 # checks that an argument is strictly TRUE or FALSE
 .isTF <- function(value, argname) {
   .hasLength1(value, argname)
@@ -35,16 +33,17 @@
 }
 
 
-# checks that an argument is of type character with length 1
+# is a string
 .isString0 <- function(value, argname) {
   .hasLength1(value, argname)
   .stopifnot(is.character(value), argname, "must be of type 'character'")
 }
+# is a string and is not NULL
 .isString <- function(value, argname) {
   .nonNull(value, argname)
   .isString0(value, argname)
 }
-# check string or NULL
+# is a string or is NULL
 .isStringOrNull <- function(value, argname) {
   if (!is.null(value)) { .isString0(value, argname) }
 }
@@ -61,6 +60,22 @@
 # check string, expression or NULL
 .isStringExprOrNull <- .isStringOrExprOrNull <- function(value, argname) {
   if (!is.null(value)) { .isStringOrExpr0(value, argname) }
+}
+
+
+# checks that argument is nonnegative and finite
+.isNonneg0 <- function(value, argname) {
+  .hasLength1(value, argname)
+  .stopifnot(is.numeric(value), argname, "must be of type 'numeric'")
+  .stopifnot(is.finite(value), argname, "must be finite")
+  .stopifnot(value >= 0, argname, "must be nonnegative")
+}
+.isNonneg <- function(value, argname) {
+  .nonNull(value, argname)
+  .isNonneg0(value, argname)
+}
+.isNonnegOrNull <- function(value, argname) {
+  if (!is.null(value)) { .isNonneg0(value, argname) }
 }
 
 # checks that argument is strictly positive and finite

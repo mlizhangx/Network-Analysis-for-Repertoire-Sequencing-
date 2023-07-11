@@ -1,4 +1,5 @@
-# Changes in NAIR version 0.0.9036 (7/10/2023)
+
+# Changes in NAIR version 0.0.9037 (7/10/2023)
     * Changes to `findAssociatedSeqs`:
         * `groups` argument still exists but is now deprecated and no longer used. Group labels are now automatically determined from the unique values of `group_ids`
         * `sample_ids` argument still exists but is now deprecated and no longer used. Custom sample IDs play no role in `findAssociatedSeqs`; the argument was inherited from a previous function that included the functionality of both `findAssociatedSeqs` and `findAssociatedClones`
@@ -21,6 +22,9 @@
     * `Downstream Analysis` vignette title renamed to `Utility Functions`. A revision to this vignette is planned prior to version 1.0.
     * CXX_STD = CXX11 flag removed from src/Makevars and src/Makevars.win
     
+    
+# 0.0.9036
+    * `buildRepSeqNetwork` no longer returns an error with `dist_cutoff = 0` (fixed a bug involving the argument checks added in version 0.0.9035).
 
 # 0.0.9035
     * Argument checks added to `buildRepSeqNetwork`
