@@ -1,8 +1,8 @@
 ---
-title: "Downstream Analysis"
+title: "Utility Functions"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Downstream Analysis}
+  %\VignetteIndexEntry{Utility Functions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,7 +18,13 @@ knitr::opts_chunk$set(
 ```
 
 
-The output returned by `buildRepSeqNetwork()` and other top-level `NAIR` functions can be used to facilitate further downstream analysis. Some common cases follow.
+The `NAIR` package contains various utility functions designed to complement the main `buildRepSeqNetwork` function. These utility functions streamline various aspects of working with the output of `buildRepSeqNetwork`, providing greater flexibility in the implementation of customized and/or downstream analyses. Some of the roles played by these utility functions include the following:
+
+* Modifying or augmenting plots produced by the `buildRepSeqNetwork` function
+* Using the output of the `buildRepSeqNetwork` function to generate new plots
+* Performing cluster analysis or computing network properties for a network constructed using the `buildRepSeqNetwork` function
+
+In this vignette, we provide an overview of these utility functions.
 
 
 ### Load Data

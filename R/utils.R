@@ -851,6 +851,34 @@ chooseNodeStats <- node_stat_settings <- function(
     "all_stats" = all_stats)
 }
 
+exclusiveNodeStats <- function(
+    degree = FALSE,
+    cluster_id = FALSE,
+    transitivity = FALSE,
+    closeness = FALSE,
+    centrality_by_closeness = FALSE,
+    eigen_centrality = FALSE,
+    centrality_by_eigen = FALSE,
+    betweenness = FALSE,
+    centrality_by_betweenness = FALSE,
+    authority_score = FALSE,
+    coreness = FALSE,
+    page_rank = FALSE
+) {
+  c("degree" = degree,
+    "cluster_id" = cluster_id,
+    "transitivity" = transitivity,
+    "closeness" = closeness,
+    "centrality_by_closeness" = centrality_by_closeness,
+    "eigen_centrality" = eigen_centrality,
+    "centrality_by_eigen" = centrality_by_eigen,
+    "betweenness" = betweenness,
+    "centrality_by_betweenness" = centrality_by_betweenness,
+    "authority_score" = authority_score,
+    "coreness" = coreness,
+    "page_rank" = page_rank,
+    "all_stats" = FALSE)
+}
 
 # Input igraph network and data frame
 # return input data frame augmented with cluster ID
@@ -1411,19 +1439,26 @@ addGraphLabels <- function(plot, node_labels, size = 5, color = "black") {
 # Input network list and graph plot;
 # return plot with top n clusters labeled
 addClusterLabels <- function(plot, net,
-                             top_n_clusters = 20, criterion = "node_count",
-                             size = 5, color = "black") {
+                             top_n_clusters = 20,
+                             cluster_id_col = "cluster_id",
+                             criterion = "node_count",
+                             size = 5, color = "black",
+                             greatest_values = TRUE) {
   dat <- net$node_data
   cdat <- net$cluster_data
 
   # Sort cluster stats by specified criterion
-  cdat <- cdat[order(-cdat[[criterion]]) , ]
+  if (greatest_values) {
+    cdat <- cdat[order(-cdat[[criterion]]) , ]
+  } else {
+    cdat <- cdat[order(cdat[[criterion]]) , ]
+  }
 
   # Identify the top n clusters by specified criterion
   clusters <- as.integer(cdat$cluster_id[1:top_n_clusters])
 
   # Create vector of node labels; only one node per top n cluster is labeled
-  node_labels <- as.integer(dat$cluster_id)
+  node_labels <- as.integer(dat[[cluster_id_col]])
   node_labels[duplicated(node_labels) | !node_labels %in% clusters] <- NA
 
   # Annotate plot with cluster labels and return
@@ -1481,16 +1516,16 @@ addClusterLabels <- function(plot, net,
 # check if color_nodes_by is "auto"; if so, look for variables to use
 .passColorNodesBy <- function(color_nodes_by, data, count_col) {
   if (length(color_nodes_by) == 1) { if (color_nodes_by == "auto") {
-    if ("cluster_id" %in% names(data)) { color_nodes_by <- "cluster_id"
+    if (!is.null(count_col)) { color_nodes_by <- count_col
+    } else if ("cluster_id" %in% names(data)) { color_nodes_by <- "cluster_id"
+    } else if ("degree" %in% names(data)) { color_nodes_by <- "degree"
     } else if ("transitivity" %in% names(data)) { color_nodes_by <- "transitivity"
     } else if ("closeness" %in% names(data)) { color_nodes_by <- "closeness"
-    } else if ("degree" %in% names(data)) { color_nodes_by <- "degree"
     } else if ("eigen_centrality" %in% names(data)) { color_nodes_by <- "eigen_centrality"
     } else if ("betweenness" %in% names(data)) { color_nodes_by <- "betweenness"
     } else if ("coreness" %in% names(data)) { color_nodes_by <- "coreness"
     } else if ("authority_score" %in% names(data)) { color_nodes_by <- "authority_score"
     } else if ("page_rank" %in% names(data)) { color_nodes_by <- "page_rank"
-    } else if (!is.null(count_col)) { color_nodes_by <- count_col
     } else { color_nodes_by <- NULL # default to uniform node colors
     } } }
   return(color_nodes_by)
@@ -1505,7 +1540,7 @@ addClusterLabels <- function(plot, net,
       } else { return("Network by Receptor Sequence Similarity") }
     }
   } else if (type == "pub_clust_rep") {
-    if (plot_title == "auto") { return("Network of Public Clusters by Representative Sequence") }
+    if (plot_title == "auto") { return("Public Cluster Network") }
   }
   return(plot_title)
 }
@@ -1521,8 +1556,8 @@ addClusterLabels <- function(plot, net,
       return(paste("Each node denotes a single TCR/BCR cell or clone\nEdges denote a maximum", dist_type, "distance of", dist_cutoff, "between receptor sequences\n"))
     }
   } else if (type == "pub_clust_rep") {
-    if (plot_subtitle == "auto" & seq_col == "seq_w_max_count") { return("Each node corresponds to a cluster\nSimilarity is based on the sequence with the highest count in each cluster") }
-    return(paste0("Each node corresponds to a cluster\nSimilarity is based on ", seq_col))
+    if (plot_subtitle == "auto" & seq_col == "seq_w_max_count") { return("Each node corresponds to a TCR sequence; edges denote similar sequences\nPublic network includes only one TCR sequence from each cluster in each sample:\nTCR sequence with highest node count") }
+    return(paste0("Each node corresponds to a TCR sequence; edges denote similar sequences\nPublic network includes only one TCR sequence from each cluster in each sample:\n", seq_col))
   }
   return(plot_subtitle)
 }

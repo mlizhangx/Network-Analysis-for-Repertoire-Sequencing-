@@ -23,6 +23,11 @@ findPublicClusters <- function(
 
 ) {
 
+  if (all(plots, !print_plots, is.null(output_dir_unfiltered))) {
+    warning("ignoring `plots = TRUE` since `print_plots = FALSE` and `output_dir_unfiltered` is NULL")
+    plots <- FALSE
+  }
+
   stopifnot("lengths of file_list and sample_ids must match" =
               length(file_list) == length(sample_ids))
   .ensureOutputDir(output_dir)
@@ -60,8 +65,7 @@ buildPublicClusterNetwork <- function(
 
 
   ## Visualization ##
-  color_nodes_by = c("ClusterIDPublic", "SampleID"),
-  color_scheme = "turbo", color_title = c("public cluster", "sample"),
+  color_nodes_by = "SampleID", color_scheme = "turbo",
 
   ## Output ##
   output_dir = file.path(getwd(), "public_clusters"),
@@ -84,8 +88,8 @@ buildPublicClusterNetwork <- function(
   net <- buildRepSeqNetwork(
     data = data, seq_col = seq_col, drop_isolated_nodes = drop_isolated_nodes,
     node_stats = node_stats, stats_to_include = stats_to_include,
-    cluster_stats = cluster_stats, color_nodes_by = color_nodes_by,
-    color_scheme = color_scheme, color_title = color_title,
+    cluster_stats = cluster_stats,
+    color_nodes_by = color_nodes_by, color_scheme = color_scheme,
     output_dir = output_dir, output_name = output_name, ...)
   if (is.null(net)) { return(NULL) }
 
@@ -107,8 +111,7 @@ buildPublicClusterNetworkByRepresentative <- function(
   ## Visualization ##
   plots = TRUE, print_plots = TRUE,
   plot_title = "auto", plot_subtitle = "auto",
-  color_nodes_by = c("ClusterIDPublic", "SampleID"),
-  color_scheme = "turbo", color_title = c("public cluster", "sample"),
+  color_nodes_by = "SampleID", color_scheme = "turbo",
   ...,
 
   ## Output ##
@@ -151,7 +154,7 @@ buildPublicClusterNetworkByRepresentative <- function(
       .makePlotTitle(plot_title, "pub_clust_rep"),
       .makePlotSubtitle(plot_subtitle, "pub_clust_rep", seq_col),
       color_nodes_by = color_nodes_by, color_scheme = color_scheme,
-      color_title = color_title, ...)
+      ...)
     if (is.null(net$plots)) { plots <- FALSE }
   }
 

@@ -1,3 +1,27 @@
+# Changes in NAIR version 0.0.9036 (7/10/2023)
+    * Changes to `findAssociatedSeqs`:
+        * `groups` argument still exists but is now deprecated and no longer used. Group labels are now automatically determined from the unique values of `group_ids`
+        * `sample_ids` argument still exists but is now deprecated and no longer used. Custom sample IDs play no role in `findAssociatedSeqs`; the argument was inherited from a previous function that included the functionality of both `findAssociatedSeqs` and `findAssociatedClones`
+    * `findPublicClusters` now ignores `plots = TRUE` when `print_plots = FALSE` and `output_dir_unfiltered = NULL`. This prevents unused plots from being generated
+    * `buildAssociatedClusterNetwork` now uses group ID as the default variable for node colors
+    * `buildPublicClusterNetwork` and `buildPublicClusterNetworkByRepresentative` now use sample ID as the default variable for node colors
+    * `buildPublicClusterNetworkByRepresentative` default plot title and subtitle updated for better clarity
+    * `buildRepSeqNetwork`, `generateNetworkObjects` and `generateNetworkGraphPlots` now use `count_col` as the default variable for node colors if available, followed in priority by cluster ID, then network degree.
+    * New arguments to `addClusterLabels`:
+        * `cluster_id_col` added to permit use with node data where the cluster ID variable has a custom name (e.g., with the output of `buildPublicClusterNetwork`)
+        * `greatest_values` added, which can be set to `FALSE` to prioritize the clusters to label based on the least values of the `criterion` variable rather than the greatest values
+    * A function `exclusiveNodeStats` has been added. This function behaves in the same manner as `chooseNodeStats`, but all arguments are set to `FALSE` by default. Useful when the user only wishes to specify a small number of node-level properties to compute, with all other properties exlcuded.
+    * Major revisions to the following vignettes:
+        * `NAIR: Network Analysis of Immune Repertoire`
+        * `Searching for Public TCR/BCR Clusters`
+        * `Searching for Associated TCR/BCR Clusters`
+        * `buildRepSeqNetwork`
+        * `Network Visualization` (incomplete, in progress)
+        * Of particular note, the associated clusters and public clusters vignettes now simulate more reasonable toy data for demonstration purposes.
+    * `Downstream Analysis` vignette title renamed to `Utility Functions`. A revision to this vignette is planned prior to version 1.0.
+    * CXX_STD = CXX11 flag removed from src/Makevars and src/Makevars.win
+    
+
 # 0.0.9035
     * Argument checks added to `buildRepSeqNetwork`
     * `buildRepSeqNetwork` now automatically attempts to perform the following conversions:

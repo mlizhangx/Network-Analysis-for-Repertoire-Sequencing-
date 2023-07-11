@@ -24,8 +24,7 @@ buildPublicClusterNetwork(
   node_stats = TRUE, stats_to_include = "all", cluster_stats = TRUE,
 
   ## Visualization ##
-  color_nodes_by = c("ClusterIDPublic", "SampleID"),
-  color_scheme = "turbo", color_title = c("public cluster", "sample"),
+  color_nodes_by = "SampleID", color_scheme = "turbo",
 
   ## Output ##
   output_dir = file.path(getwd(), "public_clusters"),
@@ -86,10 +85,6 @@ buildPublicClusterNetwork(
 %%     ~~Describe \code{color_scheme} here~~
     Passed to \code{buildRepSeqNetwork}.
 }
-  \item{color_title}{
-%%     ~~Describe \code{color_title} here~~
-    Passed to \code{buildRepSeqNetwork}.
-}
   \item{output_dir}{
 %%     ~~Describe \code{output_dir} here~~
     Passed to \code{buildRepSeqNetwork}.
@@ -139,84 +134,16 @@ buildPublicClusterNetwork(
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 \code{\link{findPublicClusters}}
+
 \code{\link{buildPublicClusterNetworkByRepresentative}}
+
+\href{../doc/public_clusters.html}{Public Clusters Vignette}
 }
 \examples{
 \dontrun{
-
-## Generate some toy data for demonstration
-
-# Use temp dir
-data_dir <- tempdir()
-
-# Directory to store input files
-dir_input_samples <- file.path(data_dir, "input_samples")
-dir.create(dir_input_samples, showWarnings = FALSE)
-
-samples <- 30
-affixes <- c("AAAA", "AASA", "AACA", "AAQA", "AAQ", "AAA", "AASAA", "AAAAA")
-affix_probs_g0 <- rep(1 / length(affixes),
-                      times = length(affixes) * samples / 2)
-affix_probs_g1 <- rep(c(1, 5, 1, 1, 1, 1, 5, 1), times = samples / 2)
-affix_probs <- matrix(c(affix_probs_g0, affix_probs_g1),
-                      nrow = samples, byrow = TRUE)
-new_probs_g0 <- rep(c(1/2, 1/6, 1/6, 1/6), times = samples / 2)
-new_probs_g1 <- rep(c(1/3, 1/6, 1/6, 1/3), times = samples / 2)
-new_probs <- matrix(c(new_probs_g0, new_probs_g1),
-                    nrow = samples, byrow = TRUE)
-simulateToyData(
-  samples = samples,
-  sample_size = 30,
-  prefix_length = 1,
-  prefix_chars = c("A", "C"),
-  prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = affixes,
-  affix_probs = affix_probs,
-  num_edits = 4,
-  edit_pos_probs = function(seq_length) {
-    dnorm(seq(-4, 4, length.out = seq_length))
-  },
-  edit_ops = c("insertion", "deletion", "transmutation"),
-  edit_probs = c(5, 1, 4),
-  new_chars = c("A", "S", "C", "Q"),
-  new_probs = new_probs,
-  output_dir = dir_input_samples,
-  no_return = TRUE
-)
-
-
-## 1. Find Public Clusters in Each Sample
-
-input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
-head(input_files)
-dir_filtered_samples <- file.path(data_dir, "filtered_samples")
-findPublicClusters(
-  file_list = input_files, input_type = "rds",
-  sample_ids = paste0("Sample", 1:samples),
-  seq_col = "CloneSeq", count_col = "CloneCount",
-  min_seq_length = NULL, drop_matches = NULL,
-  output_dir = dir_filtered_samples)
-
-
-## 2. Build Public Cluster Network
-
-# Node-level meta data for each sample's public clusters
-dir_filtered_samples_node <- file.path(dir_filtered_samples, "node_meta_data")
-files_filtered_samples_node <- list.files(dir_filtered_samples_node,
-                                          full.names = TRUE)
-head(files_filtered_samples_node)
-
-dir_out <- file.path(data_dir, "public_clusters")
-
-# Collect clones from all public clusters and perform network analysis
-buildPublicClusterNetwork(
-  file_list = files_filtered_samples_node,
-  seq_col = "CloneSeq", count_col = "CloneCount",
-  color_nodes_by = "cluster_id", output_dir = dir_out)
+vignette("public_clusters", package = "NAIR")
 }
-
 }
-
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
 % \keyword{ ~kwd1 }

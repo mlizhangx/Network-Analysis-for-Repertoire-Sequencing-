@@ -6,8 +6,12 @@ findAssociatedSeqs <- function(
 
   ## Input ##
   file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
-  sample_ids = 1:length(file_list), subject_ids = sample_ids,
-  group_ids, groups = c("group0", "group1"), seq_col, freq_col = NULL,
+  sample_ids = NULL,
+  subject_ids = NULL,
+  group_ids,
+  groups = NULL,
+  seq_col,
+  freq_col = NULL,
 
   ## Search Criteria ##
   min_seq_length = 7, drop_matches = "[*|_]",
@@ -17,41 +21,75 @@ findAssociatedSeqs <- function(
   outfile = "associated_seqs.csv"
 
 ) {
-  stopifnot("lengths of file_list and sample_ids must match" =
-              length(file_list) == length(sample_ids))
-  stopifnot("lengths of file_list and subject_ids must match" =
-              length(file_list) == length(subject_ids))
+  # stopifnot("lengths of file_list and sample_ids must match" =
+  #             length(file_list) == length(sample_ids))
+  if (!is.null(subject_ids)) {
+    stopifnot("file_list and subject_ids have non-matching lengths" =
+                length(file_list) == length(subject_ids))
+  }
   stopifnot("lengths of file_list and group_ids must match" =
               length(file_list) == length(group_ids))
   stopifnot("file_list contains duplicate values" =
               length(file_list) == length(unique(file_list)))
-  stopifnot("sample_ids contains duplicate values" =
-              length(sample_ids) == length(unique(sample_ids)))
-  stopifnot("groups contains duplicate values" =
-              length(groups) == length(unique(groups)))
-  stopifnot("groups must be of length 2" = length(groups) == 2)
-  stopifnot("'group_ids' contains values not in 'groups'" =
-              all(unique(group_ids) %in% groups))
-  stopifnot("both groups must be nonempty" = all(groups %in% group_ids))
+  # stopifnot("sample_ids contains duplicate values" =
+  #             length(sample_ids) == length(unique(sample_ids)))
+  # stopifnot("groups contains duplicate values" =
+  #             length(groups) == length(unique(groups)))
+  # stopifnot("groups must be of length 2" = length(groups) == 2)
+  # stopifnot("'group_ids' contains values not in 'groups'" =
+  #             all(unique(group_ids) %in% groups))
+  # stopifnot("both groups must be nonempty" = all(groups %in% group_ids))
+  if (!is.null(groups)) {
+    warning("`groups` argument is deprecated; group labels are now determined from the unique values of the `group_ids` argument. Avoid using the `groups` argument to avoid errors in future versions of NAIR")
+  }
+  if (!is.null(sample_ids)) {
+    warning("`sample_ids` argument is deprecated; custom sample IDs are not relevant to `findAssociatedSeqs`. Avoid using the `sample_ids` argument to avoid errors in future versions of NAIR")
+  }
 
   samples_or_subjects <- "samples"
-  if (!all(subject_ids == sample_ids)) { samples_or_subjects <- "subjects" }
-  ids_g0 <- group_ids == groups[[1]]  # indices of samples in reference group
-  ids_g1 <- group_ids == groups[[2]]  # indices of samples in comparison group
-  n_g0 <- length(unique(subject_ids[ids_g0])) # num subjects in reference group
-  n_g1 <- length(unique(subject_ids[ids_g1])) # num subjects in comparison group
-  n <- length(unique(subject_ids))  # number of subjects
-  cat(paste0("Data contains ", n, " ", samples_or_subjects, ", ",
-             n_g1, " of which belong to the reference group and ",
-             n_g0, " of which belong to the comparison group.\n"))
+  # Check whether observational units are samples or subjects
+  if (!is.null(subject_ids)) {
+    # If subject IDs given, check if any subjects have multiple samples
+    if (any(duplicated(subject_ids))) { samples_or_subjects <- "subjects" }
+  }
+  # if (!all(subject_ids == sample_ids)) { samples_or_subjects <- "subjects" }
+
+  groups <- unique(group_ids)
+  stopifnot("group_ids must contain exactly two unique values" =
+              length(groups) == 2)
+
+  # Get counts of samples/subjects in each group
+  n_samples <- length(group_ids) # total number of samples
+  ids_g0 <- group_ids == groups[[1]]  # indices of samples in first group
+  ids_g1 <- group_ids == groups[[2]]  # indices of samples in second group
+  n_samples_g0 <- sum(ids_g0)    # number of samples in first group
+  n_samples_g1 <- sum(ids_g1)    # number of samples in second group
+  if (samples_or_subjects == "subjects") {
+    n_g0 <- length(unique(subject_ids[ids_g0])) # num subjects in first group
+    n_g1 <- length(unique(subject_ids[ids_g1])) # num subjects in second group
+    n <- length(unique(subject_ids))            # total number of subjects
+    cat(paste0("Data contains ", n_samples, " samples and ", n, " subjects, ",
+               n_g0, " of which belong to group ", groups[[1]], " and ",
+               n_g1, " of which belong to group ", groups[[2]], ".\n"))
+  } else {
+    n_g0 <- n_samples_g0
+    n_g1 <- n_samples_g1
+    n <- n_samples
+    cat(paste0("Data contains ", n, " samples, ",
+               n_samples_g0, " of which belong to group ", groups[[1]], " and ",
+               n_samples_g1, " of which belong to group ", groups[[2]], ".\n"))
+  }
 
   data <- combineSamples(
-    file_list, input_type, data_symbols, header, sep, seq_col,
-    min_seq_length, drop_matches, sample_ids, subject_ids, group_ids,
+    file_list = file_list, input_type = input_type, data_symbols = data_symbols,
+    header = header, sep = sep, seq_col = seq_col,
+    min_seq_length = min_seq_length, drop_matches = drop_matches,
+    sample_ids = 1:length(file_list), subject_ids = subject_ids,
+    group_ids = group_ids,
     subset_cols = c(seq_col, freq_col))
 
   if (nrow(data) < 2) {
-    warning("insufficient remaining receptor sequences; at least two needed")
+    warning("insufficient remaining receptor sequences; at least two needed to proceed. Aborting search for associated sequences")
     return(invisible(NULL))
   }
 
@@ -60,8 +98,7 @@ findAssociatedSeqs <- function(
     data, seq_col, sample_col = "SampleID", min_sample_membership)
 
   out <- .filterByFisherPvalue(
-    out, "ReceptorSeq", "shared_by_n_samples", data, seq_col,
-    subject_col = "SubjectID", group_col = "GroupID", groups,
+    out, data, seq_col, group_col = "GroupID", groups,
     n_g0, n_g1, pval_cutoff, freq_col, samples_or_subjects)
 
   if (!is.null(outfile)) {
@@ -77,8 +114,9 @@ findAssociatedSeqs <- function(
 findAssociatedSeqs2 <- function(
 
   ## Input ##
-  data, seq_col, sample_col, subject_col = sample_col, group_col,
-  groups = c("group0", "group1"), freq_col = NULL,
+  data, seq_col, sample_col, subject_col = sample_col,
+  group_col, groups = NULL,
+  freq_col = NULL,
 
   ## Search Criteria ##
   min_seq_length = 7, drop_matches = "[*|_]",
@@ -87,7 +125,9 @@ findAssociatedSeqs2 <- function(
   ## Ouptut ##
   outfile = "associated_seqs.csv"
 ) {
-
+  if (!is.null(groups)) {
+    warning("`groups` argument is deprecated; group labels are now determined from the unique values of the `group_ids` argument. Avoid using the `groups` argument to avoid errors in future versions of NAIR")
+  }
   # Convert column references to character if not already
   seq_col <- .convertColRef(seq_col, data)
   freq_col <- .convertColRef(freq_col, data)
@@ -96,7 +136,7 @@ findAssociatedSeqs2 <- function(
     data, seq_col, min_seq_length, drop_matches, subset_cols = NULL)
 
   if (nrow(data) < 2) {
-    warning("insufficient remaining receptor sequences; at least two needed")
+    warning("insufficient remaining receptor sequences; at least two needed to proceed. Aborting search for associated sequences")
     return(invisible(NULL))
   }
 
@@ -105,22 +145,24 @@ findAssociatedSeqs2 <- function(
   if (subject_col != sample_col) { samples_or_subjects <- "subjects" }
 
   # case/control counts
+  groups <- unique(data[ , group_col])
+  stopifnot("`group_col` of `data` must contain exactly two unique values" =
+              length(groups) == 2)
   n_subjects <- length(unique(data[ , subject_col]))
   rowids_g0 <- data[ , group_col] == groups[[1]]
   n_g0 <- length(unique(data[rowids_g0, subject_col]))
   n_g1 <- n_subjects - n_g0
   cat(paste0("Data contains ", n_subjects, " ", samples_or_subjects, ", ",
-             n_g1, " of which belong to the reference group and ",
-             n_g0, " of which belong to the comparison group.\n"))
-  stopifnot("both groups must be nonempty" = n_g0 > 0 && n_g1 > 0)
+             n_g1, " of which belong to group ", groups[[1]], " and ",
+             n_g0, " of which belong to group ", groups[[2]], ".\n"))
+  # stopifnot("both groups must be nonempty" = n_g0 > 0 && n_g1 > 0)
 
   cat("All samples loaded. ")
   out <- .filterSeqsBySampleMembership(
     data, seq_col, sample_col, min_sample_membership)
 
   out <- .filterByFisherPvalue(
-    out, "ReceptorSeq", "shared_by_n_samples", data, seq_col,
-    subject_col, group_col, groups,
+    out, data, seq_col, group_col, groups,
     n_g0, n_g1, pval_cutoff, freq_col, samples_or_subjects)
 
   if (!is.null(outfile)) {
@@ -136,7 +178,8 @@ findAssociatedClones <- function(
 
   ## Input ##
   file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
-  sample_ids = 1:length(file_list), subject_ids = sample_ids, group_ids,
+  sample_ids = as.character(1:length(file_list)),
+  subject_ids = NULL, group_ids,
   seq_col,
 
   ## Search Criteria ##
@@ -179,7 +222,7 @@ findAssociatedClones <- function(
 
 
 # findAssociatedClones2 <- function(
-#
+    #
 #   ## Input ##
 #   data, sample_col, seq_col,
 #
@@ -231,7 +274,8 @@ buildAssociatedClusterNetwork <- function(
     seq_col, min_seq_length = NULL, drop_matches = NULL,
     drop_isolated_nodes = FALSE, node_stats = TRUE,
     stats_to_include = chooseNodeStats(cluster_id = TRUE),
-    cluster_stats = TRUE, color_nodes_by = "cluster_id",
+    cluster_stats = TRUE,
+    color_nodes_by = "GroupID",
     output_name = "AssociatedClusterNetwork", ...
 ) {
 
@@ -265,7 +309,8 @@ buildAssociatedClusterNetwork <- function(
   subset_cols <- .convertColRef(subset_cols, data)
   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
                           subset_cols)
-  data$SampleID <- sample_id; data$SubjectID <- subject_id;
+  data$SampleID <- sample_id
+  if (!is.null(subject_id)) { data$SubjectID <- subject_id }
   data$GroupID <- group_id
 
   cat("Finding clones in a neighborhood of each associated sequence...")
@@ -280,7 +325,7 @@ buildAssociatedClusterNetwork <- function(
 }
 
 # .findAssociatedClonesOneSample2 <- function(
-#     data, seq_col, assoc_seqs, nbd_radius, dist_type,
+    #     data, seq_col, assoc_seqs, nbd_radius, dist_type,
 #     min_seq_length, drop_matches, subset_cols, output_dirs, verbose)
 # {
 #   seq_col <- .convertColRef(seq_col, data)
@@ -332,44 +377,87 @@ buildAssociatedClusterNetwork <- function(
 {
   cat(paste0("Extracting list of unique sequences... "))
   out <- data.frame("ReceptorSeq" = unique(data[[seq_col]]))
-  cat("Done. ", paste0(nrow(out), " unique sequences present.\nFiltering by sample membership (this takes a while)..."))
+  cat("Done. ", paste0(nrow(out), " unique sequences present.\n"))
+  cat("Computing sample membership (this may take a while)...")
   out$shared_by_n_samples <- sapply(
     out$ReceptorSeq,
     function(x) { length(unique(data[data[[seq_col]] == x, sample_col])) } )
-  out <- out[out$shared_by_n_samples >= min_sample_membership, , drop = FALSE]
-  cat(paste0(" Done. ", nrow(out), " sequences remain.\n"))
-  stopifnot("no sequences pass filter for sample membership; try using a lower minimum value" = nrow(out) > 0)
+  cat(" Done.\n")
+  if (is.null(min_sample_membership)) { return(out) }
+  if (min_sample_membership > 0) {
+    out <- out[out$shared_by_n_samples >= min_sample_membership, , drop = FALSE]
+    cat(paste0(nrow(out), " sequences remain after filtering by sample membership.\n"))
+    stopifnot("no sequences pass filter for sample membership; try using a lower minimum value" = nrow(out) > 0)
+  }
   return(out)
 }
 
 .filterByFisherPvalue <- function(
-    unique_seq_data,
-    unique_seq_col = "ReceptorSeq",
-    unique_membership_count_col = "shared_by_n_samples",
-    data, seq_col, subject_col, group_col, groups,
+    unique_seq_data, data, seq_col, group_col, groups,
     n_g0, n_g1, pval_cutoff, freq_col, samples_or_subjects = "subjects")
 {
-  out <- unique_seq_data; out$label <- out$fisher_pvalue <- NA
+  # Initialize output
+  out <- unique_seq_data
+  out$fisher_pvalue <- out$samples_g0 <- out$samples_g1 <- out$label <- NA
+  if (samples_or_subjects == "subjects") {
+    out$shared_by_n_subjects <- out$subjects_g0 <- out$subjects_g1 <- NA
+    out <- out[ , c("ReceptorSeq", "fisher_pvalue",
+                    "shared_by_n_samples", "samples_g0", "samples_g1",
+                    "shared_by_n_subjects", "subjects_g0", "subjects_g1",
+                    "label")]
+  } else {
+    out <- out[ , c("ReceptorSeq", "fisher_pvalue",
+                    "shared_by_n_samples", "samples_g0", "samples_g1",
+                    "label")]
+  }
+
+  # Iterate over list of unique sequences
   cat("Filtering by Fisher's exact test P-value...")
   rowids_g0 <- data[[group_col]] == groups[[1]]
   for (i in 1:nrow(out)) {
-    rowids_clone <- data[[seq_col]] == out[[i, unique_seq_col]]
+    rowids_clone <- data[[seq_col]] == out$ReceptorSeq[[i]]
 
-    n_g0_with <- length(unique(data[rowids_clone & rowids_g0, subject_col]))
-    n_g1_with <- length(unique(data[rowids_clone & !rowids_g0, subject_col]))
+    # Sample-based counts
+    out$samples_g0[[i]] <- length(unique(data[rowids_clone & rowids_g0, "SampleID"]))
+    out$samples_g1[[i]] <- length(unique(data[rowids_clone & !rowids_g0, "SampleID"]))
 
+    # Subject-based counts
+    if (samples_or_subjects == "subjects") {
+      out$shared_by_n_subjects[[i]] <- length(unique(data[rowids_clone, "SubjectID"]))
+      out$subjects_g0[[i]] <- length(unique(data[rowids_clone & rowids_g0, "SubjectID"]))
+      out$subjects_g1[[i]] <- length(unique(data[rowids_clone & !rowids_g0, "SubjectID"]))
+    }
+
+    # Counts for Fisher's exact test
+    if (samples_or_subjects == "subjects") {
+      n_g0_with <- out$subjects_g0[[i]]
+      n_g1_with <- out$subjects_g1[[i]]
+    } else {
+      n_g0_with <- out$samples_g0[[i]]
+      n_g1_with <- out$samples_g1[[i]]
+    }
+
+    # Fisher's exact test
     out$fisher_pvalue[[i]] <-
       stats::fisher.test(data.frame("g0" = c(n_g1_with, n_g1 - n_g1_with),
                                     "g1" = c(n_g0_with, n_g0 - n_g0_with))
       )$p.value
 
-    out$label[[i]] <- paste0("Sequence present in ",
-                             out[i, unique_membership_count_col], " samples ")
-    if (samples_or_subjects == "subjects") {
-      out$label[[i]] <- paste0(out$label[[i]],
-                               "and ", n_g0_with + n_g1_with, " subjects ") }
+    # Create label
     out$label[[i]] <- paste0(
-      out$label[[i]], "(of which ", n_g0_with, " are in the comparison group)",
+      "Sequence present in ", out$shared_by_n_samples[[i]], " samples ")
+    if (samples_or_subjects == "subjects") {
+      out$label[[i]] <- paste0(out$label[[i]], "and ",
+                               out$shared_by_n_subjects[[i]], " subjects (",
+                               n_g0_with, " in group ", groups[[1]], ", ",
+                               n_g1_with, " in group ", groups[[2]], ")")
+    } else {
+      out$label[[i]] <- paste0(out$label[[i]], "(",
+                               n_g0_with, " in group ", groups[[1]], ", ",
+                               n_g1_with, " in group ", groups[[2]], ")")
+    }
+    out$label[[i]] <- paste0(
+      out$label[[i]],
       "\nFisher's exact test P-value: ", signif(out$fisher_pvalue[[i]], digits = 3))
     if (!is.null(freq_col)) {
       out$label[[i]] <- paste0(

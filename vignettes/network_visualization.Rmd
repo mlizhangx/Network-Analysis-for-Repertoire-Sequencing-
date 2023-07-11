@@ -17,10 +17,10 @@ knitr::opts_chunk$set(
 )
 ```
 
+The `buildRepSeqNetwork` function includes various arguments that facilitate customization of the network visualization. In this vignette, we provide an overview and demonstration of these arguments.
 
-In this vignette, we cover arguments of the `buildRepSeqNetwork()` function that customize the visualization produced via `ggraph`.
 
-### Load Data
+## Simulate Data for Demonstration
 
 For demonstration purposes, we simulate some toy data using built-in package functions.
 
@@ -31,25 +31,43 @@ toy_data <- simulateToyData()
 head(toy_data)
 ```
 
+### Node Colors
 
+#### Color nodes according to meta data
 
-### Color nodes using meta data
+The nodes in the graph can be colored according to a variable in the node-level metadata. This is accomplished using the `color_nodes_by` argument, which accepts a character string specifying the name of the column containing the variable. The user can specify any variable that will be present in the node-level meta data returned by `buildRepSeqNetwork`, including any node-level network properties to be computed.
 
-The nodes in the graph can be colored according to node-level meta-data by specifying a variable name in the `color_nodes_by` argument. This can be a variable from the input data or one of the node-level network properties included in the output.
+For example, when calling `buildRepSeqNetwork`, we can color the nodes based on the `CloneCount` column of the original input data by setting `color_nodes_by = "CloneCount"` as seen below.
 
-For example, we can color the nodes based on the variable `CloneCount`:
 ```{r}
 buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    color_nodes_by = "CloneCount", output_dir = NULL)
 ```
 
-### Adjust node color palette
+If the `color_nodes_by` argument is left unspecified, `buildRepSeqNetwork` will attempt to use an available variable to color the nodes. If a variable for clone count is provided using the `count_col` argument, this will be used. Otherwise the `cluster_id` variable will be used if it exists, followed by `degree`, then by other network properties. If no suitable options are available, the nodes will be left uncolored.
 
-The color palette used to color the nodes can be specified using the `color_scheme` argument. Options include:
+If the user does not wish the nodes to be colored dynamically, this can be specified by setting `color_nodes_by = NULL`. 
+
+
+#### Adjust node color palette
+
+A preset color palette can be used to color the nodes by providing the appropriate character string to the `color_scheme` argument. The argument accepts the following values:
 
 * `"default"` for default `ggplot2` colors
-* A viridis color map option (e.g., `"viridis"`, `"plasma"`, etc., or one the corresponding strings "A" through "H"; see `?viridis` for details). The direction of the color gradient can be reversed by appending `"-1"`, as in `"viridis-1"`.
-* A palette from `grDevices::hcl.pals()` (these can only be used if the variable used to color the nodes is discrete).
+* One of the following color scales from the `viridisLite` package. These scales are designed to maintain their perceptual uniformity (consistently across the scale, values close together appear similar, while values far apart appear distinct) when printed in grey scale or when viewed by individuals with common forms of color-blindness or color vision deficiency. More information, including images of the color scales, can be referenced in the [Introduction to the viridis color maps](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) vignette hosted on CRAN's website.
+    * `"magma"` (or `"A"`)
+    * `"inferno"` (or `"B"`)
+    * `"plasma"` (or `"C"`)
+    * `"viridis"` (or `"D"`)
+    * `"cividis"` (or `"E"`)
+    * `"rocket"` (or `"F"`)
+    * `"mako"` (or `"G"`)
+    * `"turbo"` (or `"H"`)
+    * Any of the above color scales with `"-1"` appended, which reverses the direction of the color scale (e.g., `color_scheme = "viridis-1"`)
+* A discrete color palette from `grDevices::hcl.pals()` (these can only be used if the variable used to color the nodes is discrete)
+
+
+Below we show an example of using the `plasma` color scheme from the `viridisLite` package, with the direction of the color scale reversed:
 
 ```{r}
 # Using the "plasma" color scheme with reversed color gradient
@@ -58,9 +76,14 @@ buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    color_scheme = "plasma-1", output_dir = NULL)
 ```
 
-### Adjust node size
 
-The default fixed node size is quite small, which is intended to prevent nodes from overlapping and obscuring edges in larger networks. The node size can be adjusted by supplying a numeric value to the argument `size_nodes_by` (the default value is 0.5):
+### Node Size
+
+#### Adjust uniform node size
+
+By default, all nodes are drawn at a uniform size value of 0.5. This results in the nodes appearing very small when the plot is saved using the default pdf dimensions of 12 inches wide by 10 inches tall. This default behavior is intended to prevent nodes from overlapping and obscuring edges in larger networks. 
+
+A different uniform node size can be specified by providing a numeric value to the `size_nodes_by` argument. Below, we set the node size to 1.5, which is three times as large as the default node size:
 
 ```{r}
 buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
@@ -68,28 +91,39 @@ buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    size_nodes_by = 1.5, output_dir = NULL)
 ```
 
-A value of `NULL` will cause the default `ggraph` node sizes to be used.
 
 
-### Size nodes using meta data
+#### Size nodes according to meta data
 
-The `size_nodes_by` argument also allows nodes to be sized dynamically based on node-level meta data by supplying a variable name, similarly to `color_nodes_by`. 
+Rather than draw all nodes using a uniform node size, it is possible to for the nodes to be sized according to a variable within the node-level metadata. This is achieved by providing the column name of the variable to the `color_nodes_by` argument.
 
-When using dynamic node sizes, the minimum and maximum node sizes can be specified as a length-2 numeric vector to the `node_size_limits` argument. The default value of `NULL` uses the default range of node sizes in `ggraph`.
+The minimum and maximum node sizes can be specified using the `node_size_limits` argument, which accepts a numeric vector of length two, where the first entry is the minimum node size and the second entry is the maximum node size.
 
 ```{r}
-# Size nodes dynamically by degree; use custom size range
+# Size nodes dynamically by network degree; use custom size range
 buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    color_nodes_by = "transitivity", color_scheme = "plasma-1",
                    size_nodes_by = "degree", 
                    node_size_limits = c(0.5, 1.5), output_dir = NULL)
 ```
-### Label Clusters
 
-If `buildRepSeqNetwork` is called with `cluster_stats = TRUE`, the results can be used to label particular clusters with the `addClusterLabels` function:
+### Labeling Clusters
+
+If [cluster analysis is performed](buildRepSeqNetwork.html#cluster-analysis) when calling `buildRepSeqNetwork`, the output will include data on the resulting clusters, with each cluster identified by a cluster ID.
+
+In order to more easily reference these clusters within the visual plot of the network graph, it is possible to label the clusters in the plot with their cluster IDs. This must be done after calling `buildRepSeqNetwork`, and is accomplished by using the the `addClusterLabels` function to modify the plot contained in the output of `buildRepSeqNetwork`. Note that `buildRepSeqNetwork` returns a list, and one of the elements of this list is another list named `plots`, which contains all plots generated by `buildRepSeqNetwork`.
+
+The `addClusterLabels` function has two primary arguments. The plot to be modified is provided to the `plot` argument. The entire output list returned by `buildRepSeqNetwork` is provided to the `net` argument.
+
+By default, only the 20 largest clusters by node count are labeled in order to preserve legibility. This number can be changed by providing a different value to the `top_n_clusters` argument. Instead of prioritizing the clusters to label based on their node count, a different variable within the cluster-level metadata can be used, so long as the variable is numeric. This is achieved by providing the column name of the variable to the `criterion` argument. The variable should be present in the `cluster_data` data frame contained in the output list of `buildRepSeqNetwork`. Rather than prioritizing the clusters with the greatest values of this variable, those with the lowest values can instead be prioritized for labeling by setting `greatest_values = FALSE`.
+
+The size of the cluster ID labels can be adjusted by providing a numeric value to the `size` argument (the default is 5), and their color can be adjusted by providing a valid character string to the `color` argument (the default is `"black"`).
+
+The `addClusterLabels` function assumes that the node-level meta data includes a variable named `cluster_id` that records the cluster membership of each node. This is the case when `buildRepSeqNetwork` is called with cluster analysis enabled. If this variable has a name different from `cluster_id` (e.g., if columns are manually renamed), the correct variable name must be provided to the `cluster_id_col` argument.
+
 
 ```{r}
-# Generate network, but don't print the graph plot
+# Generate network, but don't print the graph plot yet
 network <- buildRepSeqNetwork(
   toy_data, seq_col = "CloneSeq", 
   node_stats = TRUE, cluster_stats = TRUE,
@@ -105,18 +139,12 @@ addClusterLabels(plot = network$plots$transitivity,
                  )
 ```
 
-The `addClusterLabels` function has the following arguments:
 
-* `plot` is a ggraph object such as those contained in the output returned by `buildRepSeqNetwork`
-* `net` is a corresponding list of network objects, such as that returned by `buildRepSeqNetwork`, that includes the list items `node_data` and `cluster_data`
-* `top_n_clusters` specifies how many clusters to label (based on `criterion`).
-* `criterion` is the name of a numeric cluster statistic (see `?getClusterStats`) for ranking the clusters. The default is node count.
-* `size` and `color` control the size and color of the labels
+### Generate Multiple Plots of a Network
 
+The `buildRepSeqNetwork` can generate multiple plots of the same network graph, with each plot coloring the nodes according to a different variable. This is accomplished by providing a vector of column names to the `color_nodes_by` argument instead of a single column name.
 
-### Generate multiple graphs
-
-It is possible to generate multiple plots, each using a different variable to color the nodes, as follows:
+A different [color palette](#adjust-node-color-palette) can be used for each plot. This is achieved by providing a character vector to the `color_scheme` argument. This vector must have the same length as the vector provided to the `color_nodes_by` argument. The color palette specified by each entry will be applied to the corresponding plot. If, instead, a single value is provided to the `color_scheme` argument, the specified color palette will be applied to all of the plots.
 
 ```{r}
 buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE, 
@@ -126,13 +154,15 @@ buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    output_dir = NULL)
 ```
 
-If a single value is supplied for `color_scheme`, it will be used for all of the plots.
 
+### Title and Subtitle
 
+The `output_name` argument is used in the names of files saved by `buildRepSeqNetwork`. By default, it is also used as the title for each plot generated by `buildRepSeqNetwork`. The default value of `output_name` is `"MyRepSeqNetwork"`.
 
-### Plot title/subtitle
+By default, the subtitle of each plot contains information about the settings used to construct the network, including the values of the `dist_type` and `dist_cutoff` arguments.
 
-The plot title and subtitle can be specified using the `plot_title` and `plot_subtitle` arguments, or omitted by supplying a `NULL` value:
+A custom plot title and subtitle can be specified using the `plot_title` and `plot_subtitle` arguments, respectively. Either element can be omitted from the plot by supplying a `NULL` value to the corresponding argument, as shown below.
+
 ```{r}
 buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    color_nodes_by = "transitivity", color_scheme = "plasma-1",
@@ -142,17 +172,30 @@ buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
 
 
 
-### Legends and legend titles
+### Legend
 
-The legends for node color and size can be toggled using the logical arguments `color_legend` and `size_legend` (these are `TRUE` by default), while custom legend titles can be specified using the `color_title` and `size_title` arguments. Supplying a `NULL` value for a legend title will omit the legend title.
+#### Excluding Part or All of the Legend
 
-Setting `color_legend = "auto"` will show the color legend if `color_nodes_by` references a continuous variable or a discrete variable with at most 20 distinct values, and hide the color legend otherwise, in which case the name of the variable used to color the nodes is automatically appended to the plot subtitle in a new line.
+By default, if the nodes are colored or sized dynamically according to a variable, a legend will be included in the plot showing the color scale and/or size scale. 
 
-If `color_nodes_by` references multiple variables, `color_title` will accept a vector of matching length in the same fashion as the `color_scheme` argument.
+The color scale can be manually excluded from the legend by setting `color_legend = FALSE`. Similarly, setting `size_legend = FALSE` will exclude the size scale from the legend.
+
+An exception to the default behavior occurs when the variable used to color the nodes is discrete with more than 20 distinct values. In this case the color scale is automatically excluded from the legend in order to prevent it from taking up excessive space in the plot. The name of the variable used to color the nodes is then reported in the plot's subtitle for reference.
+
+
+#### Legend Titles
+
+By default, the title shown above the color scale in the legend is the name of the variable used to color the nodes. A custom title can be specified by providing a character string to the `color_title` argument. Similarly, the default title for the size scale is the name of variable used to size the nodes, and a custom title can be specified using the `size_title` argument. Each of the `color_title` and `size_title` arguments can also be set to `NULL` in order to omit the respective title.
+
+If a vector is provided to the `color_nodes_by` argument in order to [generate multiple plots](#generate-multiple-plots-of-a-network), then the `color_title` will accept a character vector of matching length, where each entry is the title for the color legend in the corresponding plot.
+
 
 ### Edge width
 
-The thickness of the graph edges can be adjusted using the `edge_width` argument (the default value is 0.1).
+By default, the edges in the plot are drawn with a width of 0.1.
+
+A different width can be used for the edges by setting the `edge_width` argument to a different value.
+
 
 
 ### Further customization

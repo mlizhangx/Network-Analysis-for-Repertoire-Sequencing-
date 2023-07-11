@@ -23,7 +23,7 @@ buildAssociatedClusterNetwork(
     stats_to_include =
       chooseNodeStats(cluster_id = TRUE),
     cluster_stats = TRUE,
-    color_nodes_by = "cluster_id",
+    color_nodes_by = "GroupID",
     output_name = "AssociatedClusterNetwork",
     ...
 )

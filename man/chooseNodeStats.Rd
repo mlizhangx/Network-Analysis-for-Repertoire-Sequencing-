@@ -1,5 +1,6 @@
 \name{chooseNodeStats}
 \alias{chooseNodeStats}
+\alias{exclusiveNodeStats}
 \alias{node_stat_settings}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
@@ -26,6 +27,19 @@ chooseNodeStats(degree = TRUE,
                 coreness = TRUE,
                 page_rank = TRUE,
                 all_stats = FALSE)
+
+exclusiveNodeStats(degree = FALSE,
+                   cluster_id = FALSE,
+                   transitivity = FALSE,
+                   closeness = FALSE,
+                   centrality_by_closeness = FALSE,
+                   eigen_centrality = FALSE,
+                   centrality_by_eigen = FALSE,
+                   betweenness = FALSE,
+                   centrality_by_betweenness = FALSE,
+                   authority_score = FALSE,
+                   coreness = FALSE,
+                   page_rank = FALSE)
 
 # Original name (still exists for backward compatibility)
 node_stat_settings(degree = TRUE,
@@ -97,6 +111,9 @@ node_stat_settings(degree = TRUE,
 %%     ~~Describe \code{all_stats} here~~
     Logical. If \code{TRUE}, then \code{\link{addNodeNetworkStats}} will disregard the values for the other settings and instead treat all of them as \code{TRUE}.
 }
+}
+\details{
+    The difference between \code{chooseNodeStats} and \code{exclusiveNodeStats} is in their default argument values, with the defaults for each being suited to different use cases in order to minimize the number of argument values that must be set manually. \code{chooseNodeStats} has default argument values that agree with the default set of node properties that are computed. Thus it is most suitable for use when the user wishes to include the default set of properties with only a few modifications.  \code{exclusiveNodeStats} excludes any property whose argument value is not manually set to \code{TRUE}, and is therefore most suitable for use when the user wishes to include only a small number of properties and exclude the rest.
 }
 \value{
 %%  ~Describe the value returned

@@ -95,7 +95,7 @@ simulateToyData(
 }
   \item{new_probs}{
 %%     ~~Describe \code{new_probs} here~~
-    A numeric vector of the same length as \code{new_chars}, specifying the relative probability weights assigned to each possible character or string to be inserted.
+    A numeric matrix whose column dimension matches the length of \code{new_chars} and with row dimension matching the value of \code{samples}. The \eqn{i}th row specifies, for the \eqn{i}th sample, the relative probability weights assigned to each element of \code{new_chars} when performing a transmutation or insertion as a random edit operation.
 }
   \item{output_dir}{
 %%     ~~Describe \code{output_dir} here~~

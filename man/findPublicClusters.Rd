@@ -46,19 +46,19 @@ findPublicClusters(
 }
   \item{input_type}{
 %%     ~~Describe \code{input_type} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{data_symbols}{
 %%     ~~Describe \code{data_symbols} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{header}{
 %%     ~~Describe \code{header} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{sep}{
 %%     ~~Describe \code{sep} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{sample_ids}{
 %%     ~~Describe \code{sample_ids} here~~
@@ -75,12 +75,12 @@ findPublicClusters(
 }
   \item{min_seq_length}{
 %%     ~~Describe \code{drop_matches} here~~
-    Passed to \code{buildRepSeqNetwork()} when performing
+    Passed to \code{\link{buildRepSeqNetwork}} when performing
     network analysis on each sample (prior to filtering the clusters).
 }
   \item{drop_matches}{
 %%     ~~Describe \code{drop_matches} here~~
-    Passed to \code{buildRepSeqNetwork()}.
+    Passed to \code{\link{buildRepSeqNetwork}}.
 }
   \item{top_n_clusters}{
 %%     ~~Describe \code{top_n_clusters} here~~
@@ -99,20 +99,20 @@ findPublicClusters(
 }
   \item{plots}{
 %%     ~~Describe \code{plots} here~~
-    Passed to \code{buildRepSeqNetwork()} when performing
+    Passed to \code{\link{buildRepSeqNetwork}} when performing
     network analysis on each sample (prior to filtering the clusters).
 }
   \item{print_plots}{
 %%     ~~Describe \code{print_plots} here~~
-    Passed to \code{buildRepSeqNetwork()}.
+    Passed to \code{\link{buildRepSeqNetwork}}.
 }
   \item{plot_title}{
 %%     ~~Describe \code{plot_title} here~~
-    Passed to \code{buildRepSeqNetwork()}.
+    Passed to \code{\link{buildRepSeqNetwork}}.
 }
   \item{color_nodes_by}{
 %%     ~~Describe \code{color_nodes_by} here~~
-    Passed to \code{buildRepSeqNetwork()}.
+    Passed to \code{\link{buildRepSeqNetwork}}.
 }
   \item{output_dir}{
 %%     ~~Describe \code{output_dir} here~~
@@ -133,7 +133,7 @@ findPublicClusters(
 %%     ~~Describe \code{output_type_unfiltered} here~~
     A character string specifying the file format scheme used to save the
     unfiltered network results for each sample. Only applicable if \code{output_dir_unfiltered}
-    is non-null. Passed to \code{buildRepSeqNetwork()}.
+    is non-null. Passed to \code{\link{buildRepSeqNetwork}}.
 }
   \item{\dots}{
 %%     ~~Describe \code{\dots} here~~
@@ -164,10 +164,10 @@ findPublicClusters(
     to \code{output_type}.
 
     The files containing the node-level meta data for the filtered clusters can
-    be supplied to \code{buildPublicClusterNetwork()} in order to combine the
+    be supplied to \code{\link{buildPublicClusterNetwork}} in order to combine the
     public clusters across samples and perform network analysis. The files
     containing the cluster-level meta data for the filtered clusters can be
-    supplied to \code{buildPublicClusterNetworkByRepresentative()} to build a
+    supplied to \code{\link{buildPublicClusterNetworkByRepresentative}} to build a
     network using only a single representative sequence from each cluster.
 
     The unfiltered network results for each sample can also be saved by supplying
@@ -188,65 +188,14 @@ findPublicClusters(
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 \code{\link{buildPublicClusterNetwork}}
+
 \code{\link{buildPublicClusterNetworkByRepresentative}}
+
+\href{../doc/public_clusters.html}{Public Clusters Vignette}
 }
 \examples{
-
 \dontrun{
-
-## Generate some toy data for demonstration
-
-# Use temp dir
-data_dir <- tempdir()
-
-# Directory to store input files
-dir_input_samples <- file.path(data_dir, "input_samples")
-dir.create(dir_input_samples, showWarnings = FALSE)
-
-samples <- 30
-affixes <- c("AAAA", "AASA", "AACA", "AAQA", "AAQ", "AAA", "AASAA", "AAAAA")
-affix_probs_g0 <- rep(1 / length(affixes),
-                      times = length(affixes) * samples / 2)
-affix_probs_g1 <- rep(c(1, 5, 1, 1, 1, 1, 5, 1), times = samples / 2)
-affix_probs <- matrix(c(affix_probs_g0, affix_probs_g1),
-                      nrow = samples, byrow = TRUE)
-new_probs_g0 <- rep(c(1/2, 1/6, 1/6, 1/6), times = samples / 2)
-new_probs_g1 <- rep(c(1/3, 1/6, 1/6, 1/3), times = samples / 2)
-new_probs <- matrix(c(new_probs_g0, new_probs_g1),
-                    nrow = samples, byrow = TRUE)
-simulateToyData(
-  samples = samples,
-  sample_size = 30,
-  prefix_length = 1,
-  prefix_chars = c("A", "C"),
-  prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = affixes,
-  affix_probs = affix_probs,
-  num_edits = 4,
-  edit_pos_probs = function(seq_length) {
-    dnorm(seq(-4, 4, length.out = seq_length))
-  },
-  edit_ops = c("insertion", "deletion", "transmutation"),
-  edit_probs = c(5, 1, 4),
-  new_chars = c("A", "S", "C", "Q"),
-  new_probs = new_probs,
-  output_dir = dir_input_samples,
-  no_return = TRUE
-)
-
-
-## Find Public Clusters in Each Sample
-
-input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
-head(input_files)
-dir_filtered_samples <- file.path(data_dir, "filtered_samples")
-findPublicClusters(
-  file_list = input_files, input_type = "rds",
-  sample_ids = paste0("Sample", 1:samples),
-  seq_col = "CloneSeq", count_col = "CloneCount",
-  min_seq_length = NULL, drop_matches = NULL,
-  output_dir = dir_filtered_samples)
-
+vignette("public_clusters", package = "NAIR")
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

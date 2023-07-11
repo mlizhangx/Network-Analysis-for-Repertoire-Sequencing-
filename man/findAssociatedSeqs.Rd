@@ -4,12 +4,13 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Find Receptor Sequences Associated to a Comparison Group
+    Find Receptor Sequences Associated to a Binary Variable of Interest
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given multiple samples of RepSeq data from two groups, search for sequences
-    associated to the comparison group based on Fisher's exact test P-value.
+    Given multiple samples of AIRR-Seq data that includes a binary variable,
+    search for receptor sequences whose presence is associated with this variable
+    based on Fisher's exact test using a specified P-value cutoff.
 
     \code{findAssociatedSeqs} is for use with separate files and data frames per
     sample, while \code{findAssociatedSeqs2} is for use with a single data frame
@@ -21,10 +22,12 @@ findAssociatedSeqs(
   file_list, input_type,
   data_symbols = NULL,
   header = TRUE, sep = "",
-  sample_ids = 1:length(file_list),
-  subject_ids = sample_ids,
-  group_ids, groups = c("group0", "group1"),
-  seq_col, freq_col = NULL,
+  sample_ids = NULL,
+  subject_ids = NULL,
+  group_ids,
+  groups = NULL,
+  seq_col,
+  freq_col = NULL,
 
   ## Search Criteria ##
   min_seq_length = 7, drop_matches = "[*|_]",
@@ -38,7 +41,7 @@ findAssociatedSeqs2(
   ## Input ##
   data, seq_col, sample_col,
   subject_col = sample_col,
-  group_col, groups = c("group0", "group1"),
+  group_col, groups = NULL,
   freq_col = NULL,
 
   ## Search Criteria ##
@@ -53,63 +56,61 @@ findAssociatedSeqs2(
 \arguments{
   \item{file_list}{
 %%     ~~Describe \code{file_list} here~~
-  Passed to \code{loadDataFromFileList} (one data frame per sample).
+  Passed to \code{\link{loadDataFromFileList}} (one data frame per sample).
 }
   \item{input_type}{
 %%     ~~Describe \code{input_type} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{data_symbols}{
 %%     ~~Describe \code{data_symbols} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{header}{
 %%     ~~Describe \code{header} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{sep}{
 %%     ~~Describe \code{sep} here~~
-  Passed to \code{loadDataFromFileList}.
+  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{sample_ids}{
 %%     ~~Describe \code{sample_ids} here~~
-  A character or numeric vector of sample IDs, whose length matches that of \code{file_list}.
+  Deprecated. Does nothing.
 }
   \item{subject_ids}{
 %%     ~~Describe \code{subject_ids} here~~
   A character or numeric vector of subject IDs, whose length matches that of \code{file_list}.
-  This can be disregarded if each sample comes from a distinct subject.
+  Only relevant when the binary variable of interest is subject-specific and multiple samples belong to the same subject.
 }
   \item{group_ids}{
 %%     ~~Describe \code{group_ids} here~~
   A character or numeric vector of group IDs, which contains exactly two unique
-  values and whose length matches that of \code{file_list}.
+  values and whose length matches that of \code{file_list}. The two groups correspond to the two values of the binary variable of interest.
 }
   \item{groups}{
 %%     ~~Describe \code{groups} here~~
-  A vector of length two having the same type as \code{group_ids} and containing the
-  two unique values; the first and second elements identify the reference
-  and comparison groups, respectively.
+  Deprecated. Does nothing. This argument was previously used to specify the values of \code{group_ids} corresponding to the two values of the binary variable of interest. These values are now determined automatically from the unique values of \code{group_ids}.
 }
   \item{seq_col}{
 %%     ~~Describe \code{seq_col} here~~
-    The column name or number of each sample's data frame that contains the receptor sequences to associate with the comparison group.
+    The name or index of of the column containing the clone sequences in the input data for each sample.
 }
   \item{freq_col}{
 %%     ~~Describe \code{freq_col} here~~
-    Optional. The column name or number of each sample's data frame that contains the clone frequency/clone fraction (i.e., measure of clonal abundance normalized based on the total count in the sample). This column must have the same name in each sample. If supplied, the maximum clone frequency of each associated sequence across all samples will be recorded in the returned output.
+    Optional. The name or index of the column containing the clone frequency/fraction (i.e., measure of clonal abundance normalized based on the total count in the sample) in the input data for each sample. If supplied, the maximum clone frequency (across all samples) for each associated sequence will be included in the content of the \code{label} variable of the returned data frame.
 }
   \item{min_seq_length}{
 %%     ~~Describe \code{min_seq_length} here~~
-    Passed to \code{filterInputData()}.
+    Passed to \code{\link{filterInputData}}.
 }
   \item{drop_matches}{
 %%     ~~Describe \code{drop_matches} here~~
-    Passed to \code{filterInputData()}.
+    Passed to \code{\link{filterInputData}}.
 }
   \item{min_sample_membership}{
 %%     ~~Describe \code{min_sample_membership} here~~
-    Only sequences that appear in at least this many samples will be considered.
+    Only sequences that appear in at least this many samples will be considered. Setting this value to \code{NULL} bypasses the check.
 }
   \item{pval_cutoff}{
 %%     ~~Describe \code{pval_cutoff} here~~
@@ -122,35 +123,33 @@ findAssociatedSeqs2(
     (using \code{write.csv}).
 }
 \item{data}{
-    A data frame containing the combined immune repertoire sequencing data for all samples,
+    A data frame containing the combined AIRR-seq data for all samples,
     with variables indexed by column and observations indexed by row.
 }
 \item{sample_col}{
-    The column of \code{data} containing the sample IDs.
+    The name or index of the column of \code{data} containing the sample IDs.
 }
 \item{subject_col}{
-    The column of \code{data} containing the subject IDs.
+    Optional. The name or index of the column of \code{data} containing the subject IDs. Only relevant when the binary variable of interest is subject-specific and multiple samples belong to the same subject.
 }
 \item{group_col}{
-    The column of \code{data} containing the group IDs.
+    The name or index of the column of \code{data} containing the group IDs.
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-    The data is first filtered by minimum sequence length and sequence content
-    if applicable, then is filtered based on minimum sample membership, keeping
+    The list of unique receptor sequences is first filtered according to minimum sequence length and sequence content based on the specified values in \code{min_seq_length} and \code{drop_matches}, respectively. The list is then further filtered based on minimum sample membership, keeping
     only those receptor sequences that appear in at least \code{min_sample_membership}
     samples.
 
-    For each remaining sequence, Fisher's exact test is performed using
-    \code{stats::fisher.test()}, based on the number of subjects possessing the
-    sequence in each of the reference and comparison groups. Only sequences
+    For each remaining sequence, a P-value is computed for Fisher's exact test of independence between the binary variable of interest and the appearance of the sequence within a repertoire. The test is performed using
+    \code{stats::fisher.test}, based on the number of samples possessing the
+    sequence in each of the two groups. If subject IDs are provided, then the test is instead based on the number of subjects possessing the sequence in one or more samples. Only sequences
     with a \eqn{P}-value below \code{pval_cutoff} will be retained. The resulting
     sequences are sorted by \eqn{P}-value in increasing order and returned
     along with some basic meta-data.
 
-    The returned ouput is intended for downstream use with
-    \code{findAssociatedClones} and \code{buildAssociatedClusterNetwork}.
+    The returned ouput is intended for use with the \code{findAssociatedClones} function. See the Finding Associated Clusters package vignette for more details. The vignette can be accessed using \code{vignette("associated_clusters")}.
 }
 \value{
 %%  ~Describe the value returned
@@ -158,14 +157,16 @@ findAssociatedSeqs2(
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    A data frame containing the following variables:
-    \item{ReceptorSeq}{The receptor sequences associated with the comparison
-    group, based on the specified criteria.}
-    \item{shared_by_n_samples}{The number of samples in which each sequence
-    appears.}
-    \item{fisher_pvalue}{The P-value on Fisher's exact test.}
-    \item{label}{A character string containing meta-data in sentence formatting,
-    for convenient use in, e.g., plot captions.}
+    A data frame containing the receptor sequences found to be associated with the binary variable based on Fisher's exact test using the specified P-value cutoff. Each row corresponds to a unique sequence and includes the following variables:
+    \item{ReceptorSeq}{The unique receptor sequence}
+    \item{fisher_pvalue}{The P-value on Fisher's exact test for independence between the receptor sequence and the binary variable of interest}
+    \item{shared_by_n_samples}{The number of samples in which the sequence was observed}
+    \item{samples_g0}{Of the samples in which the sequence was observed, the number of samples belonging to the first group}
+    \item{samples_g1}{Of the samples in which the sequence was observed, the number of samples belonging to the second group}
+    \item{shared_by_n_subjects}{The number of subjects in which the sequence was observed (only present if subject IDs are specified)}
+    \item{subjects_g0}{Of the subjects in which the sequence was observed, the number of subjects belonging to the first group (only present if subject IDs are specified)}
+    \item{subjects_g1}{Of the subjects in which the sequence was observed, the number of subjects belonging to the second group (only present if subject IDs are specified)}
+    \item{label}{A character string summarizing the above information. Also includes the maximum in-sample clone frequency across all samples, if available}
 }
 \references{
 %% ~put references to the literature/web site here ~
@@ -181,12 +182,12 @@ findAssociatedSeqs2(
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 \code{\link{findAssociatedClones}}
 \code{\link{buildAssociatedClusterNetwork}}
+\code{vignette("associated_clusters")}
 }
 \examples{
 
 \dontrun{
-## Generate some toy data for demonstration
-
+## Generate some toy data for demonstration ##
 # Use temp dir
 data_dir <- tempdir()
 
@@ -194,54 +195,48 @@ data_dir <- tempdir()
 dir_input_samples <- file.path(data_dir, "input_samples")
 dir.create(dir_input_samples, showWarnings = FALSE)
 
-samples <- 30
-affixes <- c("AAAA", "AASA", "AACA", "AAQA", "AAQ", "AAA", "AASAA", "AAAAA")
-affix_probs_g0 <- rep(1 / length(affixes),
-                      times = length(affixes) * samples / 2)
-affix_probs_g1 <- rep(c(1, 5, 1, 1, 1, 1, 5, 1), times = samples / 2)
-affix_probs <- matrix(c(affix_probs_g0, affix_probs_g1),
-                      nrow = samples, byrow = TRUE)
-new_probs_g0 <- rep(c(1/2, 1/6, 1/6, 1/6), times = samples / 2)
-new_probs_g1 <- rep(c(1/3, 1/6, 1/6, 1/3), times = samples / 2)
-new_probs <- matrix(c(new_probs_g0, new_probs_g1),
-                    nrow = samples, byrow = TRUE)
+# Number of samples by control/treatment group
+samples_c <- samples_t <- 15
+samples <- samples_c + samples_t
+sample_size <- 30 # (seqs per sample)
+
+# sequences (first five are chosen to be associated with treatment)
+base_seqs <- c("CASSGAYEQYF", "CSVDLGKGNNEQFF",
+               "CASSIEGQLSTDTQYF",
+               "CASSEEGQLSTDTQYF",
+               "CASSPEGQLSTDTQYF",
+               "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF")
+
+# relative generation probabilities by control/treatment group
+pgen_c <- matrix(rep(c(rep(1, 5), rep(30, 3)), times = samples_c),
+                 nrow = samples_c, byrow = TRUE)
+pgen_t <- matrix(rep(c(1, 1, rep(1/3, 3), rep(2, 3)), times = samples_t),
+                 nrow = samples_t, byrow = TRUE)
+pgen <- rbind(pgen_c, pgen_t)
+
+# Simulate the data
 simulateToyData(
-  samples = samples,
-  sample_size = 30,
-  prefix_length = 1,
-  prefix_chars = c("A", "C"),
+  samples = samples, sample_size = sample_size,
+  prefix_length = 1, prefix_chars = c("", ""),
   prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = affixes,
-  affix_probs = affix_probs,
-  num_edits = 4,
-  edit_pos_probs = function(seq_length) {
-    dnorm(seq(-4, 4, length.out = seq_length))
-  },
-  edit_ops = c("insertion", "deletion", "transmutation"),
-  edit_probs = c(5, 1, 4),
-  new_chars = c("A", "S", "C", "Q"),
-  new_probs = new_probs,
-  output_dir = dir_input_samples,
-  no_return = TRUE
-)
+  affixes = base_seqs, affix_probs = pgen, num_edits = 0,
+  output_dir = dir_input_samples, no_return = TRUE)
 
 
-## 1. Find Associated Sequences
-
-# input files for step 1 (one per sample)
+## Find Associated Sequences ##
+# input files (one per sample)
 input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
-head(input_files)
 
 # group labels for the samples
-group_labels <- c(rep("reference", samples / 2), rep("comparison", samples / 2))
+group_labels <- c(rep("reference", samples_c), rep("comparison", samples_t))
 
-# search across samples for associated sequences using Fisher's exact test
 associated_seqs <- findAssociatedSeqs(
   file_list = input_files, input_type = "rds",
-  group_ids = group_labels, groups = c("reference", "comparison"),
+  group_ids = group_labels,
+  seq_col = "CloneSeq",
   min_seq_length = NULL, drop_matches = NULL,
-  seq_col = "CloneSeq", outfile = NULL)
-head(associated_seqs)
+  min_sample_membership = 0,
+  pval_cutoff = 0.1,outfile = NULL)
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

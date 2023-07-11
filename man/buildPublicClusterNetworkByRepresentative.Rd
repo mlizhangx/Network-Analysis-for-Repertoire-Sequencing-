@@ -31,9 +31,8 @@ buildPublicClusterNetworkByRepresentative(
   print_plots = TRUE,
   plot_title = "auto",
   plot_subtitle = "auto",
-  color_nodes_by = c("ClusterIDPublic", "SampleID"),
+  color_nodes_by = "SampleID",
   color_scheme = "turbo",
-  color_title = c("public cluster", "sample"),
   ...,
 
   ## Output ##
@@ -110,10 +109,6 @@ buildPublicClusterNetworkByRepresentative(
 }
   \item{color_scheme}{
 %%     ~~Describe \code{color_scheme} here~~
-    Passed to \code{generateNetworkGraphPlots}.
-}
-  \item{color_title}{
-%%     ~~Describe \code{color_title} here~~
     Passed to \code{generateNetworkGraphPlots}.
 }
   \item{\dots}{

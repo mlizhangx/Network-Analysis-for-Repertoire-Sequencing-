@@ -15,8 +15,10 @@
 addClusterLabels(
   plot, net,
   top_n_clusters = 20,
+  cluster_id_col = "cluster_id",
   criterion = "node_count",
-  size = 5, color = "black")
+  size = 5, color = "black",
+  greatest_values = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,6 +34,10 @@ addClusterLabels(
 %%     ~~Describe \code{top_n_clusters} here~~
   A positive integer specifying the number of clusters to label. Those with the highest rank according to the \code{criterion} argument will be labeled.
 }
+  \item{cluster_id_col}{
+%%     ~~Describe \code{top_n_clusters} here~~
+  The column name of the cluster ID variable within \code{net$node_data}. Note that for \code{net$cluster_data}, the variable is always assumed to be \code{cluster_id}.
+}
   \item{criterion}{
 %%     ~~Describe \code{criterion} here~~
   The name of a numeric cluster property by which to rank the clusters. See \code{\link{getClusterStats}} for a list of properties. The default is \code{"node_size"}.
@@ -43,6 +49,10 @@ addClusterLabels(
   \item{color}{
 %%     ~~Describe \code{color} here~~
   The color of the text labels.
+}
+  \item{greatest_values}{
+%%     ~~Describe \code{color} here~~
+  If \code{TRUE}, the \code{top_n_clusters} clusters with the greatest values of \code{criterion} will be labeled. Otherwise, the \code{top_n_clusters} clusters with the least values of \code{criterion} will be labeled.
 }
 }
 \value{

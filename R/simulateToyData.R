@@ -37,7 +37,7 @@ simulateToyData <- function(
       op <- sample(edit_ops, size = 1, prob = edit_probs)
       pos2 <- pos + 1; pos3 <- nchar(seq)
       if (op == "deletion") { char <- NULL }
-      if (op != "insertion") { pos <- pos - 1}
+      if (op != "insertion") { pos <- pos - 1 }
       seq <- paste0(substr(seq, 1, pos), char, substr(seq, pos2, pos3))
     }
   }

@@ -11,10 +11,10 @@
     sequences associated to the comparison group (e.g., obtained using
     \code{findAssociatedSeqs}), this function does the following:
     for each associated sequence,
-    from all samples that possess the associated sequence, gather all clones
-    whose receptor sequences lie in a neighborhood of the associated sequence.
+    from all samples that possess the associated sequence, gather the RepSeq data
+    for all clones whose receptor sequences lie in a neighborhood of the associated sequence.
 
-    The public neighborhood for each associated sequence is stored in its own data frame
+    The RepSeq data for each neighborhood's associated sequence is then stored in its own data frame
     and saved to its own file, in preparation for use with
     \code{buildAssociatedClusterNetwork}.
 }
@@ -25,8 +25,8 @@ findAssociatedClones(
   file_list, input_type,
   data_symbols = NULL,
   header = TRUE, sep = "",
-  sample_ids = 1:length(file_list),
-  subject_ids = sample_ids,
+  sample_ids = as.character(1:length(file_list)),
+  subject_ids = NULL,
   group_ids,
   seq_col,
 
@@ -73,8 +73,7 @@ findAssociatedClones(
 }
   \item{subject_ids}{
 %%     ~~Describe \code{subject_ids} here~~
-  A character or numeric vector of subject IDs, whose length matches that of \code{file_list}.
-  This can be disregarded if each sample comes from a distinct subject.
+  An optional character or numeric vector of subject IDs, whose length matches that of \code{file_list}.
 }
   \item{group_ids}{
 %%     ~~Describe \code{group_ids} here~~
@@ -129,6 +128,8 @@ findAssociatedClones(
    value of \code{output_type} (e.g., the neighborhood data for the sequence
    \code{"CASSGAYEQYF"} would be saved as \code{"CASSGAYEQYF.csv"} if
    \code{output_type = "csv"}).
+
+   Three variables, \code{SampleID}, \code{SubjectID} and \code{GroupID}, are added to each neighborhood's RepSeq data, whose respective values in each row are the values of \code{sample_ids}, \code{subject_ids} and \code{group_ids} corresponding to the data in that row.
 }
 \references{
 %% ~put references to the literature/web site here ~
