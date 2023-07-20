@@ -1,5 +1,12 @@
 
-# Changes in NAIR version 0.0.9038 (7/14/2023)
+# Changes in NAIR version 0.0.9039 (7/20/2023)
+
+## GitHub website
+
+* Website updated using `pkgdown`
+
+
+# Changes in NAIR version 0.0.9038 (7/20/2023)
 
 ## Bug Fixes
 
