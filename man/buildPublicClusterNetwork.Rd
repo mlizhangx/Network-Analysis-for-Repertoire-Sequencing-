@@ -21,7 +21,7 @@ buildPublicClusterNetwork(
 
   ## Network ##
   drop_isolated_nodes = FALSE,
-  node_stats = TRUE, stats_to_include = "all", cluster_stats = TRUE,
+  node_stats = NULL, stats_to_include = NULL, cluster_stats = NULL,
 
   ## Visualization ##
   color_nodes_by = "SampleID", color_scheme = "turbo",
@@ -67,15 +67,15 @@ buildPublicClusterNetwork(
 }
   \item{node_stats}{
 %%     ~~Describe \code{node_stats} here~~
-    Passed to \code{buildRepSeqNetwork}.
+    Deprecated. Does nothing. All node-level network properties are automatically computed.
 }
   \item{stats_to_include}{
 %%     ~~Describe \code{stats_to_include} here~~
-    Passed to \code{buildRepSeqNetwork}.
+    Deprecated. Does nothing.
 }
   \item{cluster_stats}{
 %%     ~~Describe \code{cluster_stats} here~~
-    Passed to \code{buildRepSeqNetwork}.
+    Deprecated. Does nothing. All cluster-level network properties are automatically computed.
 }
   \item{color_nodes_by}{
 %%     ~~Describe \code{color_nodes_by} here~~
@@ -104,7 +104,7 @@ buildPublicClusterNetwork(
     The input data is intended to be obtained using \code{findPublicClusters()}
     on the unfiltered RepSeq data for each sample.
 
-    Any node-level properties computed are renamed to reflect their association
+    Node-level network properties are renamed to reflect their association
     to the public network. The names used are
     \code{ClusterIDPublic}, \code{PublicNetworkDegree},
     \code{PublicTransitivity}, \code{PublicCloseness},

@@ -70,7 +70,7 @@ generateNetworkGraphPlots(
   \item{size_nodes_by}{
 %%     ~~Describe \code{size_nodes_by} here~~
     Numeric value specifying the node size, or a
-    column name or number of \code{data} for dynamically sizing the nodes.
+    column name of \code{data} for dynamically sizing the nodes.
 }
   \item{node_size_limits}{
 %%     ~~Describe \code{node_size_limits} here~~

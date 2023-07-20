@@ -2,7 +2,7 @@
 title: "Searching for Associated TCR/BCR Clusters"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Finding Associated Clones}
+  %\VignetteIndexEntry{Searching for Associated TCR/BCR Clusters}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

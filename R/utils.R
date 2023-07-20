@@ -287,7 +287,7 @@ filterInputData <- function(
 
   # subset data columns
   if (!is.null(subset_cols)) {
-    data <- .subsetColumns(data, c(seq_col, subset_cols))
+    data <- .subsetColumns(data, c(seq_col, count_col, subset_cols))
   }
 
   # Convert count column to numeric and check for NA/NaNs
@@ -1222,6 +1222,9 @@ plotNetworkGraph <- function(igraph,
           graph_plot <-
             graph_plot + ggplot2::scale_size(range = node_size_limits)
         }
+        if (!is.null(size_title) && size_title == "auto") {
+          size_title <- deparse(substitute(size_nodes_by))
+        }
       }
     } else { # size_nodes_by is null or invalid
       graph_plot <- graph_plot +
@@ -1240,6 +1243,9 @@ plotNetworkGraph <- function(igraph,
         if (!is.null(node_size_limits)) {
           graph_plot <-
             graph_plot + ggplot2::scale_size(range = node_size_limits)
+        }
+        if (!is.null(size_title) && size_title == "auto") {
+          size_title <- deparse(substitute(size_nodes_by))
         }
       }
     } else { # size_nodes_by null or invalid
@@ -1276,24 +1282,31 @@ plotNetworkGraph <- function(igraph,
     ggplot2::labs(title = plot_title, subtitle = plot_subtitle)
 
   if (color_legend == TRUE) {
-    if (is.null(color_title)) {
-      graph_plot <- graph_plot +
-        ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
-    } else if (color_title != "auto") {
-      graph_plot <- graph_plot +
-        ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
+    if (!is.null(color_title) && color_title == "auto") {
+      color_title <- deparse(substitute(color_nodes_by))
     }
+      graph_plot <- graph_plot +
+        ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
+    # if (is.null(color_title)) {
+    #   graph_plot <- graph_plot +
+    #     ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
+    # } else if (color_title != "auto") {
+    #   graph_plot <- graph_plot +
+    #     ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
+    # }
   } else {
     graph_plot <- graph_plot + ggplot2::guides(color = "none")
   }
 
-  if (is.null(size_title)) {
-    graph_plot <- graph_plot +
-      ggplot2::guides(size = ggplot2::guide_legend(title = size_title))
-  } else if (size_title != "auto") {
-    graph_plot <- graph_plot +
-      ggplot2::guides(size = ggplot2::guide_legend(title = size_title))
-  }
+  graph_plot <- graph_plot +
+    ggplot2::guides(size = ggplot2::guide_legend(title = size_title))
+  # if (is.null(size_title)) {
+  #   graph_plot <- graph_plot +
+  #     ggplot2::guides(size = ggplot2::guide_legend(title = size_title))
+  # } else if (size_title != "auto") {
+  #   graph_plot <- graph_plot +
+  #     ggplot2::guides(size = ggplot2::guide_legend(title = size_title))
+  # }
 
 
   # Convert node-color variable to factor if discrete

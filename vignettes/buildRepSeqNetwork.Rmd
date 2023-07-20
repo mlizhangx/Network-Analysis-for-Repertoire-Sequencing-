@@ -1,6 +1,9 @@
 ---
 title: "buildRepSeqNetwork"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    number_sections: false
+    tabset: true
 vignette: >
   %\VignetteIndexEntry{buildRepSeqNetwork}
   %\VignetteEngine{knitr::rmarkdown}
@@ -18,8 +21,9 @@ knitr::opts_chunk$set(
 ```
 
 
-General network analysis on AIRR-Seq data is performed using the `buildRepSeqNetwork()` function. This function does the following:
+General network analysis on AIRR-Seq data is performed using the `buildRepSeqNetwork` function. This function does the following:
 
+* Filters the input AIRR-Seq data according to user specifications
 * Builds the network graph for the immune repertoire
 * Performs desired network analysis
     * Cluster analysis
@@ -32,48 +36,58 @@ General network analysis on AIRR-Seq data is performed using the `buildRepSeqNet
     * Network adjacency matrix in sparse matrix format
     * `igraph` object containing the list of edges in the network graph 
 
-In this vignette we demonstrate the function's basic usage.
+In this vignette we demonstrate the function's usage and output.
 
 
-## Simulate Data for Demonstration
+## Simulate Example Data
 
 For demonstration purposes, we simulate some toy data using built-in package functions.
 
-We simulate a sample consisting of 200 observations (rows).
+We simulate data consisting of two samples with 100 observations each, for a total of 200 observations (rows).
 
 ```{r }
 library(NAIR)
 dir_out <- tempdir()
+
 toy_data <- simulateToyData()
+
 head(toy_data)
 ```
 ```{r}
 nrow(toy_data)
 ```
 
-## Primary Inputs
 
-The `buildRepSeqNetwork` function has two required arguments, which together specify the input data.
+# <a name="mainargs"></a> Primary Inputs 
+
+
+The `buildRepSeqNetwork` function has two required arguments for specifying the input data.
 
 * The function's first argument `data` accepts a data frame containing the AIRR-seq data, where each row corresponds to a single TCR/BCR clone (bulk data) or cell (single-cell data).
 * The second argument `seq_col` specifies the data column containing the receptor sequences to be used as the basis of similarity between two cells or clones. This argument accepts either the column name (e.g., `seq_col = "CloneSeq"`) or the column index (e.g., `seq_col = 1`, denoting the first column).
 
 *For single-cell data, see [this vignette](dual_chain.html) on building networks based on joint similarity in both alpha chain sequences and beta chain sequences.*
 
-The `buildRepSeqNetwork` function can be executed using only these first two arguments, as demonstrated below.
+Below, we execute the `buildRepSeqNetwork` function. A visual plot of the network graph is automatically printed to the plotting window in R.
 
 ```{r}
 output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", 
                              output_dir = dir_out)
 ```
 
-A visual plot of the network graph is automatically printed to the plotting window in R.
 
-The function returns a list containing the following items:
+
+# Base Output {.tabset}
+
+When no optional arguments are used, the `buildRepSeqNetwork` function returns a list containing the following items:
 
 ```{r}
 names(output)
 ```
+
+We describe each of these items below. In subsequent sections, we will introduce optional arguments of `buildRepSeqNetwork` and show how the output changes based on these arguments.
+
+## `node_data`
 
 The item `node_data` is a data frame where each row corresponds to a node in the network graph:
 
@@ -81,31 +95,94 @@ The item `node_data` is a data frame where each row corresponds to a node in the
 head(output$node_data)
 ```
 
-The output data frame includes all of the columns that were present in the input data frame. In some cases, the user may not wish for all columns to be included. In this case, the user can specify the columns to be included using the `subset_cols` argument, which accepts a vector containing either the column names or the column indices of the columns to be kept. The column specified by the `seq_col` argument will automatically be included regardless of the value of `subset_cols`.
+By default, all columns from the original input AIRR-seq data are present in the returned node data. [This can be changed using the `subset_cols` argument](#input_options).
+
+The row names from the original input data are preserved in the returned node data. This allows the user to match rows of the input data with their corresponding rows in the node data.
+
+Notice from the row names that some rows from the original input data are missing in the returned node data. This is because by default, only those nodes that are connected to at least one other node by an edge will be kept in the network. [This can be changed using the `drop_isolated_nodes` argument](#network_settings).
 
 
-## Input Filtering
+## `plots`
+
+The item `plots` is a list containing each of the plot(s) created by `buildRepSeqNetwork`. Each plot is an object of class `ggraph` (which inherits from the `ggplot` class), and is named according to the variable used to color the nodes. Here the nodes are not colored according to any variable, so the name of the plot is `uniform_color`. 
+
+```{r}
+names(output$plots)
+```
+```{r}
+class(output$plots$uniform_color)
+```
+
+Plots can be customized through [optional arguments](network_visualization.html) to `buildRepSeqNetwork` as well as by [modifying them](network_visualization.html#modifying-plots-after-creation) after they are created.
+
+
+## `igraph`
+
+The item `igraph` is an object of class `igraph`, which contains the list of nodes and edges that comprise the network graph. 
+
+The `igraph` object can be used for [downstream computation of network properties](#downstream), as an alternative to [computing network properties when calling `buildRepSeqNetwork`](#network_properties). It can also be used to [generate additional plots of the network graph](network_visualization.html#new_plots).
+
+
+## `adjacency_matrix`
+
+The item `adjacency_matrix` is an object of class `dgCMatrix`, which is a sparse matrix format from the `Matrix` package. 
+
+```{r}
+class(output$adjacency_matrix)
+```
+
+The network adjacency matrix encodes the graph (i.e., the set of nodes and edges) as a matrix. It is symmetric, with each row (equivalently, each column) corresponding to a distinct network node. The network nodes follow the same order in the rows as they do in the columns. Each column name is the receptor sequence corresponding to the node for that column. Each row name is the row index of the original input data that corresponds to the node for that row.
+
+```{r}
+# First 5 rows and columns of the network adjacency matrix
+head(output$adjacency_matrix, c(5, 5))
+```
+
+Each matrix entry has a value of 0 or 1, with 1 indicating an edge connecting the node for that row to the node for that column, and 0 indicating no edge connection. Although the diagonal entries are 1, their values are not meaningful, since an edge is not drawn from a given node to itself.
+
+Note that the rows (nodes) in the adjacency matrix correspond to the rows (nodes) in the `node_data` data frame. Both have the same number of rows and the same row names.
+
+The adjacency matrix can be used for [downstream computation of network properties](#downstream), as an alternative to [computing network properties when calling `buildRepSeqNetwork`](#network_properties).
+
+
+
+# <a name="input_options"></a> Filtering the Input Data {.tabset}
+
+Any rows of the input data having a value of `NA` for their receptor sequence (the value in the column specified by the `seq_col` argument) will be automatically removed prior to building the network.
 
 The following options are useful for removing noise or irrelevant data from the analysis, potentially improving the quality of the network graph and downstream analysis results.
 
-* `min_seq_length`:  used to filter out TCR/BCR sequences by minimum length. This parameter sets a minimum sequence length, and any data rows with sequence lengths below this value will be dropped before constructing the network graph. By default, the minimum sequence length is set to 3.
-* `drop_matches`: used to filter out TCR/BCR sequences by content. This parameter takes a character string or regular expression and checks each TCR/BCR sequence for a match. Data rows with matches are dropped before constructing the network graph. 
+## `min_seq_length`
+
+This parameter is used to filter out TCR/BCR sequences below a certain length. The argument accepts a numeric value that specifies the minimum sequence length. Every data row whose sequence length is below this value will be dropped before constructing the network graph. The receptor sequence is the value in the column specified by the [`seq_col`](#mainargs) argument. 
+
+By default, the minimum sequence length is set to 3.
+
+This check can be bypassed by setting `min_seq_length = NULL`.
+
+## `drop_matches`
+
+This parameter can be optionally used to filter out TCR/BCR sequences with content matching a certain pattern. The argument accepts a character string or regular expression specifying the pattern of content to search for. Each TCR/BCR sequence is checked for a match with the specified content pattern. Every data row whose sequence matches the pattern is dropped before constructing the network graph. 
+
+The receptor sequence is the value in the column specified by the [`seq_col`](#mainargs) argument. It is checked for a match with the specified content pattern using the `grep` function from base R.
 
 
 
-## Settings When Building the Network
+
+
+# <a name="network_settings"></a> Network Settings {.tabset}
 
 The settings used to construct the network can be customized using the arguments below.
 
 
-### Distance Function
+## Distance Function
 
 The default method for measuring the similarity between TCR/BCR sequences is the Hamming distance. It calculates the number of differences between two sequences of the same length. If the sequences have different lengths, the shorter sequence is extended by adding non-matching characters to make it the same length as the longer sequence.
 
 The Levenshtein distance can be used as an alternative measurement to determine the similarity between sequences. It calculates the minimum number of single-character edits (insertions, deletions and transformations) needed to transform one sequence into the other. This method is particularly useful for comparing sequences of different lengths and can account for insertions and deletions. When constructing a network based on the similarity of CDR-3 nucleotide sequences, it is preferable to use the Levenshtein distance instead of the default Hamming distance by setting the argument `dist_type = "levenshtein"`. However, the Levenshtein distance requires significantly more computational time than the Hamming distance, which may be challenging when working with large data sets having long TCR/BCR sequences.
 
 
-### Distance Cutoff
+## Distance Cutoff
 
 The distance function specified in the `dist_type` argument (Hamming distance by default) is used to quantify the similarity between TCR/BCR sequences. The chosen distance measurement determines the distance between two nodes in the network graph. 
 
@@ -114,7 +191,7 @@ By default, two nodes in the  graph are connected by an edge if their distance i
 For example, if `dist_cutoff = 2`, then two nodes will be connected by an edge if their distance is at most 2. The cutoff value controls the stringency of the network construction and affects the number and density of edges in the network.
 
 
-### Isolated Nodes
+## <a name="isolated_nodes"></a> Keep/Remove Isolated Nodes 
 
 By default, if a given node has no edges connecting it to any other nodes in the network, it will be removed from the network graph and will not be included in the output. 
 
@@ -124,24 +201,33 @@ Notice that while our input data contained 200 rows, the `node_data` data frame 
 nrow(output$node_data)
 ```
 
-These 122 rows correspond to the nodes that are joined by an edge to at least one other node in the network.
+These rows correspond to the 122 nodes that are joined by an edge to at least one other node in the network.
+
+The row names from the original input data are preserved, allowing the user to conveniently cross-reference each node with its corresponding row in the original input data.
+
+```{r}
+head(rownames(output$node_data))
+```
+
 
 If desired, all nodes can be kept in the network, including those that do not have any edge connections to other nodes. This is accomplished by setting the `drop_isolated_nodes` argument to `FALSE`.
 
 
 
-## Network Properties and Cluster Analysis
+# <a name="network_properties"></a> Network Properties and Cluster Analysis
 
 The `buildRepSeqNetwork` function can perform additional network analysis after constructing the network. This includes cluster analysis and computation of network properties. Cluster analysis partitions the network graph into densely-connected subgraphs, while network properties describe the structural organization of the network.
 
 
-### Node-Level Network Properties
+## <a name="node_properties"></a> Node-Level Network Properties {.tabset}
+
+### Description
 
 Node-level network properties are properties that pertain to each individual node in the network graph. 
 
 Some are local properties, meaning that their value for a given node depends only on a subset of the nodes in the network. One example is the network degree of a given node, which represents the number of other nodes that are directly joined to the given node by an edge connection.
 
-Other properties are global properties, meaning that their value for a given node depends on all of the nodes in the network. An example is the authority score of a node, which is computed using the entire graph adjacency matrix (if we denote this matrix by $A$, then the principal eigenvector of $A_T A$ represents the authority scores of the network nodes).
+Other properties are global properties, meaning that their value for a given node depends on all of the nodes in the network. An example is the authority score of a node, which is computed using the entire graph adjacency matrix (if we denote this matrix by $A$, then the principal eigenvector of $A^T A$ represents the authority scores of the network nodes).
 
 The names of the node-level network properties that can be computed are listed below:
 
@@ -158,34 +244,36 @@ The names of the node-level network properties that can be computed are listed b
 * `coreness`
 * `page_rank`
 
-The `cluster_id` property warrants further explanation and is discussed in the [subsection on cluster analysis](#cluster-analysis).
+For details on the individual properties, please refer to the documentation for the `chooseNodeStats` function using the command `?NAIR::chooseNodeStats`.
+
+The `cluster_id` property warrants further explanation and is discussed in the [subsection on cluster analysis](#cluster_analysis).
 
 
-#### Enabling Computation of Node-Level Properties
+### Computing Node-Level Properties
 
 Use the setting `node_stats = TRUE` to enable computation of node-level network properties. 
 
-```{r include=FALSE}
-# Node-level properties
-output <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
-                             output_dir = NULL)
+```{r}
+# build network with computation of node-level network properties
+output2 <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
+                              output_dir = NULL)
 ```
 
 The node data now contains node-level network properties in addition to the original data columns:
 
 ```{r}
-names(output$node_data)
+names(output2$node_data)
 ```
 
 ```{r}
-head(output$node_data[ , c("CloneSeq", "degree", "authority_score")])
+head(output2$node_data[ , c("CloneSeq", "degree", "authority_score")])
 ```
 
 
 By default, all of the available node-level properties are computed except for `closeness`, `centrality_by_closeness` and `cluster_id`.
 
 
-#### Specifying the Set of Node-Level Properties
+### <a name="choose_node_stats"></a> Specifying the Node-Level Properties
 
 The set of node-level properties that are computed can be specified using the `stats_to_include` argument. 
 
@@ -197,7 +285,7 @@ Below is an example where the user wishes to compute the `closeness` property in
 
 ```{r, eval = FALSE}
 # Modifying the default set of node-level properties
-buildRepSeqNetwork(
+output2 <- buildRepSeqNetwork(
   toy_data, "CloneSeq", node_stats = TRUE,
   stats_to_include = chooseNodeStats(closeness = TRUE, page_rank = FALSE))
 ```
@@ -206,29 +294,28 @@ If the user wishes to include only a small number of properties and exclude the 
 
 ```{r, eval = FALSE}
 # Include only the node-level properties specified below
-buildRepSeqNetwork(
+output2 <- buildRepSeqNetwork(
   toy_data, "CloneSeq", node_stats = TRUE, 
   stats_to_include = exclusiveNodeStats(degree = TRUE, transitivity = TRUE))
 ```
 
 
+## <a name="cluster_analysis"></a> Cluster Analysis {.tabset}
 
-### Cluster Analysis
+Cluster analysis involves using a community-finding algorithm to partition the network graph into clusters (densely-connected subgraphs). These clusters represent groups of clones/cells with similar receptor sequences.
 
-Cluster analysis involves using a community-finding algorithm to partition the network graph into clusters (densely-connected subgraphs). 
+The cluster membership of each node is recorded as the `cluster_id` node-level network property, included as a variable in the node-level metadata. 
 
-The cluster membership of each node is then recorded as the `cluster_id` node-level network property, included as a variable in the node-level metadata. 
+Cluster-level network properties of each cluster are also computed. An additional data frame containing these cluster-level network properties will be included in the output list returned by `buildRepSeqNetwork`.
 
-Cluster-level network properties of each cluster are computed. An additional data frame containing these cluster-level network properties will then be included in the output list returned by `buildRepSeqNetwork`.
-
-#### Enabling Cluster Analysis
+### Enabling Cluster Analysis
 
 To perform cluster analysis, use the setting `cluster_stats = TRUE`. This will also compute the cluster-level network properties of each cluster.
 
 If the user has set `node_stats = TRUE` and has specified inclusion of the `cluster_id` node-level property through the `stats_to_include` argument, then cluster analysis will automatically be performed and the `cluster_id` values will be added to the node-level data. However, cluster-level network properties will not be computed unless the user has set `cluster_stats = TRUE`.
 
 
-#### Clustering Algorithm
+### Clustering Algorithm
 
 By default, clustering is performed using the `cluster_fast_greedy` algorithm from the `igraph` package. Other clustering algorithms from the `igraph` package can be used instead of the default algorithm. The algorithm is specified using the `cluster_fun` argument, which accepts one of the following functions:
 
@@ -246,10 +333,10 @@ By default, clustering is performed using the `cluster_fast_greedy` algorithm fr
 
 For example, setting `cluster_fun = cluster_leiden` performs clustering using the `cluster_leiden` algorithm.
 
-For more information about a particular algorithm, users can refer to its help documentation file. For example, the command `?cluster_fast_greedy` loads the documentation file for the `cluster_fast_greedy` (the default) algorithm, assuming the `NAIR` package has been loaded (e.g., using `library(NAIR)`).
+For more information about a particular algorithm, users can refer to its help documentation file. For example, the command `?igraph::cluster_fast_greedy` loads the documentation file for the `cluster_fast_greedy` algorithm.
 
 
-#### Cluster-Level Network Properties
+### Cluster-Level Network Properties
 
 If the user has set `cluster_stats = TRUE`, then after partitioning the network into clusters, various network properties are computed for each cluster.
 
@@ -258,21 +345,21 @@ These cluster-level network properties are recorded in their own data frame, con
 Below, we re-generate the output of `buildRepSeqNetwork`, this time with cluster analysis included.
 
 ```{r}
-output <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
-                             cluster_stats = TRUE, print_plots = FALSE,
-                             output_dir = NULL)
+output3 <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
+                              cluster_stats = TRUE, print_plots = FALSE,
+                              output_dir = NULL)
 ```
 
 The output list now includes an additional data frame containing the cluster-level meta data:
 
 ```{r}
-names(output)
+names(output3)
 ```
 ```{r}
-names(output$cluster_data)
+names(output3$cluster_data)
 ```
 ```{r}
-head(output$cluster_data[ , 1:6])
+head(output3$cluster_data[ , 1:6])
 ```
 
 A brief description of each cluster-level property is given below:
@@ -295,51 +382,192 @@ A brief description of each cluster-level property is given below:
 * `eigen_centrality_eigenvalue`: The eigenvalue corresponding to the principal eigenvector of the adjacency matrix for the cluster.
 
 
-#### Specifying the Count Column
+### <a name="count_col"></a> Specifying the Count Column
 
 Some cluster-level network properties, such as `agg_count` and `max_count`, are only computed if the user specifies a column of the input data containing counts for each row (i.e., clone count for bulk data or Unique Molecular Identifier count for single-cell data). This column is specified using the `count_col` function, which accepts a column name or column index.
 
+If a count column is specified, then its values will be coerced to numeric values. Any rows of the input data for which the count value is `NA` or `NaN` will be dropped before constructing the network.
+
+
+### Labeling Clusters
+
+In order to more easily reference the clusters within the visual plot of the network graph, it is possible to label the clusters in the plot with their cluster IDs. This must be done after calling `buildRepSeqNetwork`, and is accomplished  using the `addClusterLabels` function [as described here](network_visualization.html#labeling_clusters).
 
 
 
-## Visualization
+# Visualization
 
 The `buildRepSeqNetwork` function includes various arguments that facilitate customization of the network visualization. See [this vignette](network_visualization.html) for an overview.
 
 Additionally, the following arguments can be used to control whether plots are generated and/or displayed in R:
 
-* Use `print_plots = FALSE` to prevent plots from being printed to the R plotting window. Plots will still be generated, included in the output and (assuming a [valid output directory](#output-directory)) saved to a pdf as usual.
+* Use `print_plots = FALSE` to prevent plots from being printed to the R plotting window. Plots will still be generated, included in the output and (assuming a [valid output directory](#output_settings)) saved to a pdf as usual.
 * Use `plots = FALSE` to prevent plots from being generated entirely. 
 
 
 
 
 
-## Output Settings
+# <a name="output_settings"></a> Output Settings {.tabset}
 
 
-### Output Directory
+
+## <a name="subset_cols"></a> Subsetting Columns From the Input Data
+
+The `node_data` data frame contained in the output of `buildRepSeqNetwork` includes all of the columns that were present in the original input data frame. 
+
+In some cases, the user may not wish for all columns to be included. In this case, the user can specify the columns to be included using the `subset_cols` argument, which accepts a vector containing either the column names or the column indices of the columns to be kept. 
+
+The column specified by the `seq_col` argument will automatically be included regardless of the value of `subset_cols`.
+
+
+## Output Directory
 
 * By default, `buildRepSeqNetwork` saves its output to the current working directory. However, users can specify a directory using the `output_dir` argument. 
 * The specified output directory will be created if it does not already exist.
 * Setting `output_dir` to `NULL` will prevent any output from being written to file.
 
-### Output Type
+## Output File Format
 
 * By default, each component of the list returned by `buildRepSeqNetwork` is saved as its own file, with the node-level and cluster-level meta data  saved as csv files.
 * For better compression and fewer files, users can specify `output_type = "rds"` or `output_type = "rda"`, which will save the entire output list to a single rds file or a single rda file, respectively.
 
-### Plots
+## PDF of Plots
 
 * Regardless of the value of `output_type`, a separate pdf file containing the graph plot(s) is created in `output_dir`. The dimensions (in inches) for the pdf can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively. The pdf file is not created if no plots are generated (i.e., if the argument `plots` is set to `FALSE`).
-* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot` function as described in [this vignette](downstream_analysis.html).
+* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot` function as described [here](network_visualization.html#new_plots).
 
-### Output File Name(s)
+## Output File Name(s)
 
 * By default, the name of each saved file starts with `MyRepSeqNetwork`. This prefix can be changed by providing a character string to the `output_name` argument.
 * If `output_type` is set to `"rds"` or `"rda"`, then the name of the file will be the value of the `output_name` argument followed by the appropriate file extension (either `.rds` or `.rda`).
 * The name of the pdf file for the graph plot will be the value of the `output_name` argument followed by the `.pdf` file extension.
 
 
+# <a name="downstream"></a> Downstream Tasks and Complementary Functions {.tabset}
+
+This section covers some basic tasks the user may wish to perform following the use of `buildRepSeqNetwork`. We describe how these tasks can be conveniently performed using additional functions within the `NAIR` package.
+
+## Modifying Plots
+
+In some cases, the user may wish to make changes to a plot that was previously created by the `buildRepSeqNetwork` function. 
+
+Refer to [this vignette](network_visualization#modifying_plots) for further details.
 
 
+## Downstream Computation of Network Properties  {.tabset}
+
+If the user has already constructed the network using `buildRepSeqNetwork` and wishes to compute network properties without constructing the network again (which could be time-consuming for large networks), this can be done using the output of `buildRepSeqNetwork` along with built-in package functions.
+
+### Compute Node-level Properties Downstream
+
+Node-level network properties can be computed and added to the node-level meta data by passing the data frame to the `addNodeNetworkStats` function. The `igraph` object contained in the output list of `buildRepSeqNetwork` is provided to the `net` argument of `addNodeNetworkStats`. The `stats_to_include` argument can be used to [specify which network properties to compute](#node_properties) just as in the `buildRepSeqNetwork` function.
+
+```{r, eval = FALSE}
+# Add network stats to node-level meta data 
+output$node_data <- addNodeNetworkStats(output$node_data,
+                                        net = output$igraph,
+                                        stats_to_include = "all")
+```
+
+### Perform Cluster Analysis Downstream
+
+Cluster-level properties can be computed by passing the node-level meta data to the `getClusterStats` function. The adjacency matrix contained in the output list of `buildRepSeqNetwork` is provided to the `adjacency_matrix` argument of `getClusterStats`. The `seq_col` argument accepts a column name or column index specifying the column of the node data that contains the receptor sequences. If not provided, cluster properties involving receptor sequences, such as `mean_seq_length` and `seq_w_max_degree`, will not be computed. Similarly, the `count_col` argument is used to [specify the column containing the counts](#cluster_analysis).
+
+```{r, eval = FALSE}
+# Add cluster-level properties to output list from buildRepSeqNetwork
+output$cluster_data <- 
+  getClusterStats(data = output$node_data,
+                  adjacency_matrix = output$adjacency_matrix,
+                  seq_col = "CloneSeq", count_col = "CloneCount")
+```
+
+
+
+
+##  <a name="downstream_save_output"></a> Saving Output After Creation
+
+In some cases, the user may wish to save the output list returned by `buildRepSeqNetwork` after it is created. This situation may arise if the user has modified the output list, or if the user wishes to use different output settings but does not wish to reconstruct the entire network by calling `buildRepSeqNetwork` again. 
+
+The `saveNetwork` function can be used to save the output list in a manner similar to the way in which `buildRepSeqNetwork` saves its output. The output list is passed to the `net` argument, while the `output_dir`, `output_type`, `pdf_width` and `pdf_height` arguments have the [same behavior](#output_settings) as they do in the `buildRepSeqNetwork` function. The `output_filename` argument has the same behavior as the `output_name` argument of `buildRepSeqNetwork`.
+
+```{r}
+# save output list returned by buildRepSeqNetwork
+saveNetwork(net = output, output_dir = dir_out)
+```
+
+
+## Regenerating Output Components
+
+In case the `igraph` object contained in the output of `buildRepSeqNetwork` is lost, the adjacency matrix can be used to quickly generate the `igraph` object without recomputing the network edges. This is done by passing the adjacency matrix to the `generateNetworkFromAdjacencyMat` function.
+
+```{r, eval = FALSE}
+# create igraph from adjacency matrix
+output$igraph <- generateNetworkFromAdjacencyMat(output$adjacency_matrix)
+```
+
+If the adjacency matrix itself is lost, it can be recomputed from the `node_data` data frame. This is achieved by passing the column vector of receptor sequences to the `sparseAdjacencyMatFromSeqs` function. Doing so is typically faster than calling `buildRepSeqNetwork` again, particularly if `buildRepSeqNetwork` was previously called with the default setting [`drop_isolated_nodes = TRUE`](#network_settings).
+
+The `sparseAdjacencyMatFromSeqs` function has the additional arguments `dist_type`, `dist_cutoff` and `drop_isolated_nodes`, which have the [same behavior and default values](#network_settings) as in `buildRepSeqNetwork`. These arguments should be set to match the values used in `buildRepSeqNetwork` when the `node_data` data frame was created.
+
+```{r, eval = FALSE}
+# create adjacency matrix from receptor sequence data column
+output$adjacency_matrix <- sparseAdjacencyMatFromSeqs(output$node_data$CloneSeq)
+```
+
+
+# Compartmentalized Workflow {.tabset}
+
+It is possible to split the tasks performed by `buildRepSeqNetwork` into separate, individual steps. This allows the user greater freedom and flexibility in customizing their workflow and analysis. 
+
+## `generateNetworkObjects`
+
+The `generateNetworkObjects` function is a lightweight function that performs the core tasks of `buildRepSeqNetwork` and leaves the remaining tasks to be performed individually. 
+
+The `generateNetworkObjects` function performs **only** the following tasks:
+
+* Builds the network graph for the immune repertoire
+* Returns the following output: 
+    * Meta-data for the nodes in the network
+    * Network adjacency matrix
+    * `igraph` object
+    
+The function has arguments [`data`, `seq_col`](#mainargs), [`dist_type`, `dist_cutoff` and `drop_isolated_nodes`](#network_settings), all of which have the same behavior and default values as seen in the `buildRepSeqNetwork` function.
+    
+```{r}
+output_minimal <- generateNetworkObjects(data = toy_data, seq_col = "CloneSeq")
+```
+
+```{r}
+names(output_minimal)
+```
+
+
+## <a name="standalone_filtering"></a> Standalone Input Filtering 
+
+Filtering the input data can be performed as a separate step prior to calling `generateNetworkObjects`. This is done using the `filterInputData` function. The function has arguments [`data`, `seq_col`](#mainargs), [`min_seq_length`, `drop_matches`, `subset_cols`](#input_options) and [`count_col`](#cluster_analysis), all of which behave in the same manner as seen in `buildRepSeqNetwork`. 
+
+```{r}
+# Filter input data as a preprocessing step
+filtered_data <- filterInputData(
+  toy_data, seq_col = "CloneSeq", 
+  min_seq_length = 5,
+  drop_matches = "[*|_]", 
+  subset_cols = c("SampleID"),
+  count_col = "CloneCount")
+```
+
+```{r}
+head(filtered_data)
+```
+
+
+## Other Steps
+
+The following tasks performed by `buildRepSeqNetwork` are not performed by `generateNetworkObjects`:
+
+* [Computation of network properties and cluster analysis](#downstream)
+* [Generation of visual plot](network_visualization.html#new_plots)
+* [Saving output](#downstream_save_output)
+
+Each of the omitted tasks can be performed as its own step using functions in the `NAIR` package. Click on a particular task for details on how it can be accomplished.

@@ -7,9 +7,10 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-  A wrapper function for customized calling of functions from the \code{ggraph} package.
   Given an \code{igraph} network object, generates a \code{ggraph} according to the user
   specifications.
+
+  For manual generation of plots, the \code{\link{generateNetworkGraphPlots}} function is recommended over  \code{plotNetworkGraph}. The arguments of \code{\link{generateNetworkGraphPlots}} behave like those of \code{\link{buildRepSeqNetwork}} and support generation of multiple plots. \code{\link{generateNetworkGraphPlots}} dispatches appropriate calls to \code{plotNetworkGraph}, so users should have no need to call \code{plotNetworkGraph} directly.
 }
 \usage{
 plotNetworkGraph(igraph,

@@ -1,4 +1,27 @@
 
+# Changes in NAIR version 0.0.9038 (7/14/2023)
+
+## Bug Fixes
+
+* Fixed a bug in `filterInputData` that raised an error when the `count_col` and `subset_cols` arguments were both non-null
+
+## Functions
+
+* When calling `plotNetworkGraph` directly with a vector provided to `color_nodes_by` and with `color_title = "auto"` (the default), the function will attempt to use the name of the vector for the color legend title. A similar change applies with respect to the arguments `size_nodes_by` and `size_title`.
+* `buildPublicClusterNetwork` arguments `node_stats`, `stats_to_include` and `cluster_stats` are now deprecated and do nothing. All node-level and cluster-level network properties are now automatically computed. The arguments remain in order to maintain backwards compatibility with user code, but raise a warning notifying the user of their deprecated state when a non-null value is provided.
+* Functions for clustering algorithms imported from the `igraph` package (such as `cluster_fast_greedy`) are now exported in the package NAMESPACE file so that they are available to users. These functions can now be used as inputs to the `cluster_fun` argument of various `NAIR` package functions without the need to use the `igraph::` prefix.
+* Documentation file added for the above re-exported functions
+    
+## Vignettes and Documentation
+
+* `Utility Functions` vignette (formerly titled `Downstream Analysis`) removed. Its content has been absorbed into the `buildRepSeqNetwork` and `Network Visualization` vignettes
+* Revisions and content additions to the following vignettes:
+    * `buildRepSeqNetwork`
+    * `Network Visualization`
+    * `Searching for Public Clusters`
+* The help file for `plotNetworkGraph` now recommends that users prefer the higher-level function `generateNetworkGraphPlots` over `plotNetworkGraph`, since the former has arguments that behave identically to those of `buildRepSeqNetwork` and supports generation of multiple plots. `plotNetworkGraph` is called by `generateNetworkGraphPlots`, so users should have no need to call `plotNetworkGraph` directly. However, `plotNetworkGraph` remains as an exported function available to the user in order to maintain backwards compatibility with user code. 
+
+
 # Changes in NAIR version 0.0.9037 (7/10/2023)
     * Changes to `findAssociatedSeqs`:
         * `groups` argument still exists but is now deprecated and no longer used. Group labels are now automatically determined from the unique values of `group_ids`
@@ -11,7 +34,7 @@
     * New arguments to `addClusterLabels`:
         * `cluster_id_col` added to permit use with node data where the cluster ID variable has a custom name (e.g., with the output of `buildPublicClusterNetwork`)
         * `greatest_values` added, which can be set to `FALSE` to prioritize the clusters to label based on the least values of the `criterion` variable rather than the greatest values
-    * A function `exclusiveNodeStats` has been added. This function behaves in the same manner as `chooseNodeStats`, but all arguments are set to `FALSE` by default. Useful when the user only wishes to specify a small number of node-level properties to compute, with all other properties exlcuded.
+    * A function `exclusiveNodeStats` has been added. This function behaves in the same manner as `chooseNodeStats`, but all arguments are set to `FALSE` by default. Useful when the user only wishes to specify a small number of node-level properties to compute, with all other properties excluded.
     * Major revisions to the following vignettes:
         * `NAIR: Network Analysis of Immune Repertoire`
         * `Searching for Public TCR/BCR Clusters`

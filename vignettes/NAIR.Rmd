@@ -1,8 +1,8 @@
 ---
-title: "Introduction to NAIR: Network Analysis of Immune Repertoire"
+title: "Introduction to the NAIR package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{NAIR: Network Analysis of Immune Repertoire}
+  %\VignetteIndexEntry{Introduction to the NAIR package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,7 +17,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
+
+# NAIR: Network Analysis of Immune Repertoire
 
 We introduce the `NAIR` package, a powerful tool for analyzing the adaptive immune repertoire using network analysis based on similarities among receptor sequences, which implements methods from the following paper:
 
@@ -43,7 +44,7 @@ In addition, our tool enables users to search across multiple AIRR-Seq samples f
 To aid in visualization and interpretation of the immune repertoire network, our tool also allows for customized visualizations of the network. Furthermore, our tool enables users to perform further downstream analysis on the immune repertoire data, such as clustering analysis and differential abundance testing. These downstream analyses can provide additional insights into the immune response.
 
 
-### What data does `NAIR` support?
+## What data does `NAIR` support?
 
 `NAIR` supports bulk and single-cell immune repertoire sequence data for T-cell or B-cell receptors (TCR or BCR).
 
@@ -51,7 +52,7 @@ To aid in visualization and interpretation of the immune repertoire network, our
 * **Bulk data:** Each row is a distinct TCR/BCR clone (unique combination of V-D-J genes and nucleotide sequence) and typically includes a corresponding measurement of clonal abundance (e.g., clone count and clone frequency/fraction)
 
 
-### How does `NAIR` model and analyze the adaptive immune receptor repertoire as a network?
+## How does `NAIR` model and analyze the adaptive immune receptor repertoire as a network?
 
 * Each cell (single-cell data) or clone (bulk data) is modeled as a node (vertex) in the network
 * For each node, we consider the corresponding receptor sequence (nucleotide or amino acid)
@@ -70,6 +71,7 @@ To aid in visualization and interpretation of the immune repertoire network, our
 
 General network analysis on AIRR-Seq data is performed using the `buildRepSeqNetwork` function. This function does the following:
 
+* Filters the input AIRR-Seq data according to user specifications
 * Builds the network graph for the immune repertoire
 * Performs desired network analysis
     * Cluster analysis
@@ -82,7 +84,7 @@ General network analysis on AIRR-Seq data is performed using the `buildRepSeqNet
     * Network adjacency matrix in sparse matrix format
     * `igraph` object containing the list of edges in the network graph 
 
-See [this vignette](buildRepSeqNetwork.html) for a tutorial on the function's usage.
+See [this vignette](buildRepSeqNetwork.html) for a tutorial on the function's usage and output.
 
 
 
@@ -90,17 +92,6 @@ See [this vignette](buildRepSeqNetwork.html) for a tutorial on the function's us
 
 The `buildRepSeqNetwork` function includes various arguments that facilitate customization of the network visualization. See [this vignette](network_visualization.html) for an overview.
 
-
-
-# Utility Functions
-
-The `NAIR` package contains various utility functions designed to complement the main `buildRepSeqNetwork` function. These utility functions streamline various aspects of working with the output of `buildRepSeqNetwork`, providing greater flexibility in the implementation of customized and/or downstream analyses. Some of the roles played by these utility functions include the following:
-
-* Modifying or augmenting plots produced by the `buildRepSeqNetwork` function
-* Using the output of the `buildRepSeqNetwork` function to generate new plots
-* Performing cluster analysis or computing network properties for a network constructed using the `buildRepSeqNetwork` function
-
-See [this vignette](downstream_analysis.html) for an overview.
 
 
 

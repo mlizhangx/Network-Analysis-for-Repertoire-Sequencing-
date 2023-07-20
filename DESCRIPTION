@@ -1,10 +1,11 @@
 Package: NAIR
 Type: Package
 Title: Network Analysis for Immune Repertoire
-Version: 0.0.9037
+Version: 0.0.9038
 Authors@R: c(
     person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
+    person("Le", "Phi Long", email = "PhiLong.Le@ucsf.edu"),
     person("Jason", "Cham", email = "Cham.Jason@scrippshealth.org", role = "aut"),
     person("Zenghua", "Fan", email = "Zenghua.Fan@ucsf.edu", role = "aut"),
     person("Tao", "He", email = "hetao@sfsu.edu", role = "aut"),

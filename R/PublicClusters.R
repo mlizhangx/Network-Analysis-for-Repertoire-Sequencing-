@@ -61,7 +61,7 @@ buildPublicClusterNetwork <- function(
 
   ## Network ##
   drop_isolated_nodes = FALSE,
-  node_stats = TRUE, stats_to_include = "all", cluster_stats = TRUE,
+  node_stats = NULL, stats_to_include = NULL, cluster_stats = NULL,
 
 
   ## Visualization ##
@@ -74,6 +74,17 @@ buildPublicClusterNetwork <- function(
   ...
 
 ) {
+
+  if (!is.null(node_stats)) {
+    warning("`node_stats` argument is deprecated; all node-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
+  }
+  if (!is.null(stats_to_include)) {
+    warning("`stats_to_include` argument is deprecated; all node-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
+  }
+  if (!is.null(cluster_stats)) {
+    warning("`cluster_stats` argument is deprecated; cluster-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
+  }
+
   .createOutputDir(output_dir)
   if (!is.null(color_nodes_by)) {
     if ("ClusterIDPublic" %in% color_nodes_by) {
@@ -87,8 +98,8 @@ buildPublicClusterNetwork <- function(
   cat("Building network of public clusters:\n")
   net <- buildRepSeqNetwork(
     data = data, seq_col = seq_col, drop_isolated_nodes = drop_isolated_nodes,
-    node_stats = node_stats, stats_to_include = stats_to_include,
-    cluster_stats = cluster_stats,
+    node_stats = TRUE, stats_to_include = "all",
+    cluster_stats = TRUE,
     color_nodes_by = color_nodes_by, color_scheme = color_scheme,
     output_dir = output_dir, output_name = output_name, ...)
   if (is.null(net)) { return(NULL) }
