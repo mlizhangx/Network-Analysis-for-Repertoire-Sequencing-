@@ -7,7 +7,8 @@ Authors@R: c(
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
     person("Le", "Phi Long", email = "PhiLong.Le@ucsf.edu", role = "aut"),
     person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"),
-    person("Ze", "Zhang", email = "Ze.Zhang@UTsouthwestern.edu", role = "ctb"))
+    person("Ze", "Zhang", email = "Ze.Zhang@UTsouthwestern.edu", role = "ctb",
+           comment = "Author of BriseisEncoder.py"))
 Description: Pipelines for studying the immune repertoire of T and B cells 
     via network analysis based on the similarity of their receptor sequences. 
     Relate clinical outcomes to immune repertoires based on their network 
