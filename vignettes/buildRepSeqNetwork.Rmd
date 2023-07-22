@@ -508,7 +508,7 @@ output$igraph <- generateNetworkFromAdjacencyMat(output$adjacency_matrix)
 
 If the adjacency matrix itself is lost, it can be recomputed from the `node_data` data frame. This is achieved by passing the column vector of receptor sequences to the `sparseAdjacencyMatFromSeqs` function. Doing so is typically faster than calling `buildRepSeqNetwork` again, particularly if `buildRepSeqNetwork` was previously called with the default setting [`drop_isolated_nodes = TRUE`](#network_settings).
 
-The `sparseAdjacencyMatFromSeqs` function has the additional arguments `dist_type`, `dist_cutoff` and `drop_isolated_nodes`, which have the [same behavior and default values](#network_settings) as in `buildRepSeqNetwork`. These arguments should be set to match the values used in `buildRepSeqNetwork` when the `node_data` data frame was created.
+The `sparseAdjacencyMatFromSeqs` function has three additional arguments. The argument `max_dist` plays the role of the [`dist_cutoff`](#network_settings) argument from `buildRepSeqNetwork`, with the same default value of 1. The arguments `dist_type` and `drop_isolated_nodes` have the [same behavior and default values](#network_settings) as in `buildRepSeqNetwork`. These arguments should be set to match the values used in `buildRepSeqNetwork` when the `node_data` data frame was created.
 
 ```{r, eval = FALSE}
 # create adjacency matrix from receptor sequence data column
