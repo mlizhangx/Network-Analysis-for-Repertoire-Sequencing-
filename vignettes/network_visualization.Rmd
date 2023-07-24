@@ -198,7 +198,7 @@ By default, if the nodes are colored or sized dynamically according to a variabl
 
 The color scale can be manually excluded from the legend by setting `color_legend = FALSE`. Similarly, setting `size_legend = FALSE` will exclude the size scale from the legend.
 
-An exception to the default behavior occurs when the variable used to color the nodes is discrete with more than 20 distinct values. In this case the color scale is automatically excluded from the legend in order to prevent it from taking up excessive space in the plot. The name of the variable used to color the nodes is then reported in the plot's subtitle for reference.
+**Note:** An exception to the default behavior occurs when the variable used to color the nodes is discrete with more than 20 distinct values. In this case the color scale is automatically excluded from the legend in order to prevent it from taking up excessive space in the plot. The name of the variable used to color the nodes is then reported in the plot's subtitle for reference. If the user wishes to ignore this exception and force the color legend to be shown, they can do so by setting `color_legend = TRUE`. 
 
 
 ## Legend Titles
