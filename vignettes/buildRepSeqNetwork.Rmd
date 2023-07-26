@@ -304,7 +304,7 @@ output2 <- buildRepSeqNetwork(
 
 Cluster analysis involves using a community-finding algorithm to partition the network graph into clusters (densely-connected subgraphs). These clusters represent groups of clones/cells with similar receptor sequences.
 
-The cluster membership of each node is recorded as the `cluster_id` node-level network property, included as a variable in the node-level metadata. 
+Each cluster is assigned a numeric cluster ID, and the cluster membership ID of each node is recorded. The cluster membership ID is the cluster ID of the cluster to which the node belongs. The cluster membership ID is recorded as the `cluster_id` node-level network property, included as a variable in the node-level metadata. 
 
 Cluster-level network properties of each cluster are also computed. An additional data frame containing these cluster-level network properties will be included in the output list returned by `buildRepSeqNetwork`.
 
