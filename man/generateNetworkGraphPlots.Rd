@@ -3,11 +3,11 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-  Generate Multiple Plots of a Network
+  Generate Plots of a Network Graph
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-  Generate multiple plots using an igraph and corresponding node-level meta data.
+  Given an \code{\link[igraph]{igraph}} network object and a data frame containing the corresponding node-level meta data, generates one or more \code{\link[ggraph]{ggraph}} plots of the network graph according to the user specifications.
 }
 \usage{
 generateNetworkGraphPlots(
@@ -22,7 +22,7 @@ generateNetworkGraphPlots(
 \arguments{
   \item{igraph}{
 %%     ~~Describe \code{igraph} here~~
-  An \code{igraph} object containing the edge list for the network.
+    An \code{\link[igraph]{igraph}} object containing the network graph to be plotted.
 }
   \item{data}{
 %%     ~~Describe \code{data} here~~A data
@@ -34,56 +34,52 @@ generateNetworkGraphPlots(
 }
   \item{plot_title}{
 %%     ~~Describe \code{plot_title} here~~
-    Passed to \code{plotNetworkGraph()}.
+    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
   \item{plot_subtitle}{
 %%     ~~Describe \code{plot_subtitle} here~~
-    Passed to \code{plotNetworkGraph()}.
+    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
   \item{color_nodes_by}{
 %%     ~~Describe \code{color_nodes_by} here~~
-    Optional. Column name or number of \code{data} used to color network nodes. If a vector of values is supplied, one plot will be
-    generated for each value.
+    A vector specifying one or more variables of \code{data} used to encode the color of the nodes. One plot is generated for each vector entry, with each plot coloring the nodes according to the variable in the corresponding vector entry. The vector must be either a character vector (in which case each entry is a column name of \code{data}) or a numeric vector (in which case each entry is a column index of \code{data}). If this argument is \code{NULL}, one plot will be generated with the nodes uncolored.
 }
   \item{color_scheme}{
 %%     ~~Describe \code{color_scheme} here~~
-    Passed to \code{plotNetworkGraph}. If a vector is supplied to \code{color_nodes_by},
-    this argument will optionally accept a vector of matching length; if supplied,
-    corresponding values of \code{color_scheme} and \code{color_nodes_by} will
-    be used together in each call to \code{plotNetworkGraph}.
+    A character string specifying the color scale to use for all plots, or a character vector whose length matches that of \item{color_nodes_by}, specifying the color scale used for each plot. Each entry is passed to \code{\link{plotNetworkGraph}} when generating the plot for the corresponding entry of \code{color_nodes_by}.
 }
   \item{color_legend}{
 %%     ~~Describe \code{color_legend} here~~
-    Passed to \code{plotNetworkGraph()}.
+    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
   \item{color_title}{
 %%     ~~Describe \code{color_title} here~~
-    Passed to \code{plotNetworkGraph}. If a vector is supplied to \code{color_nodes_by},
-    this argument will optionally accept a vector of matching length; if supplied,
-    corresponding values of \code{color_title} and \code{color_nodes_by} will
-    be used together in each call to \code{plotNetworkGraph}.
+    A character string specifying the title of the color legend in all plots, or a character vector whose length matches that of \item{color_nodes_by}, specifying the title of the color legend in each plot. Each entry is passed to \code{\link{plotNetworkGraph}} when generating the plot for the corresponding entry of \code{color_nodes_by}.
 }
   \item{edge_width}{
 %%     ~~Describe \code{edge_width} here~~
-    Passed to \code{plotNetworkGraph}.
+    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
   \item{size_nodes_by}{
 %%     ~~Describe \code{size_nodes_by} here~~
-    Numeric value specifying the node size, or a
-    column name of \code{data} for dynamically sizing the nodes.
+    A numeric scalar specifying the size of the nodes in all plots, or the column name of a variable of \code{data} used to encode the size of the nodes in all plots. Alternatively, an argument value of \code{NULL} uses the default \code{\link[ggraph]{ggraph}} size for all nodes. Passed to the size aesthetic mapping of \code{\link[ggraph]{geom_node_point}}.
 }
   \item{node_size_limits}{
 %%     ~~Describe \code{node_size_limits} here~~
-    Passed to \code{plotNetworkGraph()}.
+    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
   \item{size_title}{
 %%     ~~Describe \code{size_title} here~~
-    Passed to \code{plotNetworkGraph()}.
+    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-  This function's primary use is to generate multiple plots of a single network, each using a different variable to color-code the nodes.
+  Intended for use with the output of \code{\link{buildRepSeqNetwork}} or \code{\link{generateNetworkObjects}}. The output of these functions contain the inputs for the \code{igraph} and \code{data} arguments of \code{generateNetworkGraphPlots}.
+
+  Each plot is generated by dispatching a call to \code{\link{plotNetworkGraph}}.
+
+  The plots can be saved to a single pdf using \code{\link{saveNetworkPlots}}.
 }
 \value{
 %%  ~Describe the value returned
@@ -91,21 +87,25 @@ generateNetworkGraphPlots(
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-  A list containing one item for each plot generated. Each plot is stored as a \code{ggraph} object.
+  A list containing one element for each plot generated. Each element is a \code{ggraph} object whose name is the column name of the variable used to color the nodes. If a plot has uncolored nodes, its name is \code{uniform_color}.
 }
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 \references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
 
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+
+\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+  \code{\link{saveNetworkPlots}}
+
+  \code{\link{generateNetworkObjects}}
+
   \code{\link{plotNetworkGraph}}
 }
 \examples{

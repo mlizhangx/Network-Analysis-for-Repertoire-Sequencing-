@@ -67,15 +67,9 @@ generateNetworkObjects(data, seq_col,
     \code{drop_isolated_nodes}, if applicable. The row names
     of the original input data will be preserved. }
 }
-\references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
-
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
-}
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
 \dontrun{

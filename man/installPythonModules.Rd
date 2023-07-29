@@ -32,8 +32,8 @@
     The modules checked for and installed are \code{numpy}, \code{pandas}, \code{tensorflow} and \code{keras}. Calling this function is equivalent to making individual calls to \code{recitulate::py_install()} for each of these modules.
 }
 \author{
-  %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+%%  ~~who you are~~
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~

@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 ```
 
 
-General network analysis on AIRR-Seq data is performed using the `buildRepSeqNetwork` function. This function does the following:
+General network analysis on Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data is performed using the `buildRepSeqNetwork` function. This function does the following:
 
 * Filters the input AIRR-Seq data according to user specifications
 * Builds the network graph for the immune repertoire

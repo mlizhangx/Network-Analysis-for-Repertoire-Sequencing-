@@ -41,15 +41,9 @@ Computation is halted if the Levenshtein distance is determined to exceed the up
 %% ...
 An integer whose value is the Levenshtein distance between \code{a} and \code{b} if this distance is at most \code{k}; otherwise the value is \code{-1}.
 }
-\references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
-
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
-}
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
 levDistBounded("foo", "bar", 1)

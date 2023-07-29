@@ -90,15 +90,9 @@ getClusterStats(data,
   \item{eigen_centrality_index}{The cluster-level centrality index based on the eigenvector centrality scores, i.e., values of the first eigenvector of the adjacency matrix for the cluster. Computed using \code{igraph::centr_eigen()$centralization}.}
   \item{eigen_centrality_eigenvalue}{The eigenvalue corresponding to the first eigenvector of the adjacency matrix for the cluster. Computed using \code{igraph::eigen_centrality()$value}.}
 }
-\references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
-
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
-}
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
 \dontrun{

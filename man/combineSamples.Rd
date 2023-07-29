@@ -111,15 +111,9 @@ combineSamples(
 %% ...
     A data frame containing the combined data rows from all files.
 }
-\references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
-
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
-}
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
 ## Generate some toy data for demonstration

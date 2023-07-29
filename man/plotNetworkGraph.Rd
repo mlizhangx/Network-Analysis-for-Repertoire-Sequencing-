@@ -7,10 +7,9 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-  Given an \code{igraph} network object, generates a \code{ggraph} according to the user
-  specifications.
+  Given an \code{\link[igraph]{igraph}} network object, generates a \code{\link[ggraph]{ggraph}} plot of the network graph according to the user specifications.
 
-  For manual generation of plots, the \code{\link{generateNetworkGraphPlots}} function is recommended over  \code{plotNetworkGraph}. The arguments of \code{\link{generateNetworkGraphPlots}} behave like those of \code{\link{buildRepSeqNetwork}} and support generation of multiple plots. \code{\link{generateNetworkGraphPlots}} dispatches appropriate calls to \code{plotNetworkGraph}, so users should have no need to call \code{plotNetworkGraph} directly.
+  For manual generation of plots, the \code{\link{generateNetworkGraphPlots}} function is recommended over  \code{plotNetworkGraph}. The arguments of \code{\link{generateNetworkGraphPlots}} behave like those of \code{\link{buildRepSeqNetwork}} and support generation of multiple plots. \code{\link{generateNetworkGraphPlots}} dispatches appropriate calls to \code{plotNetworkGraph}, so most users should have no need to call \code{plotNetworkGraph} directly.
 }
 \usage{
 plotNetworkGraph(igraph,
@@ -30,51 +29,51 @@ plotNetworkGraph(igraph,
 \arguments{
   \item{igraph}{
 %%     ~~Describe \code{network} here~~
-      An \code{igraph} object containing the network graph to be plotted.
+      An \code{\link[igraph]{igraph}} object containing the network graph to be plotted.
 }
   \item{plot_title}{
 %%     ~~Describe \code{title} here~~
-      A character string or \code{NULL}. The plot title, to be passed to \code{ggplot2::labs}.
+      A character string or \code{NULL}. The plot title, to be passed to \code{\link[ggplot2]{labs}}.
 }
   \item{plot_subtitle}{
 %%     ~~Describe \code{plot_subtitle} here~~
-      A character string or \code{NULL}. The plot subtitle, to be passed to \code{ggplot2::labs}.
+      A character string or \code{NULL}. The plot subtitle, to be passed to \code{\link[ggplot2]{labs}}.
 }
   \item{color_nodes_by}{
 %%     ~~Describe \code{color_nodes_by} here~~
-      Passed to the color aesthetic mapping of \code{ggraph::geom_node_point}, used to encode the color of each node. Either a vector whose length matches the number of nodes in \code{network}, or \code{NULL}. If the vector is numeric and contains non-integer values, a continuous color scale will be used; otherwise, a discrete color scale will be used.
+      A vector whose length matches the number of nodes in the network. The values are used to encode the color of each node. Alternatively, an argument value of \code{NULL} (the default) leaves the nodes uncolored. Passed to the color aesthetic mapping of \code{\link[ggraph]{geom_node_point}}.
 }
   \item{color_scheme}{
 %%     ~~Describe \code{color_scheme} here~~
-    A character string specifying the color palette used to color the nodes: either "default" for default \code{ggplot2} colors, a viridis color map option (e.g., \code{"viridis"}, \code{"plasma"}, etc., or one the corresponding strings "A" through "H"; see \code{?viridis} for details), or a palette from \code{grDevices::hcl.pals()} (these can only be used with discrete color scales).
+    A character string specifying the color scale used to color the nodes. \code{"default"} uses default \code{\link[ggplot2]{ggplot}} colors. Other options are one of the \code{\link[viridisLite]{viridis}} color scales (e.g. \code{"plasma"} or \code{"A"}) or (for discrete variables) a palette from \code{\link[grDevices]{hcl.pals}} (e.g. \code{"RdYlGn"}).
 }
   \item{color_legend}{
 %%     ~~Describe \code{color_title} here~~
-    Accepts a logical scalar specifying whether to display the color legend on the plot. The default value of \code{"auto"} shows the color legend if \code{color_nodes_by} is a continuous variable or a discrete variable with at most 20 distinct values.
+    A logical scalar specifying whether to display the color legend on the plot. The default value of \code{"auto"} shows the color legend if \code{color_nodes_by} is a continuous variable or a discrete variable with at most 20 distinct values.
 }
   \item{color_title}{
 %%     ~~Describe \code{color_title} here~~
-    A character string or \code{NULL} specifying the title for the color legend. If "auto" and a vector was supplied for \code{color_nodes_by}, the color legend title will attempt to use the name of the supplied vector.
+    A character string (or \code{NULL}) specifying the title for the color legend. Only applicable if  \code{color_nodes_by} is a vector. If \code{color_title = "auto"} (the default), the color legend title will use the name of the \code{color_nodes_by} vector.
 }
   \item{edge_width}{
 %%     ~~Describe \code{edge_width} here~~
-      A numeric scalar specifying the width of the graph edges in the plot. Passed to the \code{width} argument of \code{ggraph::geom_edge_link0}.
+      A numeric scalar specifying the width of the graph edges in the plot. Passed to the \code{width} argument of \code{\link[ggraph]{geom_edge_link0}}.
 }
   \item{size_nodes_by}{
 %%     ~~Describe \code{size_nodes_by} here~~
-    Passed to the size aesthetic mapping of \code{ggraph::geom_node_point}, used to encode the size of each node. Either a numeric vector with positive entires whose length matches the number of nodes in \code{network}, a positive-valued number (denoting a fixed constant size for each node), or \code{NULL}.
+    A numeric scalar specifying the size of the nodes, or a numeric vector with positive entires that encodes the size of each node (and whose length matches the number of nodes in the network). Alternatively, an argument value of \code{NULL} uses the default \code{\link[ggraph]{ggraph}} size for all nodes. Passed to the size aesthetic mapping of \code{\link[ggraph]{geom_node_point}}.
 }
   \item{size_title}{
 %%     ~~Describe \code{size_title} here~~
-    A character string or \code{NULL} specifying the title for the size legend. The size legend is only displayed if a vector was supplied for \code{size_nodes_by}, in which case \code{size_title = "auto"} will attempt to use the name of the supplied vector.
+    A character string (or \code{NULL}) specifying the title for the size legend. Only applicable if  \code{size_nodes_by} is a vector. If \code{size_title = "auto"} (the default), the size legend title will use the name of the \code{size_nodes_by} vector.
 }
   \item{node_size_limits}{
 %%     ~~Describe \code{node_size_limits} here~~
-    A numeric vector of length 2 with positive entries, or \code{NULL}. If a vector of values is provided, the node sizes will be rescaled using the first value for the minimum node size and the second value for the maximum node sizes. Only applicable if a vector is supplied for \code{size_nodes_by}.
+    A numeric vector of length 2 specifying the minimum and maximum node size. Only applicable if \code{size_nodes_by} is a vector. If \code{node_size_limits = NULL}, the default size scale will be used.
 }
   \item{outfile}{
 %%     ~~Describe \code{outfile} here~
-    A character string containing a valid file name ending in \code{".pdf"}, or \code{NULL}. If a file name is supplied, the plot will be saved to the file.
+    An optional file path for saving the plot as a pdf. If \code{NULL} (the default), no pdf will be saved.
 }
 }
 \value{
@@ -83,17 +82,18 @@ plotNetworkGraph(igraph,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-  A \code{ggraph} object.
+  A \code{\link[ggraph]{ggraph}} object.
 }
 \references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
 
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+
+\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
 \dontrun{

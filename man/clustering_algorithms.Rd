@@ -1,4 +1,5 @@
 \name{Clustering Algorithms}
+\alias{clustering_algorithms}
 \alias{cluster_edge_betweenness}
 \alias{cluster_fast_greedy}
 \alias{cluster_fluid_communities}
@@ -13,6 +14,8 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Clustering Algorithms}
 \description{
+Clustering algorithm functions available for use within the \code{NAIR} package. Used as arguments to functions such as \code{\link{buildRepSeqNetwork}} and \code{\link{addClusterMembership}}.
+
 These functions have been imported from the \code{\link[igraph]{igraph}} package. See the original documentation linked below for more details.
 }
 \seealso{
@@ -27,4 +30,8 @@ These functions have been imported from the \code{\link[igraph]{igraph}} package
 \code{\link[igraph]{cluster_optimal}}
 \code{\link[igraph]{cluster_spinglass}}
 \code{\link[igraph]{cluster_walktrap}}
+}
+\author{
+%%  ~~who you are~~
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }

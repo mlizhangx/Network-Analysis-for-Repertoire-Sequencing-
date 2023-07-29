@@ -3,13 +3,12 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Save List of RepSeq Network Objects
+    Save List of Network Objects
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given a list conforming to the output of \code{buildRepSeqNetwork()}, saves
-    its contents according to the specified file format scheme. Also saves
-    any graph plots present to a single pdf.
+    Given a list of network objects such as that returned by \code{\link{buildRepSeqNetwork}} or \code{\link{generateNetworkObjects}}, saves
+    its contents according to the specified file format scheme.
 }
 \usage{
 saveNetwork(net, output_dir = getwd(),
@@ -21,15 +20,15 @@ saveNetwork(net, output_dir = getwd(),
 \arguments{
   \item{net}{
 %%     ~~Describe \code{net} here~~
-    A list conforming to the format of the value returned by \code{buildRepSeqNetwork}. Must contain at least the components \code{igraph} (an igraph object), \code{adjacency_matrix} (a matrix or dgCMatrix) and \code{node_data} (a data frame); the components \code{cluster_data} (a data frame) and \code{plots} (a list of \code{ggraph} objects) are optional, and will also be saved if present.
+    A list conforming to the format returned by \code{\link{buildRepSeqNetwork}} or \code{\link{generateNetworkObjects}}. See details.
 }
   \item{output_dir}{
 %%     ~~Describe \code{output_dir} here~~
-    The directory in which to save the file(s).
+    A file path specifying the directory in which to save the file(s).
 }
   \item{output_type}{
 %%     ~~Describe \code{output_dir} here~~
-  A character string specifying the file format to use when writing output to file. Default \code{"individual"} saves each item as a separate, uncompressed file, with data frames saved in csv format. \code{"rda"} and \code{"rds"} save the output list as a rda and rds file, respectively. For all output types, any plots present will also be saved in a pdf file.
+  A character string specifying the file format to use when writing output to file. Valid options are \code{"individual"}, \code{"rds"} and \code{"rda"}.
 }
   \item{output_filename}{
 %%     ~~Describe \code{output_filename} here~~
@@ -37,16 +36,20 @@ saveNetwork(net, output_dir = getwd(),
 }
   \item{pdf_width}{
 %%     ~~Describe \code{plot_width} here~~
-    Passed to the \code{width} argument of \code{grDevices::pdf()}.
+    Passed to the \code{width} argument of the \code{\link[grDevices]{pdf}} function.
 }
   \item{pdf_height}{
 %%     ~~Describe \code{plot_height} here~~
-    Passed to the \code{height} argument of \code{grDevices::pdf()}.
+    Passed to the \code{height} argument of the \code{\link[grDevices]{pdf}} function.
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-    When \code{output_type = "individual"}, the igraph is saved in edgelist
+    The list provided to the \code{net} argument must contain at least the components \code{igraph} (an igraph object), \code{adjacency_matrix} (a matrix or dgCMatrix) and \code{node_data} (a data frame); the components \code{cluster_data} (a data frame) and \code{plots} (a list of \code{ggraph} objects) are optional, and will also be saved if present.
+
+    The  saves each item as a separate, uncompressed file, with data frames saved in csv format. Setting \code{output_type} to \code{"rda"} or \code{"rds"} saves the output list as a rda or rds file, respectively. For all output types, any plots present will also be saved in a pdf file.
+
+    Under the default file format scheme \code{output_type = "individual"}, the igraph is saved in edgelist
     format as a .txt file; the adjacency matrix is saved either in .csv format
     (for dense matrices) or .mtx format (for sparse matrices); and plots are
     saved only in a .pdf file, meaning that any plots will need to be generated
@@ -54,23 +57,19 @@ saveNetwork(net, output_dir = getwd(),
     \code{"rda"}, the entire list \code{net} will be saved (the R symbol for the
     object will be \code{net} if saving as .rda).
 }
-\references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
-
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
-}
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+\dontrun{
 # Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
 # Generate network for data
 net <- generateNetworkObjects(toy_data, "CloneSeq")
 
+# Save network objects
 saveNetwork(net, output_dir = tempdir())
-
+}
 }

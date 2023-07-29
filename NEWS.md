@@ -1,3 +1,25 @@
+# Changes in NAIR version 0.0.9039 (7/29/2023)
+
+## Package Metadata
+
+* Updated authors in DESCRIPTION
+* Updated journal article citation in Readme and documentation files
+
+## Vignettes
+
+* The term "AIRR-Seq" is now spelled out in full as "Adaptive Immune Receptor Repertoire Sequencing" prior to the first instance of its abbreviation in each vignette in which it appears
+* `buildRepSeqNetwork`
+    * Meaning of cluster membership ID and corresponding `cluster_id` network property are now more clearly explained
+* `Searching for Associated TCR/BCR Clusters`
+    * Header levels and document structure updated
+    * Further revisions/additions, including fixing the remaining broken links, are forthcoming
+    
+## Documentation
+
+* References/Authors updated across all documentation files
+* Many documentation files have been revised and updated to use wording that is more clear, accurate and consistent with the language used in package vignettes. Updates to the remaining documentation files are forthcoming.  
+
+
 # Changes in NAIR version 0.0.9038 (7/20/2023)
 
 ## Bug Fixes

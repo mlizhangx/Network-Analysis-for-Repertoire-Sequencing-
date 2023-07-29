@@ -5,56 +5,44 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Specify Node Network Statistics to Compute
+    Specify Node-level Network Properties to Compute
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Create a named logical vector specifying node-level
-    network stats to compute. The output is passed to the \code{stats_to_include} argument of functions
-    such as \code{\link{buildRepSeqNetwork}} and \code{\link{addNodeNetworkStats}}.
+    Create a vector specifying node-level network properties to compute. Intended for use with \code{\link{buildRepSeqNetwork}} or \code{\link{addNodeNetworkStats}}.
 }
 \usage{
-chooseNodeStats(degree = TRUE,
-                cluster_id = FALSE,
-                transitivity = TRUE,
-                closeness = FALSE,
-                centrality_by_closeness = FALSE,
-                eigen_centrality = TRUE,
-                centrality_by_eigen = TRUE,
-                betweenness = TRUE,
-                centrality_by_betweenness = TRUE,
-                authority_score = TRUE,
-                coreness = TRUE,
-                page_rank = TRUE,
-                all_stats = FALSE)
+chooseNodeStats(
+  degree = TRUE,
+  cluster_id = FALSE,
+  transitivity = TRUE,
+  closeness = FALSE,
+  centrality_by_closeness = FALSE,
+  eigen_centrality = TRUE,
+  centrality_by_eigen = TRUE,
+  betweenness = TRUE,
+  centrality_by_betweenness = TRUE,
+  authority_score = TRUE,
+  coreness = TRUE,
+  page_rank = TRUE,
+  all_stats = FALSE
+)
 
-exclusiveNodeStats(degree = FALSE,
-                   cluster_id = FALSE,
-                   transitivity = FALSE,
-                   closeness = FALSE,
-                   centrality_by_closeness = FALSE,
-                   eigen_centrality = FALSE,
-                   centrality_by_eigen = FALSE,
-                   betweenness = FALSE,
-                   centrality_by_betweenness = FALSE,
-                   authority_score = FALSE,
-                   coreness = FALSE,
-                   page_rank = FALSE)
+exclusiveNodeStats(
+  degree = FALSE,
+  cluster_id = FALSE,
+  transitivity = FALSE,
+  closeness = FALSE,
+  centrality_by_closeness = FALSE,
+  eigen_centrality = FALSE,
+  centrality_by_eigen = FALSE,
+  betweenness = FALSE,
+  centrality_by_betweenness = FALSE,
+  authority_score = FALSE,
+  coreness = FALSE,
+  page_rank = FALSE
+)
 
-# Original name (still exists for backward compatibility)
-node_stat_settings(degree = TRUE,
-                   cluster_id = FALSE,
-                   transitivity = TRUE,
-                   closeness = FALSE,
-                   centrality_by_closeness = FALSE,
-                   eigen_centrality = TRUE,
-                   centrality_by_eigen = TRUE,
-                   betweenness = TRUE,
-                   centrality_by_betweenness = TRUE,
-                   authority_score = TRUE,
-                   coreness = TRUE,
-                   page_rank = TRUE,
-                   all_stats = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -64,56 +52,61 @@ node_stat_settings(degree = TRUE,
 }
   \item{cluster_id}{
 %%     ~~Describe \code{cluster_id} here~~
-    Logical. Whether to perform clustering, which is done using \code{igraph::cluster_fast_greedy()}, in order to determine the cluster membership of each node.
+    Logical. Whether to perform cluster analysis and record the cluster membership ID of each node. See \code{\link{addClusterMembership}}.
 }
   \item{transitivity}{
 %%     ~~Describe \code{transitivity} here~~
-    Logical. Whether to compute node-level network transitivity, which is done using \code{igraph::transitivity()}
-    with \code{type = "local"} The local transitivity of a node is the the number of triangles connected to the node relative to the number of triples centered on that node.
+    Logical. Whether to compute node-level network transitivity using \code{\link[igraph]{transitivity}} with \code{type = "local"}. The local transitivity of a node is the the number of triangles connected to the node relative to the number of triples centered on that node.
 }
   \item{closeness}{
 %%     ~~Describe \code{closeness} here~~
-    Logical. Whether to compute network closeness, which is done using \code{igraph::closeness()}.
+    Logical. Whether to compute network closeness using \code{\link[igraph]{closeness}}.
 }
   \item{centrality_by_closeness}{
 %%     ~~Describe \code{centrality_by_closeness} here~~
-    Logical. Whether to compute network centrality by closeness, which is done using \code{igraph::centr_clo()$res}.
+    Logical. Whether to compute network centrality by closeness. The values are the entries of the \code{res} element of the list returned by \code{\link[igraph]{centr_clo}}.
 }
   \item{eigen_centrality}{
 %%     ~~Describe \code{eigen_centrality} here~~
-    Logical. Whether to compute the eigenvector centrality scores of node network positions, which is done using \code{igraph::eigen_centrality()$vector} with \code{weights = NA}. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.
+    Logical. Whether to compute the eigenvector centrality scores of node network positions. The scores are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{eigen_centrality} with \code{weights = NA}. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.
 }
   \item{centrality_by_eigen}{
 %%     ~~Describe \code{centrality_by_eigen} here~~
-    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores, which is done using \code{igraph::centr_eigen()$vector}.
+    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores. The scores are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{centr_eigen}.
 }
   \item{betweenness}{
 %%     ~~Describe \code{betweenness} here~~
-    Logical. Whether to compute network betweenness, which is done using \code{igraph::betweenness()}.
+    Logical. Whether to compute network betweenness using \code{\link[igraph]{betweenness}}.
 }
   \item{centrality_by_betweenness}{
 %%     ~~Describe \code{centrality_by_betweenness} here~~
-    Logical. Whether to compute network centrality by betweenness, which is done using \code{igraph::centr_betw()$res}.
+    Logical. Whether to compute network centrality scores by betweenness. The scores are the entires of the \code{res} element of the list returned by \code{\link[igraph]{centr_betw}.
 }
   \item{authority_score}{
 %%     ~~Describe \code{authority_score} here~~
-    Logical. Whether to compute the authority score, which is done using \code{igraph::authority_score()}.
+    Logical. Whether to compute the authority score using \code{\link[igraph]{authority_score}}.
 }
   \item{coreness}{
 %%     ~~Describe \code{coreness} here~~
-    Logical. Whether to compute network coreness, which is done using \code{igraph::coreness()}.
+    Logical. Whether to compute network coreness using \code{\link[igraph]{coreness}}.
 }
   \item{page_rank}{
 %%     ~~Describe \code{page_rank} here~~
-    Logical. Whether to compute page rank, which is done using \code{igraph::page_rank()$vector}.
+    Logical. Whether to compute page rank. The page rank values are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{page_rank}.
 }
   \item{all_stats}{
 %%     ~~Describe \code{all_stats} here~~
-    Logical. If \code{TRUE}, then \code{\link{addNodeNetworkStats}} will disregard the values for the other settings and instead treat all of them as \code{TRUE}.
+    Logical. If \code{TRUE}, then all node-level network properties will be computed regardless of the values used for the other arguments.
 }
 }
 \details{
-    The difference between \code{chooseNodeStats} and \code{exclusiveNodeStats} is in their default argument values, with the defaults for each being suited to different use cases in order to minimize the number of argument values that must be set manually. \code{chooseNodeStats} has default argument values that agree with the default set of node properties that are computed. Thus it is most suitable for use when the user wishes to include the default set of properties with only a few modifications.  \code{exclusiveNodeStats} excludes any property whose argument value is not manually set to \code{TRUE}, and is therefore most suitable for use when the user wishes to include only a small number of properties and exclude the rest.
+    These functions return a vector that can be passed to the \code{stats_to_include} argument of \code{\link{addNodeNetworkStats}} or \code{\link{buildRepSeqNetwork}} in order to specify which node-level network properties to compute. Note that \code{\link{buildRepSeqNetwork}} must be called with \code{node_stats = TRUE} for this to be relevant.
+
+    The main difference between \code{chooseNodeStats} and \code{exclusiveNodeStats} lies in their default argument values. The defaults for each are suited to different use cases in order to reduce the number of argument values that must be set manually.
+
+    \code{chooseNodeStats} has most of its arguments set to \code{TRUE} by default. Thus it is most suitable  when the user wishes to include a majority of the available properties. It can also be called with \code{all_stats = TRUE} as a convenient way of computing all available properties.
+
+    \code{exclusiveNodeStats} has all of its arguments set to \code{FALSE} by default. It is therefore most suitable when the user wishes to include only a few properties.
 }
 \value{
 %%  ~Describe the value returned
@@ -121,46 +114,84 @@ node_stat_settings(degree = TRUE,
 %%  \item{comp1 }{Description of 'comp1'}
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
-    A logical vector for use with \code{\link{addNodeNetworkStats}} or \code{\link{buildRepSeqNetwork}} as input to the \code{stats_to_include} argument.
+    A named logical vector with one entry for each of the function's arguments. Each entry has the same name as the corresponding argument, and its value matches the argument's value.
+}
+\seealso{
+\code{\link{addNodeNetworkStats}}
 }
 \references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
 
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+
+\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
 \dontrun{
-# Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
-# Generate network for data
-net <- generateNetworkObjects(toy_data, "CloneSeq")
+# Generate network
+net <-
+  generateNetworkObjects(
+    toy_data,
+    "CloneSeq"
+  )
 
-# Add custom network statistics
-data_w_stats <-
+# Add default set of node properties
+data_w_default_stats <-
+  addNodeNetworkStats(
+    net$node_data, net$igraph,
+    stats_to_include =
+      chooseNodeStats()
+  )
+# Equivalent form for the above
+data_w_default_stats <-
+  addNodeNetworkStats(
+    net$node_data, net$igraph
+  )
+
+# Modify default set of node properties
+data_w_custom_stats1 <-
   addNodeNetworkStats(
     net$node_data, net$igraph,
     stats_to_include =
       chooseNodeStats(
-          cluster_id = TRUE,
-          closeness = TRUE,
-          centrality_by_closeness = TRUE,
-          centrality_by_betweenness = FALSE
+        closeness = TRUE,
+        page_rank = FALSE
       )
   )
 
-# Add all network statistics
+# Add only the spepcified node properties
+data_w_custom_stats2 <-
+  addNodeNetworkStats(
+    net$node_data, net$igraph,
+    stats_to_include =
+      exclusiveNodeStats(
+        degree = TRUE,
+        transitivity = TRUE
+      )
+  )
+
+# Add all node-level network properties
 data_w_all_stats <-
   addNodeNetworkStats(
     net$node_data, net$igraph,
     stats_to_include =
-      chooseNodeStats(all_stats = TRUE)
+      chooseNodeStats(
+        all_stats = TRUE
+      )
   )
+# Equivalent form for the above
+data_w_all_stats <-
+  addNodeNetworkStats(
+    net$node_data, net$igraph,
+    stats_to_include = "all"
+  )
+
 }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the

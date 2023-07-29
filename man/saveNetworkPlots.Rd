@@ -3,11 +3,11 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Save List of GGPlots to a Single PDF
+    Write Plots to a PDF
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Print a list of \code{ggplot} objects to a single pdf file.
+    Given a list of plots, write all plots to a single pdf file.
 }
 \usage{
 saveNetworkPlots(plotlist,
@@ -18,37 +18,27 @@ saveNetworkPlots(plotlist,
 \arguments{
   \item{plotlist}{
 %%     ~~Describe \code{plotlist} here~~
-    A list of \code{ggplot} objects.
+    A list whose elements can be written to pdf using the \code{\link[grDevices]{pdf}} function, such as the \code{\link[ggplot2]{ggplot}} class.
 }
   \item{outfile}{
 %%     ~~Describe \code{outfile} here~~
-    The file to which the printed plots should be written.
+    The file path for the pdf.
 }
   \item{pdf_width}{
 %%     ~~Describe \code{plot_width} here~~
-    Passed to the \code{width} argument of \code{grDevices::pdf()}.
+    Passed to the \code{width} argument of the \code{\link[grDevices]{pdf}} function.
 }
   \item{pdf_height}{
 %%     ~~Describe \code{plot_height} here~~
-    Passed to the \code{height} argument of \code{grDevices::pdf()}.
+    Passed to the \code{height} argument of the \code{\link[grDevices]{pdf}} function.
 }
-}
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-\references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
-
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
-}
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-  \code{\link{plotNetworkGraph}}
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+\dontrun{
 # Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
@@ -61,6 +51,7 @@ net$plots <- generateNetworkGraphPlots(
 
 # Save plots
 saveNetworkPlots(net$plots, outfile = file.path(tempdir(), "network.pdf"))
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

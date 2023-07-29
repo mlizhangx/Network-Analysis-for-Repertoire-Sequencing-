@@ -236,14 +236,15 @@ buildPublicClusterNetworkByRepresentative(
         See \code{?getClusterStats()}.}
 }
 \references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
 
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+
+\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~

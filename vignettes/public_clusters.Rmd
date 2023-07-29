@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The `NAIR` package includes a set of functions that facilitate searching for public TCR/BCR clusters across multiple samples of AIRR-seq data. 
+The `NAIR` package includes a set of functions that facilitate searching for public TCR/BCR clusters across multiple samples of Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data. 
 
 In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual).
 
@@ -136,7 +136,7 @@ When building the network for each sample, all clones whose receptor sequences c
 For details on how the pattern matching is performed, please refer to the base R documentation files for `regex` and `grep`.
 
 
-## Input File Paths 
+## Input File Paths
 
 The main argument of the `findPublicClusters` function is the `file_list` argument, which accepts a vector containing file paths. Each path corresponds to a distinct AIRR-Seq data file representing an individual sample.
 

@@ -37,7 +37,7 @@ Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. NAIR: Networ
 <!-- * Perform further downstream analysis -->
 
 
-Our immune repertoire analysis tool allows users to perform various network analysis tasks on AIRR-Seq data. This includes computing local and global network properties of nodes and clusters, which can provide insights into the structural organization of the immune repertoire network.
+Our immune repertoire analysis tool allows users to perform various network analysis tasks on Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data. This includes computing local and global network properties of nodes and clusters, which can provide insights into the structural organization of the immune repertoire network.
 
 In addition, our tool enables users to search across multiple AIRR-Seq samples for clones/clusters associated with subject characteristics, disease conditions or clinical outcomes, as well as identify public clones/clusters. This can help researchers identify potentially important TCR/BCR clones.
 

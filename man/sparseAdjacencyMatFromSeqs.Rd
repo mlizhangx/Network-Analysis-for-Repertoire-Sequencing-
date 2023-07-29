@@ -3,11 +3,11 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-Sparse Adjacency Matrix for Immune Repertoire Network by Clone Sequence Similarity
+Compute Network Adjacency Matrix for Immune Repertoire
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-Given a list of T-cell or B-cell receptor sequences, generates the adjacency matrix (in sparse format) for the corresponding network graph based on either the Hamming or Levenshtein distance using a specified cutoff.
+Given a list of receptor sequences, computes the adjacency matrix for the network graph based on sequence similarity.
 }
 \usage{
 sparseAdjacencyMatFromSeqs(
@@ -20,26 +20,26 @@ sparseAdjacencyMatFromSeqs(
 \arguments{
   \item{seqs}{
 %%     ~~Describe \code{seqs} here~~
-A character vector containing the TCR/BCR sequences.
+A character vector containing the receptor sequences.
 }
   \item{dist_type}{
 %%     ~~Describe \code{dist_type} here~~
-A character string specifying the distance type; valid options are \code{"hamming"} and \code{"levenshtein"}.
+A character string specifying the distance function used to measure similarity between sequences. Valid options are \code{"hamming"} and \code{"levenshtein"}.
 }
   \item{max_dist}{
 %%     ~~Describe \code{max_dist} here~~
-A positive integer specifying the maximum distance at which two TCR/BCR sequences are concidered adjacent (joined by an edge) in the network graph.
+A nonnegative integer. Pairs of sequences whose distance is less than or equal to this value will be adjacent (connected by an edge) in the network graph.
 }
   \item{drop_isolated_nodes}{
 %%     ~~Describe \code{drop_isolated_nodes} here~~
-A logical scalar; if \code{TRUE}, sequences with no adjacencies will have their rows/columns  excluded from the matrix.
+A logical scalar; if \code{TRUE}, sequences that are not adjacent to any other sequence will be excluded from the network.
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
-The adjacency matrix of a graph with \eqn{n} nodes/vertices is the symmetric \eqn{n \times n} matrix for which the \eqn{(i,j)}th entry is equal to 1 if nodes \eqn{i} and \eqn{j} are adjacent (joined by an edge in the graph) and 0 otherwise.
+The adjacency matrix of a graph with \eqn{n} nodes/vertices is the symmetric \eqn{n \times n} matrix for which the \eqn{(i,j)}th entry is equal to 1 if nodes \eqn{i} and \eqn{j} are adjacent (joined by an edge) in the network graph and 0 otherwise.
 
-Each element of \code{seqs} represents a node in the corresponding network graph; two nodes are adjacent if the distance between their sequences, as measured by \code{dist_type}, is at most \code{max_dist}.
+Each node in the network graph represents a receptor sequence from the \code{seqs} vector. Two nodes are adjacent if the distance between their sequences, as measured by \code{dist_type}, is less than or equal to \code{max_dist}.
 }
 \value{
 %%  ~Describe the value returned
@@ -49,21 +49,23 @@ Each element of \code{seqs} represents a node in the corresponding network graph
 %% ...
 A sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package.
 
-If \code{drop_isolated_nodes = TRUE}, the element of \code{seqs} that corresponds to each row (equivalently, column) is specified in the \code{Dimnames} of this matrix. The \code{Dimnames} can be accessed using \code{dimnames()}. This returns a list with two elements, each a character vector whose length matches the row dimension of the matrix. These respectively specify the indices and the elements of \code{seqs} corresponding to each row.
+If \code{drop_isolated_nodes = TRUE}, the row and column names of the matrix indicate which receptor sequences in the \code{seqs} vector correspond to each row and column. The row and column names can be accessed using \code{dimnames()}. This returns a list containing two character vectors, one for the row names and one for the column names. The name of the \eqn{i}th row is the numerical index of the \code{seqs} vector corresponding to the \eqn{i}th row and \eqn{i}th column. The  name of the \eqn{j}th column is the receptor sequence corresponding to the \eqn{j}th row and \eqn{j}th column.
 }
 \references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
 
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+
+\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
 sparseAdjacencyMatFromSeqs(
-    c("fee", "fie", "foe", "fum", "foo"))
+    c("fee", "fie", "foe", "fum", "foo")
+)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

@@ -4,22 +4,19 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 %%  ~~function to do ... ~~
-    Find Receptor Sequences Associated to a Binary Variable of Interest
+    Identify Receptor Sequences Associated With a Binary Variable
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given multiple samples of AIRR-Seq data that includes a binary variable,
-    search for receptor sequences whose presence is associated with this variable
-    based on Fisher's exact test using a specified P-value cutoff.
+    Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data and a sample-level or subject-level binary variable of interest such as a disease condition, treatment or clinical outcome, identify receptor sequences that exhibit a statistically significant difference in frequency between the two levels of the binary variable using Fisher's exact test.
 
-    \code{findAssociatedSeqs} is for use with separate files and data frames per
-    sample, while \code{findAssociatedSeqs2} is for use with a single data frame
-    containing all samples.
+    \code{findAssociatedSeqs} is designed for use when each sample is contained in a separate data frame, with each data frame stored in a separate file. \code{findAssociatedSeqs2} is designed for use with a single data frame containing all samples.
 }
 \usage{
 findAssociatedSeqs(
   ## Input ##
-  file_list, input_type,
+  file_list,
+  input_type,
   data_symbols = NULL,
   header = TRUE, sep = "",
   sample_ids = NULL,
@@ -30,8 +27,10 @@ findAssociatedSeqs(
   freq_col = NULL,
 
   ## Search Criteria ##
-  min_seq_length = 7, drop_matches = "[*|_]",
-  min_sample_membership = 5, pval_cutoff = 0.05,
+  min_seq_length = 7,
+  drop_matches = "[*|_]",
+  min_sample_membership = 5,
+  pval_cutoff = 0.05,
 
   ## Output ##
   outfile = "associated_seqs.csv")
@@ -39,14 +38,19 @@ findAssociatedSeqs(
 
 findAssociatedSeqs2(
   ## Input ##
-  data, seq_col, sample_col,
+  data,
+  seq_col,
+  sample_col,
   subject_col = sample_col,
-  group_col, groups = NULL,
+  group_col,
+  groups = NULL,
   freq_col = NULL,
 
   ## Search Criteria ##
-  min_seq_length = 7, drop_matches = "[*|_]",
-  min_sample_membership = 5, pval_cutoff = 0.05,
+  min_seq_length = 7,
+  drop_matches = "[*|_]",
+  min_sample_membership = 5,
+  pval_cutoff = 0.05,
 
   ## Ouptut ##
   outfile = "associated_seqs.csv")
@@ -169,14 +173,15 @@ findAssociatedSeqs2(
     \item{label}{A character string summarizing the above information. Also includes the maximum in-sample clone frequency across all samples, if available}
 }
 \references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
 
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+
+\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~

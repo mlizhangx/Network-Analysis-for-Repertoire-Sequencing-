@@ -7,42 +7,44 @@
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given bulk TCR/BCR repertoire sequence data with clones indexed by row, aggregates
-    rows with identical receptor sequences. Clone count and frequency are summed,
-    other information is discarded and a column is added to record the number of
-    unique clones (rows) for each unique receptor sequence.
+    Given bulk Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data with clones indexed by row, returns a data frame containing one row for each unique receptor sequence. Includes the number of clones sharing each sequence, as well as aggregate values for clone count and clone frequency across all clones sharing each sequence. Clones can be grouped according to metadata, in which case aggregation is performed within (but not across) groups.
 }
 \usage{
-aggregateIdenticalClones(data, clone_col, count_col, freq_col,
-                         grouping_cols = NULL)
+aggregateIdenticalClones(
+  data,
+  clone_col,
+  count_col,
+  freq_col,
+  grouping_cols = NULL
+)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
 %%     ~~Describe \code{data} here~~
-      A data frame containing the immune repertoire sequence data, with clones
-      indexed by row.
+      A data frame containing the bulk AIRR-Seq data, with clones indexed by row.
 }
   \item{clone_col}{
 %%     ~~Describe \code{clone_col} here~~
-      The column name or number of \code{data} containing the receptor sequences (e.g.,
-      TCR CDR3 nucleotide sequence or amino acid sequence).
+      A column name or column index specifying the column of \code{data} containing the receptor sequences.
 }
   \item{count_col}{
 %%     ~~Describe \code{count_col} here~~
-      The column name or number of \code{data} containing the clone counts.
+      A column name or column index specifying the column of \code{data} containing the clone counts.
 }
   \item{freq_col}{
 %%     ~~Describe \code{freq_col} here~~
-      The column name or number of \code{data} containing the clone frequencies.
+      A column name or column index specifying the column of \code{data} containing the clone frequencies.
 }
   \item{grouping_cols}{
 %%     ~~Describe \code{grouping_cols} here~~
-      An optional charcter or integer vector specifying one or more columns of \code{data},
-      each of which is treated as a group/label variable. If supplied, clones
-      belonging to distinct groups will be treated as having distinct receptor
-      sequences, effectively aggregating only the identical clones within each group.
+      An optional vector of column names or vector of column indices, specifying one or more columns of \code{data} used to assign clones to groups. If provided, aggregation occurs within groups, but not across groups. See details.
 }
+}
+\details{
+  If \code{grouping_cols} is left unspecified, the returned data frame will contain one row for each unique receptor sequence appearing in \code{data}.
+
+  If one or more columns of \code{data} are specified using the \code{grouping_cols} argument, then each clone (row) in \code{data} is assigned to a group based on its combination of values in these columns. If two clones share the same receptor sequence but belong to different groups, their receptor sequence will appear multiple times in the returned data frame, with one row for each group in which the sequence appears. In each such row, the aggregate clone count, aggregate clone frequency, and number of clones sharing the sequence are reported within the group for that row.
 }
 \value{
 %%  ~Describe the value returned
@@ -51,58 +53,59 @@ aggregateIdenticalClones(data, clone_col, count_col, freq_col,
 %%  \item{comp2 }{Description of 'comp2'}
 %% ...
     A data frame whose first column contains the receptor sequences and has the
-    same name as the column of \code{data} specified by \code{clone_col}. If additional
-    columns of \code{data} were supplied via the \code{grouping_cols} argument, these
-    columns will also be inherited. The remaining columns are as follows:
+    same name as the column of \code{data} specified by \code{clone_col}. One additional column will be present for each column of \code{data} that is specified using the \code{grouping_cols} argument, with each having the same column name. The remaining columns are as follows:
 
-    \item{AggregatedCloneCount}{The aggregated clone count for each receptor sequence.}
+    \item{AggregatedCloneCount}{The aggregate clone count across all clones (within the same group, if applicable) that share the receptor sequence in that row.}
 
-    \item{AggregatedCloneFrequency}{The aggregated clone frequency for each receptor sequence.}
+    \item{AggregatedCloneFrequency}{The aggregate clone frequency across all clones (within the same group, if applicable) that share the receptor sequence in that row.}
 
-    \item{UniqueCloneCount}{The number of clones (rows) in \code{data} possessing the receptor sequence for the current row
-    (if groups are supplied, this is a within-group count).}
-}
-\references{
-%% ~put references to the literature/web site here ~
-%%    Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. "Network Analysis of Immune Repertoire (NAIR) with Advanced Machine Learning Techniques." In: Briefings in Bioinformatics (Submitted: July 18, 2022).
-
-    https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
+    \item{UniqueCloneCount}{The number of clones (rows) in \code{data} (within the same group, if applicable) possessing the receptor sequence for the current row.}
 }
 \author{
 %%  ~~who you are~~
-    Brian Neal, Hai Yang, Jason Cham, Zenghua Fan, Tao He and Li Zhang.
+    Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-  # Create some data
-  data <- data.frame(
-    clone_seq = c("ATCG", rep("ACAC", 2), rep("GGGG", 4)),
-    clone_count = rep(1, 7),
-    clone_freq = rep(1 / 7, 7),
-    # group/label variable 1
-    time_point = c("t_0", rep(c("t_0", "t_1"), 3)),
-    # group/label variable 2
-    subject_id = c(rep(1, 5), rep(2, 2))
+# Create some data
+data <- data.frame(
+  clone_seq = c("ATCG", rep("ACAC", 2), rep("GGGG", 4)),
+  clone_count = rep(1, 7),
+  clone_freq = rep(1/7, 7),
+  time_point = c("t_0", rep(c("t_0", "t_1"), 3)),
+  subject_id = c(rep(1, 5), rep(2, 2))
+)
+
+# default usage
+data_agg <-
+  aggregateIdenticalClones(
+    data, "clone_seq",
+    "clone_count", "clone_freq"
   )
 
-  # Aggregate clones by receptor sequence (default usage)
-  data_agg <- aggregateIdenticalClones(
-    data, "clone_seq", "clone_count", "clone_freq")
+# group clones by time point
+data_agg_time <-
+  aggregateIdenticalClones(
+    data, "clone_seq",
+    "clone_count", "clone_freq",
+    grouping_cols = "time_point"
+  )
 
-  # Aggregate clones by receptor sequence and time point
-  data_agg_time <- aggregateIdenticalClones(
-    data, "clone_seq", "clone_count", "clone_freq",
-    grouping_cols = "time_point")
+# group clones by subject ID
+data_agg_subject <-
+  aggregateIdenticalClones(
+    data, "clone_seq",
+    "clone_count", "clone_freq",
+    grouping_cols = "subject_id"
+  )
 
-  # Aggregate clones by receptor sequence and subject
-  data_agg_subject <- aggregateIdenticalClones(
-    data, "clone_seq", "clone_count", "clone_freq",
-    grouping_cols = "subject_id")
-
-  # Aggregate clones by receptor sequence, subject & time point
-  # (note all clones in each group are already unique)
-  data_agg_time_subject <- aggregateIdenticalClones(
-    data, "clone_seq", "clone_count", "clone_freq",
-    grouping_cols = c("subject_id", "time_point"))
+# group clones by time point and subject ID
+data_agg_time_subject <-
+  aggregateIdenticalClones(
+    data, "clone_seq",
+    "clone_count", "clone_freq",
+    grouping_cols =
+      c("subject_id", "time_point")
+  )
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):
