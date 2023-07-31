@@ -91,7 +91,13 @@ head(readRDS(file.path(dir_input_samples, "Sample1.rds")))
 
 # <a name="step1"></a> Step 1: Find Associated Sequences {.tabset}
 
-The first step is to conduct a systematic search for associated sequences within the provided samples using the `findAssociatedSeqs` function. This search is a two-stage procedure. The unique receptor sequences are first filtered according to basic criteria in order to narrow the list of candidates. Then for each candidate sequence, we compute the P-value for Fisher's exact test of independence between the binary variable of interest and the observed presence of the sequence within a sample/subject. The user specifies the P-value cutoff below which an association is detected.
+The first step is to conduct a systematic search for associated sequences within the provided samples using the `findAssociatedSeqs` function. 
+
+This search is a two-stage procedure. 
+
+The unique receptor sequences are first filtered according to basic criteria in order to narrow the list of candidates. 
+
+For each candidate sequence, we then compute the P-value for Fisher's exact test of independence between the binary variable of interest and the observed presence of the sequence within a sample/subject. The user specifies the P-value cutoff below which an association is detected.
 
 Below, we explain the usage and behavior of the `findAssociatedSeqs` function.
 
@@ -102,11 +108,11 @@ The `findAssociatedSeqs` function has several parameters that control the criter
 
 ### Sample Membership
 
-By default, only sequences that appear in at least 5 samples will be considered. This can be changed by setting the `min_sample_membership` argument to a different value. Setting the value to `NULL` bypasses this check.
+By default, only sequences that appear in at least five samples will be considered. This can be changed by setting the `min_sample_membership` argument to a different value. Setting the value to `NULL` bypasses this check.
 
 ### Sequence Length
 
-By default, only sequences that contain at least 7 characters will be considered. This can be changed by setting the `min_seq_length` argument to a different value. Setting the value to `NULL` bypasses this check.
+By default, only sequences that contain at least seven characters will be considered. This can be changed by setting the `min_seq_length` argument to a different value. Setting the value to `NULL` bypasses this check.
 
 ### Sequence Content
 
@@ -121,7 +127,7 @@ By default, sequences with a P-value below 0.05 on Fisher's exact test are inclu
 It should be noted, however, that the sequences returned by `findAssociatedSeqs` are ordered by P-value, and any subset of them can be used in [step2](#step2). Thus, imposing a stricter P-value cutoff can also be done indirectly after calling `findAssociatedSeqs`, by subsetting the results according to P-value.
 
 
-## Input File Paths
+## <a name="input_files"></a> Input File Paths
 
 The main argument of the `findAssociatedSeqs` function is the `file_list` argument, which accepts a vector containing file paths. Each path corresponds to a distinct AIRR-Seq data file representing an individual sample.
 
@@ -133,23 +139,25 @@ input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
 head(input_files)
 ```
 
-## Input File Format
+## <a name="input_type"></a> Input File Format
 
 The file format of the input files for `findAssociatedSeqs` is specified using the `input_type` parameter. The supported formats include `"rds"`, `"rda"`, `"csv"`, as well as files that can be read using the `read.table` function, such as `"tsv"` and `"txt"`. 
 
 For text formats such as `"csv"`, `"tsv"` and `"txt"`, users can specify the separation option by utilizing the `sep` argument. The default setting `sep = ""` accommodates all forms of white space, i.e., one or more spaces, tabs, newlines or carriage returns. In addition, it is important to note that the first line of the data is assumed to be the header by default. To disable this behavior and treat the first line as data, users must set the `header` parameter to `FALSE`.
 
+For the `"rda"` (Rdata) format, the `data_symbols` argument is used to specify the name of each sample's AIRR-Seq data frame within the Rdata file (i.e., the name of the data frame as it will appear in the R environment when the Rdata file is loaded). The argument accepts a character string. This requires that each sample's data frame has the same name within its respective Rdata file. For example, if each sample's data frame is named `mydataframe` and saved using the command `save(mydataframe, file = myfilepath)`, where the file path `myfilepath` is different for each sample, then we would set `data_symbols = "mydataframe"`.
+
 Our samples are stored in .rds files, so we use `input_type = "rds"`. 
 
 
-## Specifying the Sequence Column
+## <a name="seq_col"></a> Specifying the Sequence Column
 
 The `seq_col` argument is used to specify the column containing the clone sequences in the input data for each sample. The argument accepts either the column name or column index.
 
 In our simulated data, the column containing the clone sequences is named `CloneSeq`.
 
 
-## Assigning Samples to Groups
+## <a name="group_ids"></a> Assigning Samples to Groups
 
 The `group_ids` argument is used to assign each sample to one of the two groups, representing the two levels of the binary variable of interest. The argument accepts a vector of the same length as `file_list`. Each entry of `group_ids` is assigned as a group label to the sample in the corresponding entry of `file_list`. Any values may be used for the group labels, but the vector must contain exactly two unique values.
 
@@ -164,7 +172,7 @@ group_labels
 ```
 
 
-## Assigning Samples to Subjects (If Applicable)
+## <a name="subject_ids"></a> Assigning Samples to Subjects (If Applicable)
 
 The `subject_ids` argument can be used to assign each sample to a particular subject. The argument accepts a vector of the same length as `file_list`. Each entry of `subject_ids` is assigned as a subject ID to the sample in the corresponding entry of `file_list`.
 
@@ -176,7 +184,7 @@ Subject IDs should be provided when the binary variable of interest is subject-s
 
 
 
-## Specifying the Clone Frequency Column (Optional)
+## <a name="freq_col"></a> Specifying the Clone Frequency Column (Optional)
 
 The `freq_col` argument can be used to specify a column containing clone frequencies in the input data for each sample. The argument accepts either the column name or column index.
 
@@ -229,34 +237,56 @@ head(associated_seqs)
 The rows of the data frame are ordered by Fisher's exact test $P$-value.
 
 
-# <a name="step2"></a> Step 2: Find Associated Clones
+# <a name="step2"></a> Step 2: Find Associated Clones {.tabset}
 
 In the [previous step](#step1), we used `findAssociatedSeqs` to identify receptor sequences associated with the binary variable of interest.
 
 The next step is to use the `findAssociatedClones` function to search across samples and identify all clones with sequences similar to the associated sequences identified in step 1.
 
-For each associated sequence, we define its neighborhood as the set of all sequences that fall within a specified distance (e.g., a maximum Hamming distance of 1). We then identify all clones (from all samples) whose sequences belong to this neighborhood.
+For each associated sequence, we define its neighborhood as the set of all sequences that fall within a specified distance (e.g., a maximum Hamming distance of 1). We then identify all clones (from all samples) with sequences belong to this neighborhood.
 
 The data for each associated sequence's neighborhood is then saved to a separate file to be used as an input in [step 3](#step3).
 
 
 ## Specifying the Sample Data
 
-In order for `findAssociatedClones` to conduct its search, we must provide specifications for the sample data, just as we did when calling `findAssociatedSeqs` in step 1. This is done using the arguments `file_list`, `input_type`, `group_ids` and `seq_col`, which behave in the same manner as seen earlier in the `findAssociatedSeqs` function.
+In order for `findAssociatedClones` to conduct its search, we must specify our sample data, just as we did when calling `findAssociatedSeqs` in step 1. 
+
+This is done using the arguments  `file_list`, `input_type`, `group_ids` and `seq_col`, which behave in the same manner as seen earlier for the `findAssociatedSeqs` function in [step 1](#step1):
+
+* [`file_list`](#file_list) accepts a vector of input file paths
+* [`input_type`](#input_type) accepts a string specifying the input file format
+    * `sep`, `header` and `data_symbols` are situational arguments regarding data format
+* [`group_ids`](#group_ids) accepts a vector of group assignments
+* [`seq_col`](#seq_col) accepts the name or index of the clone sequence data column
+
+Refer back to [step 1](#step1) for a detailed explanation of these arguments.
+
+The user should use the same values for these arguments as they did when calling `findAssociatedSeqs` in [step 1](#step1).
 
 
-## Assigning Subject IDs and Sample IDs (Optional)
+## Assigning Custom Sample IDs (Optional)
 
-The `subject_ids` argument allows for subject IDs to be assigned to the samples in the same manner as in the `findAssociatedSeqs` function. If subject IDs are provided, each clone's subject ID will be included in the data for each associated sequence's neighborhood. 
+Each clone's sample ID is automatically included as a variable in the data for each associated sequence's neighborhood. 
 
-The `sample_ids` argument allows for custom sample IDs to be assigned. By default, the samples are labeled numerically according to the order they appear in `file_list`. Each clone's sample ID is included in the data for each associated sequence's neighborhood. 
+By default, the samples are labeled numerically according to the order they appear in `file_list`. 
 
-The `subject_ids` and `sample_ids` arguments both accept a vector of the same length as `file_list`. Each entry of `subject_ids` (respectively, `sample_ids`) is assigned as a subject ID (respectively, sample ID) to the sample in the corresponding entry of `file_list`. 
+The `sample_ids` argument allows for custom sample IDs to be assigned. It accepts a vector of the same length as `file_list`. Each entry of `sample_ids` is assigned as a sample ID to the sample in the corresponding entry of `file_list`. 
+
+
+
+## Assigning Subject IDs (Optional)
+
+The `subject_ids` argument allows for a subject ID to be assigned to each sample as a separate variable from sample ID. 
+
+If subject IDs are provided, each clone's subject ID will be included as a variable in the data for each associated sequence's neighborhood (in addition to the sample ID variable). 
+
+The `subject_ids` argument accepts a vector of the same length as `file_list`. Each entry of `subject_ids`is assigned as a subject ID to the sample in the corresponding entry of `file_list`. 
 
 
 ## Specifying the Associated Sequences
 
-The associated sequences are specified via the `assoc_seqs` argument, which accepts a character vector. 
+The associated sequences are specified via the `assoc_seqs` argument, which accepts a character vector containing the associated sequences.
 
 Typically, the vector provided to `assoc_seqs` will be the `ReceptorSeq` column of the data frame returned by `findAssociatedSeqs`. This considers all of the associated sequences found in step 1. 
 
@@ -274,7 +304,10 @@ For example, setting `dist_type = "lev"` and `nbd_radius = 2` results in each ne
 
 ## Output Settings
 
-The `findAssociatedClones` function does not return any direct output. Instead, it saves the network data for the associated sequence's neighborhoods to files that will be used as inputs in [step 3](#3.-global-network-of-associated-clusters). 
+The `findAssociatedClones` function does not return any direct output. Instead, it saves the data for the associated sequence's neighborhoods to files that will be used as inputs in [step 3](#step3). 
+
+For each neighborhood, the node-level network metadata is saved to an individual file. The following arguments can be used to control the 
+
 
 The file path for the output directory is specified using the `output_dir` argument.  The output directory will be created if it does not already exist.
 
