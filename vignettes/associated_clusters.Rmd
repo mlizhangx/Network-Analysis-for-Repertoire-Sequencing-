@@ -379,7 +379,7 @@ nbd_files <- list.files(dir_nbds, full.names = TRUE)
 
 By default, `findAssociatedClones` saves its output files using the csv file format. By default,  `buildAssociatedClusterNetwork` assumes that the input files are in the csv file format. 
 
-If the files created by `findPublicClusters` were saved using a different file format, the `input_type` argument can be used to specify the format used. This argument has the same behavior as seen in `findPublicClusters`.
+If the files created by `findAssociatedClones` were saved using a different file format, the `input_type` argument can be used to specify the format used. This argument has the [same behavior](#input_files) as seen in `findAssociatedSeqs` and `findAssociatedClones`.
 
 For the `"rda"` (Rdata) file format, the `data_symbols` argument is used to specify the name of each sample's node-level data frame within its respective Rdata file. If `findPublicClusters` was called with `output_type = "rda"`, then the node-level data frame for each sample will be named `ndat`. Accordingly, the default value of `data_symbols` is `ndat`, so the user should not need to manually specify the value of `data_symbols` unless the names within the files are changed.
 
