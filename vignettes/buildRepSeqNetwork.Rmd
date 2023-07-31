@@ -431,6 +431,7 @@ The column specified by the `seq_col` argument will automatically be included re
 
 * By default, each component of the list returned by `buildRepSeqNetwork` is saved as its own file, with the node-level and cluster-level meta data  saved as csv files.
 * For better compression and fewer files, users can specify `output_type = "rds"` or `output_type = "rda"`, which will save the entire output list to a single rds file or a single rda file, respectively.
+    * If the output list is saved using the `"rda"` (Rdata) format, the output list will be named `net` in the R environment when the Rdata file is loaded into R using the `load` function.
 
 ## PDF of Plots
 
@@ -490,6 +491,8 @@ output$cluster_data <-
 In some cases, the user may wish to save the output list returned by `buildRepSeqNetwork` after it is created. This situation may arise if the user has modified the output list, or if the user wishes to use different output settings but does not wish to reconstruct the entire network by calling `buildRepSeqNetwork` again. 
 
 The `saveNetwork` function can be used to save the output list in a manner similar to the way in which `buildRepSeqNetwork` saves its output. The output list is passed to the `net` argument, while the `output_dir`, `output_type`, `pdf_width` and `pdf_height` arguments have the [same behavior](#output_settings) as they do in the `buildRepSeqNetwork` function. The `output_filename` argument has the same behavior as the `output_name` argument of `buildRepSeqNetwork`.
+
+As with `buildRepSeqNetwork`, if the user specifies `output_type = "rda"`, then the output list will be named `net` in the R environment when the saved file is loaded into R using the `load` function.
 
 ```{r}
 # save output list returned by buildRepSeqNetwork
