@@ -279,12 +279,12 @@ to the <code>file_list</code> argument of
 <code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
 <span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmp4keLMW/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/Rtmp4keLMW/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/Rtmp4keLMW/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/Rtmp4keLMW/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/Rtmp4keLMW/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/Rtmp4keLMW/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmphbJ2yz/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmphbJ2yz/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmphbJ2yz/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmphbJ2yz/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmphbJ2yz/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmphbJ2yz/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="input-file-format">Input File Format<a class="anchor" aria-label="anchor" href="#input-file-format"></a>
@@ -877,7 +877,7 @@ named <code>dir_filtered_samples</code> for later reference.</p>
 <span><span class="co">#&gt; * 3 clusters (19 nodes) remain. Saving results... Done.</span></span>
 <span><span class="co">#&gt; ----------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; All samples complete. Filtered data is located in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp4keLMW/filtered_samples</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/filtered_samples</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -907,12 +907,12 @@ vector below.</p>
 <span><span class="va">files_filtered_samples_node</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_filtered_samples_node</span>, </span>
 <span>                                          full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">files_filtered_samples_node</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmp4keLMW/filtered_samples/node_meta_data/Sample1.rds" </span></span>
-<span><span class="co">#&gt; [2] "/tmp/Rtmp4keLMW/filtered_samples/node_meta_data/Sample10.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/Rtmp4keLMW/filtered_samples/node_meta_data/Sample11.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/Rtmp4keLMW/filtered_samples/node_meta_data/Sample12.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/Rtmp4keLMW/filtered_samples/node_meta_data/Sample13.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/Rtmp4keLMW/filtered_samples/node_meta_data/Sample14.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample1.rds" </span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample10.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample11.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample12.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample13.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample14.rds"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="input-file-format-1">Input File Format<a class="anchor" aria-label="anchor" href="#input-file-format-1"></a>
@@ -1107,16 +1107,16 @@ argument:</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp4keLMW/public_clusters/PublicClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp4keLMW/public_clusters/PublicClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="public_clusters_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp4keLMW/public_clusters/PublicClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp4keLMW/public_clusters/PublicClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp4keLMW/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>The default files saved by <code>buildPublicClusterNetwork</code>
 have the following names:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
