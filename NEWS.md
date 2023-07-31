@@ -1,3 +1,22 @@
+# Changes in NAIR version 0.0.9040
+
+## Package Functions
+
+* `buildAssociatedClusterNetwork`
+    * Default value of `data_symbols` argument changed from `NULL` to `"data"` in order to match the output format of `findAssociatedClones` when `findAssociatedClones` is called with `output_type = "rda"`. Note this change only affects the case when `buildAssociatedClusterNetwork` is called with `input_type = "rda"`
+    
+## Vignettes
+
+* `buildRepSeqNetwork`
+    * For both `buildRepSeqNetwork` and `saveNetwork`, the vignette now specifies the R environment variable name for the output list when it is saved to an Rdata file using `output_type = "rda"`.
+* `Searching for Associated TCR/BCR Clusters`
+    * Content added to more completely explain certain behavior and arguments that were not previously covered.
+    
+## Package Webpage
+
+* GitHub Actions workflow added to automate publication of future webpage updates 
+* URL for GitHub Pages hosted website added to URL field of DESCRIPTION file and to pkgdown.yaml
+
 # Changes in NAIR version 0.0.9039 (7/29/2023)
 
 ## Package Metadata

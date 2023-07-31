@@ -1,7 +1,7 @@
 Package: NAIR
 Type: Package
 Title: Network Analysis for Immune Repertoire
-Version: 0.0.9039
+Version: 0.0.9040
 Authors@R: c(
     person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
@@ -31,3 +31,4 @@ Config/reticulate:
       list(package = "keras")
     )
   )
+URL: https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/

@@ -14,7 +14,7 @@
 \usage{
 buildAssociatedClusterNetwork(
     file_list, input_type = "csv",
-    data_symbols = NULL,
+    data_symbols = "data",
     header = TRUE, sep = ",",
     seq_col,
     min_seq_length = NULL, drop_matches = NULL,

@@ -270,7 +270,7 @@ findAssociatedClones <- function(
 
 buildAssociatedClusterNetwork <- function(
     file_list,
-    input_type = "csv", data_symbols = NULL, header = TRUE, sep = ",",
+    input_type = "csv", data_symbols = "data", header = TRUE, sep = ",",
     seq_col, min_seq_length = NULL, drop_matches = NULL,
     drop_isolated_nodes = FALSE, node_stats = TRUE,
     stats_to_include = chooseNodeStats(cluster_id = TRUE),

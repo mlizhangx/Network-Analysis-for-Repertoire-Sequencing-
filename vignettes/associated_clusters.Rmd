@@ -302,24 +302,37 @@ The type of distance metric and the distance threshold used to determine the nei
 For example, setting `dist_type = "lev"` and `nbd_radius = 2` results in each neighborhood containing all sequences with a Levenshtein distance of at most 2 from the associated sequence.
 
 
-## Output Settings
+## Output Settings {.tabset}
 
 The `findAssociatedClones` function does not return any direct output. Instead, it saves the data for the associated sequence's neighborhoods to files that will be used as inputs in [step 3](#step3). 
 
-For each neighborhood, the node-level network metadata is saved to an individual file. The following arguments can be used to control the 
+For each neighborhood, a data frame is saved to an individual file. The data frame contains one row for each clone in the neighborhood. The following arguments can be used to customize the output. 
 
+### Subsetting Columns From the Input Data
 
-The file path for the output directory is specified using the `output_dir` argument.  The output directory will be created if it does not already exist.
+The data frame for each neighborhood includes all of the data columns that were present in each sample's original input data frame. 
 
-One file is saved for each associated sequence. By default, each file is saved as a csv file, but this can be changed using the `output_type` argument.  Other valid options include `"tsv"`, `"rds"` and `"rda"`. 
+In some cases, the user may not wish for all columns to be included. In this case, the user can specify the columns to be included using the `subset_cols` argument, which accepts either a vector of column names or a vector of column indices. 
+
+The column specified by the `seq_col` argument will automatically be included regardless of the value of `subset_cols`.
+
+### Output Directory
+
+The file path for the output directory is specified using the `output_dir` argument. The output directory specified by the `output_dir` argument will be created if it does not already exist. 
 
 ```{r}
 # output directory for current step
 dir_nbds <- file.path(data_dir, "assoc_seq_nbds")
 ```
 
+### Output File Format
 
-## Demonstration of Execution and Output
+By default, each neighborhood's data frame is saved as a csv file. This can be changed using the `output_type` argument. Other valid options include `"tsv"`, `"rds"` and `"rda"`. 
+
+If files are saved using the `"rda"` (Rdata) format, each data frame will be named `data` in the R environment when its Rdata file is loaded. 
+
+
+## Example Function Call
 
 We execute the `findAssociatedClones` function using the inputs we prepared earlier for the `file_list` and `group_ids` arguments:
 
@@ -349,14 +362,26 @@ Each file contains the neighborhood data for a single associated sequence.
 Now that we have identified the clones in each associated sequence's neighborhood, the final step is to use the `buildAssociatedClusterNetwork` function to combine the clones from all neighborhoods into a single global network. We then use clustering analysis to partition the global network into clusters, which are considered as the associated clusters.
 
 
-## Specifying the Neighborhood Data Files
+## Input File Paths
 
-The files created by `findAssociatedClones` in the [previous step](#step2) contain the data for each neighborhood. These files are provided to `buildAssociatedClusterNetwork` by supplying a character vector of file paths to the `file_list` argument. We create this vector below.
+The files created by `findAssociatedClones` in the [previous step](#step2) contain the data for each neighborhood. 
+
+These files are provided to `buildAssociatedClusterNetwork` by supplying a character vector of file paths to the `file_list` argument. We create this vector below.
 
 ```{r}
 # Files created by findAssociatedClones
 nbd_files <- list.files(dir_nbds, full.names = TRUE)
 ```
+
+
+## Input File Format 
+
+
+By default, `findPublicClusters` saves its output files using the RDS file format. By default,  `buildPublicClusterNetwork` assumes that the input files are in the RDS file format. 
+
+If the files created by `findPublicClusters` were saved using a different file format, the `input_type` argument can be used to specify the format used. This argument has the same behavior as seen in `findPublicClusters`.
+
+For the `"rda"` (Rdata) file format, the `data_symbols` argument is used to specify the name of each sample's node-level data frame within its respective Rdata file. If `findPublicClusters` was called with `output_type = "rda"`, then the node-level data frame for each sample will be named `ndat`. Accordingly, the default value of `data_symbols` is `ndat`, so the user should not need to manually specify the value of `data_symbols` unless the names within the files are changed.
 
 
 
