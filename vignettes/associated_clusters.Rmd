@@ -377,7 +377,7 @@ nbd_files <- list.files(dir_nbds, full.names = TRUE)
 ## Input File Format 
 
 
-By default, `findPublicClusters` saves its output files using the RDS file format. By default,  `buildPublicClusterNetwork` assumes that the input files are in the RDS file format. 
+By default, `findAssociatedClones` saves its output files using the csv file format. By default,  `buildAssociatedClusterNetwork` assumes that the input files are in the csv file format. 
 
 If the files created by `findPublicClusters` were saved using a different file format, the `input_type` argument can be used to specify the format used. This argument has the same behavior as seen in `findPublicClusters`.
 
