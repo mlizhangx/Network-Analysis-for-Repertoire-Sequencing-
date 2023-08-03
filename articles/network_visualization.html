@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9040</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,15 +80,17 @@
 
     
     
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p>The <code>buildRepSeqNetwork</code> function includes various
 arguments that facilitate customization of the network visualization. In
 this vignette, we provide an overview and demonstration of these
 arguments.</p>
 <div class="section level3">
-<h3 id="simulate-example-data">Simulate Example Data<a class="anchor" aria-label="anchor" href="#simulate-example-data"></a>
+<h3 id="simulate-data-for-demonstration">Simulate Data for Demonstration<a class="anchor" aria-label="anchor" href="#simulate-data-for-demonstration"></a>
 </h3>
-<p>For demonstration purposes, we simulate some toy data using built-in
-package functions.</p>
+<p>We simulate some toy data for demonstration.</p>
 <p>We simulate data consisting of two samples with 100 observations
 each, for a total of 200 observations (rows).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -104,20 +106,28 @@ each, for a total of 200 observations (rows).</p>
 <span><span class="co">#&gt; 5 GAAAGAGAATTCG    0.009336593       3670  Sample1</span></span>
 <span><span class="co">#&gt; 6 AGGTGGGAATTCG    0.010369470       4076  Sample1</span></span></code></pre></div>
 </div>
+</div>
 <div class="section level2">
-<h2 class="tabset" id="node-colors">
-<a name="node_colors"></a> Node Colors<a class="anchor" aria-label="anchor" href="#node-colors"></a>
+<h2 class="tabset" id="graph-elements">Graph Elements<a class="anchor" aria-label="anchor" href="#graph-elements"></a>
 </h2>
+<p>This section covers arguments that control aspects of the graph
+itself, such as the color and size of the nodes and the width of the
+edge connections.</p>
 <div class="section level3">
-<h3 id="color-nodes-according-to-metadata">Color Nodes According to Metadata<a class="anchor" aria-label="anchor" href="#color-nodes-according-to-metadata"></a>
+<h3 class="tabset" id="node-colors">
+<a name="node_colors"></a> Node Colors<a class="anchor" aria-label="anchor" href="#node-colors"></a>
 </h3>
+<div class="section level4">
+<h4 id="color-nodes-according-to-metadata">Color Nodes According to Metadata<a class="anchor" aria-label="anchor" href="#color-nodes-according-to-metadata"></a>
+</h4>
 <p>The nodes in the graph can be colored according to a variable in the
 node-level metadata. This is accomplished using the
 <code>color_nodes_by</code> argument, which accepts a character string
-specifying the name of the column containing the variable. The user can
-specify any variable that will be present in the node-level meta data
-returned by <code>buildRepSeqNetwork</code>, including node-level
-network properties.</p>
+specifying the name of the column containing the variable.</p>
+<p>The user can specify any variable that will be present in the
+node-level meta data returned by <code>buildRepSeqNetwork</code>,
+including node-level network properties. By default, this also includes
+all variables that were present in the original input data.</p>
 <p>For example, when calling <code>buildRepSeqNetwork</code>, we can
 color the nodes based on the <code>CloneCount</code> column of the
 original input data by setting
@@ -143,9 +153,9 @@ options are available, the nodes will be left uncolored.</p>
 <p>If the user does not wish the nodes to be colored dynamically, this
 can be specified by setting <code>color_nodes_by = NULL</code>.</p>
 </div>
-<div class="section level3">
-<h3 id="change-node-color-palette">Change Node Color Palette<a class="anchor" aria-label="anchor" href="#change-node-color-palette"></a>
-</h3>
+<div class="section level4">
+<h4 id="change-node-color-palette">Change Node Color Palette<a class="anchor" aria-label="anchor" href="#change-node-color-palette"></a>
+</h4>
 <p>A preset color palette can be used to color the nodes by providing
 the appropriate character string to the <code>color_scheme</code>
 argument. The argument accepts the following values:</p>
@@ -200,9 +210,9 @@ the color scale reversed:</p>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 </div>
-<div class="section level3">
-<h3 id="use-custom-color-palette">Use Custom Color Palette<a class="anchor" aria-label="anchor" href="#use-custom-color-palette"></a>
-</h3>
+<div class="section level4">
+<h4 id="use-custom-color-palette">Use Custom Color Palette<a class="anchor" aria-label="anchor" href="#use-custom-color-palette"></a>
+</h4>
 <p>The color scales that are available through the
 <code>color_scheme</code> argument of the
 <code>buildRepSeqNetwork</code> function are limited to a selection of
@@ -211,13 +221,13 @@ for the nodes, this can be done by <a href="#modifying_plots">modifying
 the plot after it is created</a>.</p>
 </div>
 </div>
-<div class="section level2">
-<h2 class="tabset" id="node-size">
-<a name="node_size"></a> Node Size<a class="anchor" aria-label="anchor" href="#node-size"></a>
-</h2>
 <div class="section level3">
-<h3 id="uniform-node-size">Uniform Node Size<a class="anchor" aria-label="anchor" href="#uniform-node-size"></a>
+<h3 class="tabset" id="node-size">
+<a name="node_size"></a> Node Size<a class="anchor" aria-label="anchor" href="#node-size"></a>
 </h3>
+<div class="section level4">
+<h4 id="uniform-node-size">Uniform Node Size<a class="anchor" aria-label="anchor" href="#uniform-node-size"></a>
+</h4>
 <p>By default, all nodes are drawn at a uniform size value of 0.5. This
 results in the nodes appearing very small when the plot is saved using
 the default pdf dimensions of 12 inches wide by 10 inches tall. This
@@ -239,9 +249,9 @@ size to 1.5, which is three times as large as the default node size:</p>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-4-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 </div>
-<div class="section level3">
-<h3 id="size-nodes-according-to-metadata">Size Nodes According to Metadata<a class="anchor" aria-label="anchor" href="#size-nodes-according-to-metadata"></a>
-</h3>
+<div class="section level4">
+<h4 id="size-nodes-according-to-metadata">Size Nodes According to Metadata<a class="anchor" aria-label="anchor" href="#size-nodes-according-to-metadata"></a>
+</h4>
 <p>Rather than draw all nodes using a uniform node size, it is possible
 to for the nodes to be sized according to a variable within the
 node-level metadata. This is achieved by providing the column name of
@@ -265,6 +275,20 @@ second entry is the maximum node size.</p>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-5-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 </div>
+</div>
+<div class="section level3">
+<h3 id="edge-width">Edge width<a class="anchor" aria-label="anchor" href="#edge-width"></a>
+</h3>
+<p>By default, the edges in the plot are drawn with a width of 0.1.</p>
+<p>A different width can be used for the edges by setting the
+<code>edge_width</code> argument to a different value.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 class="tabset" id="text-elements">Text Elements<a class="anchor" aria-label="anchor" href="#text-elements"></a>
+</h2>
+<p>This section covers arguments that control text elements in the plot,
+such as titles, annotations and legends.</p>
 </div>
 <div class="section level2">
 <h2 id="labeling-clusters">
@@ -335,6 +359,77 @@ be provided to the <code>cluster_id_col</code> argument.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning: Removed 120 rows containing missing values (`geom_text()`).</span></span></code></pre></div>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;"></p>
+<div class="section level3">
+<h3 id="title-and-subtitle">Title and Subtitle<a class="anchor" aria-label="anchor" href="#title-and-subtitle"></a>
+</h3>
+<p>The <code>output_name</code> argument is used in the names of files
+saved by <code>buildRepSeqNetwork</code>. By default, it is also used as
+the title for each plot generated by <code>buildRepSeqNetwork</code>.
+The default value of <code>output_name</code> is
+<code>"MyRepSeqNetwork"</code>.</p>
+<p>By default, the subtitle of each plot contains information about the
+settings used to construct the network, including the values of the
+<code>dist_type</code> and <code>dist_cutoff</code> arguments.</p>
+<p>A custom plot title and subtitle can be specified using the
+<code>plot_title</code> and <code>plot_subtitle</code> arguments,
+respectively. Either element can be omitted from the plot by supplying a
+<code>NULL</code> value to the corresponding argument, as shown
+below.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
+<span>                   size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
+<span>                   plot_title <span class="op">=</span> <span class="cn">NULL</span>, plot_subtitle <span class="op">=</span> <span class="cn">NULL</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Input data contains 200 rows.</span></span>
+<span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
+<span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
+<span><span class="co">#&gt; Network contains 122 nodes (after removing isolated nodes).</span></span>
+<span><span class="co">#&gt; Computing node-level network statistics... Done.</span></span>
+<span><span class="co">#&gt; Generating graph plot with nodes colored by transitivity...</span></span></code></pre></div>
+<p><img src="network_visualization_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;"></p>
+<pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 class="tabset" id="legends">Legends<a class="anchor" aria-label="anchor" href="#legends"></a>
+</h3>
+<div class="section level4">
+<h4 id="excluding-sizecolor-legend">Excluding Size/Color Legend<a class="anchor" aria-label="anchor" href="#excluding-sizecolor-legend"></a>
+</h4>
+<p>By default, if the nodes are colored or sized dynamically according
+to a variable, a legend will be included in the plot showing the color
+scale and/or size scale.</p>
+<p>The color scale can be manually excluded from the legend by setting
+<code>color_legend = FALSE</code>. Similarly, setting
+<code>size_legend = FALSE</code> will exclude the size scale from the
+legend.</p>
+<p><strong>Note:</strong> An exception to the default behavior occurs
+when the variable used to color the nodes is discrete with more than 20
+distinct values. In this case the color scale is automatically excluded
+from the legend in order to prevent it from taking up excessive space in
+the plot. The name of the variable used to color the nodes is then
+reported in the plot’s subtitle for reference. If the user wishes to
+ignore this exception and force the color legend to be shown, they can
+do so by setting <code>color_legend = TRUE</code>.</p>
+</div>
+<div class="section level4">
+<h4 id="legend-titles">Legend Titles<a class="anchor" aria-label="anchor" href="#legend-titles"></a>
+</h4>
+<p>By default, the title shown above the color scale in the legend is
+the name of the variable used to color the nodes. A custom title can be
+specified by providing a character string to the
+<code>color_title</code> argument. Similarly, the default title for the
+size scale is the name of variable used to size the nodes, and a custom
+title can be specified using the <code>size_title</code> argument. Each
+of the <code>color_title</code> and <code>size_title</code> arguments
+can also be set to <code>NULL</code> in order to omit the respective
+title.</p>
+<p>If a vector is provided to the <code>color_nodes_by</code> argument
+in order to <a href="#multiple_plots">generate multiple plots</a>, then
+the <code>color_title</code> will accept a character vector of matching
+length, where each entry is the title for the color legend in the
+corresponding plot.</p>
+</div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="generate-multiple-plots-of-a-network">
@@ -354,7 +449,7 @@ argument. The color palette specified by each entry will be applied to
 the corresponding plot. If, instead, a single value is provided to the
 <code>color_scheme</code> argument, the specified color palette will be
 applied to all of the plots.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
 <span>  <span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transitivity"</span>, <span class="st">"CloneCount"</span><span class="op">)</span>,</span>
@@ -367,115 +462,33 @@ applied to all of the plots.</p>
 <span><span class="co">#&gt; Network contains 122 nodes (after removing isolated nodes).</span></span>
 <span><span class="co">#&gt; Computing node-level network statistics... Done.</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by transitivity...</span></span></code></pre></div>
-<p><img src="network_visualization_files/figure-html/unnamed-chunk-7-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="network_visualization_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by CloneCount...</span></span></code></pre>
-<p><img src="network_visualization_files/figure-html/unnamed-chunk-7-2.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="network_visualization_files/figure-html/unnamed-chunk-8-2.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 <p>Both plots are stored in the <code>plots</code> list, which is
 contained within the output list of <code>buildRepSeqNetwork</code>.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "transitivity" "CloneCount"</span></span></code></pre></div>
 <p>Each plot is named according to the variable used to color the
 nodes.</p>
 </div>
 <div class="section level2">
-<h2 id="title-and-subtitle">Title and Subtitle<a class="anchor" aria-label="anchor" href="#title-and-subtitle"></a>
+<h2 class="tabset" id="downstream-tasks">Downstream Tasks<a class="anchor" aria-label="anchor" href="#downstream-tasks"></a>
 </h2>
-<p>The <code>output_name</code> argument is used in the names of files
-saved by <code>buildRepSeqNetwork</code>. By default, it is also used as
-the title for each plot generated by <code>buildRepSeqNetwork</code>.
-The default value of <code>output_name</code> is
-<code>"MyRepSeqNetwork"</code>.</p>
-<p>By default, the subtitle of each plot contains information about the
-settings used to construct the network, including the values of the
-<code>dist_type</code> and <code>dist_cutoff</code> arguments.</p>
-<p>A custom plot title and subtitle can be specified using the
-<code>plot_title</code> and <code>plot_subtitle</code> arguments,
-respectively. Either element can be omitted from the plot by supplying a
-<code>NULL</code> value to the corresponding argument, as shown
-below.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
-<span>                   size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
-<span>                   plot_title <span class="op">=</span> <span class="cn">NULL</span>, plot_subtitle <span class="op">=</span> <span class="cn">NULL</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Input data contains 200 rows.</span></span>
-<span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
-<span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
-<span><span class="co">#&gt; Network contains 122 nodes (after removing isolated nodes).</span></span>
-<span><span class="co">#&gt; Computing node-level network statistics... Done.</span></span>
-<span><span class="co">#&gt; Generating graph plot with nodes colored by transitivity...</span></span></code></pre></div>
-<p><img src="network_visualization_files/figure-html/unnamed-chunk-9-1.png" width="100%" style="display: block; margin: auto;"></p>
-<pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
-</div>
-<div class="section level2">
-<h2 class="tabset" id="legend">Legend<a class="anchor" aria-label="anchor" href="#legend"></a>
-</h2>
+<p>This section covers functionality within the <code>NAIR</code>
+package that facilitates additional visual analysis of the results from
+the <code>buildRepSeqNetwork</code> function.</p>
 <div class="section level3">
-<h3 id="excluding-sizecolor-legend">Excluding Size/Color Legend<a class="anchor" aria-label="anchor" href="#excluding-sizecolor-legend"></a>
-</h3>
-<p>By default, if the nodes are colored or sized dynamically according
-to a variable, a legend will be included in the plot showing the color
-scale and/or size scale.</p>
-<p>The color scale can be manually excluded from the legend by setting
-<code>color_legend = FALSE</code>. Similarly, setting
-<code>size_legend = FALSE</code> will exclude the size scale from the
-legend.</p>
-<p><strong>Note:</strong> An exception to the default behavior occurs
-when the variable used to color the nodes is discrete with more than 20
-distinct values. In this case the color scale is automatically excluded
-from the legend in order to prevent it from taking up excessive space in
-the plot. The name of the variable used to color the nodes is then
-reported in the plot’s subtitle for reference. If the user wishes to
-ignore this exception and force the color legend to be shown, they can
-do so by setting <code>color_legend = TRUE</code>.</p>
-</div>
-<div class="section level3">
-<h3 id="legend-titles">Legend Titles<a class="anchor" aria-label="anchor" href="#legend-titles"></a>
-</h3>
-<p>By default, the title shown above the color scale in the legend is
-the name of the variable used to color the nodes. A custom title can be
-specified by providing a character string to the
-<code>color_title</code> argument. Similarly, the default title for the
-size scale is the name of variable used to size the nodes, and a custom
-title can be specified using the <code>size_title</code> argument. Each
-of the <code>color_title</code> and <code>size_title</code> arguments
-can also be set to <code>NULL</code> in order to omit the respective
-title.</p>
-<p>If a vector is provided to the <code>color_nodes_by</code> argument
-in order to <a href="#multiple_plots">generate multiple plots</a>, then
-the <code>color_title</code> will accept a character vector of matching
-length, where each entry is the title for the color legend in the
-corresponding plot.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="edge-width">Edge width<a class="anchor" aria-label="anchor" href="#edge-width"></a>
-</h2>
-<p>By default, the edges in the plot are drawn with a width of 0.1.</p>
-<p>A different width can be used for the edges by setting the
-<code>edge_width</code> argument to a different value.</p>
-</div>
-<div class="section level2">
-<h2 id="excluding-plots">Excluding Plots<a class="anchor" aria-label="anchor" href="#excluding-plots"></a>
-</h2>
-<p>Use <code>print_plots = FALSE</code> to prevent plots from being
-printed to the R plotting window. Plots will still be generated and
-returned in the output, as well as saved to a pdf if a <a href="buildRepSeqNetwork.html#output-directory">valid output
-directory</a> exists.</p>
-<p>Use <code>plots = FALSE</code> to prevent plots from being generated
-entirely.</p>
-</div>
-<div class="section level2">
-<h2 class="tabset" id="modifying-plots-after-creation">
+<h3 class="tabset" id="modifying-plots-after-creation">
 <a name="modifying_plots"></a> Modifying Plots After
 Creation<a class="anchor" aria-label="anchor" href="#modifying-plots-after-creation"></a>
-</h2>
-<div class="section level3">
-<h3 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
 </h3>
+<div class="section level4">
+<h4 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
+</h4>
 <p>In some cases, the user may wish to make changes to a plot that was
 previously created by the <code>buildRepSeqNetwork</code> function.</p>
 <p>For example, suppose we call <code>buildRepSeqNetwork</code> in order
@@ -499,9 +512,9 @@ could take substantial time if the network is very large.</p>
 <p>Another option is to directly modify the plot contained within the
 already-existing output of <code>buildRepSeqNetwork</code>.</p>
 </div>
-<div class="section level3">
-<h3 id="how-to-modify-plots">How to Modify Plots<a class="anchor" aria-label="anchor" href="#how-to-modify-plots"></a>
-</h3>
+<div class="section level4">
+<h4 id="how-to-modify-plots">How to Modify Plots<a class="anchor" aria-label="anchor" href="#how-to-modify-plots"></a>
+</h4>
 <p>The list that was returned by <code>buildRepSeqNetwork</code>
 contains a sublist named <code>plots</code>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
@@ -568,18 +581,18 @@ plot to the plot list contained in the existing output of
 customize plots beyond what is possible using only the arguments of
 <code>buildRepSeqNetwork</code>.</p>
 </div>
-<div class="section level3">
-<h3 class="tabset" id="custom-color-scales">Custom Color Scales<a class="anchor" aria-label="anchor" href="#custom-color-scales"></a>
-</h3>
+<div class="section level4">
+<h4 class="tabset" id="custom-color-scales">Custom Color Scales<a class="anchor" aria-label="anchor" href="#custom-color-scales"></a>
+</h4>
 <p>The color scales that are available through the
 <code>color_scheme</code> argument of the
 <code>buildRepSeqNetwork</code> function are limited to a selection of
 preset color scales. If the user wishes to manually customize the color
 scheme for the nodes, this can be done by modifying the plot after it is
 created.</p>
-<div class="section level4">
-<h4 id="for-continuous-variables">For Continuous Variables<a class="anchor" aria-label="anchor" href="#for-continuous-variables"></a>
-</h4>
+<div class="section level5">
+<h5 id="for-continuous-variables">For Continuous Variables<a class="anchor" aria-label="anchor" href="#for-continuous-variables"></a>
+</h5>
 <p>If the variable used to color the nodes is continuous, a custom color
 gradient can be specified using the <code>scale_color_gradient</code>
 function, which allows the user to specify the color at each end of the
@@ -608,9 +621,9 @@ then modify the plot to use a custom color gradient.</p>
 <span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">CloneCount</span></span></code></pre></div>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
-<div class="section level4">
-<h4 id="for-discrete-variables">For Discrete Variables<a class="anchor" aria-label="anchor" href="#for-discrete-variables"></a>
-</h4>
+<div class="section level5">
+<h5 id="for-discrete-variables">For Discrete Variables<a class="anchor" aria-label="anchor" href="#for-discrete-variables"></a>
+</h5>
 <p>If the variable used to color the nodes is discrete, a custom color
 palette can be specified using the <code>scale_color_manual</code>
 function, which allows the user to specify the color used for each value
@@ -640,10 +653,10 @@ color palette.</p>
 </div>
 </div>
 </div>
-<div class="section level2">
-<h2 id="generating-new-plots">
+<div class="section level3">
+<h3 id="generating-new-plots">
 <a name="new_plots"></a> Generating New Plots<a class="anchor" aria-label="anchor" href="#generating-new-plots"></a>
-</h2>
+</h3>
 <p>In some cases, rather than modifying an existing plot, the user may
 wish to generate an entirely new plot of the same network graph. For
 example, it may be the case that the user wants to keep their existing
@@ -698,9 +711,9 @@ the list returned by <code>generateNetworkGraphPlots</code>.</p>
 <!-- The remaining arguments of `plotNetworkGraph` are used to customize the plot and behave identically to those of `buildRepSeqNetwork`, with one important exception that concerns the `color_nodes_by` and `size_nodes_by` arguments. In `buildRepSeqNetwork`, each of these arguments accepts a column name or column index referencing the data column that contains the desired variable to be used. In `plotNetworkGraph`, however, each argument accepts the data column itself, rather than its name or index. -->
 <!-- By default, plots generated using `plotNetworkGraph` do not have a title or subtitle. These can be set using the `plot_title` and `plot_subtitle` arguments, respectively. -->
 </div>
-<div class="section level2">
-<h2 id="saving-plots">Saving Plots<a class="anchor" aria-label="anchor" href="#saving-plots"></a>
-</h2>
+<div class="section level3">
+<h3 id="saving-plots">Saving Plots<a class="anchor" aria-label="anchor" href="#saving-plots"></a>
+</h3>
 <p>After making changes to the list of plots contained in the output of
 <code>buildRepSeqNetwork</code>, such as replacing a plot with a
 modified version or adding new plots to the list, the user may wish to
@@ -712,7 +725,8 @@ plots in the list will be saved to a single pdf.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/saveNetworkPlots.html">saveNetworkPlots</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span>, outfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_out</span>, <span class="st">"plots.pdf"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpRvZVsu/plots.pdf</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpRpSark/plots.pdf</span></span></code></pre></div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
@@ -722,7 +736,7 @@ plots in the list will be saved to a single pdf.</p>
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Brian Neal, Hai Yang, Le Phi Long, Li Zhang.</p>
+<p>Developed by Brian Neal, Hai Yang, Phi Long Le, Li Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">

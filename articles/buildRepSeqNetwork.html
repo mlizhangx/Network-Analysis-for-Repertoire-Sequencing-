@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9040</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,6 +80,9 @@
 
     
     
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p>General network analysis on Adaptive Immune Receptor Repertoire
 Sequencing (AIRR-Seq) data is performed using the
 <code>buildRepSeqNetwork</code> function. This function does the
@@ -99,9 +102,9 @@ specifications</li>
 </li>
 <li>Saves and returns the following output:
 <ul>
-<li>Meta-data for the nodes in the network, including network
+<li>Metadata for the nodes in the network, including network
 properties</li>
-<li>Meta-data for the clusters in the network</li>
+<li>Metadata for the clusters in the network</li>
 <li>Network graph plot (returned as <code>ggraph</code> object and saved
 as pdf)</li>
 <li>Network adjacency matrix in sparse matrix format</li>
@@ -113,10 +116,9 @@ network graph</li>
 </ul>
 <p>In this vignette we demonstrate the function’s usage and output.</p>
 <div class="section level3">
-<h3 id="simulate-example-data">Simulate Example Data<a class="anchor" aria-label="anchor" href="#simulate-example-data"></a>
+<h3 id="simulate-data-for-demonstration">Simulate Data for Demonstration<a class="anchor" aria-label="anchor" href="#simulate-data-for-demonstration"></a>
 </h3>
-<p>For demonstration purposes, we simulate some toy data using built-in
-package functions.</p>
+<p>We simulate some toy data for demonstration.</p>
 <p>We simulate data consisting of two samples with 100 observations
 each, for a total of 200 observations (rows).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -136,6 +138,7 @@ each, for a total of 200 observations (rows).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">toy_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 200</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="primary-inputs">
@@ -169,33 +172,33 @@ plotting window in R.</p>
 <span><span class="co">#&gt; Generating graph plot...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork_NodeMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_NodeMetadata.csv</span></span></code></pre></div>
 <p><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 </div>
 <div class="section level2">
-<h2 class="tabset" id="base-output">Base Output<a class="anchor" aria-label="anchor" href="#base-output"></a>
+<h2 class="tabset" id="base-output">
+<a name="base_output"></a> Base Output<a class="anchor" aria-label="anchor" href="#base-output"></a>
 </h2>
 <p>When no optional arguments are used, the
 <code>buildRepSeqNetwork</code> function returns a list containing the
-following items:</p>
+following elements:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "igraph"           "adjacency_matrix" "node_data"        "plots"</span></span></code></pre></div>
-<p>We describe each of these items below. In subsequent sections, we
-will introduce optional arguments of <code>buildRepSeqNetwork</code> and
-show how the output changes based on these arguments.</p>
+<p>We describe each of these list elements below.</p>
 <div class="section level3">
 <h3 id="node_data">
 <code>node_data</code><a class="anchor" aria-label="anchor" href="#node_data"></a>
 </h3>
-<p>The item <code>node_data</code> is a data frame where each row
-corresponds to a node in the network graph:</p>
+<p>The list element <code>node_data</code> is a data frame containing
+metadata for the network nodes, where each row corresponds to a node in
+the network graph:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         CloneSeq CloneFrequency CloneCount SampleID</span></span>
@@ -205,9 +208,9 @@ corresponds to a node in the network graph:</p>
 <span><span class="co">#&gt; 11 GGGGGAGAATTGC    0.012969469       5098  Sample1</span></span>
 <span><span class="co">#&gt; 12 GGGGGGGAATTGC    0.009079646       3569  Sample1</span></span>
 <span><span class="co">#&gt; 13 AGGGGGAAATTGG    0.014941093       5873  Sample1</span></span></code></pre></div>
-<p>By default, all columns from the original input AIRR-seq data are
-present in the returned node data. <a href="#input_options">This can be
-changed using the <code>subset_cols</code> argument</a>.</p>
+<p>By default, all variables (data columns) from the original input
+AIRR-seq data are present in the returned node data. <a href="#input_options">This can be changed using the
+<code>subset_cols</code> argument</a>.</p>
 <p>The row names from the original input data are preserved in the
 returned node data. This allows the user to match rows of the input data
 with their corresponding rows in the node data.</p>
@@ -221,12 +224,12 @@ changed using the <code>drop_isolated_nodes</code> argument</a>.</p>
 <h3 id="plots">
 <code>plots</code><a class="anchor" aria-label="anchor" href="#plots"></a>
 </h3>
-<p>The item <code>plots</code> is a list containing each of the plot(s)
-created by <code>buildRepSeqNetwork</code>. Each plot is an object of
-class <code>ggraph</code> (which inherits from the <code>ggplot</code>
-class), and is named according to the variable used to color the nodes.
-Here the nodes are not colored according to any variable, so the name of
-the plot is <code>uniform_color</code>.</p>
+<p>The list element <code>plots</code> is a list containing each of the
+plot(s) created by <code>buildRepSeqNetwork</code>. Each plot is an
+object of class <code>ggraph</code> (which inherits from the
+<code>ggplot</code> class), and is named according to the variable used
+to color the nodes. Here the nodes are not colored according to any
+variable, so the name of the plot is <code>uniform_color</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "uniform_color"</span></span></code></pre></div>
@@ -241,7 +244,7 @@ them</a> after they are created.</p>
 <h3 id="igraph">
 <code>igraph</code><a class="anchor" aria-label="anchor" href="#igraph"></a>
 </h3>
-<p>The item <code>igraph</code> is an object of class
+<p>The list element <code>igraph</code> is an object of class
 <code>igraph</code>, which contains the list of nodes and edges that
 comprise the network graph.</p>
 <p>The <code>igraph</code> object can be used for <a href="#downstream">downstream computation of network properties</a>, as
@@ -254,7 +257,7 @@ additional plots of the network graph</a>.</p>
 <h3 id="adjacency_matrix">
 <code>adjacency_matrix</code><a class="anchor" aria-label="anchor" href="#adjacency_matrix"></a>
 </h3>
-<p>The item <code>adjacency_matrix</code> is an object of class
+<p>The list element <code>adjacency_matrix</code> is an object of class
 <code>dgCMatrix</code>, which is a sparse matrix format from the
 <code>Matrix</code> package.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -389,8 +392,8 @@ rows than this:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 122</span></span></code></pre></div>
-<p>These rows correspond to the 122 nodes that are joined by an edge to
-at least one other node in the network.</p>
+<p>These rows correspond to the nodes that are joined by an edge to at
+least one other node in the network.</p>
 <p>The row names from the original input data are preserved, allowing
 the user to conveniently cross-reference each node with its
 corresponding row in the original input data.</p>
@@ -573,7 +576,8 @@ properties will not be computed unless the user has set
 <code>cluster_stats = TRUE</code>.</p>
 </div>
 <div class="section level4">
-<h4 id="clustering-algorithm">Clustering Algorithm<a class="anchor" aria-label="anchor" href="#clustering-algorithm"></a>
+<h4 id="clustering-algorithm">
+<a name="cluster_alg"></a> Clustering Algorithm<a class="anchor" aria-label="anchor" href="#clustering-algorithm"></a>
 </h4>
 <p>By default, clustering is performed using the
 <code>cluster_fast_greedy</code> algorithm from the <code>igraph</code>
@@ -602,7 +606,9 @@ its help documentation file. For example, the command
 for the <code>cluster_fast_greedy</code> algorithm.</p>
 </div>
 <div class="section level4">
-<h4 id="cluster-level-network-properties">Cluster-Level Network Properties<a class="anchor" aria-label="anchor" href="#cluster-level-network-properties"></a>
+<h4 id="cluster-level-network-properties">
+<a name="cluster_properties"></a> Cluster-Level Network
+Properties<a class="anchor" aria-label="anchor" href="#cluster-level-network-properties"></a>
 </h4>
 <p>If the user has set <code>cluster_stats = TRUE</code>, then after
 partitioning the network into clusters, various network properties are
@@ -780,21 +786,32 @@ automatically be included regardless of the value of
 </h3>
 <ul>
 <li>By default, <code>buildRepSeqNetwork</code> saves its output to the
-current working directory. However, users can specify a directory using
-the <code>output_dir</code> argument.</li>
-<li>The specified output directory will be created if it does not
-already exist.</li>
+current working directory.</li>
+<li>Users can specify a different directory using the
+<code>output_dir</code> argument. The specified output directory will be
+created if it does not already exist.</li>
 <li>Setting <code>output_dir</code> to <code>NULL</code> will prevent
-any output from being written to file.</li>
+the output from being saved.</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="output-file-format">Output File Format<a class="anchor" aria-label="anchor" href="#output-file-format"></a>
+<h3 id="output-file-format">
+<a name="output_format"></a> Output File Format<a class="anchor" aria-label="anchor" href="#output-file-format"></a>
 </h3>
 <ul>
 <li>By default, each component of the list returned by
-<code>buildRepSeqNetwork</code> is saved as its own file, with the
-node-level and cluster-level meta data saved as csv files.</li>
+<code>buildRepSeqNetwork</code> is saved as its own file using the
+following file formats:
+<ul>
+<li>csv for <code>node_data</code> and <code>cluster_data</code>
+</li>
+<li>mtx for <code>adjacency_matrix</code>
+</li>
+<li>txt for <code>igraph</code>
+</li>
+<li>pdf for <code>plots</code> (see next subsection)</li>
+</ul>
+</li>
 <li>For better compression and fewer files, users can specify
 <code>output_type = "rds"</code> or <code>output_type = "rda"</code>,
 which will save the entire output list to a single rds file or a single
@@ -812,9 +829,9 @@ environment when the Rdata file is loaded into R using the
 <h3 id="pdf-of-plots">PDF of Plots<a class="anchor" aria-label="anchor" href="#pdf-of-plots"></a>
 </h3>
 <ul>
-<li>Regardless of the value of <code>output_type</code>, a separate pdf
-file containing the graph plot(s) is created in <code>output_dir</code>.
-The dimensions (in inches) for the pdf can be adjusted using the
+<li>Regardless of the output file format specified, a separate pdf file
+containing the graph plot(s) is created in <code>output_dir</code>. The
+dimensions (in inches) for the pdf can be adjusted using the
 <code>plot_width</code> and <code>plot_height</code> arguments, with the
 defaults being <code>12</code> and <code>10</code>, respectively. The
 pdf file is not created if no plots are generated (i.e., if the argument
@@ -830,19 +847,38 @@ meta data using the <code>generateGraphPlot</code> function as described
 </ul>
 </div>
 <div class="section level3">
-<h3 id="output-file-names">Output File Name(s)<a class="anchor" aria-label="anchor" href="#output-file-names"></a>
+<h3 id="output-file-names">
+<a name="output_filenames"></a> Output File Name(s)<a class="anchor" aria-label="anchor" href="#output-file-names"></a>
 </h3>
 <ul>
-<li>By default, the name of each saved file starts with
-<code>MyRepSeqNetwork</code>. This prefix can be changed by providing a
-character string to the <code>output_name</code> argument.</li>
+<li>By default, the name of each saved file begins with
+<code>MyRepSeqNetwork</code>. This prefix can be changed using the
+<code>output_name</code> argument, which accepts a character
+vector.</li>
+<li>If <code>output_type = "individual"</code> (the default), the prefix
+specified by <code>output_name</code> is followed by:
+<ul>
+<li>
+<code>_NodeMetadata.csv</code> for <code>node_data</code>
+</li>
+<li>
+<code>_ClusterMetadata.csv</code> for <code>cluster_data</code> (if
+present)</li>
+<li>
+<code>_EdgeList.txt</code> for <code>igraph</code>
+</li>
+<li>
+<code>_AdjacencyMatrix.mtx</code> for
+<code>adjacency_matrix</code>
+</li>
+</ul>
+</li>
 <li>If <code>output_type</code> is set to <code>"rds"</code> or
-<code>"rda"</code>, then the name of the file will be the value of the
-<code>output_name</code> argument followed by the appropriate file
-extension (either <code>.rds</code> or <code>.rda</code>).</li>
-<li>The name of the pdf file for the graph plot will be the value of the
-<code>output_name</code> argument followed by the <code>.pdf</code> file
-extension.</li>
+<code>"rda"</code>, then the name of the file will be the value of
+<code>output_name</code> followed by the appropriate file extension
+(either <code>.rds</code> or <code>.rda</code>).</li>
+<li>The name of the pdf file will be the value of
+<code>output_name</code> followed by <code>.pdf</code>.</li>
 </ul>
 </div>
 </div>
@@ -888,7 +924,9 @@ function.</p>
 <code class="sourceCode R"><span><span class="co"># Add network stats to node-level meta data </span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span>,</span>
 <span>                                        net <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">igraph</span>,</span>
-<span>                                        stats_to_include <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span></code></pre></div>
+<span>                                        stats_to_include <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Computing cluster membership within the network... Done.</span></span>
+<span><span class="co">#&gt; Computing node-level network statistics... Done.</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="perform-cluster-analysis-downstream">Perform Cluster Analysis Downstream<a class="anchor" aria-label="anchor" href="#perform-cluster-analysis-downstream"></a>
@@ -910,7 +948,9 @@ counts</a>.</p>
 <span><span class="va">output</span><span class="op">$</span><span class="va">cluster_data</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/getClusterStats.html">getClusterStats</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">node_data</span>,</span>
 <span>                  adjacency_matrix <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">adjacency_matrix</span>,</span>
-<span>                  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, count_col <span class="op">=</span> <span class="st">"CloneCount"</span><span class="op">)</span></span></code></pre></div>
+<span>                  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, count_col <span class="op">=</span> <span class="st">"CloneCount"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Computing cluster membership within the network... Done.</span></span>
+<span><span class="co">#&gt; Computing statistics for the 20 clusters in the network... Done.</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -941,13 +981,15 @@ R using the <code>load</code> function.</p>
 <code class="sourceCode R"><span><span class="co"># save output list returned by buildRepSeqNetwork</span></span>
 <span><span class="fu"><a href="../reference/saveNetwork.html">saveNetwork</a></span><span class="op">(</span>net <span class="op">=</span> <span class="va">output</span>, output_dir <span class="op">=</span> <span class="va">dir_out</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_ClusterMetadata.csv</span></span>
 <span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp7KUHuq/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="regenerating-output-components">Regenerating Output Components<a class="anchor" aria-label="anchor" href="#regenerating-output-components"></a>
@@ -1001,7 +1043,7 @@ and leaves the remaining tasks to be performed individually.</p>
 <li>Builds the network graph for the immune repertoire</li>
 <li>Returns the following output:
 <ul>
-<li>Meta-data for the nodes in the network</li>
+<li>Metadata for the nodes in the network</li>
 <li>Network adjacency matrix</li>
 <li>
 <code>igraph</code> object</li>
@@ -1076,7 +1118,7 @@ for details on how it can be accomplished.</p>
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Brian Neal, Hai Yang, Le Phi Long, Li Zhang.</p>
+<p>Developed by Brian Neal, Hai Yang, Phi Long Le, Li Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">

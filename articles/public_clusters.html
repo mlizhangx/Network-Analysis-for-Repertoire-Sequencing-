@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9040</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,15 +99,19 @@ demonstration in which we explain the process in greater detail.</p>
 <li>
 <a href="#step1"><strong>Filter the clusters within each sample’s
 network</strong></a>. For each sample, construct the repertoire network
-and use cluster analysis to partition the nodes into clusters. Filter
+and use cluster analysis to partition the network into clusters. Filter
 the data, keeping only those clusters with sufficient node count or
 clone count.</li>
 <li>
 <a href="#step2"><strong>Construct global network from the filtered
 data and perform clustering.</strong></a> Combine the filtered data from
 all samples into a single global network. Perform cluster analysis and
-assign membership to the global clusters. Assess sample representation
-within the clusters to identify public clusters.</li>
+assign membership to the global clusters. These clusters are considered
+as the public clusters.</li>
+<li>
+<a href="#step3">Perform additional tasks</a> such as labeling the
+clusters in the global network plot and analyzing particular clusters of
+interest.</li>
 </ol>
 </div>
 <div class="section level3">
@@ -185,9 +189,8 @@ on node count and clone count.</p>
 <p>For each sample, the repertoire network is constructed and cluster
 analysis is used to partition the network into clusters. The clusters
 are then filtered according to node count and clone count based on
-user-specified criteria. The node-level and cluster-level metadata for
-the clusters that remain after filtering are saved as files to be used
-as inputs for <a href="#step2">step 2</a>.</p>
+user-specified criteria. The data for the clusters that remain after
+filtering are saved as files to be used as inputs for <a href="#step2">step 2</a>.</p>
 <p>Below, we explain the function’s usage.</p>
 <div class="section level3">
 <h3 class="tabset" id="filter-settings">Filter Settings<a class="anchor" aria-label="anchor" href="#filter-settings"></a>
@@ -266,8 +269,14 @@ the base R documentation files for <code>regex</code> and
 </div>
 </div>
 <div class="section level3">
-<h3 id="input-file-paths">Input File Paths<a class="anchor" aria-label="anchor" href="#input-file-paths"></a>
+<h3 class="tabset" id="specify-input-data-for-step-1">
+<a name="input_settings"></a> Specify Input Data for
+Step 1<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-1"></a>
 </h3>
+<div class="section level4">
+<h4 id="file-paths-of-sample-data">
+<a name="files1"></a> File Paths of Sample Data<a class="anchor" aria-label="anchor" href="#file-paths-of-sample-data"></a>
+</h4>
 <p>The main argument of the <code>findPublicClusters</code> function is
 the <code>file_list</code> argument, which accepts a vector containing
 file paths. Each path corresponds to a distinct AIRR-Seq data file
@@ -279,22 +288,25 @@ to the <code>file_list</code> argument of
 <code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
 <span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmphbJ2yz/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmphbJ2yz/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmphbJ2yz/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmphbJ2yz/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmphbJ2yz/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmphbJ2yz/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpEKJ3Vv/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpEKJ3Vv/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmpEKJ3Vv/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmpEKJ3Vv/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmpEKJ3Vv/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmpEKJ3Vv/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="input-file-format">Input File Format<a class="anchor" aria-label="anchor" href="#input-file-format"></a>
-</h3>
+<div class="section level4">
+<h4 id="file-format-of-sample-data">
+<a name="input_type"></a> File Format of Sample Data<a class="anchor" aria-label="anchor" href="#file-format-of-sample-data"></a>
+</h4>
 <p>The file format of the input files for
 <code>findPublicClusters</code> is specified using the
 <code>input_type</code> parameter. The supported formats include
 <code>"rds"</code>, <code>"rda"</code>, <code>"csv"</code>, as well as
 files that can be read using the <code>read.table</code> function, such
 as <code>"tsv"</code> and <code>"txt"</code>.</p>
+<p>Our samples are stored in .rds files, so we use
+<code>input_type = "rds"</code>.</p>
 <p>For text formats such as <code>"csv"</code>, <code>"tsv"</code> and
 <code>"txt"</code>, users can specify the separation option by utilizing
 the <code>sep</code> argument. The default setting <code>sep = ""</code>
@@ -314,34 +326,37 @@ Rdata file. For example, if each sample’s data frame is named
 <code>save(mydataframe, file = myfilepath)</code>, where the file path
 <code>myfilepath</code> is different for each sample, then we would set
 <code>data_symbols = "mydataframe"</code>.</p>
-<p>Our samples are stored in .rds files, so we use
-<code>input_type = "rds"</code>.</p>
 </div>
-<div class="section level3">
-<h3 id="specifying-the-sequence-column">Specifying the Sequence Column<a class="anchor" aria-label="anchor" href="#specifying-the-sequence-column"></a>
-</h3>
+<div class="section level4">
+<h4 id="sequence-column-in-sample-data">Sequence Column in Sample Data<a class="anchor" aria-label="anchor" href="#sequence-column-in-sample-data"></a>
+</h4>
 <p>Each clone’s TCR/BCR sequence is used as the basis of similarity
 between clones in the network.</p>
 <p>The <code>seq_col</code> argument is used to specify the column
-containing the clone sequences in the input data for each sample. The
-argument accepts either the column name or column index.</p>
+containing the clone sequences in the data frame for each sample. The
+argument accepts a character string containing the column name.</p>
 <p>In our simulated data, the column containing the clone sequences is
-named <code>CloneSeq</code>.</p>
+named <code>CloneSeq</code>. Hence we specify
+<code>seq_col = "CloneSeq"</code> when calling
+<code>findPublicClusters</code>.</p>
 </div>
-<div class="section level3">
-<h3 id="specifying-the-count-column">Specifying the Count Column<a class="anchor" aria-label="anchor" href="#specifying-the-count-column"></a>
-</h3>
+<div class="section level4">
+<h4 id="count-column-in-sample-data">Count Column in Sample Data<a class="anchor" aria-label="anchor" href="#count-column-in-sample-data"></a>
+</h4>
 <p>The clone count for each clone is used to filter the clusters within
 each sample.</p>
 <p>The <code>count_col</code> argument is used to specify the column
-containing the clone counts in the input data for each sample. The
-argument accepts either the column name or column index.</p>
+containing the clone counts in the data frame for each sample. The
+argument accepts a character string containing the column name.</p>
 <p>In our simulated data, the column containing the clone sequences is
-named <code>CloneCount</code>.</p>
+named <code>CloneCount</code>. Hence we specify
+<code>count_col = "CloneCount"</code> when calling
+<code>findPublicClusters</code>.</p>
 </div>
-<div class="section level3">
-<h3 id="assigning-custom-sample-ids">Assigning Custom Sample IDs<a class="anchor" aria-label="anchor" href="#assigning-custom-sample-ids"></a>
-</h3>
+<div class="section level4">
+<h4 id="custom-sample-ids-optional">
+<a name="sample_ids"></a> Custom Sample IDs (Optional)<a class="anchor" aria-label="anchor" href="#custom-sample-ids-optional"></a>
+</h4>
 <p>The sample ID for each clone will be included in the filtered data
 saved by <code>findPublicClusters</code>. This will allow us to
 distinguish the sample of origin for each clone after we combine the
@@ -353,8 +368,11 @@ argument accepts a vector of the same length as <code>file_list</code>.
 Each entry of <code>sample_ids</code> is assigned as a sample ID to the
 sample in the corresponding entry of <code>file_list</code>.</p>
 </div>
+</div>
 <div class="section level3">
-<h3 class="tabset" id="network-settings-per-sample">Network Settings Per Sample<a class="anchor" aria-label="anchor" href="#network-settings-per-sample"></a>
+<h3 class="tabset" id="network-settings-for-sample-networks">
+<a name="network_settings"></a> Network Settings for
+Sample Networks<a class="anchor" aria-label="anchor" href="#network-settings-for-sample-networks"></a>
 </h3>
 <p>The settings used to construct the network for each sample can be
 customized using the arguments below.</p>
@@ -407,167 +425,157 @@ that do not have any edge connections to other nodes. This is
 accomplished by setting the <code>drop_isolated_nodes</code> argument to
 <code>FALSE</code>.</p>
 </div>
+<div class="section level4">
+<h4 id="clustering-algorithm-for-sample-networks">Clustering Algorithm for Sample Networks<a class="anchor" aria-label="anchor" href="#clustering-algorithm-for-sample-networks"></a>
+</h4>
+<p>By default, clustering within each sample’s network is performed
+using the <code>cluster_fast_greedy</code> algorithm from the
+<code>igraph</code> package. A different clustering algorithm can be
+specified using the <code>cluster_fun</code> argument. See <a href="buildRepSeqNetwork.html#cluster_alg">this section of the
+buildRepSeqNetwork vignette</a> for details.</p>
+</div>
 </div>
 <div class="section level3">
-<h3 id="clustering-algorithm">Clustering Algorithm<a class="anchor" aria-label="anchor" href="#clustering-algorithm"></a>
-</h3>
-<p>By default, clustering is performed using the
-<code>cluster_fast_greedy</code> algorithm from the <code>igraph</code>
-package. Other clustering algorithms from the <code>igraph</code>
-package can be used instead of the default algorithm. The algorithm is
-specified using the <code>cluster_fun</code> argument, which accepts one
-of the following functions:</p>
-<ul>
-<li><code>cluster_fast_greedy</code></li>
-<li><code>cluster_edge_betweenness</code></li>
-<li><code>cluster_fluid_communities</code></li>
-<li><code>cluster_infomap</code></li>
-<li><code>cluster_label_prop</code></li>
-<li><code>cluster_leading_eigen</code></li>
-<li><code>cluster_leiden</code></li>
-<li><code>cluster_louvain</code></li>
-<li><code>cluster_optimal</code></li>
-<li><code>cluster_spinglass</code></li>
-<li><code>cluster_walktrap</code></li>
-</ul>
-<p>For example, setting <code>cluster_fun = cluster_leiden</code>
-performs clustering using the <code>cluster_leiden</code> algorithm.</p>
-<p>For more information about a particular algorithm, users can refer to
-its help documentation file. For example, the command
-<code><a href="https://r.igraph.org/reference/cluster_fast_greedy.html" class="external-link">?igraph::cluster_fast_greedy</a></code> loads the documentation file
-for the <code>cluster_fast_greedy</code> algorithm.</p>
-</div>
-<div class="section level3">
-<h3 class="tabset" id="output-settings">Output Settings<a class="anchor" aria-label="anchor" href="#output-settings"></a>
+<h3 class="tabset" id="output-settings-for-step-1">Output Settings for Step 1<a class="anchor" aria-label="anchor" href="#output-settings-for-step-1"></a>
 </h3>
 <p>The <code>findPublicClusters</code> function does not return any
-direct output. Instead, it saves the network metadata for the selected
-clusters to files that will be used as inputs in step 2.</p>
-<p>For each sample, <code>findPublicClusters</code> saves two files, one
-containing the node-specific network metadata and the other containing
-the cluster-specific network metadata. The data for each sample is saved
-after filtering the clusters, and thus includes only the clusters
+direct output. Instead, it saves data for the selected clusters to files
+that will be used as inputs in step 2. For each sample,
+<code>findPublicClusters</code> saves two files, one containing <a href="#filtered_node_data">node-specific metadata</a> and the other
+containing <a href="#filtered_cluster_data">cluster-specific
+metadata</a>. The data for each sample is saved after filtering the
+clusters, and thus includes data only for those clusters that are
 selected based on the specified filter settings.</p>
 <div class="section level4">
-<h4 id="subsetting-columns-from-the-input-data">Subsetting Columns From the Input Data<a class="anchor" aria-label="anchor" href="#subsetting-columns-from-the-input-data"></a>
+<h4 id="variables-to-keep-from-step-1">
+<a name="subset_cols"></a> Variables to Keep From Step 1<a class="anchor" aria-label="anchor" href="#variables-to-keep-from-step-1"></a>
 </h4>
-<p>The node-specific network metadata for each sample includes all of
-the data columns that were present in the sample’s original input data
-frame.</p>
-<p>In some cases, the user may not wish for all columns to be included.
-In this case, the user can specify the columns to be included using the
+<p>By default, the <a href="#filtered_node_data">node-specific
+metadata</a> for each sample includes all of the variables (data
+columns) from the sample’s original input data frame.</p>
+<p>In some cases, the user may not wish for all of the original
+variables to be included. In this case, the user can specify the
+original data columns they wish to keep. This is done using the
 <code>subset_cols</code> argument, which accepts a vector containing
 either the column names or the column indices of the columns to be
 kept.</p>
-<p>The column specified by the <code>seq_col</code> argument will
-automatically be included regardless of the value of
-<code>subset_cols</code>.</p>
+<p>Regardless of the value of <code>subset_cols</code>, the variable for
+clone sequence (as specified by the <code>seq_col</code> argument) will
+always be included, as will the variable <code>SampleID</code>. Also
+included will be <a href="#filtered_node_data">additional variables for
+node-level network properties within the sample network</a>.</p>
+<p>Any variables included in the output can be <a href="#vis">used as
+metadata to color the nodes</a> in graph plots of the global network
+during <a href="#step2">step 2</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="output-directory">Output Directory<a class="anchor" aria-label="anchor" href="#output-directory"></a>
+<h4 id="output-directory-for-step-1">
+<a name="dir_out1"></a> Output Directory for Step 1<a class="anchor" aria-label="anchor" href="#output-directory-for-step-1"></a>
 </h4>
-<p>The file path for the output directory is specified using the
-<code>output_dir</code> argument. The output directory specified by the
-<code>output_dir</code> argument will be created if it does not already
+<p>By default, a new directory named <code>public_clusters</code> is
+created within the current working directory, to be used as an output
+directory for saving the function’s output. A different output directory
+can be specified by providing a file path to the <code>output_dir</code>
+argument. The specified directory will be created if it does not already
 exist.</p>
 <p>Within the output directory, two subdirectories are created. One
 subdirectory, named <code>node_meta_data</code>, contains the node-level
 data files for each sample, and the other, named
 <code>cluster_meta_data</code>, contains the cluster-level data files.
 Within each of these two subdirectories, the file for each sample is
-named according to its sample ID as specified by the
-<code>sample_ids</code> argument (see the <strong>Assigning Custom
-Sample IDs</strong> subsection above).</p>
+named according to its <a href="#sample_ids">sample ID</a>.</p>
 </div>
 <div class="section level4">
-<h4 id="output-file-format">Output File Format<a class="anchor" aria-label="anchor" href="#output-file-format"></a>
+<h4 id="output-file-format-for-step-1">Output File Format for Step 1<a class="anchor" aria-label="anchor" href="#output-file-format-for-step-1"></a>
 </h4>
 <p>By default, each file is saved as a RDS file. This can be changed
 using the <code>output_type</code> argument. Other valid options include
-<code>"rda"</code> and <code>"csv"</code>. For the <code>"rda"</code>
-(Rdata) format, each data frame containing node-level data will be named
-<code>ndat</code> in the R environment when its Rdata file is loaded,
-while each data frame containing cluster-level data will be named
-<code>cdat</code>.</p>
+<code>"rda"</code> and <code>"csv"</code>.</p>
+<p><strong>Note regarding the Rdata format:</strong> For the
+<code>"rda"</code> (Rdata) format, each data frame containing node-level
+data will be named <code>ndat</code> in the R environment when its Rdata
+file is loaded, while each data frame containing cluster-level data will
+be named <code>cdat</code>.</p>
 </div>
 <div class="section level4">
-<h4 id="saving-unfiltered-network-data">Saving Unfiltered Network Data<a class="anchor" aria-label="anchor" href="#saving-unfiltered-network-data"></a>
+<h4 id="optional-saving-data-for-unfiltered-sample-networks">
+<a name="save_unfiltered"></a> (Optional) Saving Data for Unfiltered
+Sample Networks<a class="anchor" aria-label="anchor" href="#optional-saving-data-for-unfiltered-sample-networks"></a>
 </h4>
-<p>By default, the <code>findPublicClusters</code> function saves the
-network metadata only for the clusters selected based on the specified
-filter settings.</p>
-<p>If desired, the network metadata for each sample’s full network can
-also be saved prior to filtering the clusters. This is done by by
-providing a file path to the <code>output_dir_unfiltered</code>
-argument, which specifies a separate output directory for the full
-network data. Each sample’s full network data prior to filtering the
-clusters will then be saved to the directory specified by the
-<code>output_dir_unfiltered</code> argument. This data is saved
-separately from, and in addition to, the default data that is saved
-after filtering the clusters.</p>
+<p>By default, <code>findPublicClusters</code> saves data only for the
+clusters that are selected based on the specified filter settings.</p>
+<p>If desired, data for each sample’s full network can also be saved
+prior to filtering the clusters. This is done by by providing a file
+path to the <code>output_dir_unfiltered</code> argument, which specifies
+a separate output directory for the full network data. Each sample’s
+full network data prior to filtering the clusters will then be saved to
+the directory specified by the <code>output_dir_unfiltered</code>
+argument. This data is saved separately from, and in addition to, the
+default data that is saved after filtering the clusters.</p>
 <p>Note that the sequence-based filter settings specified by
 <code>min_seq_length</code> and <code>drop_chars</code> still apply to
 each sample’s full network, since the network is only constructed after
 applying these filters. The full, pre-filtered network refers to the
 network that contains all of the sample’s clusters, i.e., before the
 public clusters are identified and other clusters are removed.</p>
-<p>The full network data for each sample includes node-level metadata,
-cluster-level metadata, the <code>igraph</code> edge list, the network
-adjacency matrix, as well as any plots generated (see next subsection).
-By default, the R objects for these files are saved into a single RDS
-file whose file name (excluding the .rds file extension) is the sample
-ID (as specified by the <code>sample_ids</code> argument). The RDA file
-format can be used instead of RDS by setting
-<code>output_type_unfiltered = "rda"</code>. If desired, each R object
-can be saved to a separate file by setting
-<code>output_type_unfiltered = "individual"</code>. This saves each
-object according to the <a href="buildRepSeqNetwork.html#output_settings">default file format used
-by <code>buildRepSeqNetwork</code></a>. When saving objects
-individually, the sample ID is used as the common file name prefix for
-the files from each sample.</p>
+<p>The full network data for each sample includes <a href="buildRepSeqNetwork.html#base_output">all of the objects contained
+in the output of <code>buildRepSeqNetwork</code></a>, including cluster
+metadata. By default, these are placed in a list named <code>net</code>
+and saved to an RDS file whose file name is the <a href="#sample_ids">sample ID</a>. The RDA format can be used instead of
+RDS by setting <code>output_type_unfiltered = "rda"</code>.
+Alternatively, setting
+<code>output_type_unfiltered = "individual"</code> saves each R object
+using the <a href="buildRepSeqNetwork.html#output_format">default file
+formats from <code>buildRepSeqNetwork</code></a>, where each file’s name
+begins with the <a href="#sample_ids">sample ID</a>.</p>
 </div>
-</div>
-<div class="section level3">
-<h3 id="optional-network-visualization-per-sample">(Optional) Network Visualization Per Sample<a class="anchor" aria-label="anchor" href="#optional-network-visualization-per-sample"></a>
-</h3>
+<div class="section level4">
+<h4 id="optional-visualization-of-sample-networks">(Optional) Visualization of Sample Networks<a class="anchor" aria-label="anchor" href="#optional-visualization-of-sample-networks"></a>
+</h4>
 <p>By default, <code>findPublicClusters</code> does not produce visual
 plots when constructing the network for each sample. Instead,
 visualization occurs after combining the data from all samples into a
 single network in <a href="#step2">step 2</a>.</p>
 <p>If desired, visual plots of the full network for each sample (prior
-to filtering the clusters) can be produced by setting
-<code>plots = TRUE</code>. The plots can be printed in R by additionally
-setting <code>print_plots = TRUE</code>. Furthermore, if the user has
-specified to save the full network data for each sample (prior to
-filtering the clusters) by providing a file path to the
-<code>output_type_unfiltered</code> argument, these plots will be saved
-along with the rest of the full network data for each sample.</p>
-<p>Note that the plots are not saved along with the default data that is
-saved after filtering the clusters. Therefore, if no file path is
-provided to the <code>output_type_unfiltered</code> argument, the plots
-will not be saved at all. If, in addition, the argument
-<code>print_plots</code> is set to <code>FALSE</code> (the default),
-setting <code>plots = TRUE</code> will have no effect.</p>
-<p>If the user sets <code>plots</code> to <code>TRUE</code>, then by
-default, the plot for each sample will color the nodes according to
-their cluster membership. If desired, a different variable can be used
-to color the nodes. This is done by specifying the column for the
-variable to the <code>color_nodes_by</code> argument, which accepts a
-column name or column index.</p>
+to filtering the clusters) can be enabled by setting
+<code>plots = TRUE</code>. This does nothing on its own: by default,
+these plots are neither printed nor saved. To print the plots in the R
+plotting window, the user must additionally set
+<code>print_plots = TRUE</code>. To save the plots, the user must <a href="#save_unfiltered">specify a directory to the
+<code>output_type_unfiltered</code> argument</a>.</p>
+<p>By default, the plot for each sample will color the nodes according
+to the cluster to which they belong. The user can specify a different
+variable for coloring the nodes using the <code>color_nodes_by</code>
+argument <a href="network_visualization.html#node_colors">as detailed
+here</a>. It is even possible to generate <a href="network_visualization.html#multiple_plots">multiple plots of each
+sample’s network, with each plot colored according to a different
+variable</a>.</p>
+<p>If the user <a href="#save_unfiltered">provides a directory to the
+<code>output_type_unfiltered</code> argument</a>, a pdf file will be
+saved for each sample, containing all plots generated for the sample’s
+network. Each pdf file’s name will be the <a href="#sample_ids">sample
+ID</a>.</p>
 <p><a href="network_visualization.html">This vignette</a> details
 additional arguments that can be used to further customize the visual
 plot for each sample.</p>
 </div>
+</div>
 <div class="section level3">
-<h3 id="example-function-call">Example Function Call<a class="anchor" aria-label="anchor" href="#example-function-call"></a>
+<h3 id="demonstration-step-1">
+<a name="demo1"></a> Demonstration (Step 1)<a class="anchor" aria-label="anchor" href="#demonstration-step-1"></a>
 </h3>
-<p>We execute the <code>findPublicClusters</code> function using the
-input we prepared earlier for the <code>file_list</code> argument.</p>
+<div class="section level4">
+<h4 id="execute-findpublicclusters">Execute <code>findPublicClusters</code><a class="anchor" aria-label="anchor" href="#execute-findpublicclusters"></a>
+</h4>
+<p>We execute the <code>findPublicClusters</code> function using the <a href="#files1">input we prepared earlier</a> for the
+<code>file_list</code> argument.</p>
 <p>The file path of our output directory is saved to the R variable
 named <code>dir_filtered_samples</code> for later reference.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Filter Clusters Within Each Sample</span></span>
+<code class="sourceCode R"><span><span class="co"># directory to save filtered sample data</span></span>
 <span><span class="va">dir_filtered_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"filtered_samples"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Filter Clusters Within Each Sample</span></span>
 <span><span class="fu"><a href="../reference/findPublicClusters.html">findPublicClusters</a></span><span class="op">(</span></span>
 <span>  file_list <span class="op">=</span> <span class="va">input_files</span>, input_type <span class="op">=</span> <span class="st">"rds"</span>,</span>
 <span>  sample_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span><span class="op">)</span>,</span>
@@ -877,7 +885,83 @@ named <code>dir_filtered_samples</code> for later reference.</p>
 <span><span class="co">#&gt; * 3 clusters (19 nodes) remain. Saving results... Done.</span></span>
 <span><span class="co">#&gt; ----------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; All samples complete. Filtered data is located in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/filtered_samples</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/filtered_samples</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="output-of-findpublicclusters">Output of <code>findPublicClusters</code><a class="anchor" aria-label="anchor" href="#output-of-findpublicclusters"></a>
+</h4>
+<p>In practice, we can proceed to <a href="#step2">step 2</a> without
+examining the output from step 1. Here we present some of the output
+purely for demonstration.</p>
+<div class="section level5">
+<h5 id="node-metadata-for-filtered-sample-networks">
+<a name="filtered_node_data"></a> Node Metadata for Filtered Sample
+Networks<a class="anchor" aria-label="anchor" href="#node-metadata-for-filtered-sample-networks"></a>
+</h5>
+<p>For the sake of demonstration, we load the node-level metadata for
+the first sample’s filtered network in order to show the variables it
+contains.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Directory of filtered node data</span></span>
+<span><span class="va">dir_filtered_samples_node</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_filtered_samples</span>, <span class="st">"node_meta_data"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load first file </span></span>
+<span><span class="va">sample1_filtered_node_data</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_filtered_samples_node</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Variables contained in each sample's filtered node-level data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sample1_filtered_node_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "CloneSeq"                           "CloneFrequency"                    </span></span>
+<span><span class="co">#&gt;  [3] "CloneCount"                         "SampleID"                          </span></span>
+<span><span class="co">#&gt;  [5] "SampleLevelNetworkDegree"           "ClusterIDInSample"                 </span></span>
+<span><span class="co">#&gt;  [7] "SampleLevelTransitivity"            "SampleLevelCloseness"              </span></span>
+<span><span class="co">#&gt;  [9] "SampleLevelCentralityByCloseness"   "SampleLevelEigenCentrality"        </span></span>
+<span><span class="co">#&gt; [11] "SampleLevelCentralityByEigen"       "SampleLevelBetweenness"            </span></span>
+<span><span class="co">#&gt; [13] "SampleLevelCentralityByBetweenness" "SampleLevelAuthorityScore"         </span></span>
+<span><span class="co">#&gt; [15] "SampleLevelCoreness"                "SampleLevelPageRank"</span></span></code></pre></div>
+<p>Each row in the data frame corresponds to a node belonging to one of
+the filtered clusters in the sample network.</p>
+<p>Refer <a href="buildRepSeqNetwork.html#node_properties">here</a> for
+more information about the node-level network properties.</p>
+</div>
+<div class="section level5">
+<h5 id="cluster-metadata-for-filtered-sample-networks">
+<a name="filtered_cluster_data"></a> Cluster Metadata for Filtered
+Sample Networks<a class="anchor" aria-label="anchor" href="#cluster-metadata-for-filtered-sample-networks"></a>
+</h5>
+<p>We load the cluster-level metadata for the first sample’s filtered
+network in order to show the variables it contains.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Directory of filtered cluster data</span></span>
+<span><span class="va">dir_filtered_samples_cluster</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_filtered_samples</span>, <span class="st">"cluster_meta_data"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load first file </span></span>
+<span><span class="va">sample1_filtered_cluster_data</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_filtered_samples_cluster</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Variables contained in each sample's filtered node-level data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sample1_filtered_cluster_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "ClusterIDInSample"           "node_count"                 </span></span>
+<span><span class="co">#&gt;  [3] "mean_seq_length"             "mean_degree"                </span></span>
+<span><span class="co">#&gt;  [5] "max_degree"                  "seq_w_max_degree"           </span></span>
+<span><span class="co">#&gt;  [7] "agg_count"                   "max_count"                  </span></span>
+<span><span class="co">#&gt;  [9] "seq_w_max_count"             "diameter_length"            </span></span>
+<span><span class="co">#&gt; [11] "global_transitivity"         "assortativity"              </span></span>
+<span><span class="co">#&gt; [13] "edge_density"                "degree_centrality_index"    </span></span>
+<span><span class="co">#&gt; [15] "closeness_centrality_index"  "eigen_centrality_index"     </span></span>
+<span><span class="co">#&gt; [17] "eigen_centrality_eigenvalue" "SampleID"</span></span></code></pre></div>
+<p>Each row in the data frame corresponds to one of the filtered
+clusters in the sample network.</p>
+<p>Refer <a href="buildRepSeqNetwork.html#cluster_properties">here</a>
+for more information about the cluster-level network properties.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -885,49 +969,79 @@ named <code>dir_filtered_samples</code> for later reference.</p>
 <a name="step2"></a> Step 2: Global Network of Public
 Clusters<a class="anchor" aria-label="anchor" href="#step-2-global-network-of-public-clusters"></a>
 </h2>
-<p>Next, we use the <code>buildPublicClusterNetwork</code> function to
-combine the filtered data from all samples into a single global network
-and perform clustering analysis.</p>
+<p>In <a href="#step1">step 1</a>, we used the
+<code>findPublicClusters</code> function to perform network analysis on
+each sample individually and select clusters based on node count and
+clone count.</p>
+<p>Next, we will use the <code>buildPublicClusterNetwork</code> function
+to combine the filtered data from all samples into a single global
+network and perform clustering analysis.</p>
 <div class="section level3">
-<h3 id="input-file-paths-1">Input File Paths<a class="anchor" aria-label="anchor" href="#input-file-paths-1"></a>
+<h3 id="specify-input-data-for-step-2">Specify Input Data for Step 2<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-2"></a>
 </h3>
-<p>The files created by <code>findPublicClusters</code> in the previous
-step contain the filtered data for each sample. As detailed earlier,
-these files are located in two separate subdirectories, one containing
-the files for the node-level metadata and the other containing the files
-for the cluster-level metadata.</p>
-<p>For this step, we require only the files containing the node-level
-metadata. These files are provided to
-<code>buildPublicClusterNetwork</code> by supplying a character vector
-of file paths to the <code>file_list</code> argument. We create this
-vector below.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Node-level metadata for each sample's filtered clusters</span></span>
-<span><span class="va">dir_filtered_samples_node</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_filtered_samples</span>, <span class="st">"node_meta_data"</span><span class="op">)</span></span>
-<span><span class="va">files_filtered_samples_node</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_filtered_samples_node</span>, </span>
-<span>                                          full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<p>The output files created in the previous step contain the filtered
+data for each sample. <a href="#dir_out1">As detailed earlier</a>, these
+files are located in two separate subdirectories, one containing the
+files for the node-level metadata and the other containing the files for
+the cluster-level metadata.</p>
+<p>To call <code>buildPublicClusterNetwork</code>, we only need the
+files containing the node-level metadata.</p>
+<div class="section level4">
+<h4 id="file-paths-of-filtered-node-data">
+<a name="files2"></a> File Paths of Filtered Node Data<a class="anchor" aria-label="anchor" href="#file-paths-of-filtered-node-data"></a>
+</h4>
+<p>If <code>findPublicClusters</code> was called with the default value
+of <code>output_dir</code>, then it is not necessary to specify the
+input file paths when calling <code>buildPublicClusterNetwork</code>,
+<em>provided the current working directory is the same as the previous
+working directory, and provided <code>findPublicClusters</code> has not
+previously been called with different input data while using this
+working directory.</em></p>
+<p>If <code>findPublicClusters</code> was called with a non-default
+value for <code>output_dir</code>, then the node data files must be
+specified using the <code>file_list</code> argument, which accepts a
+vector of file paths. The node data files will be located in the
+<code>node_meta_data</code> subdirectory of the <a href="#demo1">output
+directory used in step 1</a>. They can be conveniently referenced using
+<code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code> with <code>full.names = TRUE</code>, assuming
+that <code>findPublicClusters</code> has not previously been called with
+different input data and the same output directory.</p>
+<p>Below, we create the vector of file paths to provide to the
+<code>file_list</code> argument.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Directory of filtered node data</span></span>
+<span><span class="va">dir_filtered_samples_node</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_filtered_samples</span>, <span class="st">"node_meta_data"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Vector of file paths for filtered node data</span></span>
+<span><span class="va">files_filtered_samples_node</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_filtered_samples_node</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">files_filtered_samples_node</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample1.rds" </span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample10.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample11.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample12.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample13.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmphbJ2yz/filtered_samples/node_meta_data/Sample14.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample1.rds" </span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample10.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample11.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample12.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample13.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample14.rds"</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="input-file-format-1">Input File Format<a class="anchor" aria-label="anchor" href="#input-file-format-1"></a>
-</h3>
-<p>By default, <code>findPublicClusters</code> saves its output files
-using the RDS file format. By default,
-<code>buildPublicClusterNetwork</code> assumes that the input files are
-in the RDS file format.</p>
+<div class="section level4">
+<h4 id="file-format-of-filtered-node-data">File Format of Filtered Node Data<a class="anchor" aria-label="anchor" href="#file-format-of-filtered-node-data"></a>
+</h4>
+<p>If <code>findPublicClusters</code> was called with the default value
+of <code>output_type</code>, then it is not necessary to specify the
+input type when calling <code>buildPublicClusterNetwork</code>.</p>
 <p>If the files created by <code>findPublicClusters</code> were saved
 using a different file format, the <code>input_type</code> argument can
-be used to specify the format used. This argument has the same behavior
-as seen in <code>findPublicClusters</code>.</p>
-<p>For the <code>"rda"</code> (Rdata) file format, the
-<code>data_symbols</code> argument is used to specify the name of each
-sample’s node-level data frame within its respective Rdata file. If
+be used to specify the format used. This argument has the <a href="#input_type">same behavior described earlier</a> in
+<code>findPublicClusters</code>. The situational arguments
+<code>header</code>, <code>sep</code> and <code>data_symbols</code> also
+perform the same roles as before.</p>
+<p><strong>Note about Rdata file format:</strong> If the
+<code>"rda"</code> (Rdata) input file format is specified using
+<code>input_type = "rda"</code>, then the <code>data_symbols</code>
+argument is used to specify the name of each sample’s node-level data
+frame within its respective Rdata file. If
 <code>findPublicClusters</code> was called with
 <code>output_type = "rda"</code>, then the node-level data frame for
 each sample will be named <code>ndat</code>. Accordingly, the default
@@ -936,23 +1050,29 @@ should not need to manually specify the value of
 <code>data_symbols</code> unless the names within the files are
 changed.</p>
 </div>
-<div class="section level3">
-<h3 id="specifying-the-sequence-and-count-columns">Specifying the Sequence and Count Columns<a class="anchor" aria-label="anchor" href="#specifying-the-sequence-and-count-columns"></a>
-</h3>
+<div class="section level4">
+<h4 id="column-names-in-filtered-node-data">Column Names in Filtered Node Data<a class="anchor" aria-label="anchor" href="#column-names-in-filtered-node-data"></a>
+</h4>
 <p>The <code>seq_col</code> and <code>count_col</code> arguments are
-used to specify the columns containing the receptor sequences and clone
-counts, respectively, in the same manner seen earlier for
+used to specify the names of the columns containing the receptor
+sequences and clone counts, respectively, in the <a href="#input_settings">same manner seen earlier</a> for
 <code>findPublicClusters</code>.</p>
+<p>Generally, users should provide the same values for these arguments
+as they did in step 1.</p>
 <p>The clone counts are used to compute some of the cluster-level
 properties, which will be omitted if <code>count_col</code> is left
 unspecified.</p>
 </div>
+</div>
 <div class="section level3">
-<h3 id="network-settings">Network Settings<a class="anchor" aria-label="anchor" href="#network-settings"></a>
+<h3 class="tabset" id="settings-for-global-network-analysis">Settings for Global Network Analysis<a class="anchor" aria-label="anchor" href="#settings-for-global-network-analysis"></a>
 </h3>
-<p>The settings used to construct the network can be customized <a href="buildRepSeqNetwork.html#network_settings">using the same arguments
-from <code>findPublicClusters</code></a>, shown below with their default
-values:</p>
+<div class="section level4">
+<h4 id="network-construction">Network Construction<a class="anchor" aria-label="anchor" href="#network-construction"></a>
+</h4>
+<p>The settings used to construct the network can be customized <a href="#network_settings">using the same arguments from
+<code>findPublicClusters</code></a>, shown below with their default
+values for <code>buildPublicClusterNetwork</code>:</p>
 <ul>
 <li><code>dist_type = "hamming"</code></li>
 <li><code>dist_cutoff = 1</code></li>
@@ -961,65 +1081,59 @@ values:</p>
 <p>Refer to <a href="buildRepSeqNetwork.html#network_settings">this
 vignette</a> for details on their meaning and behavior.</p>
 </div>
-<div class="section level3">
-<h3 id="clustering-algorithm-1">Clustering Algorithm<a class="anchor" aria-label="anchor" href="#clustering-algorithm-1"></a>
-</h3>
+<div class="section level4">
+<h4 id="clustering-algorithm-for-global-network">Clustering Algorithm for Global Network<a class="anchor" aria-label="anchor" href="#clustering-algorithm-for-global-network"></a>
+</h4>
 <p>After constructing the global network,
 <code>buildPublicClusterNetwork</code> performs cluster analysis on the
 network nodes, partitioning the global network graph into
 densely-connected subgraphs. These global clusters can contain nodes
 from different samples.</p>
-<p>By default, clustering is performed using the
-<code>cluster_fast_greedy</code> algorithm from the <code>igraph</code>
-package. Other clustering algorithms from the <code>igraph</code>
-package can be used instead of the default algorithm. The algorithm is
-specified using the <code>cluster_fun</code> argument, which accepts one
-of the following functions:</p>
-<ul>
-<li><code>cluster_fast_greedy</code></li>
-<li><code>cluster_edge_betweenness</code></li>
-<li><code>cluster_fluid_communities</code></li>
-<li><code>cluster_infomap</code></li>
-<li><code>cluster_label_prop</code></li>
-<li><code>cluster_leading_eigen</code></li>
-<li><code>cluster_leiden</code></li>
-<li><code>cluster_louvain</code></li>
-<li><code>cluster_optimal</code></li>
-<li><code>cluster_spinglass</code></li>
-<li><code>cluster_walktrap</code></li>
-</ul>
-<p>For example, setting <code>cluster_fun = cluster_leiden</code>
-performs clustering using the <code>cluster_leiden</code> algorithm.</p>
-<p>For more information about a particular algorithm, users can refer to
-its help documentation file. For example, the command
-<code><a href="https://r.igraph.org/reference/cluster_fast_greedy.html" class="external-link">?igraph::cluster_fast_greedy</a></code> loads the documentation file
-for the <code>cluster_fast_greedy</code> algorithm.</p>
+<p>By default, clustering within the global network is performed using
+the <code>cluster_fast_greedy</code> algorithm from the
+<code>igraph</code> package. A different clustering algorithm can be
+specified using the <code>cluster_fun</code> argument. See <a href="buildRepSeqNetwork.html#cluster_alg">this section of the
+buildRepSeqNetwork vignette</a> for details.</p>
 </div>
-<div class="section level3">
-<h3 id="customization-of-visual-plot">Customization of Visual Plot<a class="anchor" aria-label="anchor" href="#customization-of-visual-plot"></a>
-</h3>
-<p>By default, the network graph plot produced by
-<code>buildPublicClusterNetwork</code> colors the nodes according to
-sample ID. This can assist the user in identifying the public clusters.
-If desired, a different variable can be used to color the nodes. This is
-done by specifying the column for the variable to the
-<code>color_nodes_by</code> argument, which accepts a column name or
-column index.</p>
+<div class="section level4">
+<h4 id="visualization-of-global-network">
+<a name="vis"></a> Visualization of Global Network<a class="anchor" aria-label="anchor" href="#visualization-of-global-network"></a>
+</h4>
+<p>By default, <code>buildPublicClusterNetwork</code> produces a visual
+plot of the global network graph. This step can be omitted by setting
+<code>plots = FALSE</code>.</p>
+<p>By default, the plot colors the nodes according to sample ID. This
+can assist the user in identifying the public clusters.</p>
+<p>If desired, a different variable can be used to color the nodes. This
+is done using the <code>color_nodes_by</code> argument, which accepts a
+character string specifying the variable to use. The value should be the
+name of a <a href="#subset_cols">variable present in the filtered
+node-level metadata for each sample</a> or a <a href="#node_variables">node-level network property that has been
+computed for the global network</a>.</p>
+<p>The <code>color_nodes_by</code> argument also accommodates a
+character vector specifying multiple variables, in which case <a href="network_visualization.html#multiple_plots">one plot will be
+created for each variable specified, with each plot coloring the nodes
+according to the respective variable</a>. If the user wishes to include
+the binary variable of interest as one of these variables, it is
+contained in each neighborhood’s data frame as the variable
+<code>"GroupID"</code>.</p>
 <p><a href="network_visualization.html">This vignette</a> details
 additional arguments that can be used to further customize the visual
-plot.</p>
+plot, such as arguments to control the color scale, node size, title and
+legend.</p>
+</div>
 </div>
 <div class="section level3">
-<h3 class="tabset" id="output-settings-1">Output Settings<a class="anchor" aria-label="anchor" href="#output-settings-1"></a>
+<h3 class="tabset" id="output-settings-for-step-2">Output Settings for Step 2<a class="anchor" aria-label="anchor" href="#output-settings-for-step-2"></a>
 </h3>
 <p>The output returned by <code>buildPublicClusterNetwork</code> follows
 the <a href="buildRepSeqNetwork.html#output_settings">same format as the
 output of <code>buildRepSeqNetwork</code></a>. The function returns a
-list containing the node-level and cluster-level metadata for the global
+list containing the <a href="#node_variables">node-level</a> and <a href="#cluster_variables">cluster-level</a> metadata for the global
 network, as well as any plots generated, in addition to the network
 adjacency matrix and the <code>igraph</code> network edge list.</p>
 <div class="section level4">
-<h4 id="output-directory-1">Output Directory<a class="anchor" aria-label="anchor" href="#output-directory-1"></a>
+<h4 id="output-directory-for-step-2">Output Directory for Step 2<a class="anchor" aria-label="anchor" href="#output-directory-for-step-2"></a>
 </h4>
 <p>By default, a subdirectory named <code>public_clusters</code> is
 created within the current working directory, and the contents of the
@@ -1031,7 +1145,7 @@ path to the <code>output_dir</code> argument.</p>
 prevent the output from being saved.</p>
 </div>
 <div class="section level4">
-<h4 id="output-file-format-1">Output File Format<a class="anchor" aria-label="anchor" href="#output-file-format-1"></a>
+<h4 id="output-file-format-for-step-2">Output File Format for Step 2<a class="anchor" aria-label="anchor" href="#output-file-format-for-step-2"></a>
 </h4>
 <p>By default, each element of the list returned by
 <code>buildPublicClusterNetwork</code> is saved as an individual file.
@@ -1043,15 +1157,16 @@ compressed rds or rda file by setting <code>output_type = "rds"</code>
 or <code>output_type = "rda"</code>, respectively.</p>
 </div>
 <div class="section level4">
-<h4 id="pdf-of-plots">PDF of Plots<a class="anchor" aria-label="anchor" href="#pdf-of-plots"></a>
+<h4 id="pdf-of-global-network-graph-plots">PDF of Global Network Graph Plots<a class="anchor" aria-label="anchor" href="#pdf-of-global-network-graph-plots"></a>
 </h4>
 <ul>
-<li>Regardless of the value of <code>output_type</code>, a separate pdf
-file containing the graph plot(s) is created in <code>output_dir</code>.
-The dimensions (in inches) for the pdf can be adjusted using the
-<code>plot_width</code> and <code>plot_height</code> arguments, with the
-defaults being <code>12</code> and <code>10</code>, respectively. The
-pdf file is not created if no plots are generated (i.e., if the argument
+<li>Regardless of the output file format specified, a separate pdf file
+is created in <code>output_dir</code> containing all graph plots
+generated for the global network. The dimensions (in inches) for the pdf
+can be adjusted using the <code>plot_width</code> and
+<code>plot_height</code> arguments, with the defaults being
+<code>12</code> and <code>10</code>, respectively. The pdf file is not
+created if no plots are generated (i.e., if the argument
 <code>plots</code> is set to <code>FALSE</code>).</li>
 <li>
 <strong>Note:</strong> the <code>ggraph</code> object for each plot
@@ -1064,30 +1179,26 @@ meta data using the <code>generateGraphPlot</code> function as described
 </ul>
 </div>
 <div class="section level4">
-<h4 id="output-file-names">Output File Name(s)<a class="anchor" aria-label="anchor" href="#output-file-names"></a>
+<h4 id="output-file-names-for-step-2">Output File Name(s) for Step 2<a class="anchor" aria-label="anchor" href="#output-file-names-for-step-2"></a>
 </h4>
-<ul>
-<li>By default, the name of each saved file starts with
-<code>PublicClusterNetwork</code>. This prefix can be changed by
-providing a character string to the <code>output_name</code>
-argument.</li>
-<li>If <code>output_type</code> is set to <code>"rds"</code> or
-<code>"rda"</code>, then the name of the file will be the value of the
-<code>output_name</code> argument followed by the appropriate file
-extension (either <code>.rds</code> or <code>.rda</code>).</li>
-<li>The name of the pdf file for the graph plot will be the value of the
-<code>output_name</code> argument followed by the <code>.pdf</code> file
-extension.</li>
-</ul>
+<p>By default, the name of each saved file begins with
+<code>PublicClusterNetwork</code>. This prefix can be changed using the
+<code>output_name</code> argument, which accepts a character vector.</p>
+<p>Refer to <a href="buildRepSeqNetwork.html#output_filenames">this
+vignette</a> for further details on how the output files are named.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 class="tabset" id="example-call-and-output">Example Call and Output<a class="anchor" aria-label="anchor" href="#example-call-and-output"></a>
+<h3 id="demonstration-step-2">
+<a name="demo2"></a> Demonstration (Step 2)<a class="anchor" aria-label="anchor" href="#demonstration-step-2"></a>
 </h3>
+<div class="section level4">
+<h4 id="execute-buildpublicclusternetwork">Execute <code>buildPublicClusterNetwork</code><a class="anchor" aria-label="anchor" href="#execute-buildpublicclusternetwork"></a>
+</h4>
 <p>We execute the <code>buildPublicClusterNetwork</code> function using
-the input we prepared earlier for the <code>file_list</code>
-argument:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+the <a href="#files2">input we prepared earlier</a> for the
+<code>file_list</code> argument:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dir_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"public_clusters"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Collect clones from all public clusters and perform network analysis</span></span>
@@ -1107,19 +1218,27 @@ argument:</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
-<p><img src="public_clusters_files/figure-html/unnamed-chunk-6-1.png" width="100%" style="display: block; margin: auto;"></p>
+<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<p><img src="public_clusters_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmphbJ2yz/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<p>From the plot of the global network graph, where the nodes are
+colored according to sample ID, we notice that many samples are
+represented among the larger clusters. Hence <a href="#step3">these
+clusters may be of particular interest</a> as public clusters.</p>
+</div>
+<div class="section level4">
+<h4 id="output-of-buildpublicclusternetwork">Output of <code>buildPublicClusterNetwork</code><a class="anchor" aria-label="anchor" href="#output-of-buildpublicclusternetwork"></a>
+</h4>
 <p>The default files saved by <code>buildPublicClusterNetwork</code>
 have the following names:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Files saved by buildPublicClusterNetwork</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_out</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "PublicClusterNetwork_AdjacencyMatrix.mtx"</span></span>
@@ -1129,45 +1248,49 @@ have the following names:</p>
 <span><span class="co">#&gt; [5] "PublicClusterNetwork.pdf"</span></span></code></pre></div>
 <p>The elements of the output list returned by
 <code>buildPublicClusterNetwork</code> have the following names:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># output returned by buildPublicClusterNetwork</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">public_clusters</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "igraph"           "adjacency_matrix" "node_data"        "cluster_data"    </span></span>
 <span><span class="co">#&gt; [5] "plots"</span></span></code></pre></div>
-<p>Below, we describe each element of the above list.</p>
-<div class="section level4">
-<h4 id="node_data">
-<code>node_data</code><a class="anchor" aria-label="anchor" href="#node_data"></a>
-</h4>
-<p>The <code>node_data</code> data frame contained in the output list
-contains one row for each node in the network, with the following
-variables:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<p>Below, we examine the data frames <code>node_data</code> and
+<code>cluster_data</code>. For details on the other list elements, refer
+to <a href="buildRepSeqNetwork.html#base_output">the output of the
+<code>buildRepSeqNetwork</code> function</a>.</p>
+<div class="section level5">
+<h5 id="node-metadata-for-global-network">
+<a name="node_variables"></a> Node Metadata for Global Network<a class="anchor" aria-label="anchor" href="#node-metadata-for-global-network"></a>
+</h5>
+<p>The list element <code>node_data</code> is a data frame containing
+metadata for the network nodes, where each row corresponds to a node in
+the global network graph. The following variables are present in this
+data frame:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># variables in the node-level metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">public_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "CloneSeq"                           "CloneFrequency"                    </span></span>
 <span><span class="co">#&gt;  [3] "CloneCount"                         "SampleID"                          </span></span>
 <span><span class="co">#&gt;  [5] "SampleLevelNetworkDegree"           "ClusterIDInSample"                 </span></span>
-<span><span class="co">#&gt;  [7] "SampleLevelTransitivity"            "PublicCloseness"                   </span></span>
+<span><span class="co">#&gt;  [7] "SampleLevelTransitivity"            "SampleLevelCloseness"              </span></span>
 <span><span class="co">#&gt;  [9] "SampleLevelCentralityByCloseness"   "SampleLevelEigenCentrality"        </span></span>
 <span><span class="co">#&gt; [11] "SampleLevelCentralityByEigen"       "SampleLevelBetweenness"            </span></span>
 <span><span class="co">#&gt; [13] "SampleLevelCentralityByBetweenness" "SampleLevelAuthorityScore"         </span></span>
 <span><span class="co">#&gt; [15] "SampleLevelCoreness"                "SampleLevelPageRank"               </span></span>
 <span><span class="co">#&gt; [17] "PublicNetworkDegree"                "ClusterIDPublic"                   </span></span>
-<span><span class="co">#&gt; [19] "PublicTransitivity"                 "PublicCentralityByCloseness"       </span></span>
-<span><span class="co">#&gt; [21] "PublicEigenCentrality"              "PublicCentralityByEigen"           </span></span>
-<span><span class="co">#&gt; [23] "PublicBetweenness"                  "PublicCentralityByBetweenness"     </span></span>
-<span><span class="co">#&gt; [25] "PublicAuthorityScore"               "PublicCoreness"                    </span></span>
-<span><span class="co">#&gt; [27] "PublicPageRank"</span></span></code></pre></div>
-<p>Notice that by default, all variables that were present in each
-sample’s original data, such as <code>"CloneFrequency"</code> and
-<code>"CloneCount"</code>, are automatically carried over into this
-data.</p>
-<p>Many node-level network properties are present in the data. Some
-pertain to the network for the individual sample from which each node
-originated, i.e., the networks constructed in <a href="#step1">step
-1</a>. This includes all variables that begin with
-<code>"SampleLevel"</code>, such as
+<span><span class="co">#&gt; [19] "PublicTransitivity"                 "PublicCloseness"                   </span></span>
+<span><span class="co">#&gt; [21] "PublicCentralityByCloseness"        "PublicEigenCentrality"             </span></span>
+<span><span class="co">#&gt; [23] "PublicCentralityByEigen"            "PublicBetweenness"                 </span></span>
+<span><span class="co">#&gt; [25] "PublicCentralityByBetweenness"      "PublicAuthorityScore"              </span></span>
+<span><span class="co">#&gt; [27] "PublicCoreness"                     "PublicPageRank"</span></span></code></pre></div>
+<p>Notice that <a href="#subset_cols">by default</a>, all variables that
+were present in each sample’s original data, such as
+<code>"CloneFrequency"</code> and <code>"CloneCount"</code>, are
+automatically carried over into this data.</p>
+<p>Many <a href="buildRepSeqNetwork.html#node_properties">node-level
+network properties</a> are present in the data. Some pertain to the
+network for the individual sample from which each node originated, i.e.,
+the networks constructed in <a href="#step1">step 1</a>. This includes
+all variables that begin with <code>"SampleLevel"</code>, such as
 <code>SampleLevelNetworkDegree</code>, as well as the variable
 <code>ClusterIDInSample</code>.</p>
 <p>The variables that begin with <code>"Public"</code>, such as
@@ -1175,14 +1298,16 @@ originated, i.e., the networks constructed in <a href="#step1">step
 particular, <code>ClusterIDPublic</code> indicates the ID of the global
 cluster to which each node belongs.</p>
 </div>
-<div class="section level4">
-<h4 id="cluster_data">
-<code>cluster_data</code><a class="anchor" aria-label="anchor" href="#cluster_data"></a>
-</h4>
-<p>The <code>cluster_data</code> data frame contained in the output list
-contains one row for each cluster in the network, with the following
-variables representing the cluster-level network properties:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="section level5">
+<h5 id="cluster-metadata-for-global-network">
+<a name="cluster_variables"></a> Cluster Metadata for Global
+Network<a class="anchor" aria-label="anchor" href="#cluster-metadata-for-global-network"></a>
+</h5>
+<p>The list element <code>cluster_data</code> is a data frame containing
+metadata for the public clusters, where each row corresponds to a
+cluster in the global network. The following variables are present in
+this data frame:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># variables in the node-level metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">public_clusters</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "cluster_id"                  "node_count"                 </span></span>
@@ -1194,87 +1319,33 @@ variables representing the cluster-level network properties:</p>
 <span><span class="co">#&gt; [13] "edge_density"                "degree_centrality_index"    </span></span>
 <span><span class="co">#&gt; [15] "closeness_centrality_index"  "eigen_centrality_index"     </span></span>
 <span><span class="co">#&gt; [17] "eigen_centrality_eigenvalue"</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="plots">
-<code>plots</code><a class="anchor" aria-label="anchor" href="#plots"></a>
-</h4>
-<p>The item <code>plots</code> is a list containing each of the plot(s)
-created by <code>buildPublicClusterNetwork</code>. Each plot is an
-object of class <code>ggraph</code> (which inherits from the
-<code>ggplot</code> class), and is named according to the variable used
-to color the nodes.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">public_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "SampleID"</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">public_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">SampleID</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "ggraph" "gg"     "ggplot"</span></span></code></pre></div>
-<p>The plots can be modified after their creation as described in <a href="network_visualization.html#modifying_plots">this vignette</a>.</p>
-<p>New plots can be generated from the output as described <a href="network_visualization.html#new_plots">here</a>.</p>
-</div>
-<div class="section level4">
-<h4 id="igraph">
-<code>igraph</code><a class="anchor" aria-label="anchor" href="#igraph"></a>
-</h4>
-<p>The item <code>igraph</code> is an object of class
-<code>igraph</code>, which contains the list of nodes and edges that
-comprise the network graph.</p>
-<p>It can be used to <a href="network_visualization.html#new_plots">generate additional plots of
-the network graph</a>.</p>
-</div>
-<div class="section level4">
-<h4 id="adjacency_matrix">
-<code>adjacency_matrix</code><a class="anchor" aria-label="anchor" href="#adjacency_matrix"></a>
-</h4>
-<p>The item <code>adjacency_matrix</code> is an object of class
-<code>dgCMatrix</code>, which is a sparse matrix format from the
-<code>Matrix</code> package.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">public_clusters</span><span class="op">$</span><span class="va">adjacency_matrix</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "dgCMatrix"</span></span>
-<span><span class="co">#&gt; attr(,"package")</span></span>
-<span><span class="co">#&gt; [1] "Matrix"</span></span></code></pre></div>
-<p>The network adjacency matrix encodes the graph (i.e., the set of
-nodes and edges) as a matrix. It is symmetric, with each row
-(equivalently, each column) corresponding to a distinct network node.
-The network nodes follow the same order in the rows as they do in the
-columns. Each column name is the receptor sequence corresponding to the
-node for that column. Each row name is the row index of the original
-input data that corresponds to the node for that row.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First 5 rows and columns of the network adjacency matrix</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">public_clusters</span><span class="op">$</span><span class="va">adjacency_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; 5 x 5 sparse Matrix of class "dgCMatrix"</span></span>
-<span><span class="co">#&gt;               </span></span>
-<span><span class="co">#&gt; [1,] 1 1 . 1 .</span></span>
-<span><span class="co">#&gt; [2,] 1 1 . 1 .</span></span>
-<span><span class="co">#&gt; [3,] . . 1 . .</span></span>
-<span><span class="co">#&gt; [4,] 1 1 . 1 .</span></span>
-<span><span class="co">#&gt; [5,] . . . . 1</span></span></code></pre></div>
-<p>Each matrix entry has a value of 0 or 1, with 1 indicating an edge
-connecting the node for that row to the node for that column, and 0
-indicating no edge connection. Although the diagonal entries are 1,
-their values are not meaningful, since an edge is not drawn from a given
-node to itself.</p>
-<p>Note that the rows (nodes) in the adjacency matrix correspond to the
-rows (nodes) in the <code>node_data</code> data frame. Both have the
-same number of rows and the same row names.</p>
+<p>Refer <a href="buildRepSeqNetwork.html#cluster_properties">here</a>
+for more information about the cluster-level network properties.</p>
 </div>
 </div>
+</div>
+</div>
+<div class="section level2">
+<h2 class="tabset" id="step-3-additional-tasks">
+<a name="step3"></a> Step 3: Additional Tasks<a class="anchor" aria-label="anchor" href="#step-3-additional-tasks"></a>
+</h2>
+<p>After calling <code>buildPublicClusterNetwork</code>, the following
+tasks can be performed using the returned output.</p>
 <div class="section level3">
 <h3 id="labeling-the-global-clusters">Labeling the Global Clusters<a class="anchor" aria-label="anchor" href="#labeling-the-global-clusters"></a>
 </h3>
-<p>In the plot generated by <code>buildPublicClusterNetwork</code>,
-there appear to be six clusters with more than three samples
-represented.</p>
-<p>In order to reference these clusters within the data, we can <a href="network_visualization.html#labeling_clusters">label the six
-largest clusters in the plot with their cluster IDs</a> using the
-<code>addClusterLabels</code> function. Note that within the node-level
-metadata, the global cluster ID is stored in the variable
-<code>ClusterIDPublic</code>, so we must provide this column name to the
-<code>cluster_id_col</code> argument.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p>In order to more easily cross-reference the clusters in the visual
+plot with the clusters in the data, we can label the clusters with their
+ID numbers.</p>
+<p>This is accomplished using the <code>addClusterLabels</code> function
+<a href="network_visualization.html#labeling_clusters">as described
+here</a>. Note that within the node-level metadata, the global cluster
+ID is stored in the variable <code>ClusterIDPublic</code>, so we must
+provide this column name to the <code>cluster_id_col</code>
+argument.</p>
+<p>Below, we label the six largest clusters in the plot with their
+cluster IDs:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Modify plot to add labels to the clusters</span></span>
 <span><span class="va">public_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/addClusterLabels.html">addClusterLabels</a></span><span class="op">(</span></span>
@@ -1288,7 +1359,7 @@ metadata, the global cluster ID is stored in the variable
 <span><span class="co"># View modified plot</span></span>
 <span><span class="va">public_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt; Warning: Removed 511 rows containing missing values (`geom_text()`).</span></span></code></pre></div>
-<p><img src="public_clusters_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="public_clusters_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="focusing-on-individual-clusters-of-interest">Focusing on Individual Clusters of Interest<a class="anchor" aria-label="anchor" href="#focusing-on-individual-clusters-of-interest"></a>
@@ -1302,7 +1373,7 @@ contains the global cluster IDs.</p>
 <p>Below, we focus on the first cluster, which in this case is also the
 largest cluster by node count. In the plot, we color each node according
 to the receptor sequence of its corresponding clone.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># focus on cluster 1</span></span>
 <span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> </span>
@@ -1316,10 +1387,10 @@ to the receptor sequence of its corresponding clone.</p>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
 <span><span class="co">#&gt; Network contains 96 nodes (after removing isolated nodes).</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by CloneSeq...</span></span></code></pre></div>
-<p><img src="public_clusters_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="public_clusters_files/figure-html/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
-<p>Below, we do the same for the sixth largest cluster:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<p>Next, we do the same for the sixth largest cluster:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># focus on cluster 6</span></span>
 <span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> </span>
@@ -1333,7 +1404,7 @@ to the receptor sequence of its corresponding clone.</p>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
 <span><span class="co">#&gt; Network contains 27 nodes (after removing isolated nodes).</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by CloneSeq...</span></span></code></pre></div>
-<p><img src="public_clusters_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="public_clusters_files/figure-html/unnamed-chunk-15-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 </div>
 </div>
@@ -1345,7 +1416,7 @@ to the receptor sequence of its corresponding clone.</p>
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by Brian Neal, Hai Yang, Le Phi Long, Li Zhang.</p>
+<p>Developed by Brian Neal, Hai Yang, Phi Long Le, Li Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">

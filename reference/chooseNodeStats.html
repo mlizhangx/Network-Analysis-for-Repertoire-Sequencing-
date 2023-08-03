@@ -14,7 +14,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9040</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,52 +120,153 @@
 
   <dt>eigen_centrality</dt>
 <dd><p><!-- %%     ~~Describe \code{eigen_centrality} here~~ -->
-    Logical. Whether to compute the eigenvector centrality scores of node network positions. The scores are the entries of the <code>vector</code> element of the list returned by <code><a href="https://r.igraph.org/reference/eigen_centrality.html" class="external-link">eigen_centrality</a> with <code>weights = NA</code>. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.
-</code>
-  centrality_by_eigen
-<!-- %%     ~~Describe \code{centrality_by_eigen} here~~ -->
-    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores. The scores are the entries of the <code>vector</code> element of the list returned by <code><a href="https://r.igraph.org/reference/centr_eigen.html" class="external-link">centr_eigen</a>.
-</code>
-  betweenness
-<!-- %%     ~~Describe \code{betweenness} here~~ -->
-    Logical. Whether to compute network betweenness using <code><a href="https://r.igraph.org/reference/betweenness.html" class="external-link">betweenness</a></code>.  centrality_by_betweenness
-<!-- %%     ~~Describe \code{centrality_by_betweenness} here~~ -->
-    Logical. Whether to compute network centrality scores by betweenness. The scores are the entires of the <code>res</code> element of the list returned by <code><a href="https://r.igraph.org/reference/centr_betw.html" class="external-link">centr_betw</a>.
-</code>
-  authority_score
-<!-- %%     ~~Describe \code{authority_score} here~~ -->
-    Logical. Whether to compute the authority score using <code><a href="https://r.igraph.org/reference/hub_score.html" class="external-link">authority_score</a></code>.  coreness
-<!-- %%     ~~Describe \code{coreness} here~~ -->
-    Logical. Whether to compute network coreness using <code><a href="https://r.igraph.org/reference/coreness.html" class="external-link">coreness</a></code>.  page_rank
-<!-- %%     ~~Describe \code{page_rank} here~~ -->
-    Logical. Whether to compute page rank. The page rank values are the entries of the <code>vector</code> element of the list returned by <code><a href="https://r.igraph.org/reference/page_rank.html" class="external-link">page_rank</a>.
-</code>
-  all_stats
-<!-- %%     ~~Describe \code{all_stats} here~~ -->
-    Logical. If <code>TRUE</code>, then all node-level network properties will be computed regardless of the values used for the other arguments.    These functions return a vector that can be passed to the <code>stats_to_include</code> argument of <code><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></code> or <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> in order to specify which node-level network properties to compute. Note that <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> must be called with <code>node_stats = TRUE</code> for this to be relevant.    The main difference between <code>chooseNodeStats</code> and <code>exclusiveNodeStats</code> lies in their default argument values. The defaults for each are suited to different use cases in order to reduce the number of argument values that must be set manually.    <code>chooseNodeStats</code> has most of its arguments set to <code>TRUE</code> by default. Thus it is most suitable  when the user wishes to include a majority of the available properties. It can also be called with <code>all_stats = TRUE</code> as a convenient way of computing all available properties.    <code>exclusiveNodeStats</code> has all of its arguments set to <code>FALSE</code> by default. It is therefore most suitable when the user wishes to include only a few properties.<!-- %%  ~Describe the value returned -->
-<!-- %%  If it is a LIST, use -->
-<!-- %%  \item{comp1 }{Description of 'comp1'} -->
-<!-- %%  \item{comp2 }{Description of 'comp2'} -->
-<!-- %% ... -->
-    A named logical vector with one entry for each of the function's arguments. Each entry has the same name as the corresponding argument, and its value matches the argument's value.<code><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></code>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825<a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825" class="external-link">https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825</a><a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-" class="external-link">https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-</a><!-- %%  ~~who you are~~ -->
-    Brian Neal (<a href="mailto:Brian.Neal@ucsf.edu">Brian.Neal@ucsf.edu</a>)<!-- % Add one or more standard keywords, see file 'KEYWORDS' in the -->
-<!-- % R documentation directory (show via RShowDoc("KEYWORDS")): -->
-<!-- % \keyword{ ~kwd1 } -->
-<!-- % \keyword{ ~kwd2 } -->
-<!-- % Use only one keyword per line. -->
-<!-- % For non-standard keywords, use \concept instead of \keyword: -->
-<!-- % \concept{ ~cpt1 } -->
-<!-- % \concept{ ~cpt2 } -->
-<!-- % Use only one concept per line. --></p></dd>
+    Logical. Whether to compute the eigenvector centrality scores of node network positions. The scores are the entries of the <code>vector</code> element of the list returned by <code><a href="https://r.igraph.org/reference/eigen_centrality.html" class="external-link">eigen_centrality</a></code> with <code>weights = NA</code>. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.</p></dd>
+
+  <dt>centrality_by_eigen</dt>
+<dd><p><!-- %%     ~~Describe \code{centrality_by_eigen} here~~ -->
+    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores. The scores are the entries of the <code>vector</code> element of the list returned by <code><a href="https://r.igraph.org/reference/centr_eigen.html" class="external-link">centr_eigen</a></code>.</p></dd>
+
+  <dt>betweenness</dt>
+<dd><p><!-- %%     ~~Describe \code{betweenness} here~~ -->
+    Logical. Whether to compute network betweenness using <code><a href="https://r.igraph.org/reference/betweenness.html" class="external-link">betweenness</a></code>.</p></dd>
+
+  <dt>centrality_by_betweenness</dt>
+<dd><p><!-- %%     ~~Describe \code{centrality_by_betweenness} here~~ -->
+    Logical. Whether to compute network centrality scores by betweenness. The scores are the entires of the <code>res</code> element of the list returned by <code><a href="https://r.igraph.org/reference/centr_betw.html" class="external-link">centr_betw</a></code>.</p></dd>
+
+  <dt>authority_score</dt>
+<dd><p><!-- %%     ~~Describe \code{authority_score} here~~ -->
+    Logical. Whether to compute the authority score using <code><a href="https://r.igraph.org/reference/hub_score.html" class="external-link">authority_score</a></code>.</p></dd>
+
+  <dt>coreness</dt>
+<dd><p><!-- %%     ~~Describe \code{coreness} here~~ -->
+    Logical. Whether to compute network coreness using <code><a href="https://r.igraph.org/reference/coreness.html" class="external-link">coreness</a></code>.</p></dd>
+
+  <dt>page_rank</dt>
+<dd><p><!-- %%     ~~Describe \code{page_rank} here~~ -->
+    Logical. Whether to compute page rank. The page rank values are the entries of the <code>vector</code> element of the list returned by <code><a href="https://r.igraph.org/reference/page_rank.html" class="external-link">page_rank</a></code>.</p></dd>
+
+  <dt>all_stats</dt>
+<dd><p><!-- %%     ~~Describe \code{all_stats} here~~ -->
+    Logical. If <code>TRUE</code>, then all node-level network properties will be computed regardless of the values used for the other arguments.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>These functions return a vector that can be passed to the <code>stats_to_include</code> argument of <code><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></code> or <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> in order to specify which node-level network properties to compute. Note that <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> must be called with <code>node_stats = TRUE</code> for this to be relevant.</p>
+<p>The main difference between <code>chooseNodeStats</code> and <code>exclusiveNodeStats</code> lies in their default argument values. The defaults for each are suited to different use cases in order to reduce the number of argument values that must be set manually.</p>
+<p><code>chooseNodeStats</code> has most of its arguments set to <code>TRUE</code> by default. Thus it is most suitable  when the user wishes to include a majority of the available properties. It can also be called with <code>all_stats = TRUE</code> as a convenient way of computing all available properties.</p>
+<p><code>exclusiveNodeStats</code> has all of its arguments set to <code>FALSE</code> by default. It is therefore most suitable when the user wishes to include only a few properties.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
 
+<p><!-- %%  ~Describe the value returned --></p>
+
+
+<p><!-- %%  If it is a LIST, use --></p>
+
+
+<p><!-- %%  \item{comp1 }{Description of 'comp1'} --></p>
+
+
+<p><!-- %%  \item{comp2 }{Description of 'comp2'} --></p>
+
+
+<p><!-- %% ... --></p>
+
+
+<p>A named logical vector with one entry for each of the function's arguments. Each entry has the same name as the corresponding argument, and its value matches the argument's value.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></code></p></div>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825</p>
+<p><a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825" class="external-link">https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825</a></p>
+<p><a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-" class="external-link">https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-</a></p>
+    </div>
+    <div class="section level2">
+    <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
+    <p><!-- %%  ~~who you are~~ -->
+    Brian Neal (<a href="mailto:Brian.Neal@ucsf.edu">Brian.Neal@ucsf.edu</a>)</p>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate network</span></span></span>
+<span class="r-in"><span><span class="va">net</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="generateNetworkObjects.html">generateNetworkObjects</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">toy_data</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"CloneSeq"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add default set of node properties</span></span></span>
+<span class="r-in"><span><span class="va">data_w_default_stats</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span>, <span class="va">net</span><span class="op">$</span><span class="va">igraph</span>,</span></span>
+<span class="r-in"><span>    stats_to_include <span class="op">=</span></span></span>
+<span class="r-in"><span>      <span class="fu">chooseNodeStats</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Equivalent form for the above</span></span></span>
+<span class="r-in"><span><span class="va">data_w_default_stats</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span>, <span class="va">net</span><span class="op">$</span><span class="va">igraph</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Modify default set of node properties</span></span></span>
+<span class="r-in"><span><span class="va">data_w_custom_stats1</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span>, <span class="va">net</span><span class="op">$</span><span class="va">igraph</span>,</span></span>
+<span class="r-in"><span>    stats_to_include <span class="op">=</span></span></span>
+<span class="r-in"><span>      <span class="fu">chooseNodeStats</span><span class="op">(</span></span></span>
+<span class="r-in"><span>        closeness <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        page_rank <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add only the spepcified node properties</span></span></span>
+<span class="r-in"><span><span class="va">data_w_custom_stats2</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span>, <span class="va">net</span><span class="op">$</span><span class="va">igraph</span>,</span></span>
+<span class="r-in"><span>    stats_to_include <span class="op">=</span></span></span>
+<span class="r-in"><span>      <span class="fu">exclusiveNodeStats</span><span class="op">(</span></span></span>
+<span class="r-in"><span>        degree <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        transitivity <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Add all node-level network properties</span></span></span>
+<span class="r-in"><span><span class="va">data_w_all_stats</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span>, <span class="va">net</span><span class="op">$</span><span class="va">igraph</span>,</span></span>
+<span class="r-in"><span>    stats_to_include <span class="op">=</span></span></span>
+<span class="r-in"><span>      <span class="fu">chooseNodeStats</span><span class="op">(</span></span></span>
+<span class="r-in"><span>        all_stats <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Equivalent form for the above</span></span></span>
+<span class="r-in"><span><span class="va">data_w_all_stats</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span>, <span class="va">net</span><span class="op">$</span><span class="va">igraph</span>,</span></span>
+<span class="r-in"><span>    stats_to_include <span class="op">=</span> <span class="st">"all"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Brian Neal, Hai Yang, Le Phi Long, Li Zhang.</p>
+  <p></p><p>Developed by Brian Neal, Hai Yang, Phi Long Le, Li Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">
