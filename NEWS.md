@@ -1,9 +1,30 @@
+# Changes in NAIR version 0.0.9041 (8/2/2023)
+
+## Package Functions
+
+* `buildAssociatedClusterNetwork`
+    * Now performs clustering analysis to obtain cluster membership ID even if the user manually specifies not to compute cluster stats or the `cluster_id` network property. This is because performing clustering and obtaining the cluster membership is a primary purpose of this function. It is still desirable for the user to be able to prevent other node-level properties as well as cluster-level properties from being computed if desired, but now doing so will not interfere with the function accomplishing its purpose. 
+* `findPublicClusters`
+    * Fixed a bug that was causing the sample-level network node property `SampleLevelCloseness` to be left named as `closeness` in the data frames for the filtered node-level data. This bug was in turn causing this property to be overwritten by the global network node property `PublicCloseness` when calling `buildPublicClusterNetwork`. 
+    
+## Vignettes
+
+* `Searching for Associated TCR/BCR Clusters`
+    * Completion of major revisions
+* `Searching for Public Clusters`
+    * Completion of major revisions
+* `buildRepSeqNetwork`
+    * Minor content revisions
+* `Network Visualization`
+    * Restructured sections and minor content revisions
+
 # Changes in NAIR version 0.0.9040
 
 ## Package Functions
 
 * `buildAssociatedClusterNetwork`
     * Default value of `data_symbols` argument changed from `NULL` to `"data"` in order to match the output format of `findAssociatedClones` when `findAssociatedClones` is called with `output_type = "rda"`. Note this change only affects the case when `buildAssociatedClusterNetwork` is called with `input_type = "rda"`
+    * Now performs clustering analysis to obtain cluster membership ID even if the user manually specifies not to compute cluster stats or the `cluster_id` network property. This is because performing clustering and obtaining the cluster membership is a primary purpose of this function. It is still desirable for the user to be able to prevent other node-level properties as well as cluster-level properties from being computed if desired, but now doing so will not interfere with the function accomplishing its purpose. 
     
 ## Vignettes
 
@@ -63,46 +84,49 @@
 
 
 # Changes in NAIR version 0.0.9037 (7/10/2023)
-    * Changes to `findAssociatedSeqs`:
-        * `groups` argument still exists but is now deprecated and no longer used. Group labels are now automatically determined from the unique values of `group_ids`
-        * `sample_ids` argument still exists but is now deprecated and no longer used. Custom sample IDs play no role in `findAssociatedSeqs`; the argument was inherited from a previous function that included the functionality of both `findAssociatedSeqs` and `findAssociatedClones`
-    * `findPublicClusters` now ignores `plots = TRUE` when `print_plots = FALSE` and `output_dir_unfiltered = NULL`. This prevents unused plots from being generated
-    * `buildAssociatedClusterNetwork` now uses group ID as the default variable for node colors
-    * `buildPublicClusterNetwork` and `buildPublicClusterNetworkByRepresentative` now use sample ID as the default variable for node colors
-    * `buildPublicClusterNetworkByRepresentative` default plot title and subtitle updated for better clarity
-    * `buildRepSeqNetwork`, `generateNetworkObjects` and `generateNetworkGraphPlots` now use `count_col` as the default variable for node colors if available, followed in priority by cluster ID, then network degree.
-    * New arguments to `addClusterLabels`:
-        * `cluster_id_col` added to permit use with node data where the cluster ID variable has a custom name (e.g., with the output of `buildPublicClusterNetwork`)
-        * `greatest_values` added, which can be set to `FALSE` to prioritize the clusters to label based on the least values of the `criterion` variable rather than the greatest values
-    * A function `exclusiveNodeStats` has been added. This function behaves in the same manner as `chooseNodeStats`, but all arguments are set to `FALSE` by default. Useful when the user only wishes to specify a small number of node-level properties to compute, with all other properties excluded.
-    * Major revisions to the following vignettes:
-        * `NAIR: Network Analysis of Immune Repertoire`
-        * `Searching for Public TCR/BCR Clusters`
-        * `Searching for Associated TCR/BCR Clusters`
-        * `buildRepSeqNetwork`
-        * `Network Visualization` (incomplete, in progress)
-        * Of particular note, the associated clusters and public clusters vignettes now simulate more reasonable toy data for demonstration purposes.
-    * `Downstream Analysis` vignette title renamed to `Utility Functions`. A revision to this vignette is planned prior to version 1.0.
-    * CXX_STD = CXX11 flag removed from src/Makevars and src/Makevars.win
+
+* Changes to `findAssociatedSeqs`:
+    * `groups` argument still exists but is now deprecated and no longer used. Group labels are now automatically determined from the unique values of `group_ids`
+    * `sample_ids` argument still exists but is now deprecated and no longer used. Custom sample IDs play no role in `findAssociatedSeqs`; the argument was inherited from a previous function that included the functionality of both `findAssociatedSeqs` and `findAssociatedClones`
+* `findPublicClusters` now ignores `plots = TRUE` when `print_plots = FALSE` and `output_dir_unfiltered = NULL`. This prevents unused plots from being generated
+* `buildAssociatedClusterNetwork` now uses group ID as the default variable for node colors
+* `buildPublicClusterNetwork` and `buildPublicClusterNetworkByRepresentative` now use sample ID as the default variable for node colors
+* `buildPublicClusterNetworkByRepresentative` default plot title and subtitle updated for better clarity
+* `buildRepSeqNetwork`, `generateNetworkObjects` and `generateNetworkGraphPlots` now use `count_col` as the default variable for node colors if available, followed in priority by cluster ID, then network degree.
+* New arguments to `addClusterLabels`:
+    * `cluster_id_col` added to permit use with node data where the cluster ID variable has a custom name (e.g., with the output of `buildPublicClusterNetwork`)
+    * `greatest_values` added, which can be set to `FALSE` to prioritize the clusters to label based on the least values of the `criterion` variable rather than the greatest values
+* A function `exclusiveNodeStats` has been added. This function behaves in the same manner as `chooseNodeStats`, but all arguments are set to `FALSE` by default. Useful when the user only wishes to specify a small number of node-level properties to compute, with all other properties excluded.
+* Major revisions to the following vignettes:
+    * `NAIR: Network Analysis of Immune Repertoire`
+    * `Searching for Public TCR/BCR Clusters`
+    * `Searching for Associated TCR/BCR Clusters`
+    * `buildRepSeqNetwork`
+    * `Network Visualization` (incomplete, in progress)
+    * Of particular note, the associated clusters and public clusters vignettes now simulate more reasonable toy data for demonstration purposes.
+* `Downstream Analysis` vignette title renamed to `Utility Functions`. A revision to this vignette is planned prior to version 1.0.
+* CXX_STD = CXX11 flag removed from src/Makevars and src/Makevars.win
     
     
 # 0.0.9036
-    * `buildRepSeqNetwork` no longer returns an error with `dist_cutoff = 0` (fixed a bug involving the argument checks added in version 0.0.9035).
+
+* `buildRepSeqNetwork` no longer returns an error with `dist_cutoff = 0` (fixed a bug involving the argument checks added in version 0.0.9035).
 
 # 0.0.9035
-    * Argument checks added to `buildRepSeqNetwork`
-    * `buildRepSeqNetwork` now automatically attempts to perform the following conversions:
-        * coerces the input data to a data frame
-        * coerces the sequence column to character
-        * coerces the count column to numeric, if provided
-    * `filterInputData`, which affect top-level functions such as `buildRepSeqNetwork` that call it:
-        * automatically drops data rows with `NA` values in the sequence column, with a warning produced
-        * added optional `count_col` arg; if provided, the count column will be coerced to numeric and rows with `NA/NaN` values in the count column will be dropped with a warning
-    * Changes related to choosing node-level network statistics:
-        * The `node_stat_settings` function now has a duplicate with the less-confusing name `chooseNodeStats`; the newer name is now used in place of `node_stat_settings` for defaults and in the tutorials
-        * The `stats_to_include` argument of `addNodeNetworkStats`, `buildRepSetNetwork`, etc., now also accepts a named logical vector with the same named elements as the list previously required. A list will still work, for backwards compatibility.
-        * `chooseNodeStats` / `node_stat_settings` now generate a named logical vector rather than a list.
-    * The `dist_type` argument is now more flexible in the values it will accept; for example `"lev"` or simply `"l"` is now equivalent to `"levenshtein"`
+
+* Argument checks added to `buildRepSeqNetwork`
+* `buildRepSeqNetwork` now automatically attempts to perform the following conversions:
+    * coerces the input data to a data frame
+    * coerces the sequence column to character
+    * coerces the count column to numeric, if provided
+* `filterInputData`, which affect top-level functions such as `buildRepSeqNetwork` that call it:
+    * automatically drops data rows with `NA` values in the sequence column, with a warning produced
+    * added optional `count_col` arg; if provided, the count column will be coerced to numeric and rows with `NA/NaN` values in the count column will be dropped with a warning
+* Changes related to choosing node-level network statistics:
+    * The `node_stat_settings` function now has a duplicate with the less-confusing name `chooseNodeStats`; the newer name is now used in place of `node_stat_settings` for defaults and in the tutorials
+    * The `stats_to_include` argument of `addNodeNetworkStats`, `buildRepSetNetwork`, etc., now also accepts a named logical vector with the same named elements as the list previously required. A list will still work, for backwards compatibility.
+    * `chooseNodeStats` / `node_stat_settings` now generate a named logical vector rather than a list.
+* The `dist_type` argument is now more flexible in the values it will accept; for example `"lev"` or simply `"l"` is now equivalent to `"levenshtein"`
 
 # 0.0.9034
 

@@ -13,11 +13,13 @@
 }
 \usage{
 buildAssociatedClusterNetwork(
-    file_list, input_type = "csv",
+    file_list,
+    input_type = "csv",
     data_symbols = "data",
     header = TRUE, sep = ",",
     seq_col,
-    min_seq_length = NULL, drop_matches = NULL,
+    min_seq_length = NULL,
+    drop_matches = NULL,
     drop_isolated_nodes = FALSE,
     node_stats = TRUE,
     stats_to_include =

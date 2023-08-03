@@ -765,11 +765,7 @@ addNodeNetworkStats <- function(
     if (stats_to_include == "all") {
       stats_to_include <- chooseNodeStats(all_stats = TRUE)
     } else if (stats_to_include == "cluster_id_only") {
-      stats_to_include <- chooseNodeStats(
-        degree = FALSE, cluster_id = TRUE, transitivity = FALSE,
-        eigen_centrality = FALSE, centrality_by_eigen = FALSE,
-        betweenness = FALSE, centrality_by_betweenness = FALSE,
-        authority_score = FALSE, coreness = FALSE, page_rank = FALSE)
+      stats_to_include <- exclusiveNodeStats(cluster_id = TRUE)
     } }
   if (stats_to_include[["degree"]] | stats_to_include[["all_stats"]]) {
     data$degree <- igraph::degree(net) }

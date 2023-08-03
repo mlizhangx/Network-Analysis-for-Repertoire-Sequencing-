@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 )
 ```
 
+# Introduction
 
 General network analysis on Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data is performed using the `buildRepSeqNetwork` function. This function does the following:
 
@@ -30,8 +31,8 @@ General network analysis on Adaptive Immune Receptor Repertoire Sequencing (AIRR
     * Computation of network properties
 * Generates customized visual plot of the network graph using `ggraph`
 * Saves and returns the following output: 
-    * Meta-data for the nodes in the network, including network properties
-    * Meta-data for the clusters in the network
+    * Metadata for the nodes in the network, including network properties
+    * Metadata for the clusters in the network
     * Network graph plot (returned as `ggraph` object and saved as pdf)
     * Network adjacency matrix in sparse matrix format
     * `igraph` object containing the list of edges in the network graph 
@@ -39,9 +40,9 @@ General network analysis on Adaptive Immune Receptor Repertoire Sequencing (AIRR
 In this vignette we demonstrate the function's usage and output.
 
 
-## Simulate Example Data
+## Simulate Data for Demonstration
 
-For demonstration purposes, we simulate some toy data using built-in package functions.
+We simulate some toy data for demonstration.
 
 We simulate data consisting of two samples with 100 observations each, for a total of 200 observations (rows).
 
@@ -77,25 +78,25 @@ output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq",
 
 
 
-# Base Output {.tabset}
+# <a name="base_output"></a> Base Output {.tabset}
 
-When no optional arguments are used, the `buildRepSeqNetwork` function returns a list containing the following items:
+When no optional arguments are used, the `buildRepSeqNetwork` function returns a list containing the following elements:
 
 ```{r}
 names(output)
 ```
 
-We describe each of these items below. In subsequent sections, we will introduce optional arguments of `buildRepSeqNetwork` and show how the output changes based on these arguments.
+We describe each of these list elements below. 
 
 ## `node_data`
 
-The item `node_data` is a data frame where each row corresponds to a node in the network graph:
+The list element `node_data` is a data frame containing metadata for the network nodes, where each row corresponds to a node in the network graph:
 
 ```{r}
 head(output$node_data)
 ```
 
-By default, all columns from the original input AIRR-seq data are present in the returned node data. [This can be changed using the `subset_cols` argument](#input_options).
+By default, all variables (data columns) from the original input AIRR-seq data are present in the returned node data. [This can be changed using the `subset_cols` argument](#input_options).
 
 The row names from the original input data are preserved in the returned node data. This allows the user to match rows of the input data with their corresponding rows in the node data.
 
@@ -104,7 +105,7 @@ Notice from the row names that some rows from the original input data are missin
 
 ## `plots`
 
-The item `plots` is a list containing each of the plot(s) created by `buildRepSeqNetwork`. Each plot is an object of class `ggraph` (which inherits from the `ggplot` class), and is named according to the variable used to color the nodes. Here the nodes are not colored according to any variable, so the name of the plot is `uniform_color`. 
+The list element `plots` is a list containing each of the plot(s) created by `buildRepSeqNetwork`. Each plot is an object of class `ggraph` (which inherits from the `ggplot` class), and is named according to the variable used to color the nodes. Here the nodes are not colored according to any variable, so the name of the plot is `uniform_color`. 
 
 ```{r}
 names(output$plots)
@@ -118,14 +119,14 @@ Plots can be customized through [optional arguments](network_visualization.html)
 
 ## `igraph`
 
-The item `igraph` is an object of class `igraph`, which contains the list of nodes and edges that comprise the network graph. 
+The list element `igraph` is an object of class `igraph`, which contains the list of nodes and edges that comprise the network graph. 
 
 The `igraph` object can be used for [downstream computation of network properties](#downstream), as an alternative to [computing network properties when calling `buildRepSeqNetwork`](#network_properties). It can also be used to [generate additional plots of the network graph](network_visualization.html#new_plots).
 
 
 ## `adjacency_matrix`
 
-The item `adjacency_matrix` is an object of class `dgCMatrix`, which is a sparse matrix format from the `Matrix` package. 
+The list element `adjacency_matrix` is an object of class `dgCMatrix`, which is a sparse matrix format from the `Matrix` package. 
 
 ```{r}
 class(output$adjacency_matrix)
@@ -201,7 +202,7 @@ Notice that while our input data contained 200 rows, the `node_data` data frame 
 nrow(output$node_data)
 ```
 
-These rows correspond to the 122 nodes that are joined by an edge to at least one other node in the network.
+These rows correspond to the nodes that are joined by an edge to at least one other node in the network.
 
 The row names from the original input data are preserved, allowing the user to conveniently cross-reference each node with its corresponding row in the original input data.
 
@@ -315,7 +316,7 @@ To perform cluster analysis, use the setting `cluster_stats = TRUE`. This will a
 If the user has set `node_stats = TRUE` and has specified inclusion of the `cluster_id` node-level property through the `stats_to_include` argument, then cluster analysis will automatically be performed and the `cluster_id` values will be added to the node-level data. However, cluster-level network properties will not be computed unless the user has set `cluster_stats = TRUE`.
 
 
-### Clustering Algorithm
+### <a name="cluster_alg"></a> Clustering Algorithm
 
 By default, clustering is performed using the `cluster_fast_greedy` algorithm from the `igraph` package. Other clustering algorithms from the `igraph` package can be used instead of the default algorithm. The algorithm is specified using the `cluster_fun` argument, which accepts one of the following functions:
 
@@ -336,7 +337,7 @@ For example, setting `cluster_fun = cluster_leiden` performs clustering using th
 For more information about a particular algorithm, users can refer to its help documentation file. For example, the command `?igraph::cluster_fast_greedy` loads the documentation file for the `cluster_fast_greedy` algorithm.
 
 
-### Cluster-Level Network Properties
+### <a name="cluster_properties"></a> Cluster-Level Network Properties
 
 If the user has set `cluster_stats = TRUE`, then after partitioning the network into clusters, various network properties are computed for each cluster.
 
@@ -423,26 +424,36 @@ The column specified by the `seq_col` argument will automatically be included re
 
 ## Output Directory
 
-* By default, `buildRepSeqNetwork` saves its output to the current working directory. However, users can specify a directory using the `output_dir` argument. 
-* The specified output directory will be created if it does not already exist.
-* Setting `output_dir` to `NULL` will prevent any output from being written to file.
+* By default, `buildRepSeqNetwork` saves its output to the current working directory.
+* Users can specify a different directory using the `output_dir` argument. The specified output directory will be created if it does not already exist.
+* Setting `output_dir` to `NULL` will prevent the output from being saved.
 
-## Output File Format
 
-* By default, each component of the list returned by `buildRepSeqNetwork` is saved as its own file, with the node-level and cluster-level meta data  saved as csv files.
+## <a name = "output_format"></a> Output File Format
+
+* By default, each component of the list returned by `buildRepSeqNetwork` is saved as its own file using the following file formats:
+    * csv for `node_data` and `cluster_data`
+    * mtx for `adjacency_matrix`
+    * txt for `igraph`
+    * pdf for `plots` (see next subsection)
 * For better compression and fewer files, users can specify `output_type = "rds"` or `output_type = "rda"`, which will save the entire output list to a single rds file or a single rda file, respectively.
     * If the output list is saved using the `"rda"` (Rdata) format, the output list will be named `net` in the R environment when the Rdata file is loaded into R using the `load` function.
 
 ## PDF of Plots
 
-* Regardless of the value of `output_type`, a separate pdf file containing the graph plot(s) is created in `output_dir`. The dimensions (in inches) for the pdf can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively. The pdf file is not created if no plots are generated (i.e., if the argument `plots` is set to `FALSE`).
+* Regardless of the output file format specified, a separate pdf file containing the graph plot(s) is created in `output_dir`. The dimensions (in inches) for the pdf can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively. The pdf file is not created if no plots are generated (i.e., if the argument `plots` is set to `FALSE`).
 * **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot` function as described [here](network_visualization.html#new_plots).
 
-## Output File Name(s)
+## <a name="output_filenames"></a> Output File Name(s)
 
-* By default, the name of each saved file starts with `MyRepSeqNetwork`. This prefix can be changed by providing a character string to the `output_name` argument.
-* If `output_type` is set to `"rds"` or `"rda"`, then the name of the file will be the value of the `output_name` argument followed by the appropriate file extension (either `.rds` or `.rda`).
-* The name of the pdf file for the graph plot will be the value of the `output_name` argument followed by the `.pdf` file extension.
+* By default, the name of each saved file begins with `MyRepSeqNetwork`. This prefix can be changed using the `output_name` argument, which accepts a character vector.
+* If `output_type = "individual"` (the default), the prefix specified by `output_name` is followed by:
+    * `_NodeMetadata.csv` for `node_data`
+    * `_ClusterMetadata.csv` for `cluster_data` (if present)
+    * `_EdgeList.txt` for `igraph`
+    * `_AdjacencyMatrix.mtx` for `adjacency_matrix`
+* If `output_type` is set to `"rds"` or `"rda"`, then the name of the file will be the value of `output_name` followed by the appropriate file extension (either `.rds` or `.rda`).
+* The name of the pdf file will be the value of `output_name` followed by `.pdf`.
 
 
 # <a name="downstream"></a> Downstream Tasks and Complementary Functions {.tabset}
@@ -464,7 +475,7 @@ If the user has already constructed the network using `buildRepSeqNetwork` and w
 
 Node-level network properties can be computed and added to the node-level meta data by passing the data frame to the `addNodeNetworkStats` function. The `igraph` object contained in the output list of `buildRepSeqNetwork` is provided to the `net` argument of `addNodeNetworkStats`. The `stats_to_include` argument can be used to [specify which network properties to compute](#node_properties) just as in the `buildRepSeqNetwork` function.
 
-```{r, eval = FALSE}
+```{r}
 # Add network stats to node-level meta data 
 output$node_data <- addNodeNetworkStats(output$node_data,
                                         net = output$igraph,
@@ -475,7 +486,7 @@ output$node_data <- addNodeNetworkStats(output$node_data,
 
 Cluster-level properties can be computed by passing the node-level meta data to the `getClusterStats` function. The adjacency matrix contained in the output list of `buildRepSeqNetwork` is provided to the `adjacency_matrix` argument of `getClusterStats`. The `seq_col` argument accepts a column name or column index specifying the column of the node data that contains the receptor sequences. If not provided, cluster properties involving receptor sequences, such as `mean_seq_length` and `seq_w_max_degree`, will not be computed. Similarly, the `count_col` argument is used to [specify the column containing the counts](#cluster_analysis).
 
-```{r, eval = FALSE}
+```{r}
 # Add cluster-level properties to output list from buildRepSeqNetwork
 output$cluster_data <- 
   getClusterStats(data = output$node_data,
@@ -531,7 +542,7 @@ The `generateNetworkObjects` function performs **only** the following tasks:
 
 * Builds the network graph for the immune repertoire
 * Returns the following output: 
-    * Meta-data for the nodes in the network
+    * Metadata for the nodes in the network
     * Network adjacency matrix
     * `igraph` object
     

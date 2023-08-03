@@ -185,6 +185,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 \author{
 %%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
+}
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 \code{\link{buildPublicClusterNetwork}}

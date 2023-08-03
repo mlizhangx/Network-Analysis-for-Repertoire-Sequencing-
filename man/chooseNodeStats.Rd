@@ -68,11 +68,11 @@ exclusiveNodeStats(
 }
   \item{eigen_centrality}{
 %%     ~~Describe \code{eigen_centrality} here~~
-    Logical. Whether to compute the eigenvector centrality scores of node network positions. The scores are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{eigen_centrality} with \code{weights = NA}. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.
+    Logical. Whether to compute the eigenvector centrality scores of node network positions. The scores are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{eigen_centrality}} with \code{weights = NA}. The centrality scores correspond to the values of the first eigenvector of the adjacency matrix for the cluster graph.
 }
   \item{centrality_by_eigen}{
 %%     ~~Describe \code{centrality_by_eigen} here~~
-    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores. The scores are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{centr_eigen}.
+    Logical. Whether to compute node-level network centrality scores based on eigenvector centrality scores. The scores are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{centr_eigen}}.
 }
   \item{betweenness}{
 %%     ~~Describe \code{betweenness} here~~
@@ -80,7 +80,7 @@ exclusiveNodeStats(
 }
   \item{centrality_by_betweenness}{
 %%     ~~Describe \code{centrality_by_betweenness} here~~
-    Logical. Whether to compute network centrality scores by betweenness. The scores are the entires of the \code{res} element of the list returned by \code{\link[igraph]{centr_betw}.
+    Logical. Whether to compute network centrality scores by betweenness. The scores are the entires of the \code{res} element of the list returned by \code{\link[igraph]{centr_betw}}.
 }
   \item{authority_score}{
 %%     ~~Describe \code{authority_score} here~~
@@ -92,7 +92,7 @@ exclusiveNodeStats(
 }
   \item{page_rank}{
 %%     ~~Describe \code{page_rank} here~~
-    Logical. Whether to compute page rank. The page rank values are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{page_rank}.
+    Logical. Whether to compute page rank. The page rank values are the entries of the \code{vector} element of the list returned by \code{\link[igraph]{page_rank}}.
 }
   \item{all_stats}{
 %%     ~~Describe \code{all_stats} here~~

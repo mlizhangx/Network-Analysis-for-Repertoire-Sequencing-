@@ -1,12 +1,9 @@
 \name{generateNetworkGraphPlots}
 \alias{generateNetworkGraphPlots}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
   Generate Plots of a Network Graph
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
   Given an \code{\link[igraph]{igraph}} network object and a data frame containing the corresponding node-level meta data, generates one or more \code{\link[ggraph]{ggraph}} plots of the network graph according to the user specifications.
 }
 \usage{
@@ -18,78 +15,75 @@ generateNetworkGraphPlots(
   edge_width = 0.1, size_nodes_by = 0.5,
   node_size_limits = NULL, size_title = "auto")
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{igraph}{
-%%     ~~Describe \code{igraph} here~~
-    An \code{\link[igraph]{igraph}} object containing the network graph to be plotted.
+
+\item{igraph}{
+  An \code{\link[igraph]{igraph}} object containing the network graph to be plotted.
 }
-  \item{data}{
-%%     ~~Describe \code{data} here~~A data
-    A data frame containing the node-level meta-data for the network, with each row corresponding to a node.
+
+\item{data}{
+  A data frame containing the node-level meta-data for the network, with each row corresponding to a node.
 }
-  \item{print_plots}{
-%%     ~~Describe \code{print_plots} here~~
-    A logical scalar; should plots be printed in the \code{R} plotting window?
+
+\item{print_plots}{
+  A logical scalar; should plots be printed in the \code{R} plotting window?
 }
-  \item{plot_title}{
-%%     ~~Describe \code{plot_title} here~~
-    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
+
+\item{plot_title}{
+  Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
-  \item{plot_subtitle}{
-%%     ~~Describe \code{plot_subtitle} here~~
-    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
+
+\item{plot_subtitle}{
+  Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
-  \item{color_nodes_by}{
-%%     ~~Describe \code{color_nodes_by} here~~
-    A vector specifying one or more variables of \code{data} used to encode the color of the nodes. One plot is generated for each vector entry, with each plot coloring the nodes according to the variable in the corresponding vector entry. The vector must be either a character vector (in which case each entry is a column name of \code{data}) or a numeric vector (in which case each entry is a column index of \code{data}). If this argument is \code{NULL}, one plot will be generated with the nodes uncolored.
+
+\item{color_nodes_by}{
+  A vector specifying one or more variables of \code{data} used to encode the color of the nodes. One plot is generated for each vector entry, with each plot coloring the nodes according to the variable in the corresponding vector entry. The vector must be either a character vector (in which case each entry is a column name of \code{data}) or a numeric vector (in which case each entry is a column index of \code{data}). If this argument is \code{NULL}, one plot will be generated with the nodes uncolored.
 }
-  \item{color_scheme}{
-%%     ~~Describe \code{color_scheme} here~~
-    A character string specifying the color scale to use for all plots, or a character vector whose length matches that of \item{color_nodes_by}, specifying the color scale used for each plot. Each entry is passed to \code{\link{plotNetworkGraph}} when generating the plot for the corresponding entry of \code{color_nodes_by}.
+
+\item{color_scheme}{
+  A character string specifying the color scale to use for all plots, or a character vector whose length matches that of \code{color_nodes_by}, specifying the color scale used for each plot. Each entry is passed to \code{\link{plotNetworkGraph}} when generating the plot for the corresponding entry of \code{color_nodes_by}.
 }
-  \item{color_legend}{
-%%     ~~Describe \code{color_legend} here~~
-    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
+
+\item{color_legend}{
+  Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
-  \item{color_title}{
-%%     ~~Describe \code{color_title} here~~
-    A character string specifying the title of the color legend in all plots, or a character vector whose length matches that of \item{color_nodes_by}, specifying the title of the color legend in each plot. Each entry is passed to \code{\link{plotNetworkGraph}} when generating the plot for the corresponding entry of \code{color_nodes_by}.
+
+\item{color_title}{
+  A character string specifying the title of the color legend in all plots, or a character vector whose length matches that of \code{color_nodes_by}, specifying the title of the color legend in each plot. Each entry is passed to \code{\link{plotNetworkGraph}} when generating the plot for the corresponding entry of \code{color_nodes_by}.
 }
-  \item{edge_width}{
-%%     ~~Describe \code{edge_width} here~~
-    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
+
+\item{edge_width}{
+  Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
-  \item{size_nodes_by}{
-%%     ~~Describe \code{size_nodes_by} here~~
-    A numeric scalar specifying the size of the nodes in all plots, or the column name of a variable of \code{data} used to encode the size of the nodes in all plots. Alternatively, an argument value of \code{NULL} uses the default \code{\link[ggraph]{ggraph}} size for all nodes. Passed to the size aesthetic mapping of \code{\link[ggraph]{geom_node_point}}.
+
+\item{size_nodes_by}{
+  A numeric scalar specifying the size of the nodes in all plots, or the column name of a variable of \code{data} used to encode the size of the nodes in all plots. Alternatively, an argument value of \code{NULL} uses the default \code{\link[ggraph]{ggraph}} size for all nodes. Passed to the size aesthetic mapping of \code{\link[ggraph]{geom_node_point}}.
 }
-  \item{node_size_limits}{
-%%     ~~Describe \code{node_size_limits} here~~
-    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
+
+\item{node_size_limits}{
+  Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
-  \item{size_title}{
-%%     ~~Describe \code{size_title} here~~
-    Passed to \code{\link{plotNetworkGraph}} when generating each plot.
+
+\item{size_title}{
+  Passed to \code{\link{plotNetworkGraph}} when generating each plot.
 }
+
 }
+
 \details{
-%%  ~~ If necessary, more details than the description above ~~
   Intended for use with the output of \code{\link{buildRepSeqNetwork}} or \code{\link{generateNetworkObjects}}. The output of these functions contain the inputs for the \code{igraph} and \code{data} arguments of \code{generateNetworkGraphPlots}.
 
   Each plot is generated by dispatching a call to \code{\link{plotNetworkGraph}}.
 
   The plots can be saved to a single pdf using \code{\link{saveNetworkPlots}}.
 }
+
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
   A list containing one element for each plot generated. Each element is a \code{ggraph} object whose name is the column name of the variable used to color the nodes. If a plot has uncolored nodes, its name is \code{uniform_color}.
 }
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
 
@@ -97,10 +91,11 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 
 \url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
 }
+
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
+
 \seealso{
   \code{\link{saveNetworkPlots}}
 
@@ -108,6 +103,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 
   \code{\link{plotNetworkGraph}}
 }
+
 \examples{
 \dontrun{
 # Simulate some toy data for demonstration
@@ -121,12 +117,3 @@ net_plot <- generateNetworkGraphPlots(
   net$igraph, net$node_data, color_nodes_by = c("SampleID", "CloneCount"))
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

@@ -279,6 +279,12 @@ buildAssociatedClusterNetwork <- function(
     output_name = "AssociatedClusterNetwork", ...
 ) {
 
+  # Force clustering analysis (cluster membership ID only) if not enabled
+  if (typeof(stats_to_include) %in% c("list", "logical") &&
+      !stats_to_include[["cluster_id"]]) {
+    stats_to_include[["cluster_id"]] <- TRUE
+  }
+
   # Load data
   data <- loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
 

@@ -261,7 +261,7 @@ buildPublicClusterNetworkByRepresentative <- function(
     "SampleLevelNetworkDegree"
   column_names[column_names == "transitivity"] <-
     "SampleLevelTransitivity"
-  column_names[column_names == "Closeness"] <-
+  column_names[column_names == "closeness"] <-
     "SampleLevelCloseness"
   column_names[column_names == "centrality_by_closeness"] <-
     "SampleLevelCentralityByCloseness"
