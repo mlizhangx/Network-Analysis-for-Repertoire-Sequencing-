@@ -1,23 +1,18 @@
 \name{kmeansAtchley}
 \alias{kmeansAtchley}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
-    Analyze TCR Samples Using Numerical Encoder and K-Means Clustering
+    Encode TCR Sequences Using Atchley Factors, Perform K-Means Clustering, Compare Samples by TCR Frequency Per Cluster
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given samples of TCR RepSeq data, convert the CDR3 amino acid
-    sequences into numeric vectors using deep learning, perform \eqn{K}-means
-    clustering, profile how each sample's unique TCR sequences are distributed
-    among the clusters, and compare these profiles across samples.
+    Given multiple samples of AIRR-Seq data containing TCR CDR3 amino acid sequences, encodes each TCR sequence as a numeric vector based on Atchley factors and performs \eqn{K}-means clustering on the encoded sequences. Samples are compared based on the fraction of their unique TCR sequences in each cluster.
 }
 \usage{
 kmeansAtchley(
   data,
-  amino_col = "AminoAcidSeq",
-  sample_col = "SampleID",
-  group_col, k = 100,
+  amino_col,
+  sample_col,
+  group_col,
+  k = 100,
   pdf_width = 15,
   pdf_height = 15,
   margin_cluster_heatmap = 25,
@@ -25,122 +20,96 @@ kmeansAtchley(
   use_viridis = FALSE,
   output_dir = getwd(),
   file_cluster_heatmap =
-    "atchley_kmeans_cluster_relative_size_profiles_by_sample.pdf",
+    "atchley_kmeans_TCR_fraction_per_cluster.pdf",
   file_corr_heatmap =
-    "atchley_kmeans_corr_in_cluster_size_profile_between_samples.pdf",
-  return_output = FALSE)
+    "atchley_kmeans_correlation_heatmap.pdf",
+  return_output = FALSE
+)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
 \item{data}{
-    A data frame containing the combined immune repertoire sequencing data for all samples,
-    with variables indexed by column and observations indexed by row.
+    A data frame containing the combined AIRR-Seq data for all samples.
 }
   \item{amino_col}{
-%%     ~~Describe \code{amino_col} here~~
-    The column of \code{data} containing the CDR3 amino acid sequences.
+    Specifies the column of \code{data} containing the TCR CDR3 amino acid sequence. Accepts either the column name or column index.
 }
 \item{sample_col}{
-    The column of \code{data} containing the sample IDs.
+    Specifies the column of \code{data} containing the sample ID. Accepts either the column name or column index.
 }
 \item{group_col}{
-    The column of \code{data} containing the group IDs.
+    Specifies the column of \code{data} containing group IDs. Used to assign each sample to a group (e.g., treatment and control). Accepts either the column name or column index.
 }
   \item{k}{
-%%     ~~Describe \code{k} here~~
-    The number of clusters for \eqn{K}-means clustering.
+    The number of clusters to use for \eqn{K}-means clustering.
 }
   \item{pdf_width}{
-%%     ~~Describe \code{plot_width} here~~
-    Passed to the \code{width} argument of \code{grDevices::pdf()}.
+    Sets the page width when printing heatmaps to pdf. Passed to the \code{width} argument of the \code{\link[grDevices]{pdf}} function.
 }
   \item{pdf_height}{
-%%     ~~Describe \code{plot_height} here~~
-    Passed to the \code{height} argument of \code{grDevices::pdf()}.
+    Sets the page height when printing heatmaps to pdf. Passed to the \code{height} argument of the \code{\link[grDevices]{pdf}} function.
 }
   \item{margin_cluster_heatmap}{
-%%     ~~Describe \code{margin_cluster_heatmap} here~~
-    The margin width of column names and row names in the heatmap for each
-    sample's cluster profile.
+    The margin width of the column names and row names in the heatmap for each
+    sample's fraction of TCRs per cluster.
 }
   \item{margin_corr_heatmap}{
-%%     ~~Describe \code{margin_corr_heatmap} here~~
-    The margin width of column names and row names in the heatmap for the
-    correlation in cluster profiles between samples.
+    The margin width of the column names and row names in the heatmap for the
+    correlation in TCRs per cluster between samples.
 }
   \item{use_viridis}{
-%%     ~~Describe \code{use_viridis} here~~
-    A logical scalar indicating whether to use the \code{cividis}
-    color scale from the \code{viridis} package instead of the \code{RdBu}
-    color scale from \code{RColorBrewer}. This yields more readable results when
-    printing in black-and-white, and is more robust against color
-    vision deficiency.
+    A logical scalar indicating whether to use the \code{\link[viridisLite]{cividis}} color scale instead of the \code{RdBu} color scale from \code{\link[RColorBrewer]{RColorBrewer}}. Better for greyscale printing and for viewers with common forms of color vision deficiency.
 }
   \item{output_dir}{
-%%     ~~Describe \code{output_dir} here~~
-    The directory in which to save pdf files of the two heatmaps produced.
+    A file path. The directory in which to save pdf files of the two heatmaps produced.
 }
   \item{file_cluster_heatmap}{
-%%     ~~Describe \code{file_cluster_heatmap} here~~
-    The pdf filename for the heatmap for each
-    sample's cluster profile.
+    A character string. The file name under which to save the pdf of the heatmap for each sample's fraction of TCRs per cluster.
 }
   \item{file_corr_heatmap}{
-%%     ~~Describe \code{file_corr_heatmap} here~~
-    The pdf filename for the heatmap for correlation in cluster profiles between samples.
+    A character string. The file name under which to save the pdf of the heatmap for correlation in TCRs per cluster between samples.
 }
   \item{return_output}{
-%%     ~~Describe \code{return_output} here~~
-    A logical scalar indicating whether to return the numeric vectors encoding
-    the TCR sequences, the K-means cluster membership table, and each sample's
-    profile of TCR representation across clusters.
+    A logical scalar specifying whether to return the encoded TCR sequences, the K-means cluster membership table, and each sample's fraction of TCRs per cluster.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+    Each unique TCR CDR3 amino acid sequence is encoded as a 30-dimensional numeric vector using \code{\link{encodeTCRSeqsByAtchleyFactor}}, which employs the software \href{https://doi.org/10.1038/s41592-020-01020-3}{TESSA}. \eqn{K}-means clustering is performed on the encoded TCR sequences from all samples, resulting in \code{k} clusters.
 
-    Each unique TCR sequence is encoded as a 30-dimensional numeric vector
-    using \code{encodeTCRSeqsByAtchleyFactor()}, and \eqn{K}-means clustering is
-    performed on the encoded TCR sequences from all samples, resulting in
-    \code{k} clusters.
+    For each sample, the frequency distribution of its TCR sequences across the \code{k} clusters is recorded in a length-\code{k} vector, where each entry is the fraction of TCRs in a particular cluster (with all \code{k} entries summing to 1). Fraction of TCRs refers to the fraction of the sample's total number of unique TCR sequences.
 
-    For each sample, its TCR representation profile across the \code{k} clusters
-    is computed as a length-\code{k} vector whose \eqn{i}th element is the
-    fraction of the sample's unique TCR sequences that belong to the \eqn{i}th
-    cluster.
+    The correlation in fraction of TCRs per cluster is computed between pairs of samples. This is done by pairing corresponding entries from both samples' \code{k}-vectors. Each of the \code{k} pairs of values is treated as an independent observation from a common bivariate random variable. This treats the fraction of TCRs in a cluster as a random variable, where the cluster is also considered random. It may be noted, however, that the \code{k} paired observations are not  actually independent, since they sum to \eqn{(1, 1)}.
 
-    Two heatmaps are generated and saved to file: the first shows the TCR
-    representation profile values across samples and clusters; the second shows
-    the correlation in TCR represenation profiles between pairs of samples.
+    Two heatmaps are produced for comparing the samples. The first heatmap depicts each sample's fraction of TCRs in each cluster. The second heatmap depicts the pairwise correlation between samples that is described above. In both heatmaps, each column corresponds to a sample. A colored bar appears above each column, with the color indicating the group to which the sample belongs, based on the group assignments specified by the \code{group_ids} argument. This aids in the detection of differences and similarities within and between groups.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-    If \code{return_output = TRUE}, then a list containing the following items:
+    If \code{return_output = TRUE}, then the function returns a list containing the following items:
     \item{kmeans_cluster_ids}{
-    A data frame with two variables, \code{cdr3} and \code{kmeanClusterID},
-    containing the unique TCR sequences and the cluster to which each belongs.
+    A data frame with two variables, \code{cdr3} and \code{kmeanClusterID}, containing the unique TCR sequences and the ID of the cluster to which each sequence belongs.
     }
     \item{encoded_values}{
-    A matrix returned by \code{encodeTCRSeqsByAtchleyFactor} containing the
-    numerically encoded values of the TCR sequences.
+    A matrix returned by \code{\link{encodeTCRSeqsByAtchleyFactor}} containing the numerically encoded vector for each TCR sequence.
     }
     \item{cluster_TCR_profiles}{
-    A matrix with \code{k} rows and one column per sample; each column is the
-    TCR representation profile for a sample, with each value recording the
-    fraction of that sample's unique TCR sequences belonging to the cluster for
-    the corresponding row (thus each column sums to 1).
+    A matrix with \code{k} rows (each corresponding to a cluster) and one column per sample. Each column contains a particular sample's fraction of TCRs in each cluster.
     }
 }
-\references{
-    The BriseisEncoder is authored by Ze Zhang (\email{Ze.Zhang@UTsouthwestern.edu}).
+\note{
+The deep learning algorithm used by \href{https://doi.org/10.1038/s41592-020-01020-3}{TESSA} was trained specifically on TCR CDR3 amino acid sequences and is not appropriate for use with other amino acid sequences.
 }
+\references{
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
 
+    Zhang Z, Xiong D, Wang X, Liu H, Wang T. (2021). Mapping the functional landscape
+of T cell receptor repertoires by single-T cell transcriptomics. \emph{Nat Methods}, 18
+(1):92–9. \url{https://doi.org/10.1038/s41592-020-01020-3}
+
+Atchley WR, Zhao J, Fernandes AD, Drüke T. (2005). Solving the protein sequence
+metric problem. \emph{Proc Natl Acad Sci U.S.A.}  102(18):6395–400. \url{https://doi.org/10.1073/
+pnas.0408677102}
+
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
+}
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{

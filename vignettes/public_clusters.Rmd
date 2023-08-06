@@ -44,8 +44,6 @@ We simulate a total of 30 samples, each containing 30 observations.
 
 Some sequences are simulated with a tendency to appear in relatively few samples, while others are simulated with a tendency to appear in many samples. 
 
-Each sample is saved in a separate file using the .rds file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. The file path of their directory is saved to the R environment variable `dir_input_samples` for later reference.
-
 ```{r }
 # Use temp dir
 data_dir <- tempdir()
@@ -83,6 +81,8 @@ foo <- simulateToyData(
   affixes = base_seqs, affix_probs = pgen, num_edits = 0,
   output_dir = dir_input_samples, no_return = FALSE)
 ```
+
+Each sample is saved in a separate file using the .rds file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. The file path of their directory is saved to the R environment variable `dir_input_samples` for later reference.
 
 The first few rows of the data for the first sample appear as follows:
 
@@ -140,13 +140,15 @@ For details on how the pattern matching is performed, please refer to the base R
 
 ### <a name="files1"></a> File Paths of Sample Data
 
-The main argument of the `findPublicClusters` function is the `file_list` argument, which accepts a vector containing file paths. Each path corresponds to a distinct AIRR-Seq data file representing an individual sample.
+The main argument of the `findPublicClusters` function is the `file_list` argument, which accepts a vector containing file paths. Each file is assumed to contain the AIRR-Seq data for a single sample, with observations indexed by row.
 
 Below, we prepare the vector `input_files` to be provided to the `file_list` argument of `findPublicClusters`:
 
 ```{r}
 # input files for step 1 (one per sample)
-input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
+input_files <- 
+  file.path(dir_input_samples, 
+            paste0("Sample", 1:samples, ".rds"))
 head(input_files)
 ```
 
@@ -183,7 +185,9 @@ In our simulated data, the column containing the clone sequences is named `Clone
 
 The sample ID for each clone will be included in the filtered data saved by `findPublicClusters`. This will allow us to distinguish the sample of origin for each clone after we combine the filtered data from all samples in [step 2](#step2).
 
-By default, the samples are labeled numerically according to the order they appear in `file_list`. The `sample_ids` argument allows for custom sample IDs to be assigned, if desired. The argument accepts a vector of the same length as `file_list`. Each entry of `sample_ids` is assigned as a sample ID to the sample in the corresponding entry of `file_list`. 
+By default, the samples are labeled as `"Sample1"`, `"Sample2"`, etc., according to their order of appearance in `file_list`. The `sample_ids` argument allows for custom sample IDs to be assigned, if desired. The argument accepts a vector of the same length as `file_list`. Each entry of `sample_ids` is assigned as a sample ID to the sample in the corresponding entry of `file_list`. 
+
+**Sample ID values should avoid using characters that are invalid for use in file names, as well as forward slash and backslash (`/` and `\`).**
 
 
 ## <a name="network_settings"></a> Network Settings for Sample Networks {.tabset}
@@ -290,7 +294,6 @@ dir_filtered_samples <- file.path(data_dir, "filtered_samples")
 # Filter Clusters Within Each Sample
 findPublicClusters(
   file_list = input_files, input_type = "rds",
-  sample_ids = paste0("Sample", 1:samples),
   seq_col = "CloneSeq", count_col = "CloneCount",
   min_seq_length = NULL, drop_matches = NULL,
   top_n_clusters = 3, min_node_count = 5, min_clone_count = 15000,

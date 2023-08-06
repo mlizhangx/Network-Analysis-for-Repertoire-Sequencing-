@@ -5,7 +5,8 @@ findPublicClusters <- function(
 
   ## Input ##
   file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
-  sample_ids = 1:length(file_list), seq_col, count_col = NULL,
+  sample_ids = paste0("Sample", 1:length(file_list)),
+  seq_col, count_col = NULL,
   min_seq_length = 3, drop_matches = "[*|_]",
 
   ## Network ##
@@ -22,6 +23,8 @@ findPublicClusters <- function(
   ...
 
 ) {
+
+  sample_ids <- as.character(sample_ids)
 
   if (all(plots, !print_plots, is.null(output_dir_unfiltered))) {
     warning("ignoring `plots = TRUE` since `print_plots = FALSE` and `output_dir_unfiltered` is NULL")
@@ -66,6 +69,7 @@ buildPublicClusterNetwork <- function(
 
   ## Visualization ##
   color_nodes_by = "SampleID", color_scheme = "turbo",
+  plot_title = "Global Network of Public Clusters",
 
   ## Output ##
   output_dir = file.path(getwd(), "public_clusters"),
@@ -222,7 +226,8 @@ buildPublicClusterNetworkByRepresentative <- function(
   names(cdat)[names(cdat) == "transitivity"] <- "SampleLevelTransitivity"
 
   # Add sample ID to node and cluster data
-  ndat$SampleID <- sample_id; cdat$SampleID <- sample_id
+  ndat$SampleID <- as.character(sample_id)
+  cdat$SampleID <- as.character(sample_id)
 
   # Save filtered node and cluster data
   .savePublicClustersOneSample(

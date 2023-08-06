@@ -11,8 +11,8 @@
 
 kmeansAtchley <- function(
   data,
-  amino_col = "AminoAcidSeq",
-  sample_col = "SampleID",
+  amino_col,
+  sample_col,
   group_col,
   k = 100,
   pdf_width = 15,
@@ -21,8 +21,8 @@ kmeansAtchley <- function(
   margin_corr_heatmap = 15,
   use_viridis = FALSE, # use viridis color palettes for color-blindness robustness
   output_dir = getwd(),
-  file_cluster_heatmap = "atchley_kmeans_cluster_relative_size_profiles_by_sample.pdf",
-  file_corr_heatmap = "atchley_kmeans_corr_in_cluster_size_profile_between_samples.pdf",
+  file_cluster_heatmap = "atchley_kmeans_TCR_fraction_per_cluster.pdf",
+  file_corr_heatmap = "atchley_kmeans_correlation_heatmap.pdf",
   return_output = FALSE
 ) {
   cdr3 <- kmeanClusterID <- NULL
@@ -74,7 +74,7 @@ kmeansAtchley <- function(
 
   # For each sample, aggregate # of TCR seqs by K-means cluster
   # each row of the data now corresponds to a cluster
-  cat("Computing each cluster's share of the TCRs in each sample...")
+  cat("Computing the fraction of unique TCRs per cluster for each sample...")
   df <- dplyr::summarise_all(
     dplyr::group_by(dplyr::select(df, -cdr3), kmeanClusterID), sum)
 
@@ -116,13 +116,13 @@ kmeansAtchley <- function(
 
   # Generate heatmap for cluster share of TCRs in each sample
   if (!is.null(file_cluster_heatmap) & !is.null(output_dir)) { # write pdf to file
-    cat("Generating a heatmap of each cluster's share of the TCRs in each sample...")
+    cat("Generating a heatmap of TCR fraction per cluster for each sample...")
     grDevices::pdf(file.path(output_dir, file_cluster_heatmap),
                    width = pdf_width, height = pdf_height)
     gplots::heatmap.2(as.matrix(df), col = colors_corr, trace = "none",
                       margins = c(margin_cluster_heatmap, margin_cluster_heatmap),
                       lhei = c(1, 3), cexRow = 2, cexCol = 2,
-                      key.title = NA, key.xlab = "cluster's share of TCRs in sample",
+                      key.title = NA, key.xlab = "fraction of sample's TCRs per cluster",
                       key.par = list(cex = 1.2),
                       ColSideColors = colors_subject_group[sample_subject_group])
     graphics::legend(x = "topright",
@@ -138,7 +138,7 @@ kmeansAtchley <- function(
 
   # Heatmap of correlation between sample profiles of TCR share per cluster
   if (!is.null(file_corr_heatmap) & !is.null(output_dir)) { # write pdf to file
-    cat("Generating a heatmap of correlation between samples (based on each sample's profile of TCR shares for all k clusters)...")
+    cat("Generating a heatmap of correlation in TCR fraction per cluster between samples...")
     grDevices::pdf(file.path(output_dir, file_corr_heatmap),
                    width = pdf_width, height = pdf_height)
     gplots::heatmap.2(stats::cor(df), col = colors_corr, trace = "none",

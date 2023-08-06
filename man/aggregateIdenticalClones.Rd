@@ -1,12 +1,9 @@
 \name{aggregateIdenticalClones}
 \alias{aggregateIdenticalClones}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
     Aggregate Counts/Frequencies for Clones With Identical Receptor Sequences
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
     Given bulk Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data with clones indexed by row, returns a data frame containing one row for each unique receptor sequence. Includes the number of clones sharing each sequence, as well as aggregate values for clone count and clone frequency across all clones sharing each sequence. Clones can be grouped according to metadata, in which case aggregation is performed within (but not across) groups.
 }
 \usage{
@@ -18,26 +15,20 @@ aggregateIdenticalClones(
   grouping_cols = NULL
 )
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
-%%     ~~Describe \code{data} here~~
       A data frame containing the bulk AIRR-Seq data, with clones indexed by row.
 }
   \item{clone_col}{
-%%     ~~Describe \code{clone_col} here~~
       A column name or column index specifying the column of \code{data} containing the receptor sequences.
 }
   \item{count_col}{
-%%     ~~Describe \code{count_col} here~~
       A column name or column index specifying the column of \code{data} containing the clone counts.
 }
   \item{freq_col}{
-%%     ~~Describe \code{freq_col} here~~
       A column name or column index specifying the column of \code{data} containing the clone frequencies.
 }
   \item{grouping_cols}{
-%%     ~~Describe \code{grouping_cols} here~~
       An optional vector of column names or vector of column indices, specifying one or more columns of \code{data} used to assign clones to groups. If provided, aggregation occurs within groups, but not across groups. See details.
 }
 }
@@ -47,11 +38,6 @@ aggregateIdenticalClones(
   If one or more columns of \code{data} are specified using the \code{grouping_cols} argument, then each clone (row) in \code{data} is assigned to a group based on its combination of values in these columns. If two clones share the same receptor sequence but belong to different groups, their receptor sequence will appear multiple times in the returned data frame, with one row for each group in which the sequence appears. In each such row, the aggregate clone count, aggregate clone frequency, and number of clones sharing the sequence are reported within the group for that row.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
     A data frame whose first column contains the receptor sequences and has the
     same name as the column of \code{data} specified by \code{clone_col}. One additional column will be present for each column of \code{data} that is specified using the \code{grouping_cols} argument, with each having the same column name. The remaining columns are as follows:
 
@@ -61,8 +47,12 @@ aggregateIdenticalClones(
 
     \item{UniqueCloneCount}{The number of clones (rows) in \code{data} (within the same group, if applicable) possessing the receptor sequence for the current row.}
 }
+\references{
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
+
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
+}
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
@@ -107,12 +97,3 @@ data_agg_time_subject <-
       c("subject_id", "time_point")
   )
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

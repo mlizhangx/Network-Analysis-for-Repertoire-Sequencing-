@@ -1,3 +1,39 @@
+# Changes in NAIR version 0.0.9042 (8/6/2023)
+
+## Package Functions
+
+* `findAssociatedClones`
+    * The variable `SampleID` created in the output data is now forced to be of type character. Previously, values from the argument `sample_ids` were sometimes unintentionally converted from character to numeric, such as the default values in `sample_ids`, which were `"1"`, `"2"`, etc. This was causing these variables to be treated as continuous variables when used to color nodes in the network graph plot, which resulted in their color scales being depicted in the wrong format in the plot legend.
+    * The `sample_ids` argument is now coerced to a character vector. This prevents an error when saving the output that occurred when `sample_ids` used numeric values.
+    * Default value of `sample_ids` now has entries `"Sample1"`, `"Sample2"`, etc., instead of `"1"`, `"2"`, etc. 
+* `findPublicClusters`
+    * The variables `SampleID`, `SubjectID` and `GroupID` created in the output data are now forced to be of type character. Previously, values from the arguments `sample_ids`, `subject_ids` and `group_ids` were sometimes unintentionally converted from character to numeric, such as the default values in `sample_ids`, which were `"1"`, `"2"`, etc. This was causing these variables to be treated as continuous variables when used to color nodes in the network graph plot, which resulted in their color scales being depicted in the wrong format in the plot legend.
+    * The `sample_ids` argument is now coerced to a character vector. This prevents an error when saving the output that occurred when `sample_ids` used numeric values (which was the previous default!).
+    * Default value of `sample_ids` now has entries `"Sample1"`, `"Sample2"`, etc., instead of `1`, `2`, etc. 
+* `buildPublicClusterNetwork`
+    * Argument `plot_title` added with default value `"Global Network of Public Clusters"`. Previously this argument was passed to `buildRepSeqNetwork` through the ellipses `...` argument, and thus used a default value of `"auto"`, which resulted in the default plot title being the value of the `output_name` argument, which is `"PublicClusterNetwork"` by default. 
+* `plotNetworkGraph`
+    * Added arguments `pdf_width` and `pdf_height` for adjusting the dimensions of the pdf when saving this function's output directly using the `outfile` argument. Other package functions use `saveNetworkPlots` for saving plots created using `plotNetworkGraph`, so the absence of these arguments in the `plotNetworkGraph` function had gone unnoticed previously. But since the function has an option to save the output directly to pdf using the `outfile` argument, it is only appropriate to also provide control over the pdf dimensions.
+* `kmeansAtchley`
+    * Default values for `amino_col` and `sample_col` arguments removed as the previous defaults are no longer useful. They were originally designed based on a previous version of the associated clusters workflow.
+    * Default filenames for the pdfs of the heatmaps have been changed to `"atchley_kmeans_TCR_fraction_per_cluster.pdf"` and `"atchley_kmeans_correlation_heatmap.pdf"`. The previous values `"atchley_kmeans_cluster_relative_size_profiles_by_sample.pdf"` and `"atchley_kmeans_corr_in_cluster_size_profile_between_samples.pdf"` were longer and potentially more confusing in their meaning.
+    
+## Vignettes
+
+* `Searching for Associated TCR/BCR Clusters`
+    * Completion of major revisions
+* `Searching for Public Clusters`
+    * Completion of major revisions
+* `buildRepSeqNetwork`
+    * Minor content revisions
+* `Network Visualization`
+    * Restructured sections and minor content revisions
+    
+## Documentation
+
+* All package documentation files have been revised and updated.
+
+
 # Changes in NAIR version 0.0.9041 (8/2/2023)
 
 ## Package Functions

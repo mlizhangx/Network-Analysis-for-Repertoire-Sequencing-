@@ -1,26 +1,25 @@
 \name{buildRepSeqNetwork}
 \alias{buildRepSeqNetwork}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
-    Immune Repertoire Network By Sequence Similarity
+    Network Analysis of Immune Repertoire
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Builds the network graph for an immune repertoire based on sequence
-    similarity, computes specified network properties and generates customized
-    visualizations.
+    Given Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data, builds the network graph for the immune repertoire based on sequence similarity, computes specified network properties and generates customized visualizations.
 }
 \usage{
 buildRepSeqNetwork(
 
   ## Input ##
-  data, seq_col, count_col = NULL,
+  data,
+  seq_col,
+  count_col = NULL,
   subset_cols = NULL,
-  min_seq_length = 3, drop_matches = NULL,
+  min_seq_length = 3,
+  drop_matches = NULL,
 
   ## Network ##
-  dist_type = "hamming", dist_cutoff = 1,
+  dist_type = "hamming",
+  dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
   node_stats = FALSE,
   stats_to_include = chooseNodeStats(),
@@ -39,175 +38,109 @@ buildRepSeqNetwork(
   output_dir = getwd(),
   output_type = "individual",
   output_name = "MyRepSeqNetwork",
-  pdf_width = 12, pdf_height = 10
+  pdf_width = 12,
+  pdf_height = 10
 
 )
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
-%%     ~~Describe \code{data} here~~
-    A data frame containing the immune repertoire sequencing data, with variables indexed by column and observations (e.g., clones or cells) indexed by row.
+    A data frame containing the AIRR-Seq data, with variables indexed by column and observations (e.g., clones or cells) indexed by row.
 }
   \item{seq_col}{
-%%     ~~Describe \code{seq_col} here~~
-    The column name or number of \code{data} containing the receptor sequences to be used as the basis of similarity between rows. Also accepts a vector of length 2 specifying distinct sequence columns (e.g., alpha, beta chains); then two rows are similar only if both types of sequences are similar.
+    Specifies the column of \code{data} containing the receptor sequences to be used as the basis of similarity between rows. Accepts either the column name or column index. Alternatively, a vector of length 2 specifying two columns with distinct sequences (e.g., alpha chain and beta chain), in which case similarity between rows depends on both types of sequences being similar (e.g., similar alpha chain sequences and similar beta chain sequences).
 }
   \item{count_col}{
-%%     ~~Describe \code{count_col} here~~
-    Optional column name or number of \code{data} containing a measure of abundance, e.g., clone count. Passed to \code{getClusterStats}; only relevant if \code{cluster_stats = TRUE}.
+    Optional. Specifies the column of \code{data} containing a measure of abundance, e.g., clone count or unique molecular identifier (UMI) count. Accepts either the column name or column index. Passed to \code{\link{getClusterStats}}; only relevant if \code{cluster_stats = TRUE}.
 }
   \item{subset_cols}{
-%%     ~~Describe \code{other_cols} here~~
-    Optional vector of column names or numbers of \code{data}; if supplied, only these plus other relevant columns are included in the output. If \code{NULL} (the default), all columns of \code{data} are included.
+    Specifies which columns of the AIRR-Seq data are included in the output. Accepts a vector of column names or a vector of column indices. The default \code{NULL} includes all columns. The receptor sequence column is always included regardless of this argument's value. Passed to \code{\link{filterInputData}}.
 }
   \item{min_seq_length}{
-%%     ~~Describe \code{min_seq_length} here~~
     A numeric scalar, or \code{NULL}. Observations whose receptor sequences have fewer than \code{min_seq_length} characters are removed prior to network analysis.
 }
   \item{drop_matches}{
-%%     ~~Describe \code{drop_chars} here~~
-    An optional regular expression or character string. Observations whose receptor sequences return a match are removed prior to network analysis.
+    Optional. Passed to \code{\link{filterInputData}}. Accepts a regular expression (see \code{\link[base]{regex}}). Checks receptor sequences for a pattern match using \code{\link{grep}}. Those returning a match are removed prior to network analysis.
 }
   \item{dist_type}{
-%%     ~~Describe \code{dist_type} here~~
-    The type of function to use as a measure of similarity between two receptor
-    sequences. Valid options are \code{"hamming"} (the default), \code{"levenshtein"}
-    and \code{"euclidean_on_atchley"} (only applicable to TCR CDR3 amino acid sequences).
+    Specifies the function used to quantify the similarity between sequences. The similarity between two sequences determines the pairwise distance between their respective nodes in the network graph, with greater similarity corresponding to shorter distance. Valid options are \code{"hamming"} (the default), which uses \code{\link{hamDistBounded}}, and \code{"levenshtein"}, which uses \code{\link{levDistBounded}}. An additional option \code{"euclidean_on_atchley"} exists for TCR CDR3 amino acid sequences (see \code{\link{adjacencyMatAtchleyFromSeqs}}).
 }
   \item{dist_cutoff}{
-%%     ~~Describe \code{dist_cutoff} here~~
-    A nonnegative scalar specifying the maximum distance threshold for
-    similarity between receptor sequences.
+    A nonnegative scalar. Specifies the maximum pairwise distance (based on \code{dist_type}) for an edge connection to exist between two nodes. Pairs of nodes whose distance is less than or equal to this value will be joined by an edge connection in the network graph. Controls the stringency of the network construction and affects the number and density of edges in the network. A lower cutoff value requires greater similarity between sequences in order for their respective nodes to be joined by an edge connection. A value of \code{0} requires two sequences to be identical in order for their nodes to be joined by an edge.
 }
   \item{drop_isolated_nodes}{
-%%     ~~Describe \code{drop_isolated_nodes} here~~
-    A logical scalar; should observations whose receptor sequences are not
-    similar to any other sequences be dropped from the network?
+    A logical scalar. When \code{TRUE}, removes each node that is not joined by an edge connection to any other node in the network graph.
 }
   \item{node_stats}{
-%%     ~~Describe \code{node_stats} here~~
-    A logical scalar; should node-level network properties be computed?
+    A logical scalar. Specifies whether node-level network properties are computed.
 }
   \item{stats_to_include}{
-%%     ~~Describe \code{stats_to_include} here~~
-    A logical vector returned by \code{chooseNodeStats()}, specifying the node-level
-    properties to include. Also accepts the values \code{"all"} and
-    \code{"cluster_id_only"}. Only relevant if \code{node_stats = TRUE}.
+    A named logical vector returned by \code{\link{chooseNodeStats}} or \code{\link{exclusiveNodeStats}}. Specifies the node-level network properties to compute. Also accepts the values \code{"all"} and \code{"cluster_id_only"}. Only relevant if \code{node_stats = TRUE}.
 }
   \item{cluster_stats}{
-%%     ~~Describe \code{cluster_stats} here~~
-    A logical scalar; should cluster-level network properties be computed?
+    A logical scalar. Specifies whether to compute cluster-level network properties.
 }
   \item{cluster_fun}{
-%%     ~~Describe \code{net} here~~
-    Passed to \code{addClusterMembership}. Controls the algorithm used for cluster identification.
+    Passed to \code{\link{addClusterMembership}}. Specifies the clustering algorithm used when cluster analysis is performed. Cluster analysis is performed when \code{cluster_stats = TRUE} or when \code{node_stats = TRUE} with the \code{cluster_id} property enabled via the \code{stats_to_include} argument.
 }
   \item{plots}{
-    A logical scalar; should plot(s) of the network graph be generated?
+    A logical scalar. Specifies whether to generate plots of the network graph.
 }
   \item{print_plots}{
-%%     ~~Describe \code{print_plots} here~~
-    A logical scalar; should visualizations be printed in the \code{R} plotting window?
+    A logical scalar. If \code{plots = TRUE}, specifies whether the plots should be printed to the R plotting window.
 }
   \item{plot_title}{
-%%     ~~Describe \code{plot_title} here~~
-    A character string (or \code{NULL} value) to be used as the title in
-    visualizations. The default value \code{"auto"} generates the title
-    dynamically.
+    A character string or \code{NULL}. If \code{plots = TRUE}, this is the title used for each plot. The default value \code{"auto"} generates the title based on the value of the \code{output_name} argument.
 }
   \item{plot_subtitle}{
-%%     ~~Describe \code{plot_subtitle} here~~
-    A character string (or \code{NULL} value) to be used as the subtitle in
-    visualizations. The default value \code{"auto"} generates the title
-    dynamically.
+    A character string or \code{NULL}. If \code{plots = TRUE}, this is the subtitle used for each plot. The default value \code{"auto"} generates a subtitle based on the values of the \code{dist_type} and \code{dist_cutoff} arguments.
 }
   \item{color_nodes_by}{
-%%     ~~Describe \code{color_nodes_by} here~~
-    Optional. Column name or number of \code{data} used to color network nodes
-    in visualizations. If a vector of values is supplied, one plot will be
-    generated for each value. The value \code{"auto"} attempts to use one of several
-    variables (e.g., cluster ID) to color the nodes, depending on what is available.
+    Optional. Specifies a variable to be used as metadata for coloring the nodes in the network graph plot. Accepts a character string. This can be a column name of \code{data} or (if \code{node_stats = TRUE}) the name of a computed node-level network property (based on \code{stats_to_include}). Also accepts a character vector specifying multiple variables, in which case one plot will be generated for each variable. The default value \code{"auto"} attempts to use one of several potential variables to color the nodes, depending on what is available.
 }
   \item{...}{
   Other arguments to \code{generateNetworkGraphPlots}.
 }
   \item{output_dir}{
-%%     ~~Describe \code{output_dir} here~~
-  The output directory; if \code{NULL}, output will not be written to file.
+  A file path specifying the directory for saving the output. The directory will be created if it does not exist. If \code{NULL}, output will be returned but not saved.
 }
   \item{output_type}{
-%%     ~~Describe \code{output_dir} here~~
-  A character string specifying the file format to use when writing output to file. Default \code{"individual"} saves each item as a separate, uncompressed file, with data frames saved in csv format. \code{"rda"} and \code{"rds"} save the output list as a rda and rds file, respectively. For all output types, any plots generated will also be saved in a pdf file.
+  A character string specifying the file format to use when saving the output. The default value \code{"individual"} saves each element of the returned list as an individual uncompressed file, with data frames saved in csv format. For better compression, the values \code{"rda"} and \code{"rds"} save the returned list as a single file using the rda and rds format, respectively (in the former case, the list will be named \code{net} within the rda file). Regardless of the argument value, any plots generated will saved to a pdf file containing one plot per page.
 }
   \item{output_name}{
-%%     ~~Describe \code{output_dir} here~~
-  A character string to be used as a common filename prefix for any files saved.
+  A character string. All files saved will have file names beginning with this value.
 }
   \item{pdf_width}{
-%%     ~~Describe \code{plot_width} here~~
-    Passed to the \code{width} argument of \code{grDevices::pdf()}.
+    Sets the width of each plot when writing to pdf. Passed to \code{\link{saveNetwork}}.
 }
   \item{pdf_height}{
-%%     ~~Describe \code{plot_height} here~~
-    Passed to the \code{height} argument of \code{grDevices::pdf()}.
+    Sets the height of each plot when writing to pdf. Passed to \code{\link{saveNetwork}}.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
-    To build the immune repertoire network, each TCR/BCR clone (bulk data) or
-    cell (single-cell data) is modeled as a network node (corresponding to a single
-    row of the input data). Two nodes are considered adjacent (share an edge) if
-    their receptor sequences are sufficiently similar.
+    To construct the immune repertoire network, each TCR/BCR clone (bulk data) or cell (single-cell data) is modeled as a node in the network graph, corresponding to a single row of the AIRR-Seq data. For each node, the corresponding receptor sequence is considered. Both nucleotide and amino acid sequences are supported for this purpose. The receptor sequence is used as the basis of similarity and distance between nodes in the network.
 
-    Both nucleotide and amino acid sequences are supported. Sequence similarity is
-    based on either the Hamming distance or Levenshtein (edit) distance. For TCR CDR3
-    amino acid sequences, an alternative measure of similarity is also available via
-    the argument \code{dist_type = "euclidean_on_atchley"}; this represents sequences as
-    30-dimensional numeric vectors according to the Atchley factors of their amino acids
-    (which encode biological properties) using a trained encoder. Similarity is then based on the
-    Euclidean distance between these representations. Selecting a distance
-    threshold is challenging in this setting, however, as particular values lack
-    the clear interpretations enjoyed by the Hamming and Levenshtein distances.
+    Similarity between sequences is measured using either the Hamming distance or Levenshtein (edit) distance. The similarity determines the pairwise distance between nodes in the network graph. The more similar two sequences are, the shorter the distance between their respective nodes. Two nodes in the graph are joined by an edge if the distance between them is sufficiently small, i.e., if their receptor sequences are sufficiently similar.
 
-    The graph adjacency matrix for the network is computed and used to generate
-    a \code{igraph} network object. Network properties are computed largely
-    through the use of \code{igraph} functions. The visualizations are generated with
-    \code{ggraph}.
+    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html}{buildRepSeqNetwork} package vignette for more details. The vignette can be accessed offline using \code{vignette("buildRepSeqNetwork")}.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-    If the constructed network contains no edges, the function will return \code{NULL} with a warning. Otherwise, the function invisibly returns a list containing some or all of the following items:
+    If the constructed network contains no nodes, the function will return \code{NULL} with a warning. Otherwise, the function invisibly returns a list containing the following items:
 
-    \item{igraph}{An \code{igraph} object containing the edge list for the network.}
-    \item{adjacency_matrix}{The network graph adjacency matrix, stored as a sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package.}
-    \item{node_data}{ A data
-    frame containing the node-level meta-data for the network. This data frame contains
-    all column names of \code{data} unless \code{subset_cols} is non-null, in which
-    case only the column names of \code{data} specified by \code{subset_cols}, along
-    with other relevant ones (e.g., \code{seq_col}), will be present in the returned
-    data frame. The data frame will additionally contain columns for any node-level
-    network properties computed (as specified through the \code{node_stats} and
-    \code{stats_to_include} arguments). The data frame will contain one row for
-    each node that remains in the network after all filtering has occurred,
-    including any filtering based on \code{drop_isolated_nodes}. The row names
-    of the original input data will be preserved. }
-    \item{cluster_data}{A data frame containing the cluster-level properties, with one row per cluster. Only included if \code{cluster_stats = TRUE}.}
-    \item{plots}{A list containing the graph plot(s) as \code{ggraph} objects. Only included if \code{plots = TRUE}.}
+    \item{igraph}{An object of class \code{\link[igraph]{igraph}} containing the list of nodes and edges for the network graph.}
+    \item{adjacency_matrix}{The network graph adjacency matrix, stored as a sparse matrix of class \code{dgCMatrix} from the \code{Matrix} package. See \code{\link[Matrix]{dgCMatrix-class}}.}
+    \item{node_data}{ A data frame containing containing metadata for the network nodes, where each row corresponds to a node in the network graph. This data frame contains all variables from \code{data} (unless otherwise specified via \code{subset_cols}) in addition to the computed node-level network properties if \code{node_stats = TRUE}. Each row's name is the name of the corresponding row from \code{data}.}
+    \item{cluster_data}{A data frame containing network properties for the clusters, where each row corresponds to a cluster in the network graph. Only included if \code{cluster_stats = TRUE}.}
+    \item{plots}{A list containing each plot generated for the network graph. Each plot is an object of class \code{\link[ggraph]{ggraph}}. Only included if \code{plots = TRUE}.}
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
 
-\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
-\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html}{buildRepSeqNetwork vignette}
 }
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
@@ -225,12 +158,3 @@ network <- buildRepSeqNetwork(
 }
 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

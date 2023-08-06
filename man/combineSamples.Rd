@@ -1,13 +1,10 @@
 \name{combineSamples}
 \alias{combineSamples}
 \alias{loadDataFromFileList}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
-    Load Multiple Data Files and Combine
+    Load and Combine Data From Multiple Samples
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
     Given multiple data frames stored in separate files, \code{loadDataFromFileList}
     loads and combines them into a single data frame.
 
@@ -17,12 +14,15 @@
 }
 \usage{
 loadDataFromFileList(
-    file_list, input_type,
+    file_list,
+    input_type,
     data_symbols = NULL,
-    header = TRUE, sep = "")
+    header = TRUE, sep = ""
+)
 
 combineSamples(
-    file_list, input_type,
+    file_list,
+    input_type,
     data_symbols = NULL,
     header = TRUE, sep = "",
     seq_col,
@@ -31,88 +31,63 @@ combineSamples(
     subset_cols = NULL,
     sample_ids = NULL,
     subject_ids = NULL,
-    group_ids = NULL)
+    group_ids = NULL
+)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
     \item{file_list}{
-  %%     ~~Describe \code{file_list} here~~
-    A character vector of file paths containing the data frames (one file per data frame).
+    A vector of file paths where each file contains the data for a sample, with observations indexed by row.
   }
     \item{input_type}{
-  %%     ~~Describe \code{input_type} here~~
-    A character string specifying the input file format; determines the function used to load each file. See details section below.
+    A character string specifying the file format of the sample data files. Options are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"}, \code{"rds"} and \code{"rda"}.
   }
     \item{data_symbols}{
-  %%     ~~Describe \code{data_symbols} here~~
-    If \code{input_type = "rda"}, a character vector specifying the name of each data frame (this can be of length 1 if all data frames have the same name).
+    Used when \code{input_type = "rda"}. Specifies the name of each sample's data frame within its respective Rdata file. Accepts a character vector of the same length as \code{file_list}. Alternatively, a single character string can be used if all data frames have the same name. See details.
   }
     \item{header}{
-  %%     ~~Describe \code{header} here~~
-    Passed to \code{read.table} or \code{read.csv} if applicable.
+    Passed to \code{\link{read.table}} or \code{\link{read.csv}} for applicable values of \code{input_type}.
   }
     \item{sep}{
-  %%     ~~Describe \code{sep} here~~
-    Passed to \code{read.table} or \code{read.csv} if applicable.
+    Passed to \code{\link{read.table}} or \code{\link{read.csv}} for applicable values of \code{input_type}.
   }
   \item{seq_col}{
-  %%     ~~Describe \code{seq_col} here~~
-    Passed to \code{filterInputData} for each sample.
+    Passed to \code{\link{filterInputData}} for each sample.
   }
     \item{min_seq_length}{
-  %%     ~~Describe \code{min_seq_length} here~~
-    Passed to \code{filterInputData} for each sample.
+    Passed to \code{\link{filterInputData}} for each sample.
   }
     \item{drop_matches}{
-  %%     ~~Describe \code{drop_matches} here~~
-    Passed to \code{filterInputData} for each sample.
+    Passed to \code{\link{filterInputData}} for each sample.
   }
     \item{subset_cols}{
-  %%     ~~Describe \code{subset_cols} here~~
-    Passed to \code{filterInputData} for each sample.
+    Passed to \code{\link{filterInputData}} for each sample.
   }
     \item{sample_ids}{
-  %%     ~~Describe \code{sample_ids} here~~
-  An optional character or numeric vector of sample IDs, whose length matches that of \code{file_list}.
+  A character or numeric vector of sample IDs, whose length matches that of \code{file_list}.
   }
     \item{subject_ids}{
-  %%     ~~Describe \code{subject_ids} here~~
-  An optional character or numeric vector of subject IDs, whose length matches that of \code{file_list}.
+  An optional character or numeric vector of subject IDs, whose length matches that of \code{file_list}. Used to assign a subject ID to each sample.
   }
     \item{group_ids}{
-  %%     ~~Describe \code{group_ids} here~~
-  An optional character or numeric vector of group IDs, whose length matches that of \code{file_list}.
+  A character or numeric vector of group IDs whose length matches that of \code{file_list}. Used to assign each sample to a group.
   }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
-    Valid options for \code{input_type} (and the corresponding function used to
-    load each file) include \code{"rds"} (\code{readRDS}), \code{"rda"}
-    (\code{load}), \code{"csv"} (\code{read.csv}) and \code{"table"}
-    (\code{read.table}).
+    Valid options for \code{input_type} (and the corresponding function used to load each file) include \code{"rds"} (\code{\link{readRDS}}), \code{"rda"} (\code{\link{load}}), \code{"csv"} (\code{\link{read.csv}}) and one of \code{"table"}, \code{"txt"} or \code{"tsv"} (all of which are loaded using \code{\link{read.table}}).
 
-    If \code{input_type = "rda"}, the \code{data_symbols}
-    argument specifies the name of each data frame in R. For example,
-    given three R data frames named \code{sample1}, \code{sample2}
-    and \code{sample3}, with each data frame saved to a separate rda file using
-    \code{save()}), we would pass \code{c("sample1", "sample2", "sample3")}
-    to \code{data_symbols}.
+    If \code{input_type = "rda"}, the \code{data_symbols} argument specifies the name (in R) of each data frame as it is saved within its respective file. For example, given three R data frames named \code{sample1}, \code{sample2} and \code{sample3} in the R environment, with each data frame saved to a separate rda file using \code{\link{save}}), we would pass \code{c("sample1", "sample2", "sample3")} to \code{data_symbols}, assuming this is the order in which their file paths appear in the \code{file_list} argument. If each data frame is named \code{sample_data} within its respective rda file, we would simply specify \code{data_symbols = "sample_data"}.
 
-    For \code{combineSamples}, for each of \code{sample_ids}, \code{subject_ids}
-    and \code{group_ids} that is non-null, a corresponding variable will be
-    added to the combined data frame; these will be named \code{SampleID},
-    \code{SubjectID} and \code{GroupID}.
+    When calling \code{combineSamples}, for each of \code{sample_ids}, \code{subject_ids} and \code{group_ids} that is non-null, a corresponding variable will be added to the combined data frame; these variables are named \code{SampleID}, \code{SubjectID} and \code{GroupID}.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
     A data frame containing the combined data rows from all files.
 }
+\references{
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
+
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
+}
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
@@ -145,12 +120,3 @@ data2 <- combineSamples(
   subset_cols = "CloneSeq",
   sample_ids = c("id01", "id02"))
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

@@ -178,7 +178,7 @@ findAssociatedClones <- function(
 
   ## Input ##
   file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
-  sample_ids = as.character(1:length(file_list)),
+  sample_ids = paste0("Sample", 1:length(file_list)),
   subject_ids = NULL, group_ids,
   seq_col,
 
@@ -192,7 +192,12 @@ findAssociatedClones <- function(
   output_type = "csv",
   verbose = FALSE
 ) {
+
   .ensureOutputDir(output_dir)
+  sample_ids <- as.character(sample_ids)
+  group_ids <- as.character(group_ids)
+  if (!is.null(subject_ids)) { subject_ids <- as.character(subject_ids) }
+
 
   cat(paste0("<<< Beginning search for associated clones >>>\n"))
 
@@ -315,9 +320,9 @@ buildAssociatedClusterNetwork <- function(
   subset_cols <- .convertColRef(subset_cols, data)
   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
                           subset_cols)
-  data$SampleID <- sample_id
-  if (!is.null(subject_id)) { data$SubjectID <- subject_id }
-  data$GroupID <- group_id
+  data$SampleID <- as.character(sample_id)
+  if (!is.null(subject_id)) { data$SubjectID <- as.character(subject_id) }
+  data$GroupID <- as.character(group_id)
 
   cat("Finding clones in a neighborhood of each associated sequence...")
   for (i in 1:length(assoc_seqs)) {

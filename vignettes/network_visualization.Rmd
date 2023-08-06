@@ -47,18 +47,18 @@ This section covers arguments that control aspects of the graph itself, such as 
 
 ### Color Nodes According to Metadata
 
-The nodes in the graph can be colored according to a variable in the node-level metadata. This is accomplished using the `color_nodes_by` argument, which accepts a character string specifying the name of the column containing the variable.
+The nodes in the graph can be colored according to available metadata. This is accomplished using the `color_nodes_by` argument, which accepts a character string containing the name of a variable.
 
-The user can specify any variable that will be present in the node-level meta data returned by `buildRepSeqNetwork`, including node-level network properties. By default, this also includes all variables that were present in the original input data. 
+The variable can be any variable present in the input data, as well as any [node-level network properties](buildRepSeqNetwork.html#node_properties) that are computed for the network.
 
-For example, when calling `buildRepSeqNetwork`, we can color the nodes based on the `CloneCount` column of the original input data by setting `color_nodes_by = "CloneCount"` as seen below.
+For example, when calling `buildRepSeqNetwork`, we can color the nodes based on the `CloneCount` column of the input data by setting `color_nodes_by = "CloneCount"` as seen below.
 
 ```{r}
 buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    color_nodes_by = "CloneCount", output_dir = NULL)
 ```
 
-If the `color_nodes_by` argument is left unspecified, `buildRepSeqNetwork` will attempt to use an available variable to color the nodes. If a variable for clone count is provided using the `count_col` argument, this will be used. Otherwise the `cluster_id` variable will be used if it exists, followed by `degree`, then by other network properties. If no suitable options are available, the nodes will be left uncolored.
+If the `color_nodes_by` argument is left unspecified, `buildRepSeqNetwork` will attempt to use an available variable to color the nodes. If a variable for abundance is provided using the `count_col` argument, this will be used. Otherwise the `cluster_id` variable will be used if it exists, followed by `degree`, then by other network properties. If no suitable options are available, the nodes will be left uncolored.
 
 If the user does not wish the nodes to be colored dynamically, this can be specified by setting `color_nodes_by = NULL`. 
 
@@ -153,7 +153,7 @@ By default, only the 20 largest clusters by node count are labeled in order to p
 
 The size of the cluster ID labels can be adjusted by providing a numeric value to the `size` argument (the default is 5), and their color can be adjusted by providing a valid character string to the `color` argument (the default is `"black"`).
 
-The `addClusterLabels` function assumes that the node-level meta data includes a variable named `cluster_id` that records the cluster membership of each node. This is the case when `buildRepSeqNetwork` is called with cluster analysis enabled. If this variable has a name different from `cluster_id` (e.g., if columns are manually renamed), the correct variable name must be provided to the `cluster_id_col` argument.
+The `addClusterLabels` function assumes that the node-level metadata includes a variable named `cluster_id` that records the cluster membership of each node. This is the case when `buildRepSeqNetwork` is called with cluster analysis enabled. If this variable has a name different from `cluster_id` (e.g., if columns are manually renamed), the correct variable name must be provided to the `cluster_id_col` argument.
 
 
 ```{r}

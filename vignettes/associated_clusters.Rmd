@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-Given multiple samples of Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data, the `NAIR` package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome. 
+Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data, the `NAIR` package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome. 
 
 We first provide a brief conceptual overview, followed by a demonstration in which we explain the process in greater detail.
 
@@ -43,7 +43,6 @@ As our binary variable of interest, we consider a single treatment factor with t
 
 In each of the two groups, we simulate 15 samples, each containing 30 observations. The generation probabilities of the possible sequences are fixed within each group. In order to simulate the treatment effect, the generation probabilities of certain sequences differ substantially between the two groups.
 
-Each sample is saved in a separate file using the .rds file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. The file path of their directory is saved to the R environment variable `dir_input_samples` for later reference.
 
 ```{r }
 # Use temp dir
@@ -82,6 +81,8 @@ simulateToyData(
   output_dir = dir_input_samples, no_return = TRUE)
 ```
 
+Each sample is saved in a separate file using the .rds file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. The file path of their directory is saved to the R environment variable `dir_input_samples` for later reference.
+
 The first few rows of the data for the first sample appear as follows:
 
 ```{r}
@@ -117,7 +118,9 @@ By default, only sequences that contain at least seven characters will be consid
 
 ### Sequence Content
 
-Sequences containing characters `*` or `_` will be excluded from consideration. This can be changed using the `drop_matches` argument, which accommodates a character string or regular expression specifying the pattern of content to search for. The content of each sequence is checked for a match to this pattern using the `grep` function from base R. If a match is found, the sequence is excluded from consideration. Setting the value to `NULL` bypasses this check. 
+Sequences can be filtered based on the character content they contain. **It is recommended to filter out sequences containing special characters that are invalid for use in file names.**
+
+By default, sequences containing characters `*` or `_` will be excluded from consideration. This can be changed using the `drop_matches` argument, which accommodates a character string or regular expression specifying the pattern of content to search for. The content of each sequence is checked for a match to this pattern using the `grep` function from base R. If a match is found, the sequence is excluded from consideration. Setting the value to `NULL` bypasses this check. 
 
 For details on how the pattern matching is performed, please refer to the base R documentation files for `regex` and `grep`.
 
@@ -132,7 +135,7 @@ It should be noted that the sequences returned by `findAssociatedSeqs` are order
 
 ### <a name="input_files"></a> File Paths of Sample Data
 
-The main argument of the `findAssociatedSeqs` function is the `file_list` argument, which accepts a vector containing file paths. Each path corresponds to a distinct AIRR-Seq data file representing an individual sample.
+The main argument of the `findAssociatedSeqs` function is the `file_list` argument, which accepts a vector containing file paths. Each file is assumed to contain the AIRR-Seq data for a single sample, with observations indexed by row.
 
 Below, we prepare the vector `input_files` to be provided to the `file_list` argument of `findAssociatedSeqs`:
 
@@ -190,7 +193,7 @@ Subject IDs should be provided when the binary variable of interest is subject-s
 
 ### <a name="freq_col"></a> Clone Frequency Column (Optional)
 
-The `freq_col` argument can be used to specify a column containing clone frequencies in the input data for each sample. The argument accepts either the column name or column index.
+The `freq_col` argument can be used to specify the column in each sample's data frame that contains the clone frequencies (i.e., clone count divided by the sum of the clone counts across all clones in the sample). The argument accepts either the column name or column index.
 
 If clone frequencies are provided, the maximum clone frequency (across all samples) for each associated sequence will be included in the content of the data frame returned by `findAssociatedSeqs`.
 
@@ -210,7 +213,7 @@ The user can also specify `outfile = NULL` in order to prevent the output from b
 
 ### Execute `findAssociatedSeqs`
 
-We execute the `findAssociatedSeqs` function using the [inputs we prepared earlier](#input_files) for the `file_list` and `group_ids` arguments:
+We execute the `findAssociatedSeqs` function using the [inputs we prepared earlier](#input_settings) for the [`file_list`](#input_files) and [`group_ids`](#group_ids) arguments:
 
 ```{r}
 # search across samples for associated sequences using Fisher's exact test
@@ -263,7 +266,7 @@ The data for each associated sequence's neighborhood is then saved to a separate
 
 
 
-## Specifying the Associated Sequences
+## <a name="assoc_seqs"></a> Specifying the Associated Sequences
 
 The associated sequences are specified via the `assoc_seqs` argument, which accepts a character vector containing the associated sequences.
 
@@ -275,7 +278,7 @@ However, it may be desirable to consider only a subset of the sequences returned
 
 ## Specify Input Data for Step 2 {.tabset}
 
-### Arguments from Step 1
+### <a name="files2"></a> Arguments from Step 1
 
 In order for `findAssociatedClones` to conduct its search, we must provide specifications for our sample data, just as we did when calling `findAssociatedSeqs`. 
 
@@ -295,7 +298,7 @@ The user should use the same values for these arguments as they did when calling
 
 Each clone's sample ID is automatically included as a variable in the data for each associated sequence's neighborhood. 
 
-By default, the samples are labeled numerically according to the order they appear in `file_list`. 
+By default, the samples are labeled as `"Sample1"`, `"Sample2"`, etc., according to their order of appearance in `file_list`. 
 
 The `sample_ids` argument allows for custom sample IDs to be assigned. It accepts a vector of the same length as `file_list`. Each entry of `sample_ids` is assigned as a sample ID to the sample in the corresponding entry of `file_list`.
 
@@ -389,7 +392,7 @@ If files are saved using the `"rda"` (Rdata) format, each data frame will be nam
 
 ### Execute `findAssociatedClones`
 
-We execute the `findAssociatedClones` function using the inputs we prepared earlier for the `file_list` and `group_ids` arguments:
+We execute the `findAssociatedClones` function using the [inputs from step 1](#files2) for the [`file_list`](#input_files) and [`group_ids`](#group_ids) arguments, the [associated sequences from step 1](#assoc_seqs), as well as the [output directory file path we created for the current step](#output2):
 
 ```{r}
 # Identify clones in a neighborhood around each associated sequence
@@ -439,7 +442,7 @@ The [output files created in the previous step](#demo2) are used as the input fi
 
 The `file_list` argument of  `buildAssociatedClusterNetwork` is used to specify the location of the neighborhood data files. It accepts a character vector of file paths. 
 
-If the files from step 2 were saved to a new or empty directory [as recommended](#output2), then they can easily be referenced using `list.files` with `full.names = TRUE`, as seen below. 
+The neighborhood data files are located in the [output directory from step 2](#output2). If the files from step 2 were saved to a new or empty directory as recommended, then they can easily be referenced using `list.files` with `full.names = TRUE`, as seen below. 
 
 ```{r}
 # Files created by findAssociatedClones
@@ -545,7 +548,7 @@ Refer to [this vignette](buildRepSeqNetwork.html#output_filenames) for further d
 
 ### Execute `buildAssociatedClusterNetwork`
 
-We execute the `buildAssociatedClusterNetwork` function using the input we prepared earlier for the `file_list` argument:
+We execute the `buildAssociatedClusterNetwork` function using the [input we prepared earlier](#input_files3) for the `file_list` argument:
 
 ```{r}
 # Combine neighborhoods and perform network analysis
@@ -682,18 +685,28 @@ buildRepSeqNetwork(
 
 **NOTE: This step applies to TCR CDR3 amino acid sequences only**
 
-As an additional step in our analysis, we can take the TCR sequences from the global network and use a deep learning model to encode each TCR sequence as a 30-dimensional numeric vector based on the Atchley-factor representations of its amino acids. This allows us to perform $K$-means clustering on the TCR sequences based on their numerically encoded values. 
+As an additional step in our analysis, we can take the TCR sequences from the global network and use a deep learning algorithm to encode each TCR sequence as a 30-dimensional numeric vector based on the Atchley-factor representations of its amino acids. This is done using the software [TESSA](https://doi.org/10.1038/s41592-020-01020-3).
 
-We can then profile each sample based on how its TCR sequences are distributed among the $K$-means clusters. We compute the fraction of the sample's unique TCR sequences that belong to each cluster, yielding a $K$-dimensional vector representing the profile for the sample. 
+We can then perform $K$-means clustering on the TCR sequences based on their numerically encoded values, resulting in $K$ clusters.
 
-The function `kmeansAtchley` performs the encoding and produces two heatmaps. One depicts the profile values across samples, while the other depicts the correlation in profile values between samples. 
+For each sample, the frequency distribution of its TCR sequences across the $K$ clusters is recorded in a length-$K$ vector, where each entry is the fraction of TCRs in a particular cluster (with all $K$ entries summing to 1). Fraction of TCRs refers to the fraction of the sample's total number of unique TCR sequences.
+
+The correlation in fraction of TCRs per cluster is computed between pairs of samples. This is done by pairing corresponding entries from both samples' $K$-vectors. Each of the $K$ pairs of values is treated as an independent observation from a common bivariate random variable. This treats the fraction of TCRs in a cluster as a random variable, where the cluster is also considered random. It may be noted, however, that the $K$ paired observations are not  actually independent, since they sum to $(1, 1)$. Nonetheless, the correlation computed in this manner provides 
+
+Two heatmaps are produced for comparing the samples. The first heatmap depicts each sample's fraction of TCRs in each cluster. The second heatmap depicts the pairwise correlation between samples that is described above. In both heatmaps, each column corresponds to a sample. A colored bar appears above each column, with the color indicating the group to which the sample belongs, based on the group assignments specified by the `group_ids` argument. This aids in the detection of differences and similarities within and between groups.
+
+All of these steps are performed by the function `kmeansAtchley()`.
 
 ```{r, eval = FALSE}
 atchley_results <- kmeansAtchley(
   data = all_clusters$node_data,
-  amino_col = "CloneSeq", sample_col = "SampleID", group_col = "GroupID",
-  k = 5, output_dir = file.path(data_dir, "assoc_clusters"), 
+  amino_col = "CloneSeq", 
+  sample_col = "SampleID", 
+  group_col = "GroupID",
+  k = 5, 
+  output_dir = 
+    file.path(data_dir, "assoc_clusters"), 
   return_output = TRUE)
 ```
 
-The heatmaps are saved as pdfs. The numerically-encoded TCR values and the $K$-means sample profiles will be returned if `return_output = TRUE`.
+The heatmaps are saved as pdfs. Data containing the numerically-encoded TCR values, their cluster membership, and each sample's fraction of TCRs in each cluster will be returned if `return_output = TRUE`.

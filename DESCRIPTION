@@ -1,14 +1,14 @@
 Package: NAIR
 Type: Package
 Title: Network Analysis for Immune Repertoire
-Version: 0.0.9041
+Version: 0.0.9042
 Authors@R: c(
     person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
     person("Phi Long", "Le", email = "PhiLong.Le@ucsf.edu", role = "aut"),
     person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"),
     person("Ze", "Zhang", email = "Ze.Zhang@UTsouthwestern.edu", role = "ctb",
-           comment = "Author of BriseisEncoder.py"))
+           comment = "Author of TESSA (BriseisEncoder.py)"))
 Description: Pipelines for studying the immune repertoire of T and B cells 
     via network analysis based on the similarity of their receptor sequences. 
     Relate clinical outcomes to immune repertoires based on their network 

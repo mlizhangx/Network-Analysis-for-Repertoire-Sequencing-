@@ -4,7 +4,7 @@
   Generate Plots of a Network Graph
 }
 \description{
-  Given an \code{\link[igraph]{igraph}} network object and a data frame containing the corresponding node-level meta data, generates one or more \code{\link[ggraph]{ggraph}} plots of the network graph according to the user specifications.
+  Given the \code{\link[igraph]{igraph}} of a network and a data frame containing the corresponding node-level meta data, generates one or more \code{\link[ggraph]{ggraph}} plots of the network graph according to the user specifications.
 }
 \usage{
 generateNetworkGraphPlots(
@@ -85,11 +85,11 @@ generateNetworkGraphPlots(
 }
 
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
 
-\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
-\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html}{Network Visualization vignette}
 }
 
 \author{

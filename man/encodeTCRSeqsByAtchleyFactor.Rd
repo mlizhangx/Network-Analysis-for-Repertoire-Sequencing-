@@ -1,51 +1,48 @@
 \name{encodeTCRSeqsByAtchleyFactor}
 \alias{encodeTCRSeqsByAtchleyFactor}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
-Numerically Encode TCR Sequences Using Deep Learning
+Encode TCR Sequences Numerically Based on Atchley Factor Representations
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-Given a list of T-cell receptor CDR3 amino acid sequences, encodes each sequence as a 30-dimensional numeric vector based on the Atchley factor representation of its terms using a trained encoder.
+Given a list of T-cell receptor CDR3 amino acid sequences, encodes each sequence as a 30-dimensional numeric vector based on the Atchley factor representations of its amino acids.
 }
 \usage{
 encodeTCRSeqsByAtchleyFactor(
     cdr3_AA,
-    contig_ids = seq_along(cdr3_AA))
+    contig_ids = seq_along(cdr3_AA)
+)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{cdr3_AA}{
-%%     ~~Describe \code{cdr3_AA} here~~
 A character vector containing the TCR CDR3 amino acid sequences.
 }
   \item{contig_ids}{
-%%     ~~Describe \code{contig_ids} here~~
 A numeric vector of the same length as \code{cdr3_AA}, used to uniquely identify its elements. By default, this is simply the sequence of integers from 1 to \code{length(cdr3_AA)}.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
-Encoding is performed using the BriseisEncoder python script. Each amino acid is represented by its five-dimensional vector of Atchley factors, which numerically encode its biological characteristics. Each TCR CDR3 amino acid sequence is embedded in Euclidean 30-space based on the Atchley factor representations of its constitutent terms, using a deep learning encoder and a pretrained model.
+The encoding is performed using the software \href{https://doi.org/10.1038/s41592-020-01020-3}{TESSA}. For each TCR CDR3 amino acid sequence, each of its amino acids is represented by its five-dimensional vector of Atchley factors, which numerically encode its biological characteristics. The TCR CDR3 amino acid sequence is then encoded as a 30-dimensional numeric vector based on the Atchley factor representations of its amino acids using a deep learning algorithm.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
 A matrix with \code{length(cdr3_AA)} rows and 31 columns. Each row corresponds to a TCR sequence; the first column is \code{contig_ids}, while the remaining columns contain the 30-dimensional numerical encoding for each TCR sequence.
 }
 \note{
-The encoder was trained specifically on TCR CDR3 amino acid sequences and is not appropriate for use with other amino acid sequences.
+The deep learning algorithm used by \href{https://doi.org/10.1038/s41592-020-01020-3}{TESSA} was trained specifically on TCR CDR3 amino acid sequences and is not appropriate for use with other amino acid sequences.
 }
 \references{
-    The BriseisEncoder is authored by Ze Zhang (\email{Ze.Zhang@UTsouthwestern.edu}).
-}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
 
+    Zhang Z, Xiong D, Wang X, Liu H, Wang T. (2021). Mapping the functional landscape
+of T cell receptor repertoires by single-T cell transcriptomics. \emph{Nat Methods}, 18
+(1):92–9. \url{https://doi.org/10.1038/s41592-020-01020-3}
+
+Atchley WR, Zhao J, Fernandes AD, Drüke T. (2005). Solving the protein sequence
+metric problem. \emph{Proc Natl Acad Sci U.S.A.}  102(18):6395–400. \url{https://doi.org/10.1073/
+pnas.0408677102}
+
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
+}
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
@@ -60,15 +57,7 @@ cdr3 <- c("CASSEAQGSGSTDTQYF",
           "CASSLGLATDTQYF",
           "CASSEKEEVGELFF",
           "CASSSRTSGGAGELFF")
+
 encodeTCRSeqsByAtchleyFactor(cdr3)
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

@@ -1,22 +1,12 @@
 \name{findAssociatedClones}
 \alias{findAssociatedClones}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
-    Gather Clones in Public Neighborhoods Around Associated Sequences
+    Identify TCR/BCR Clones in a Neighborhood Around Each Associated Sequence
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given multiple samples of RepSeq data from two groups and a list of receptor
-    sequences associated to the comparison group (e.g., obtained using
-    \code{findAssociatedSeqs}), this function does the following:
-    for each associated sequence,
-    from all samples that possess the associated sequence, gather the RepSeq data
-    for all clones whose receptor sequences lie in a neighborhood of the associated sequence.
+    Part of the workflow \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}. Intended for use following \code{\link{findAssociatedSeqs}} and prior to \code{\link{buildAssociatedClusterNetwork}}.
 
-    The RepSeq data for each neighborhood's associated sequence is then stored in its own data frame
-    and saved to its own file, in preparation for use with
-    \code{buildAssociatedClusterNetwork}.
+    Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data and a vector of associated sequences, identifies for each associated sequence a global "neighborhood" comprised of clones with TCR/BCR sequences similar to the associated sequence.
 }
 \usage{
 findAssociatedClones(
@@ -25,13 +15,14 @@ findAssociatedClones(
   file_list, input_type,
   data_symbols = NULL,
   header = TRUE, sep = "",
-  sample_ids = as.character(1:length(file_list)),
+  sample_ids =
+    paste0("Sample", 1:length(file_list)),
   subject_ids = NULL,
   group_ids,
   seq_col,
-
-  ## Search Criteria ##
   assoc_seqs,
+
+  ## Neighborhood Criteria ##
   nbd_radius = 1,
   dist_type = "hamming",
   min_seq_length = 6,
@@ -45,112 +36,86 @@ findAssociatedClones(
   verbose = FALSE
 )
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{file_list}{
-%%     ~~Describe \code{file_list} here~~
-  Passed to \code{loadDataFromFileList} (one file per sample).
+  A vector of file paths where each file contains the AIRR-Seq data for a sample, with observations indexed by row. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{input_type}{
-%%     ~~Describe \code{input_type} here~~
-  Passed to \code{loadDataFromFileList}.
+  A character string specifying the file format of the sample data files. Options are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{data_symbols}{
-%%     ~~Describe \code{data_symbols} here~~
-  Passed to \code{loadDataFromFileList}.
+  Used when \code{input_type = "rda"}. Specifies the name of each sample's data frame within its respective Rdata file.  Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{header}{
-%%     ~~Describe \code{header} here~~
-  Passed to \code{loadDataFromFileList}.
+  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{sep}{
-%%     ~~Describe \code{sep} here~~
-  Passed to \code{loadDataFromFileList}.
+  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{sample_ids}{
-%%     ~~Describe \code{sample_ids} here~~
   A character or numeric vector of sample IDs, whose length matches that of \code{file_list}.
 }
   \item{subject_ids}{
-%%     ~~Describe \code{subject_ids} here~~
-  An optional character or numeric vector of subject IDs, whose length matches that of \code{file_list}.
+  An optional character or numeric vector of subject IDs, whose length matches that of \code{file_list}. Used to assign a subject ID to each sample.
 }
   \item{group_ids}{
-%%     ~~Describe \code{group_ids} here~~
-  A character or numeric vector of group IDs, which contains exactly two unique
-  values and whose length matches that of \code{file_list}.
+  A character or numeric vector of group IDs whose length matches that of \code{file_list}. Used to assign each sample to a group. The two groups represent the levels of the binary variable of interest.
 }
   \item{seq_col}{
-%%     ~~Describe \code{seq_col} here~~
-    The column name or number of each sample's data frame that contains the receptor sequences to associate with the comparison group.
+    Specifies the column of each sample's data frame containing the TCR/BCR sequences. Accepts either the column name or column index.
 }
   \item{assoc_seqs}{
-%%     ~~Describe \code{assoc_seqs} here~~
-    A character vector containing the receptor sequences associated to the comparison group.
+    A character vector containing the TCR/BCR sequences associated with the binary variable of interest.
 }
   \item{nbd_radius}{
-%%     ~~Describe \code{nbd_radius} here~~
-    The maximum distance between an element of \code{assoc_seqs} and other clones within its neighborhood.
+    The maximum distance (based on \code{dist_type}) between an associated sequence and other TCR/BCR sequences belonging to its neighborhood. Lower values require sequences to be more similar to an associated sequence in order to belong to its neighborhood.
 }
   \item{dist_type}{
-%%     ~~Describe \code{dist_type} here~~
-    The distance metric used to measure the distance between sequences in \code{nbd_radius}. Valid options are \code{"hamming"} and \code{"levenshtein"}.
+    Specifies the function used to quantify the similarity between sequences. The similarity between two sequences determines their pairwise distance, with greater similarity corresponding to shorter distance. Valid options are \code{"hamming"} (the default), which uses \code{\link{hamDistBounded}}, and \code{"levenshtein"}, which uses \code{\link{levDistBounded}}.
 }
   \item{min_seq_length}{
-%%     ~~Describe \code{min_seq_length} here~~
-    Passed to \code{filterInputData()} when loading each sample.
+    Clones with TCR/BCR sequences below this length will be removed. Passed to \code{\link{filterInputData}} when loading each sample.
 }
   \item{drop_matches}{
-%%     ~~Describe \code{drop_matches} here~~
-    Passed to \code{filterInputData()}.
+    Passed to \code{\link{filterInputData}}. Accepts a regular expression (see \code{\link[base]{regex}}). Checks TCR/BCR sequences for a pattern match using \code{\link{grep}}. Those returning a match are dropped. By default, sequences containing either of the characters \code{*} or \code{_} are dropped.
 }
   \item{subset_cols}{
-%%     ~~Describe \code{subset_cols} here~~
-    Passed to \code{filterInputData()}.
+    Controls which columns of the AIRR-Seq data from each sample are included in the output. Accepts a vector of column names or a vector of column indices. The default \code{NULL} includes all columns. Passed to \code{\link{filterInputData}}.
 }
   \item{output_dir}{
-%%     ~~Describe \code{output_dir} here~~
-  The output directory; a valid output directory is required, since results are not returned in R.
+  A file path to a directory for saving the output. A valid output directory is required, since no output is returned in R. The specified directory will be created if it does not already exist.
 }
   \item{output_type}{
-%%     ~~Describe \code{output_dir} here~~
-  A character string specifying the file format to use when writing each file. Valid options include \code{"csv"}, \code{"tsv"}, \code{"rds"} and \code{"rda"}.
+  A character string specifying the file format to use for saving the output. Valid options include \code{"csv"}, \code{"tsv"}, \code{"rds"} and \code{"rda"}.
 }
   \item{verbose}{
-%%     ~~Describe \code{output_dir} here~~
-  A logical scalar; if \code{TRUE}, additional console output will be printed reporting the number of clones in each sample belonging to the neighborhood for each associated sequence, as well as the total number of clones in each neighborhood across all samples.
+  Logical. If \code{TRUE}, additional console output will be printed reporting the number of clones in each sample belonging to the neighborhood for each associated sequence, as well as the total number of clones in each neighborhood across all samples.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
-   Each neighborhood's RepSeq data file is saved using the corresponding associated sequence
-   for the filename, with the appropriate file extension appended based on the
-   value of \code{output_type} (e.g., the neighborhood data for the sequence
-   \code{"CASSGAYEQYF"} would be saved as \code{"CASSGAYEQYF.csv"} if
-   \code{output_type = "csv"}).
+   For each associated sequence, its neighborhood is defined to include all clones with TCR/BCR sequences that are sufficiently similar to the associated sequence. The arguments \code{dist_type} and \code{nbd_radius} control how the similarity is measured and the degree of similarity required for neighborhood membership.
 
-   Three variables, \code{SampleID}, \code{SubjectID} and \code{GroupID}, are added to each neighborhood's RepSeq data, whose respective values in each row are the values of \code{sample_ids}, \code{subject_ids} and \code{group_ids} corresponding to the data in that row.
+   For each associated sequence, a data frame is saved to an individual file. The data frame contains one row for each clone in the associated sequence's neighborhood (from all samples). It includes variables for sample ID, group ID and (if provided) subject ID, as well as variables from the AIRR-Seq data. Each neighborhood's file is named as its associated sequence, followed by the file extension based on \code{output_type}.
+
+   The files saved by this function are intended for use with \code{\link{buildAssociatedClusterNetwork}}. See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("associated_clusters")}.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
 
-\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
-\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters vignette}
 }
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 \code{\link{findAssociatedSeqs}}
 \code{\link{buildAssociatedClusterNetwork}}
 }
 \examples{
 \dontrun{
-## Generate some toy data for demonstration
-
+## Generate some toy data for demonstration ##
 # Use temp dir
 data_dir <- tempdir()
 
@@ -158,76 +123,70 @@ data_dir <- tempdir()
 dir_input_samples <- file.path(data_dir, "input_samples")
 dir.create(dir_input_samples, showWarnings = FALSE)
 
-samples <- 30
-affixes <- c("AAAA", "AASA", "AACA", "AAQA", "AAQ", "AAA", "AASAA", "AAAAA")
-affix_probs_g0 <- rep(1 / length(affixes),
-                      times = length(affixes) * samples / 2)
-affix_probs_g1 <- rep(c(1, 5, 1, 1, 1, 1, 5, 1), times = samples / 2)
-affix_probs <- matrix(c(affix_probs_g0, affix_probs_g1),
-                      nrow = samples, byrow = TRUE)
-new_probs_g0 <- rep(c(1/2, 1/6, 1/6, 1/6), times = samples / 2)
-new_probs_g1 <- rep(c(1/3, 1/6, 1/6, 1/3), times = samples / 2)
-new_probs <- matrix(c(new_probs_g0, new_probs_g1),
-                    nrow = samples, byrow = TRUE)
+# Number of samples by control/treatment group
+samples_c <- samples_t <- 15
+samples <- samples_c + samples_t
+sample_size <- 30 # (seqs per sample)
+
+# sequences (first five are chosen to be associated with treatment)
+base_seqs <- c("CASSGAYEQYF", "CSVDLGKGNNEQFF",
+               "CASSIEGQLSTDTQYF",
+               "CASSEEGQLSTDTQYF",
+               "CASSPEGQLSTDTQYF",
+               "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF")
+
+# relative generation probabilities by control/treatment group
+pgen_c <- matrix(rep(c(rep(1, 5), rep(30, 3)), times = samples_c),
+                 nrow = samples_c, byrow = TRUE)
+pgen_t <- matrix(rep(c(1, 1, rep(1/3, 3), rep(2, 3)), times = samples_t),
+                 nrow = samples_t, byrow = TRUE)
+pgen <- rbind(pgen_c, pgen_t)
+
+# Simulate the data
 simulateToyData(
-  samples = samples,
-  sample_size = 30,
-  prefix_length = 1,
-  prefix_chars = c("A", "C"),
+  samples = samples, sample_size = sample_size,
+  prefix_length = 1, prefix_chars = c("", ""),
   prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = affixes,
-  affix_probs = affix_probs,
-  num_edits = 4,
-  edit_pos_probs = function(seq_length) {
-    dnorm(seq(-4, 4, length.out = seq_length))
-  },
-  edit_ops = c("insertion", "deletion", "transmutation"),
-  edit_probs = c(5, 1, 4),
-  new_chars = c("A", "S", "C", "Q"),
-  new_probs = new_probs,
-  output_dir = dir_input_samples,
-  no_return = TRUE
-)
+  affixes = base_seqs, affix_probs = pgen, num_edits = 0,
+  output_dir = dir_input_samples, no_return = TRUE)
+
+# View first few rows of data for sample 1
+head(readRDS(file.path(dir_input_samples, "Sample1.rds")))
 
 
-## 1. Find Associated Sequences
-
-# input files for step 1 (one per sample)
+## Step 1: Find Associated Sequences ##
+# input files (one per sample)
 input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
-head(input_files)
 
 # group labels for the samples
-group_labels <- c(rep("reference", samples / 2), rep("comparison", samples / 2))
+group_labels <- c(rep("reference", samples_c), rep("comparison", samples_t))
 
-# search across samples for associated sequences using Fisher's exact test
+# search for associated sequences using Fisher's exact test
 associated_seqs <- findAssociatedSeqs(
   file_list = input_files, input_type = "rds",
-  group_ids = group_labels, groups = c("reference", "comparison"),
+  group_ids = group_labels,
+  seq_col = "CloneSeq",
   min_seq_length = NULL, drop_matches = NULL,
-  seq_col = "CloneSeq", outfile = NULL)
+  min_sample_membership = 0,
+  pval_cutoff = 0.1, outfile = NULL)
+
+# view first few rows of output
 head(associated_seqs)
 
 
-## 2. Find Associated Clones
+## Step 2: Find Associated Clones ##
 
 # output directory for current step
 dir_nbds <- file.path(data_dir, "assoc_seq_nbds")
 
-# Identify neighborhood around each associated sequence
+# Identify clones in a neighborhood around each associated sequence
 findAssociatedClones(
-  file_list = input_files, input_type = "rds", group_ids = group_labels,
-  seq_col = "CloneSeq", dist_type = "levenshtein",
+  file_list = input_files, input_type = "rds",
+  group_ids = group_labels,
+  seq_col = "CloneSeq",
   assoc_seqs = associated_seqs$ReceptorSeq,
   min_seq_length = NULL, drop_matches = NULL,
   output_dir = dir_nbds)
 }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+

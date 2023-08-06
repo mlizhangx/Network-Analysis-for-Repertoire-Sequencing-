@@ -1,67 +1,50 @@
 \name{getNeighborhood}
 \alias{getNeighborhood}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
-    Compute the Neighborhood Around a Cell/Clone
+    Identify Cells or Clones in a Neighborhood Around a Target Sequence
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-    Given immune repertoire sequence data and a target receptor sequence, return
-    the subset of the data consiting of those cells/clones whose receptor sequences are
-    within a specified distance of the target.
+    Given Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data and a target receptor sequence that is present within the data, identifies a "neighborhood" comprised of cells/clones with receptor sequences sufficiently similar to the target sequence.
 }
 \usage{
-getNeighborhood(data, seq_col, target_seq,
-                dist_type = "hamming", max_dist = 1)
+getNeighborhood(
+    data,
+    seq_col,
+    target_seq,
+    dist_type = "hamming",
+    max_dist = 1
+)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data}{
-%%     ~~Describe \code{x} here~~
-    Data frame containing the RepSeq data.
+    A data frame containing the AIRR-Seq data.
 }
   \item{seq_col}{
-%%     ~~Describe \code{x} here~~
-    The column name or number of \code{data} containing the receptor sequences of the same type as \code{target_seq}.
+    Specifies the column of \code{data} containing the receptor sequences. Accepts either the column name or column index.
 }
   \item{target_seq}{
-%%     ~~Describe \code{x} here~~
-    A character string containing the receptor sequence of the cell/clone around which to form a neighborhood.
+    A character string containing the target receptor sequence. Must be a receptor sequence possessed by one of the clones/cells in the AIRR-Seq data.
 }
   \item{dist_type}{
-%%     ~~Describe \code{x} here~~
-    A character string specifying the distance type on which the neighborhood is based; valid options are \code{"hamming"} and \code{"levenshtein"}.
+    Specifies the function used to quantify the similarity between receptor sequences. The similarity between two sequences determines their pairwise distance, with greater similarity corresponding to shorter distance. Valid options are \code{"hamming"} (the default), which uses \code{\link{hamDistBounded}}, and \code{"levenshtein"}, which uses \code{\link{levDistBounded}}.
 }
   \item{max_dist}{
-%%     ~~Describe \code{x} here~~
-    A numeric scalar specifying the neighborhood radius. The neighborhood consists of all clones whose receptor sequences are at most \code{max_dist} from the target sequence.
+    Determines whether each cell/clone belongs to the neighborhood based on its receptor sequence's distance from the target sequence. The distance is based on the \code{dist_type} argument. \code{max_dist} specifies the maximum distance at which a cell/clone belongs to the neighborhood. Lower values require greater similarity between the target sequence and the receptor sequences of cells/clones in its neighborhood.
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-    The neighborhood will only be computed if \code{target_seq} is present in the data, i.e., in the column of \code{data} referenced by \code{seq_col}.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-    If \code{target_seq} is present in the data, a data frame containing the subset corresponding to the neighborhood; otherwise, the function returns \code{NULL}.
+    A data frame containing the rows of \code{data} corresponding to the cells/clones in the neighborhood.
+
+    If no cell/clone in the AIRR-Seq data possesses the target sequence as its receptor sequence, then a value of \code{NULL} is returned.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
 
-\url{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825}
-
-\url{https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 }
 \author{
-%%  ~~who you are~~
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \examples{
 # Simulate some toy data for demonstration
@@ -71,12 +54,3 @@ toy_data <- simulateToyData(sample_size = 500)
 nbd <- getNeighborhood(toy_data, seq_col = "CloneSeq",
                        target_seq = toy_data$CloneSeq[[1]])
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

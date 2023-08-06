@@ -124,6 +124,11 @@ The list element `igraph` is an object of class `igraph`, which contains the lis
 The `igraph` object can be used for [downstream computation of network properties](#downstream), as an alternative to [computing network properties when calling `buildRepSeqNetwork`](#network_properties). It can also be used to [generate additional plots of the network graph](network_visualization.html#new_plots).
 
 
+```{r}
+class(output$igraph)
+```
+
+
 ## `adjacency_matrix`
 
 The list element `adjacency_matrix` is an object of class `dgCMatrix`, which is a sparse matrix format from the `Matrix` package. 
@@ -178,18 +183,18 @@ The settings used to construct the network can be customized using the arguments
 
 ## Distance Function
 
-The default method for measuring the similarity between TCR/BCR sequences is the Hamming distance. It calculates the number of differences between two sequences of the same length. If the sequences have different lengths, the shorter sequence is extended by adding non-matching characters to make it the same length as the longer sequence.
+The default method for measuring the similarity between TCR/BCR sequences is the [Hamming distance](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/hamDistBounded.html). It calculates the number of differences between two sequences of the same length. For each position in one sequence, the character in that position is checked to see whether it differs from the character in the same position of the other sequence. If the sequences have different lengths, the shorter sequence is extended by adding non-matching characters to make it the same length as the longer sequence.
 
-The Levenshtein distance can be used as an alternative measurement to determine the similarity between sequences. It calculates the minimum number of single-character edits (insertions, deletions and transformations) needed to transform one sequence into the other. This method is particularly useful for comparing sequences of different lengths and can account for insertions and deletions. When constructing a network based on the similarity of CDR-3 nucleotide sequences, it is preferable to use the Levenshtein distance instead of the default Hamming distance by setting the argument `dist_type = "levenshtein"`. However, the Levenshtein distance requires significantly more computational time than the Hamming distance, which may be challenging when working with large data sets having long TCR/BCR sequences.
+The [Levenshtein distance](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/levDistBounded.html) can be used as an alternative measurement to determine the similarity between sequences. It calculates the minimum number of single-character edits (insertions, deletions and transformations) needed to transform one sequence into the other. This method is particularly useful for comparing sequences of different lengths and can account for insertions and deletions. When constructing a network based on the similarity of CDR-3 nucleotide sequences, it is preferable to use the Levenshtein distance instead of the default Hamming distance by setting the argument `dist_type = "levenshtein"`. However, the Levenshtein distance requires significantly more computational time than the Hamming distance, which may be challenging when working with large data sets having long TCR/BCR sequences.
 
 
 ## Distance Cutoff
 
 The distance function specified in the `dist_type` argument (Hamming distance by default) is used to quantify the similarity between TCR/BCR sequences. The chosen distance measurement determines the distance between two nodes in the network graph. 
 
-By default, two nodes in the  graph are connected by an edge if their distance is at most 1. However, if users want to adjust this cutoff, the `dist_cutoff` argument can be set to a different value. 
+By default, two nodes in the graph are connected by an edge if their distance is at most 1. However, if users want to adjust this cutoff, the `dist_cutoff` argument can be set to a different value.  For example, if `dist_cutoff = 2`, then two nodes will be connected by an edge if their distance is at most 2. 
 
-For example, if `dist_cutoff = 2`, then two nodes will be connected by an edge if their distance is at most 2. The cutoff value controls the stringency of the network construction and affects the number and density of edges in the network.
+The cutoff value controls the stringency of the network construction and affects the number and density of edges in the network. A lower cutoff value requires greater similarity between sequences in order for their respective nodes to be joined by an edge connection. If `dist_cutoff = 0`, two sequences must be identical in order for their nodes to be joined by an edge.
 
 
 ## <a name="isolated_nodes"></a> Keep/Remove Isolated Nodes 
@@ -334,7 +339,7 @@ By default, clustering is performed using the `cluster_fast_greedy` algorithm fr
 
 For example, setting `cluster_fun = cluster_leiden` performs clustering using the `cluster_leiden` algorithm.
 
-For more information about a particular algorithm, users can refer to its help documentation file. For example, the command `?igraph::cluster_fast_greedy` loads the documentation file for the `cluster_fast_greedy` algorithm.
+For more information about a particular algorithm, users can refer to [this help topic](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/clustering_algorithms.html), which can be accessed offline from within R using the command `?NAIR::clustering_algorithms`.
 
 
 ### <a name="cluster_properties"></a> Cluster-Level Network Properties
@@ -426,23 +431,21 @@ The column specified by the `seq_col` argument will automatically be included re
 
 * By default, `buildRepSeqNetwork` saves its output to the current working directory.
 * Users can specify a different directory using the `output_dir` argument. The specified output directory will be created if it does not already exist.
-* Setting `output_dir` to `NULL` will prevent the output from being saved.
+* Setting `output_dir` to `NULL` will prevent all output from being saved.
 
 
 ## <a name = "output_format"></a> Output File Format
 
-* By default, each component of the list returned by `buildRepSeqNetwork` is saved as its own file using the following file formats:
+* By default, each element of the list returned by `buildRepSeqNetwork` is written to its own file using the following file formats:
     * csv for `node_data` and `cluster_data`
     * mtx for `adjacency_matrix`
     * txt for `igraph`
     * pdf for `plots` (see next subsection)
 * For better compression and fewer files, users can specify `output_type = "rds"` or `output_type = "rda"`, which will save the entire output list to a single rds file or a single rda file, respectively.
     * If the output list is saved using the `"rda"` (Rdata) format, the output list will be named `net` in the R environment when the Rdata file is loaded into R using the `load` function.
+* Regardless of the output file format specified, if `plots = TRUE`, a pdf file is written to the output directory. The pdf contains all plots generated for the network, with one plot per page. The dimensions (in inches) for each page can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively.
+* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot` function as described [here](network_visualization.html#new_plots).
 
-## PDF of Plots
-
-* Regardless of the output file format specified, a separate pdf file containing the graph plot(s) is created in `output_dir`. The dimensions (in inches) for the pdf can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively. The pdf file is not created if no plots are generated (i.e., if the argument `plots` is set to `FALSE`).
-* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot` function as described [here](network_visualization.html#new_plots).
 
 ## <a name="output_filenames"></a> Output File Name(s)
 

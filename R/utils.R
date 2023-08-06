@@ -1179,18 +1179,21 @@ getClusterStats <- function(
 
 
 
-plotNetworkGraph <- function(igraph,
-                             plot_title = NULL,
-                             plot_subtitle = NULL,
-                             color_nodes_by = NULL,
-                             color_scheme = "default",
-                             color_legend = "auto",
-                             color_title = "auto",
-                             edge_width = 0.1,
-                             size_nodes_by = 0.5,
-                             node_size_limits = NULL,
-                             size_title = "auto",
-                             outfile = NULL
+plotNetworkGraph <- function(
+    igraph,
+    plot_title = NULL,
+    plot_subtitle = NULL,
+    color_nodes_by = NULL,
+    color_scheme = "default",
+    color_legend = "auto",
+    color_title = "auto",
+    edge_width = 0.1,
+    size_nodes_by = 0.5,
+    node_size_limits = NULL,
+    size_title = "auto",
+    outfile = NULL,
+    pdf_width = 12,
+    pdf_height = 8
 ) {
   set.seed(9999)
   layout <- igraph::layout_components(igraph)
@@ -1281,8 +1284,8 @@ plotNetworkGraph <- function(igraph,
     if (!is.null(color_title) && color_title == "auto") {
       color_title <- deparse(substitute(color_nodes_by))
     }
-      graph_plot <- graph_plot +
-        ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
+    graph_plot <- graph_plot +
+      ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
     # if (is.null(color_title)) {
     #   graph_plot <- graph_plot +
     #     ggplot2::guides(color = ggplot2::guide_legend(title = color_title))
@@ -1373,7 +1376,7 @@ plotNetworkGraph <- function(igraph,
 
 
   if (!is.null(outfile)) {
-    grDevices::pdf(file = outfile, width = 12, height = 8)
+    grDevices::pdf(file = outfile, width = pdf_width, height = pdf_height)
     print(graph_plot)
     grDevices::dev.off()
     cat(paste0("Plot of network graph saved to file:\n  ", outfile, "\n"))
@@ -1549,7 +1552,7 @@ addClusterLabels <- function(plot, net,
       } else { return("Network by Receptor Sequence Similarity") }
     }
   } else if (type == "pub_clust_rep") {
-    if (plot_title == "auto") { return("Public Cluster Network") }
+    if (plot_title == "auto") { return("Public Clusters Using Representative TCR/BCRs") }
   }
   return(plot_title)
 }
@@ -1565,8 +1568,8 @@ addClusterLabels <- function(plot, net,
       return(paste("Each node denotes a single TCR/BCR cell or clone\nEdges denote a maximum", dist_type, "distance of", dist_cutoff, "between receptor sequences\n"))
     }
   } else if (type == "pub_clust_rep") {
-    if (plot_subtitle == "auto" & seq_col == "seq_w_max_count") { return("Each node corresponds to a TCR sequence; edges denote similar sequences\nPublic network includes only one TCR sequence from each cluster in each sample:\nTCR sequence with highest node count") }
-    return(paste0("Each node corresponds to a TCR sequence; edges denote similar sequences\nPublic network includes only one TCR sequence from each cluster in each sample:\n", seq_col))
+    if (plot_subtitle == "auto" & seq_col == "seq_w_max_count") { return("Each node represents a TCR/BCR sequence. Similar sequences are joined by edges.\nNetwork includes one representative TCR/BCR sequence from each cluster within each sample\nRepresentative sequence from each cluster: TCR/BCR with greatest clone count") }
+    return(paste0("Each node represents a TCR/BCR sequence. Similar sequences are joined by edges.\nNetwork includes one representative TCR/BCR sequence from each cluster within each sample\nRepresentative sequence from each cluster based on property: ", seq_col))
   }
   return(plot_subtitle)
 }
