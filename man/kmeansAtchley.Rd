@@ -99,13 +99,9 @@ The deep learning algorithm used by \href{https://doi.org/10.1038/s41592-020-010
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
 
-    Zhang Z, Xiong D, Wang X, Liu H, Wang T. (2021). Mapping the functional landscape
-of T cell receptor repertoires by single-T cell transcriptomics. \emph{Nat Methods}, 18
-(1):92–9. \url{https://doi.org/10.1038/s41592-020-01020-3}
+    Zhang Z, Xiong D, Wang X, Liu H, Wang T. (2021). Mapping the functional landscape of T cell receptor repertoires by single-T cell transcriptomics. \emph{Nat Methods}, 18(1):92–9. \url{https://doi.org/10.1038/s41592-020-01020-3}
 
-Atchley WR, Zhao J, Fernandes AD, Drüke T. (2005). Solving the protein sequence
-metric problem. \emph{Proc Natl Acad Sci U.S.A.}  102(18):6395–400. \url{https://doi.org/10.1073/
-pnas.0408677102}
+Atchley WR, Zhao J, Fernandes AD, Druke T. (2005). Solving the protein sequence metric problem. \emph{Proc Natl Acad Sci U.S.A.}  102(18):6395–400. \url{https://doi.org/10.1073/pnas.0408677102}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 }

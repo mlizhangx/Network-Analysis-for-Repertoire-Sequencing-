@@ -31,4 +31,4 @@ Config/reticulate:
       list(package = "keras")
     )
   )
-URL: https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/
+URL: https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/, https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
