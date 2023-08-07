@@ -91,6 +91,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+\dontrun{
 ## Generate some toy data for demonstration
 
 # Use temp dir
@@ -119,4 +120,5 @@ data2 <- combineSamples(
   min_seq_length = 3,
   subset_cols = "CloneSeq",
   sample_ids = c("id01", "id02"))
+}
 }

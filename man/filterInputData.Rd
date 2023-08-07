@@ -48,6 +48,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+\dontrun{
 ## Generate some toy data for demonstration
 raw_data <- simulateToyData()
 
@@ -57,4 +58,5 @@ filtered_data <-
                   min_seq_length = 13,
                   drop_matches = "[*|_]",
                   subset_cols = c("CloneSeq", "CloneFrequency", "SampleID"))
+}
 }
