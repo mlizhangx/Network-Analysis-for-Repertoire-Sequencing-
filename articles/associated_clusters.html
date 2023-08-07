@@ -165,6 +165,7 @@ between the two groups.</p>
 <span></span>
 <span><span class="co"># Simulate the data</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Welcome to the NAIR package. Get started using `vignette("NAIR", package = "NAIR")` or by visiting https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/</span></span>
 <span><span class="fu"><a href="../reference/simulateToyData.html">simulateToyData</a></span><span class="op">(</span>    </span>
 <span>  samples <span class="op">=</span> <span class="va">samples</span>, sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span>
 <span>  prefix_length <span class="op">=</span> <span class="fl">1</span>, prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span>
@@ -287,12 +288,12 @@ to the <code>file_list</code> argument of
 <code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
 <span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmpw6Xxth/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/Rtmpw6Xxth/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/Rtmpw6Xxth/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/Rtmpw6Xxth/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/Rtmpw6Xxth/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/Rtmpw6Xxth/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/Rtmph3Mdt8/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/Rtmph3Mdt8/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/Rtmph3Mdt8/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/Rtmph3Mdt8/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/Rtmph3Mdt8/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/Rtmph3Mdt8/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
@@ -885,7 +886,7 @@ step</a>:</p>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmpw6Xxth/assoc_seq_nbds</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/Rtmph3Mdt8/assoc_seq_nbds</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findassociatedclones">
@@ -1175,16 +1176,16 @@ vignette</a> for further details on how the output files are named.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmpw6Xxth/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmph3Mdt8/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmpw6Xxth/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/Rtmph3Mdt8/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmpw6Xxth/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmph3Mdt8/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmpw6Xxth/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmph3Mdt8/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmpw6Xxth/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/Rtmph3Mdt8/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>In the graph plot of the global network, where the nodes are colored
 according to the binary variable of interest, we see that the treatment
 group shows high representation in the clusters, affirming the

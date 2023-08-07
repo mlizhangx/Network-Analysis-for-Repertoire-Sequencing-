@@ -124,6 +124,7 @@ specifications</li>
 each, for a total of 200 observations (rows).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Welcome to the NAIR package. Get started using `vignette("NAIR", package = "NAIR")` or by visiting https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/</span></span>
 <span><span class="va">dir_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -173,14 +174,14 @@ plotting window in R.</p>
 <span><span class="co">#&gt; Generating graph plot...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork_NodeMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork_NodeMetadata.csv</span></span></code></pre></div>
 <p><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 class="tabset" id="base-output">
@@ -987,15 +988,15 @@ R using the <code>load</code> function.</p>
 <code class="sourceCode R"><span><span class="co"># save output list returned by buildRepSeqNetwork</span></span>
 <span><span class="fu"><a href="../reference/saveNetwork.html">saveNetwork</a></span><span class="op">(</span>net <span class="op">=</span> <span class="va">output</span>, output_dir <span class="op">=</span> <span class="va">dir_out</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork_ClusterMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork_ClusterMetadata.csv</span></span>
 <span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpplYFCE/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmptgKNG7/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="regenerating-output-components">Regenerating Output Components<a class="anchor" aria-label="anchor" href="#regenerating-output-components"></a>
