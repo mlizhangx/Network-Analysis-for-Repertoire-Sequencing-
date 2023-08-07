@@ -1,6 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/actions/workflows/check-standard.yaml)
 <!-- badges: end -->
 
 # NAIR: Network Analysis of Immune Repertoire
