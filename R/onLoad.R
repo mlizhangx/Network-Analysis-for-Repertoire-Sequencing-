@@ -27,7 +27,10 @@
   #
   # message("NOTE: The following Python modules are required for this package to function properly: \n\n\t pandas \n\t scipy \n\t numpy \n\t Levenshtein \n\n You can install these using `RepSeqNetworkAnalysis::installPythonModules()`.\n")
 
+}
 
-
-
+.onAttach <- function(libname, pkgname) {
+  packageStartupMessage(
+    'Welcome to the NAIR package. Get started using `vignette("NAIR", package = "NAIR")` or by visiting https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/'
+  )
 }

@@ -12,6 +12,10 @@
 
 * Custom index added for the reference topics. Topics are now organized into named sections, dramatically improving the ability to find particular topics or functions of interest.
 
+## Package
+
+* `packageStartupMessage()` added to `.onAttach()`: When loaded, the package will provide a welcome message with instructions for getting started.
+
 
 # Changes in NAIR version 0.0.9042 (8/6/2023)
 
