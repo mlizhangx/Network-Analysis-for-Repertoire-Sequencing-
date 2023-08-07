@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -74,7 +81,7 @@
       <img src="" class="logo" alt=""><h1>Searching for Public TCR/BCR Clusters</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/blob/HEAD/vignettes/public_clusters.Rmd" class="external-link"><code>vignettes/public_clusters.Rmd</code></a></small>
       <div class="d-none name"><code>public_clusters.Rmd</code></div>
     </div>
 
@@ -123,11 +130,6 @@ observations.</p>
 <p>Some sequences are simulated with a tendency to appear in relatively
 few samples, while others are simulated with a tendency to appear in
 many samples.</p>
-<p>Each sample is saved in a separate file using the .rds file format.
-The files are named “<code>Sample1.rds</code>”,
-“<code>Sample2.rds</code>”, etc. The file path of their directory is
-saved to the R environment variable <code>dir_input_samples</code> for
-later reference.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use temp dir</span></span>
 <span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -164,6 +166,11 @@ later reference.</p>
 <span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">samples</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>, affix_probs <span class="op">=</span> <span class="va">pgen</span>, num_edits <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="va">dir_input_samples</span>, no_return <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Each sample is saved in a separate file using the .rds file format.
+The files are named “<code>Sample1.rds</code>”,
+“<code>Sample2.rds</code>”, etc. The file path of their directory is
+saved to the R environment variable <code>dir_input_samples</code> for
+later reference.</p>
 <p>The first few rows of the data for the first sample appear as
 follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -279,21 +286,23 @@ Step 1<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-1
 </h4>
 <p>The main argument of the <code>findPublicClusters</code> function is
 the <code>file_list</code> argument, which accepts a vector containing
-file paths. Each path corresponds to a distinct AIRR-Seq data file
-representing an individual sample.</p>
+file paths. Each file is assumed to contain the AIRR-Seq data for a
+single sample, with observations indexed by row.</p>
 <p>Below, we prepare the vector <code>input_files</code> to be provided
 to the <code>file_list</code> argument of
 <code>findPublicClusters</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
-<span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">input_files</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, </span>
+<span>            <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpEKJ3Vv/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpEKJ3Vv/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmpEKJ3Vv/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmpEKJ3Vv/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmpEKJ3Vv/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmpEKJ3Vv/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpKcQZdN/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpKcQZdN/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmpKcQZdN/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmpKcQZdN/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmpKcQZdN/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmpKcQZdN/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
@@ -361,12 +370,16 @@ named <code>CloneCount</code>. Hence we specify
 saved by <code>findPublicClusters</code>. This will allow us to
 distinguish the sample of origin for each clone after we combine the
 filtered data from all samples in <a href="#step2">step 2</a>.</p>
-<p>By default, the samples are labeled numerically according to the
-order they appear in <code>file_list</code>. The <code>sample_ids</code>
-argument allows for custom sample IDs to be assigned, if desired. The
-argument accepts a vector of the same length as <code>file_list</code>.
-Each entry of <code>sample_ids</code> is assigned as a sample ID to the
-sample in the corresponding entry of <code>file_list</code>.</p>
+<p>By default, the samples are labeled as <code>"Sample1"</code>,
+<code>"Sample2"</code>, etc., according to their order of appearance in
+<code>file_list</code>. The <code>sample_ids</code> argument allows for
+custom sample IDs to be assigned, if desired. The argument accepts a
+vector of the same length as <code>file_list</code>. Each entry of
+<code>sample_ids</code> is assigned as a sample ID to the sample in the
+corresponding entry of <code>file_list</code>.</p>
+<p><strong>Sample ID values should avoid using characters that are
+invalid for use in file names, as well as forward slash and backslash
+(<code>/</code> and <code>\</code>).</strong></p>
 </div>
 </div>
 <div class="section level3">
@@ -578,7 +591,6 @@ named <code>dir_filtered_samples</code> for later reference.</p>
 <span><span class="co"># Filter Clusters Within Each Sample</span></span>
 <span><span class="fu"><a href="../reference/findPublicClusters.html">findPublicClusters</a></span><span class="op">(</span></span>
 <span>  file_list <span class="op">=</span> <span class="va">input_files</span>, input_type <span class="op">=</span> <span class="st">"rds"</span>,</span>
-<span>  sample_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span><span class="op">)</span>,</span>
 <span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, count_col <span class="op">=</span> <span class="st">"CloneCount"</span>,</span>
 <span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  top_n_clusters <span class="op">=</span> <span class="fl">3</span>, min_node_count <span class="op">=</span> <span class="fl">5</span>, min_clone_count <span class="op">=</span> <span class="fl">15000</span>,</span>
@@ -885,7 +897,7 @@ named <code>dir_filtered_samples</code> for later reference.</p>
 <span><span class="co">#&gt; * 3 clusters (19 nodes) remain. Saving results... Done.</span></span>
 <span><span class="co">#&gt; ----------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; All samples complete. Filtered data is located in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/filtered_samples</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpKcQZdN/filtered_samples</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findpublicclusters">Output of <code>findPublicClusters</code><a class="anchor" aria-label="anchor" href="#output-of-findpublicclusters"></a>
@@ -1018,12 +1030,12 @@ different input data and the same output directory.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_filtered_samples_node</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">files_filtered_samples_node</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample1.rds" </span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample10.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample11.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample12.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample13.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmpEKJ3Vv/filtered_samples/node_meta_data/Sample14.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpKcQZdN/filtered_samples/node_meta_data/Sample1.rds" </span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpKcQZdN/filtered_samples/node_meta_data/Sample10.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmpKcQZdN/filtered_samples/node_meta_data/Sample11.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmpKcQZdN/filtered_samples/node_meta_data/Sample12.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmpKcQZdN/filtered_samples/node_meta_data/Sample13.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmpKcQZdN/filtered_samples/node_meta_data/Sample14.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-filtered-node-data">File Format of Filtered Node Data<a class="anchor" aria-label="anchor" href="#file-format-of-filtered-node-data"></a>
@@ -1218,16 +1230,16 @@ the <a href="#files2">input we prepared earlier</a> for the
 <span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpKcQZdN/public_clusters/PublicClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpKcQZdN/public_clusters/PublicClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="public_clusters_files/figure-html/unnamed-chunk-8-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpKcQZdN/public_clusters/PublicClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpKcQZdN/public_clusters/PublicClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpEKJ3Vv/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmpKcQZdN/public_clusters/PublicClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>From the plot of the global network graph, where the nodes are
 colored according to sample ID, we notice that many samples are
 represented among the larger clusters. Hence <a href="#step3">these

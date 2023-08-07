@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -74,7 +81,7 @@
       <img src="" class="logo" alt=""><h1>Searching for Associated TCR/BCR Clusters</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/blob/HEAD/vignettes/associated_clusters.Rmd" class="external-link"><code>vignettes/associated_clusters.Rmd</code></a></small>
       <div class="d-none name"><code>associated_clusters.Rmd</code></div>
     </div>
 
@@ -83,7 +90,7 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Given multiple samples of Adaptive Immune Receptor Repertoire
+<p>Given multiple samples of bulk Adaptive Immune Receptor Repertoire
 Sequencing (AIRR-Seq) data, the <code>NAIR</code> package can be used to
 search for TCR/BCR clusters associated with a binary variable of
 interest, such as a disease condition, treatment or clinical
@@ -129,11 +136,6 @@ observations. The generation probabilities of the possible sequences are
 fixed within each group. In order to simulate the treatment effect, the
 generation probabilities of certain sequences differ substantially
 between the two groups.</p>
-<p>Each sample is saved in a separate file using the .rds file format.
-The files are named “<code>Sample1.rds</code>”,
-“<code>Sample2.rds</code>”, etc. The file path of their directory is
-saved to the R environment variable <code>dir_input_samples</code> for
-later reference.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use temp dir</span></span>
 <span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -170,6 +172,11 @@ later reference.</p>
 <span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>, affix_probs <span class="op">=</span> <span class="va">pgen</span>, num_edits <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="va">dir_input_samples</span>, no_return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>Each sample is saved in a separate file using the .rds file format.
+The files are named “<code>Sample1.rds</code>”,
+“<code>Sample2.rds</code>”, etc. The file path of their directory is
+saved to the R environment variable <code>dir_input_samples</code> for
+later reference.</p>
 <p>The first few rows of the data for the first sample appear as
 follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -228,14 +235,17 @@ value to <code>NULL</code> bypasses this check.</p>
 <div class="section level4">
 <h4 id="sequence-content">Sequence Content<a class="anchor" aria-label="anchor" href="#sequence-content"></a>
 </h4>
-<p>Sequences containing characters <code>*</code> or <code>_</code> will
-be excluded from consideration. This can be changed using the
-<code>drop_matches</code> argument, which accommodates a character
-string or regular expression specifying the pattern of content to search
-for. The content of each sequence is checked for a match to this pattern
-using the <code>grep</code> function from base R. If a match is found,
-the sequence is excluded from consideration. Setting the value to
-<code>NULL</code> bypasses this check.</p>
+<p>Sequences can be filtered based on the character content they
+contain. <strong>It is recommended to filter out sequences containing
+special characters that are invalid for use in file names.</strong></p>
+<p>By default, sequences containing characters <code>*</code> or
+<code>_</code> will be excluded from consideration. This can be changed
+using the <code>drop_matches</code> argument, which accommodates a
+character string or regular expression specifying the pattern of content
+to search for. The content of each sequence is checked for a match to
+this pattern using the <code>grep</code> function from base R. If a
+match is found, the sequence is excluded from consideration. Setting the
+value to <code>NULL</code> bypasses this check.</p>
 <p>For details on how the pattern matching is performed, please refer to
 the base R documentation files for <code>regex</code> and
 <code>grep</code>.</p>
@@ -268,8 +278,8 @@ Step 1<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-1
 </h4>
 <p>The main argument of the <code>findAssociatedSeqs</code> function is
 the <code>file_list</code> argument, which accepts a vector containing
-file paths. Each path corresponds to a distinct AIRR-Seq data file
-representing an individual sample.</p>
+file paths. Each file is assumed to contain the AIRR-Seq data for a
+single sample, with observations indexed by row.</p>
 <p>Below, we prepare the vector <code>input_files</code> to be provided
 to the <code>file_list</code> argument of
 <code>findAssociatedSeqs</code>:</p>
@@ -277,12 +287,12 @@ to the <code>file_list</code> argument of
 <code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
 <span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmp1SFJcq/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/Rtmp1SFJcq/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/Rtmp1SFJcq/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/Rtmp1SFJcq/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/Rtmp1SFJcq/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/Rtmp1SFJcq/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmppzTOrP/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmppzTOrP/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmppzTOrP/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmppzTOrP/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmppzTOrP/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmppzTOrP/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
@@ -391,9 +401,11 @@ subject.</p>
 <h4 id="clone-frequency-column-optional">
 <a name="freq_col"></a> Clone Frequency Column (Optional)<a class="anchor" aria-label="anchor" href="#clone-frequency-column-optional"></a>
 </h4>
-<p>The <code>freq_col</code> argument can be used to specify a column
-containing clone frequencies in the input data for each sample. The
-argument accepts either the column name or column index.</p>
+<p>The <code>freq_col</code> argument can be used to specify the column
+in each sample’s data frame that contains the clone frequencies (i.e.,
+clone count divided by the sum of the clone counts across all clones in
+the sample). The argument accepts either the column name or column
+index.</p>
 <p>If clone frequencies are provided, the maximum clone frequency
 (across all samples) for each associated sequence will be included in
 the content of the data frame returned by
@@ -426,8 +438,7 @@ prevent the output from being saved.</p>
 <div class="section level4">
 <h4 id="execute-findassociatedseqs">Execute <code>findAssociatedSeqs</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedseqs"></a>
 </h4>
-<p>We execute the <code>findAssociatedSeqs</code> function using the <a href="#input_files">inputs we prepared earlier</a> for the
-<code>file_list</code> and <code>group_ids</code> arguments:</p>
+<p>We execute the <code>findAssociatedSeqs</code> function using the <a href="#input_settings">inputs we prepared earlier</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># search across samples for associated sequences using Fisher's exact test</span></span>
 <span><span class="va">associated_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span></span>
@@ -552,7 +563,8 @@ whose sequences belong to this neighborhood.</p>
 a separate file to be used as an input in <a href="#step3">step
 3</a>.</p>
 <div class="section level3">
-<h3 id="specifying-the-associated-sequences">Specifying the Associated Sequences<a class="anchor" aria-label="anchor" href="#specifying-the-associated-sequences"></a>
+<h3 id="specifying-the-associated-sequences">
+<a name="assoc_seqs"></a> Specifying the Associated Sequences<a class="anchor" aria-label="anchor" href="#specifying-the-associated-sequences"></a>
 </h3>
 <p>The associated sequences are specified via the
 <code>assoc_seqs</code> argument, which accepts a character vector
@@ -572,7 +584,8 @@ consider only the 10 with the lowest P-values by specifying
 <h3 class="tabset" id="specify-input-data-for-step-2">Specify Input Data for Step 2<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-2"></a>
 </h3>
 <div class="section level4">
-<h4 id="arguments-from-step-1">Arguments from Step 1<a class="anchor" aria-label="anchor" href="#arguments-from-step-1"></a>
+<h4 id="arguments-from-step-1">
+<a name="files2"></a> Arguments from Step 1<a class="anchor" aria-label="anchor" href="#arguments-from-step-1"></a>
 </h4>
 <p>In order for <code>findAssociatedClones</code> to conduct its search,
 we must provide specifications for our sample data, just as we did when
@@ -597,8 +610,9 @@ when calling <code>findAssociatedSeqs</code> in <a href="#step1">step
 </h4>
 <p>Each clone’s sample ID is automatically included as a variable in the
 data for each associated sequence’s neighborhood.</p>
-<p>By default, the samples are labeled numerically according to the
-order they appear in <code>file_list</code>.</p>
+<p>By default, the samples are labeled as <code>"Sample1"</code>,
+<code>"Sample2"</code>, etc., according to their order of appearance in
+<code>file_list</code>.</p>
 <p>The <code>sample_ids</code> argument allows for custom sample IDs to
 be assigned. It accepts a vector of the same length as
 <code>file_list</code>. Each entry of <code>sample_ids</code> is
@@ -764,8 +778,9 @@ Rdata file is loaded.</p>
 <h4 id="execute-findassociatedclones">Execute <code>findAssociatedClones</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedclones"></a>
 </h4>
 <p>We execute the <code>findAssociatedClones</code> function using the
-inputs we prepared earlier for the <code>file_list</code> and
-<code>group_ids</code> arguments:</p>
+<a href="#files2">inputs from step 1</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments, the <a href="#assoc_seqs">associated sequences from step 1</a>, as well as the
+<a href="#output2">output directory file path we created for the current
+step</a>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Identify clones in a neighborhood around each associated sequence</span></span>
 <span><span class="fu"><a href="../reference/findAssociatedClones.html">findAssociatedClones</a></span><span class="op">(</span></span>
@@ -776,94 +791,94 @@ inputs we prepared earlier for the <code>file_list</code> and
 <span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_dir <span class="op">=</span> <span class="va">dir_nbds</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;&lt;&lt; Beginning search for associated clones &gt;&gt;&gt;</span></span>
-<span><span class="co">#&gt; Processing sample 1 of 30 (1):</span></span>
+<span><span class="co">#&gt; Processing sample 1 of 30 (Sample1):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 2 of 30 (2):</span></span>
+<span><span class="co">#&gt; Processing sample 2 of 30 (Sample2):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 3 of 30 (3):</span></span>
+<span><span class="co">#&gt; Processing sample 3 of 30 (Sample3):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 4 of 30 (4):</span></span>
+<span><span class="co">#&gt; Processing sample 4 of 30 (Sample4):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 5 of 30 (5):</span></span>
+<span><span class="co">#&gt; Processing sample 5 of 30 (Sample5):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 6 of 30 (6):</span></span>
+<span><span class="co">#&gt; Processing sample 6 of 30 (Sample6):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 7 of 30 (7):</span></span>
+<span><span class="co">#&gt; Processing sample 7 of 30 (Sample7):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 8 of 30 (8):</span></span>
+<span><span class="co">#&gt; Processing sample 8 of 30 (Sample8):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 9 of 30 (9):</span></span>
+<span><span class="co">#&gt; Processing sample 9 of 30 (Sample9):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 10 of 30 (10):</span></span>
+<span><span class="co">#&gt; Processing sample 10 of 30 (Sample10):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 11 of 30 (11):</span></span>
+<span><span class="co">#&gt; Processing sample 11 of 30 (Sample11):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 12 of 30 (12):</span></span>
+<span><span class="co">#&gt; Processing sample 12 of 30 (Sample12):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 13 of 30 (13):</span></span>
+<span><span class="co">#&gt; Processing sample 13 of 30 (Sample13):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 14 of 30 (14):</span></span>
+<span><span class="co">#&gt; Processing sample 14 of 30 (Sample14):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 15 of 30 (15):</span></span>
+<span><span class="co">#&gt; Processing sample 15 of 30 (Sample15):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 16 of 30 (16):</span></span>
+<span><span class="co">#&gt; Processing sample 16 of 30 (Sample16):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 17 of 30 (17):</span></span>
+<span><span class="co">#&gt; Processing sample 17 of 30 (Sample17):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 18 of 30 (18):</span></span>
+<span><span class="co">#&gt; Processing sample 18 of 30 (Sample18):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 19 of 30 (19):</span></span>
+<span><span class="co">#&gt; Processing sample 19 of 30 (Sample19):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 20 of 30 (20):</span></span>
+<span><span class="co">#&gt; Processing sample 20 of 30 (Sample20):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 21 of 30 (21):</span></span>
+<span><span class="co">#&gt; Processing sample 21 of 30 (Sample21):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 22 of 30 (22):</span></span>
+<span><span class="co">#&gt; Processing sample 22 of 30 (Sample22):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 23 of 30 (23):</span></span>
+<span><span class="co">#&gt; Processing sample 23 of 30 (Sample23):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 24 of 30 (24):</span></span>
+<span><span class="co">#&gt; Processing sample 24 of 30 (Sample24):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 25 of 30 (25):</span></span>
+<span><span class="co">#&gt; Processing sample 25 of 30 (Sample25):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 26 of 30 (26):</span></span>
+<span><span class="co">#&gt; Processing sample 26 of 30 (Sample26):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 27 of 30 (27):</span></span>
+<span><span class="co">#&gt; Processing sample 27 of 30 (Sample27):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 28 of 30 (28):</span></span>
+<span><span class="co">#&gt; Processing sample 28 of 30 (Sample28):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 29 of 30 (29):</span></span>
+<span><span class="co">#&gt; Processing sample 29 of 30 (Sample29):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 30 of 30 (30):</span></span>
+<span><span class="co">#&gt; Processing sample 30 of 30 (Sample30):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
 <span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; Done processing samples. Compiling results:</span></span>
@@ -872,7 +887,7 @@ inputs we prepared earlier for the <code>file_list</code> and
 <span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp1SFJcq/assoc_seq_nbds</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_seq_nbds</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findassociatedclones">
@@ -896,12 +911,12 @@ for a single associated sequence.</p>
 <span><span class="co"># first few rows</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nbd1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           CloneSeq CloneFrequency CloneCount SampleID    GroupID</span></span>
-<span><span class="co">#&gt; 1 CASSEEGQLSTDTQYF     0.04349787       4726        1  reference</span></span>
-<span><span class="co">#&gt; 2 CASSIEGQLSTDTQYF     0.03239791       3520        1  reference</span></span>
-<span><span class="co">#&gt; 3 CASSEEGQLSTDTQYF     0.01630940       1772        1  reference</span></span>
-<span><span class="co">#&gt; 4 CASSEEGQLSTDTQYF     0.03451031       3801       20 comparison</span></span>
-<span><span class="co">#&gt; 5 CASSEEGQLSTDTQYF     0.03662578       4034       20 comparison</span></span>
-<span><span class="co">#&gt; 6 CASSIEGQLSTDTQYF     0.02511326       2766       20 comparison</span></span>
+<span><span class="co">#&gt; 1 CASSEEGQLSTDTQYF     0.04349787       4726  Sample1  reference</span></span>
+<span><span class="co">#&gt; 2 CASSIEGQLSTDTQYF     0.03239791       3520  Sample1  reference</span></span>
+<span><span class="co">#&gt; 3 CASSEEGQLSTDTQYF     0.01630940       1772  Sample1  reference</span></span>
+<span><span class="co">#&gt; 4 CASSEEGQLSTDTQYF     0.03451031       3801 Sample20 comparison</span></span>
+<span><span class="co">#&gt; 5 CASSEEGQLSTDTQYF     0.03662578       4034 Sample20 comparison</span></span>
+<span><span class="co">#&gt; 6 CASSIEGQLSTDTQYF     0.02511326       2766 Sample20 comparison</span></span>
 <span><span class="co">#&gt;           AssocSeq</span></span>
 <span><span class="co">#&gt; 1 CASSEEGQLSTDTQYF</span></span>
 <span><span class="co">#&gt; 2 CASSEEGQLSTDTQYF</span></span>
@@ -939,9 +954,10 @@ sequence.</p>
 <code>buildAssociatedClusterNetwork</code> is used to specify the
 location of the neighborhood data files. It accepts a character vector
 of file paths.</p>
-<p>If the files from step 2 were saved to a new or empty directory <a href="#output2">as recommended</a>, then they can easily be referenced
-using <code>list.files</code> with <code>full.names = TRUE</code>, as
-seen below.</p>
+<p>The neighborhood data files are located in the <a href="#output2">output directory from step 2</a>. If the files from step
+2 were saved to a new or empty directory as recommended, then they can
+easily be referenced using <code>list.files</code> with
+<code>full.names = TRUE</code>, as seen below.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Files created by findAssociatedClones</span></span>
 <span><span class="va">nbd_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_nbds</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
@@ -1141,8 +1157,8 @@ vignette</a> for further details on how the output files are named.</p>
 <h4 id="execute-buildassociatedclusternetwork">Execute <code>buildAssociatedClusterNetwork</code><a class="anchor" aria-label="anchor" href="#execute-buildassociatedclusternetwork"></a>
 </h4>
 <p>We execute the <code>buildAssociatedClusterNetwork</code> function
-using the input we prepared earlier for the <code>file_list</code>
-argument:</p>
+using the <a href="#input_files3">input we prepared earlier</a> for the
+<code>file_list</code> argument:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combine neighborhoods and perform network analysis</span></span>
 <span><span class="va">all_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork</a></span><span class="op">(</span></span>
@@ -1160,16 +1176,16 @@ argument:</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp1SFJcq/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp1SFJcq/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp1SFJcq/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp1SFJcq/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp1SFJcq/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>In the graph plot of the global network, where the nodes are colored
 according to the binary variable of interest, we see that the treatment
 group shows high representation in the clusters, affirming the
@@ -1357,28 +1373,55 @@ opposed to relatively few samples.</p>
 <p><strong>NOTE: This step applies to TCR CDR3 amino acid sequences
 only</strong></p>
 <p>As an additional step in our analysis, we can take the TCR sequences
-from the global network and use a deep learning model to encode each TCR
-sequence as a 30-dimensional numeric vector based on the Atchley-factor
-representations of its amino acids. This allows us to perform <span class="math inline">\(K\)</span>-means clustering on the TCR sequences
-based on their numerically encoded values.</p>
-<p>We can then profile each sample based on how its TCR sequences are
-distributed among the <span class="math inline">\(K\)</span>-means
-clusters. We compute the fraction of the sample’s unique TCR sequences
-that belong to each cluster, yielding a <span class="math inline">\(K\)</span>-dimensional vector representing the
-profile for the sample.</p>
-<p>The function <code>kmeansAtchley</code> performs the encoding and
-produces two heatmaps. One depicts the profile values across samples,
-while the other depicts the correlation in profile values between
-samples.</p>
+from the global network and use a deep learning algorithm to encode each
+TCR sequence as a 30-dimensional numeric vector based on the
+Atchley-factor representations of its amino acids. This is done using
+the software <a href="https://doi.org/10.1038/s41592-020-01020-3" class="external-link">TESSA</a>.</p>
+<p>We can then perform <span class="math inline">\(K\)</span>-means
+clustering on the TCR sequences based on their numerically encoded
+values, resulting in <span class="math inline">\(K\)</span>
+clusters.</p>
+<p>For each sample, the frequency distribution of its TCR sequences
+across the <span class="math inline">\(K\)</span> clusters is recorded
+in a length-<span class="math inline">\(K\)</span> vector, where each
+entry is the fraction of TCRs in a particular cluster (with all <span class="math inline">\(K\)</span> entries summing to 1). Fraction of TCRs
+refers to the fraction of the sample’s total number of unique TCR
+sequences.</p>
+<p>The correlation in fraction of TCRs per cluster is computed between
+pairs of samples. This is done by pairing corresponding entries from
+both samples’ <span class="math inline">\(K\)</span>-vectors. Each of
+the <span class="math inline">\(K\)</span> pairs of values is treated as
+an independent observation from a common bivariate random variable. This
+treats the fraction of TCRs in a cluster as a random variable, where the
+cluster is also considered random. It may be noted, however, that the
+<span class="math inline">\(K\)</span> paired observations are not
+actually independent, since they sum to <span class="math inline">\((1,
+1)\)</span>. Nonetheless, the correlation computed in this manner
+provides</p>
+<p>Two heatmaps are produced for comparing the samples. The first
+heatmap depicts each sample’s fraction of TCRs in each cluster. The
+second heatmap depicts the pairwise correlation between samples that is
+described above. In both heatmaps, each column corresponds to a sample.
+A colored bar appears above each column, with the color indicating the
+group to which the sample belongs, based on the group assignments
+specified by the <code>group_ids</code> argument. This aids in the
+detection of differences and similarities within and between groups.</p>
+<p>All of these steps are performed by the function
+<code><a href="../reference/kmeansAtchley.html">kmeansAtchley()</a></code>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">atchley_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kmeansAtchley.html">kmeansAtchley</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
-<span>  amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, sample_col <span class="op">=</span> <span class="st">"SampleID"</span>, group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span>
-<span>  k <span class="op">=</span> <span class="fl">5</span>, output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span>, </span>
+<span>  amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>  sample_col <span class="op">=</span> <span class="st">"SampleID"</span>, </span>
+<span>  group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span>
+<span>  k <span class="op">=</span> <span class="fl">5</span>, </span>
+<span>  output_dir <span class="op">=</span> </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span>, </span>
 <span>  return_output <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The heatmaps are saved as pdfs. The numerically-encoded TCR values
-and the <span class="math inline">\(K\)</span>-means sample profiles
-will be returned if <code>return_output = TRUE</code>.</p>
+<p>The heatmaps are saved as pdfs. Data containing the
+numerically-encoded TCR values, their cluster membership, and each
+sample’s fraction of TCRs in each cluster will be returned if
+<code>return_output = TRUE</code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

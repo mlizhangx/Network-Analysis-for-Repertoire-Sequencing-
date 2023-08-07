@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,13 @@
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -48,9 +54,63 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Changelog</h1>
-      
+      <small>Source: <a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9042" id="changes-in-nair-version-009042-862023">Changes in NAIR version 0.0.9042 (8/6/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009042-862023"></a></h2>
+<div class="section level3">
+<h3 id="package-functions-0-0-9042">Package Functions<a class="anchor" aria-label="anchor" href="#package-functions-0-0-9042"></a></h3>
+<ul><li>
+<code>findAssociatedClones</code>
+<ul><li>The variable <code>SampleID</code> created in the output data is now forced to be of type character. Previously, values from the argument <code>sample_ids</code> were sometimes unintentionally converted from character to numeric, such as the default values in <code>sample_ids</code>, which were <code>"1"</code>, <code>"2"</code>, etc. This was causing these variables to be treated as continuous variables when used to color nodes in the network graph plot, which resulted in their color scales being depicted in the wrong format in the plot legend.</li>
+<li>The <code>sample_ids</code> argument is now coerced to a character vector. This prevents an error when saving the output that occurred when <code>sample_ids</code> used numeric values.</li>
+<li>Default value of <code>sample_ids</code> now has entries <code>"Sample1"</code>, <code>"Sample2"</code>, etc., instead of <code>"1"</code>, <code>"2"</code>, etc.</li>
+</ul></li>
+<li>
+<code>findPublicClusters</code>
+<ul><li>The variables <code>SampleID</code>, <code>SubjectID</code> and <code>GroupID</code> created in the output data are now forced to be of type character. Previously, values from the arguments <code>sample_ids</code>, <code>subject_ids</code> and <code>group_ids</code> were sometimes unintentionally converted from character to numeric, such as the default values in <code>sample_ids</code>, which were <code>"1"</code>, <code>"2"</code>, etc. This was causing these variables to be treated as continuous variables when used to color nodes in the network graph plot, which resulted in their color scales being depicted in the wrong format in the plot legend.</li>
+<li>The <code>sample_ids</code> argument is now coerced to a character vector. This prevents an error when saving the output that occurred when <code>sample_ids</code> used numeric values (which was the previous default!).</li>
+<li>Default value of <code>sample_ids</code> now has entries <code>"Sample1"</code>, <code>"Sample2"</code>, etc., instead of <code>1</code>, <code>2</code>, etc.</li>
+</ul></li>
+<li>
+<code>buildPublicClusterNetwork</code>
+<ul><li>Argument <code>plot_title</code> added with default value <code>"Global Network of Public Clusters"</code>. Previously this argument was passed to <code>buildRepSeqNetwork</code> through the ellipses <code>...</code> argument, and thus used a default value of <code>"auto"</code>, which resulted in the default plot title being the value of the <code>output_name</code> argument, which is <code>"PublicClusterNetwork"</code> by default.</li>
+</ul></li>
+<li>
+<code>plotNetworkGraph</code>
+<ul><li>Added arguments <code>pdf_width</code> and <code>pdf_height</code> for adjusting the dimensions of the pdf when saving this function’s output directly using the <code>outfile</code> argument. Other package functions use <code>saveNetworkPlots</code> for saving plots created using <code>plotNetworkGraph</code>, so the absence of these arguments in the <code>plotNetworkGraph</code> function had gone unnoticed previously. But since the function has an option to save the output directly to pdf using the <code>outfile</code> argument, it is only appropriate to also provide control over the pdf dimensions.</li>
+</ul></li>
+<li>
+<code>kmeansAtchley</code>
+<ul><li>Default values for <code>amino_col</code> and <code>sample_col</code> arguments removed as the previous defaults are no longer useful. They were originally designed based on a previous version of the associated clusters workflow.</li>
+<li>Default filenames for the pdfs of the heatmaps have been changed to <code>"atchley_kmeans_TCR_fraction_per_cluster.pdf"</code> and <code>"atchley_kmeans_correlation_heatmap.pdf"</code>. The previous values <code>"atchley_kmeans_cluster_relative_size_profiles_by_sample.pdf"</code> and <code>"atchley_kmeans_corr_in_cluster_size_profile_between_samples.pdf"</code> were longer and potentially more confusing in their meaning.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="vignettes-0-0-9042">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes-0-0-9042"></a></h3>
+<ul><li>
+<code>Searching for Associated TCR/BCR Clusters</code>
+<ul><li>Completion of major revisions</li>
+</ul></li>
+<li>
+<code>Searching for Public Clusters</code>
+<ul><li>Completion of major revisions</li>
+</ul></li>
+<li>
+<code>buildRepSeqNetwork</code>
+<ul><li>Minor content revisions</li>
+</ul></li>
+<li>
+<code>Network Visualization</code>
+<ul><li>Restructured sections and minor content revisions</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-0-9042">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-0-9042"></a></h3>
+<ul><li>All package documentation files have been revised and updated.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9041" id="changes-in-nair-version-009041-822023">Changes in NAIR version 0.0.9041 (8/2/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009041-822023"></a></h2>
 <div class="section level3">

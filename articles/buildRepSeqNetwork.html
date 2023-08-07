@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9041</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,7 +59,14 @@
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
 </form>
 
-      <ul class="navbar-nav"></ul>
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 
     
@@ -74,7 +81,7 @@
       <img src="" class="logo" alt=""><h1>buildRepSeqNetwork</h1>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/blob/HEAD/vignettes/buildRepSeqNetwork.Rmd" class="external-link"><code>vignettes/buildRepSeqNetwork.Rmd</code></a></small>
       <div class="d-none name"><code>buildRepSeqNetwork.Rmd</code></div>
     </div>
 
@@ -172,14 +179,14 @@ plotting window in R.</p>
 <span><span class="co">#&gt; Generating graph plot...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_NodeMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork_NodeMetadata.csv</span></span></code></pre></div>
 <p><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 class="tabset" id="base-output">
@@ -252,6 +259,9 @@ an alternative to <a href="#network_properties">computing network
 properties when calling <code>buildRepSeqNetwork</code></a>. It can also
 be used to <a href="network_visualization.html#new_plots">generate
 additional plots of the network graph</a>.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">igraph</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "igraph"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="adjacency_matrix">
@@ -260,7 +270,7 @@ additional plots of the network graph</a>.</p>
 <p>The list element <code>adjacency_matrix</code> is an object of class
 <code>dgCMatrix</code>, which is a sparse matrix format from the
 <code>Matrix</code> package.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">adjacency_matrix</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "dgCMatrix"</span></span>
 <span><span class="co">#&gt; attr(,"package")</span></span>
@@ -272,7 +282,7 @@ The network nodes follow the same order in the rows as they do in the
 columns. Each column name is the receptor sequence corresponding to the
 node for that column. Each row name is the row index of the original
 input data that corresponds to the node for that row.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># First 5 rows and columns of the network adjacency matrix</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">adjacency_matrix</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 5 x 5 sparse Matrix of class "dgCMatrix"</span></span>
@@ -345,24 +355,27 @@ the arguments below.</p>
 <h3 id="distance-function">Distance Function<a class="anchor" aria-label="anchor" href="#distance-function"></a>
 </h3>
 <p>The default method for measuring the similarity between TCR/BCR
-sequences is the Hamming distance. It calculates the number of
-differences between two sequences of the same length. If the sequences
+sequences is the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/hamDistBounded.html">Hamming
+distance</a>. It calculates the number of differences between two
+sequences of the same length. For each position in one sequence, the
+character in that position is checked to see whether it differs from the
+character in the same position of the other sequence. If the sequences
 have different lengths, the shorter sequence is extended by adding
 non-matching characters to make it the same length as the longer
 sequence.</p>
-<p>The Levenshtein distance can be used as an alternative measurement to
-determine the similarity between sequences. It calculates the minimum
-number of single-character edits (insertions, deletions and
-transformations) needed to transform one sequence into the other. This
-method is particularly useful for comparing sequences of different
-lengths and can account for insertions and deletions. When constructing
-a network based on the similarity of CDR-3 nucleotide sequences, it is
-preferable to use the Levenshtein distance instead of the default
-Hamming distance by setting the argument
-<code>dist_type = "levenshtein"</code>. However, the Levenshtein
-distance requires significantly more computational time than the Hamming
-distance, which may be challenging when working with large data sets
-having long TCR/BCR sequences.</p>
+<p>The <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/levDistBounded.html">Levenshtein
+distance</a> can be used as an alternative measurement to determine the
+similarity between sequences. It calculates the minimum number of
+single-character edits (insertions, deletions and transformations)
+needed to transform one sequence into the other. This method is
+particularly useful for comparing sequences of different lengths and can
+account for insertions and deletions. When constructing a network based
+on the similarity of CDR-3 nucleotide sequences, it is preferable to use
+the Levenshtein distance instead of the default Hamming distance by
+setting the argument <code>dist_type = "levenshtein"</code>. However,
+the Levenshtein distance requires significantly more computational time
+than the Hamming distance, which may be challenging when working with
+large data sets having long TCR/BCR sequences.</p>
 </div>
 <div class="section level3">
 <h3 id="distance-cutoff">Distance Cutoff<a class="anchor" aria-label="anchor" href="#distance-cutoff"></a>
@@ -373,11 +386,15 @@ similarity between TCR/BCR sequences. The chosen distance measurement
 determines the distance between two nodes in the network graph.</p>
 <p>By default, two nodes in the graph are connected by an edge if their
 distance is at most 1. However, if users want to adjust this cutoff, the
-<code>dist_cutoff</code> argument can be set to a different value.</p>
-<p>For example, if <code>dist_cutoff = 2</code>, then two nodes will be
-connected by an edge if their distance is at most 2. The cutoff value
-controls the stringency of the network construction and affects the
-number and density of edges in the network.</p>
+<code>dist_cutoff</code> argument can be set to a different value. For
+example, if <code>dist_cutoff = 2</code>, then two nodes will be
+connected by an edge if their distance is at most 2.</p>
+<p>The cutoff value controls the stringency of the network construction
+and affects the number and density of edges in the network. A lower
+cutoff value requires greater similarity between sequences in order for
+their respective nodes to be joined by an edge connection. If
+<code>dist_cutoff = 0</code>, two sequences must be identical in order
+for their nodes to be joined by an edge.</p>
 </div>
 <div class="section level3">
 <h3 id="keepremove-isolated-nodes">
@@ -389,7 +406,7 @@ not be included in the output.</p>
 <p>Notice that while our input data contained 200 rows, the
 <code>node_data</code> data frame in the returned output contains fewer
 rows than this:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 122</span></span></code></pre></div>
 <p>These rows correspond to the nodes that are joined by an edge to at
@@ -397,7 +414,7 @@ least one other node in the network.</p>
 <p>The row names from the original input data are preserved, allowing
 the user to conveniently cross-reference each node with its
 corresponding row in the original input data.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2"  "5"  "8"  "11" "12" "13"</span></span></code></pre></div>
 <p>If desired, all nodes can be kept in the network, including those
@@ -466,7 +483,7 @@ analysis</a>.</p>
 </h4>
 <p>Use the setting <code>node_stats = TRUE</code> to enable computation
 of node-level network properties.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># build network with computation of node-level network properties</span></span>
 <span><span class="va">output2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                              output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
@@ -476,11 +493,11 @@ of node-level network properties.</p>
 <span><span class="co">#&gt; Network contains 122 nodes (after removing isolated nodes).</span></span>
 <span><span class="co">#&gt; Computing node-level network statistics... Done.</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by degree...</span></span></code></pre></div>
-<p><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 <p>The node data now contains node-level network properties in addition
 to the original data columns:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output2</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "CloneSeq"                  "CloneFrequency"           </span></span>
 <span><span class="co">#&gt;  [3] "CloneCount"                "SampleID"                 </span></span>
@@ -489,7 +506,7 @@ to the original data columns:</p>
 <span><span class="co">#&gt;  [9] "betweenness"               "centrality_by_betweenness"</span></span>
 <span><span class="co">#&gt; [11] "authority_score"           "coreness"                 </span></span>
 <span><span class="co">#&gt; [13] "page_rank"</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">output2</span><span class="op">$</span><span class="va">node_data</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneSeq"</span>, <span class="st">"degree"</span>, <span class="st">"authority_score"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         CloneSeq degree authority_score</span></span>
 <span><span class="co">#&gt; 2  GGAGATGAATCGG      1      0.00000000</span></span>
@@ -525,7 +542,7 @@ unspecified.</p>
 <p>Below is an example where the user wishes to compute the
 <code>closeness</code> property in addition to the default properties,
 with the <code>page_rank</code> property excluded:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Modifying the default set of node-level properties</span></span>
 <span><span class="va">output2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
 <span>  <span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -537,7 +554,7 @@ inconvenient. In this case, it may instead be easier to use the
 <code>exclusiveNodeStats</code> function, which behaves in the same
 manner as <code>chooseNodeStats</code>, but all of its arguments are set
 to <code>FALSE</code> by default.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Include only the node-level properties specified below</span></span>
 <span><span class="va">output2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
 <span>  <span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
@@ -601,9 +618,9 @@ of the following functions:</p>
 <p>For example, setting <code>cluster_fun = cluster_leiden</code>
 performs clustering using the <code>cluster_leiden</code> algorithm.</p>
 <p>For more information about a particular algorithm, users can refer to
-its help documentation file. For example, the command
-<code><a href="https://r.igraph.org/reference/cluster_fast_greedy.html" class="external-link">?igraph::cluster_fast_greedy</a></code> loads the documentation file
-for the <code>cluster_fast_greedy</code> algorithm.</p>
+<a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/clustering_algorithms.html">this
+help topic</a>, which can be accessed offline from within R using the
+command <code><a href="../reference/clustering_algorithms.html">?NAIR::clustering_algorithms</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 id="cluster-level-network-properties">
@@ -617,7 +634,7 @@ computed for each cluster.</p>
 frame, containing one row per cluster.</p>
 <p>Below, we re-generate the output of <code>buildRepSeqNetwork</code>,
 this time with cluster analysis included.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                              cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>, print_plots <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                              output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
@@ -631,11 +648,11 @@ this time with cluster analysis included.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by cluster_id... Done.</span></span></code></pre></div>
 <p>The output list now includes an additional data frame containing the
 cluster-level meta data:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "igraph"           "adjacency_matrix" "node_data"        "cluster_data"    </span></span>
 <span><span class="co">#&gt; [5] "plots"</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output3</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "cluster_id"                  "node_count"                 </span></span>
 <span><span class="co">#&gt;  [3] "mean_seq_length"             "mean_degree"                </span></span>
@@ -646,7 +663,7 @@ cluster-level meta data:</p>
 <span><span class="co">#&gt; [13] "edge_density"                "degree_centrality_index"    </span></span>
 <span><span class="co">#&gt; [15] "closeness_centrality_index"  "eigen_centrality_index"     </span></span>
 <span><span class="co">#&gt; [17] "eigen_centrality_eigenvalue"</span></span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">output3</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">[</span> , <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   cluster_id node_count mean_seq_length mean_degree max_degree seq_w_max_degree</span></span>
 <span><span class="co">#&gt; 1          1         14           13.00        3.36          9    AAAAAAAAATTGC</span></span>
@@ -791,7 +808,7 @@ current working directory.</li>
 <code>output_dir</code> argument. The specified output directory will be
 created if it does not already exist.</li>
 <li>Setting <code>output_dir</code> to <code>NULL</code> will prevent
-the output from being saved.</li>
+all output from being saved.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -799,8 +816,8 @@ the output from being saved.</li>
 <a name="output_format"></a> Output File Format<a class="anchor" aria-label="anchor" href="#output-file-format"></a>
 </h3>
 <ul>
-<li>By default, each component of the list returned by
-<code>buildRepSeqNetwork</code> is saved as its own file using the
+<li>By default, each element of the list returned by
+<code>buildRepSeqNetwork</code> is written to its own file using the
 following file formats:
 <ul>
 <li>csv for <code>node_data</code> and <code>cluster_data</code>
@@ -823,27 +840,20 @@ environment when the Rdata file is loaded into R using the
 <code>load</code> function.</li>
 </ul>
 </li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="pdf-of-plots">PDF of Plots<a class="anchor" aria-label="anchor" href="#pdf-of-plots"></a>
-</h3>
-<ul>
-<li>Regardless of the output file format specified, a separate pdf file
-containing the graph plot(s) is created in <code>output_dir</code>. The
-dimensions (in inches) for the pdf can be adjusted using the
-<code>plot_width</code> and <code>plot_height</code> arguments, with the
-defaults being <code>12</code> and <code>10</code>, respectively. The
-pdf file is not created if no plots are generated (i.e., if the argument
-<code>plots</code> is set to <code>FALSE</code>).</li>
+<li>Regardless of the output file format specified, if
+<code>plots = TRUE</code>, a pdf file is written to the output
+directory. The pdf contains all plots generated for the network, with
+one plot per page. The dimensions (in inches) for each page can be
+adjusted using the <code>plot_width</code> and <code>plot_height</code>
+arguments, with the defaults being <code>12</code> and <code>10</code>,
+respectively.</li>
 <li>
 <strong>Note:</strong> the <code>ggraph</code> object for each plot
 is only saved if the user sets <code>output_type = "rds"</code> or
 <code>output_type = "rda"</code>. Using one of these settings is
-recommended used if the user wishes to modify any plots in the future.
-Note, however, that plots can always be re-generated from the node-level
-meta data using the <code>generateGraphPlot</code> function as described
-<a href="network_visualization.html#new_plots">here</a>.</li>
+recommended if the user wishes to modify any plots in the future. Note,
+however, that plots can always be re-generated from the node-level meta
+data using the <code>generateGraphPlot</code> function as described <a href="network_visualization.html#new_plots">here</a>.</li>
 </ul>
 </div>
 <div class="section level3">
@@ -920,7 +930,7 @@ is provided to the <code>net</code> argument of
 argument can be used to <a href="#node_properties">specify which network
 properties to compute</a> just as in the <code>buildRepSeqNetwork</code>
 function.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add network stats to node-level meta data </span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addNodeNetworkStats.html">addNodeNetworkStats</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span>,</span>
 <span>                                        net <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">igraph</span>,</span>
@@ -943,7 +953,7 @@ properties involving receptor sequences, such as
 be computed. Similarly, the <code>count_col</code> argument is used to
 <a href="#cluster_analysis">specify the column containing the
 counts</a>.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Add cluster-level properties to output list from buildRepSeqNetwork</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">cluster_data</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/getClusterStats.html">getClusterStats</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">node_data</span>,</span>
@@ -977,19 +987,19 @@ passed to the <code>net</code> argument, while the
 <code>output_type = "rda"</code>, then the output list will be named
 <code>net</code> in the R environment when the saved file is loaded into
 R using the <code>load</code> function.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># save output list returned by buildRepSeqNetwork</span></span>
 <span><span class="fu"><a href="../reference/saveNetwork.html">saveNetwork</a></span><span class="op">(</span>net <span class="op">=</span> <span class="va">output</span>, output_dir <span class="op">=</span> <span class="va">dir_out</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_ClusterMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork_ClusterMetadata.csv</span></span>
 <span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpSLiOao/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpSL7jQS/MyRepSeqNetwork_AdjacencyMatrix.mtx</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="regenerating-output-components">Regenerating Output Components<a class="anchor" aria-label="anchor" href="#regenerating-output-components"></a>
@@ -999,7 +1009,7 @@ R using the <code>load</code> function.</p>
 used to quickly generate the <code>igraph</code> object without
 recomputing the network edges. This is done by passing the adjacency
 matrix to the <code>generateNetworkFromAdjacencyMat</code> function.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># create igraph from adjacency matrix</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">igraph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateNetworkFromAdjacencyMat.html">generateNetworkFromAdjacencyMat</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">adjacency_matrix</span><span class="op">)</span></span></code></pre></div>
 <p>If the adjacency matrix itself is lost, it can be recomputed from the
@@ -1018,7 +1028,7 @@ The arguments <code>dist_type</code> and
 <code>buildRepSeqNetwork</code>. These arguments should be set to match
 the values used in <code>buildRepSeqNetwork</code> when the
 <code>node_data</code> data frame was created.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># create adjacency matrix from receptor sequence data column</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">adjacency_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sparseAdjacencyMatFromSeqs.html">sparseAdjacencyMatFromSeqs</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">CloneSeq</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -1055,11 +1065,11 @@ and leaves the remaining tasks to be performed individually.</p>
 <code>dist_cutoff</code> and <code>drop_isolated_nodes</code></a>, all
 of which have the same behavior and default values as seen in the
 <code>buildRepSeqNetwork</code> function.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output_minimal</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateNetworkObjects.html">generateNetworkObjects</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
 <span><span class="co">#&gt; Network contains 122 nodes (after removing isolated nodes).</span></span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output_minimal</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "igraph"           "adjacency_matrix" "node_data"</span></span></code></pre></div>
 </div>
@@ -1072,7 +1082,7 @@ calling <code>generateNetworkObjects</code>. This is done using the
 <code>filterInputData</code> function. The function has arguments <a href="#mainargs"><code>data</code>, <code>seq_col</code></a>, <a href="#input_options"><code>min_seq_length</code>,
 <code>drop_matches</code>, <code>subset_cols</code></a> and <a href="#cluster_analysis"><code>count_col</code></a>, all of which behave
 in the same manner as seen in <code>buildRepSeqNetwork</code>.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Filter input data as a preprocessing step</span></span>
 <span><span class="va">filtered_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filterInputData.html">filterInputData</a></span><span class="op">(</span></span>
 <span>  <span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
@@ -1083,7 +1093,7 @@ in the same manner as seen in <code>buildRepSeqNetwork</code>.</p>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 5 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Removing sequences containing matches to the expression '[*|_]'... Done. 200 rows remaining.</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">filtered_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        CloneSeq CloneCount SampleID</span></span>
 <span><span class="co">#&gt; 1 TTGAGGAAATTCG       3095  Sample1</span></span>
