@@ -112,7 +112,8 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Generate network</span></span></span>
 <span class="r-in"><span><span class="va">net</span> <span class="op">&lt;-</span></span></span>
@@ -120,8 +121,6 @@
 <span class="r-in"><span>    <span class="va">toy_data</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"CloneSeq"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 122 nodes (after removing isolated nodes).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Perform cluster analysis,</span></span></span>
 <span class="r-in"><span><span class="co"># add cluster membership ID</span></span></span>
@@ -130,7 +129,7 @@
 <span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span>,</span></span>
 <span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">igraph</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
