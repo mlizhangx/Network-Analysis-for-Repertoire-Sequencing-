@@ -3,14 +3,17 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
+# NAIR: Network Analysis of Immune Repertoire
+
 We introduce the `NAIR` package, a powerful tool for analyzing the
 adaptive immune repertoire using network analysis based on similarities
 among receptor sequences, which implements methods from the following
 paper:
 
-Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang.
-NAIR: Network Analysis of Immune Repertoire. *Frontiers in Immunology*
-(forthcoming).
+[Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang.
+(2023). NAIR: Network Analysis of Immune Repertoire. *Frontiers in
+Immunology*, vol. 14.
+https://doi.org/10.3389/fimmu.2023.1181825](https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825)
 
 Our immune repertoire analysis tool allows users to perform various
 network analysis tasks on AIRR-Seq data. This includes computing local
@@ -70,29 +73,30 @@ T-cell or B-cell receptors (TCR or BCR).
 
 # Installation
 
-The current development version of `NAIR` can be installed from github
-using the following commands:
+The development version of `NAIR` is [hosted on
+Github](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-)
+and can be installed from source using the following command:
 
 ``` r
-install.packages("devtools")
 devtools::install_github(
-  "mlizhangx/Network-Analysis-for-Repertoire-Sequencing-",
-  build_vignettes = TRUE)
+  "mlizhangx/Network-Analysis-for-Repertoire-Sequencing-"
+)
 ```
 
-Installing the development version requires a toolchain compiler. On
-Windows, this means downloading and installing Rtools. On MacOS, this
-entails installing XCode Command Line Tools (“XCode CLI”) and the
-correct version of gfortran for your macOS version (instructions
-[here](https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/)).
+<!-- Installing the development version requires a toolchain compiler. On Windows, this means downloading and installing Rtools. On MacOS, this entails installing XCode Command Line Tools ("XCode CLI") and the correct version of gfortran for your macOS version (instructions [here](https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/)). -->
 
-# Documentation
+# Getting Started
 
-Once the package is installed, type the following commands to access the
-package vignettes and documentation:
+[The website for the `NAIR`
+package](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/)
+contains articles to help users get started. All package documentation
+and vignettes can be found there.
+
+Once the package is installed, package vignettes and documentation can
+be accessed offline from within R using the following commands:
 
 ``` r
-# Package introduction vignette
+# Package vignette
 vignette("NAIR", package = "NAIR")
 
 # Display vignettes in html browser
@@ -102,42 +106,46 @@ browseVignettes("NAIR")
 help(package = "NAIR")
 ```
 
-# The `buildRepSeqNetwork` function
+## The `buildRepSeqNetwork` function
 
-General network analysis on AIRR-Seq data is performed using the
-`buildRepSeqNetwork` function. This function does the following:
+General network analysis on AIRR-Seq data is performed using
+`buildRepSeqNetwork()`. This function does the following:
 
 - Filters the input AIRR-Seq data according to user specifications
 - Builds the network graph for the immune repertoire
-- Performs desired network analysis
+- Performs additional network analysis, which can include:
   - Cluster analysis
   - Computation of network properties
-- Generates customized visual plot of the network graph using `ggraph`
+- Generates customizable visual plots of the network graph
 - Saves and returns the following output:
-  - Meta-data for the nodes in the network, including network properties
-  - Meta-data for the clusters in the network
-  - Network graph plot (returned as `ggraph` object and saved as pdf)
-  - Network adjacency matrix in sparse matrix format
-  - `igraph` object containing the list of edges in the network graph
+  - Metadata for the nodes in the network
+  - Metadata for the clusters in the network
+  - The plots of the network graph
+  - The network graph itself, both as an adjacency matrix and as an
+    `igraph` object
 
-See `vignette("buildRepSeqNetwork")` for a tutorial on the function’s
-usage and output.
+See [this
+vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html)
+for a tutorial on the function’s usage and output.
 
-# Visualization
+## Visualization
 
-The `buildRepSeqNetwork` function includes various arguments that
-facilitate customization of the network visualization. See
-`vignette("network_visualization")` for an overview.
+`buildRepSeqNetwork()` accepts various arguments for customizing the
+network visualization. See [this
+vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html)
+for an overview.
 
-# Searching for Associated Clusters
+## Searching for Associated Clusters
 
 Given multiple samples of AIRR-Seq data, the `NAIR` package can be used
 to search for TCR/BCR clusters associated with a binary variable of
 interest, such as a disease condition, treatment or clinical outcome.
 
-See `vignette("associated_clusters")` for a detailed tutorial.
+See [this
+vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html)
+for a detailed tutorial.
 
-# Searching for Public Clusters
+## Searching for Public Clusters
 
 The `NAIR` package includes a set of functions that facilitate searching
 for public TCR/BCR clusters across multiple samples of AIRR-seq data.
@@ -147,4 +155,6 @@ In this context, a public cluster consists of similar TCR/BCR clones
 acid) that are shared across samples (e.g., across individuals or across
 time points for a single individual).
 
-See `vignette("public_clusters")` for a detailed tutorial.
+See [this
+vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html)
+for a detailed tutorial.

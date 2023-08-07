@@ -1,3 +1,18 @@
+# Changes in NAIR version 0.0.9043 (8/7/2023)
+
+## Vignettes
+
+* Function names in vignettes have been reformatted so that when pkgdown builds the package webpage articles from the vignettes, function names will link to the webpages with their documentation files.
+
+## Readme
+
+* Package README file updated
+
+## Website
+
+* Custom index added for the reference topics. Topics are now organized into named sections, dramatically improving the ability to find particular topics or functions of interest.
+
+
 # Changes in NAIR version 0.0.9042 (8/6/2023)
 
 ## Package Functions

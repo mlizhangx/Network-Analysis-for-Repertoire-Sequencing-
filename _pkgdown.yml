@@ -1,4 +1,70 @@
 url: https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/
 template:
   bootstrap: 5
-
+reference:
+- title: "Main Function"
+  desc: "All-in-one function for network analysis"
+  contents:
+  - buildRepSeqNetwork
+- title: "Searching for Associated TCR/BCR Clusters"
+  desc: >
+    Given multiple samples of AIRR-Seq data, search for TCR/BCR clusters
+    associated with a binary variable of interest
+  contents:
+  - findAssociatedSeqs
+  - findAssociatedSeqs2
+  - findAssociatedClones
+  - buildAssociatedClusterNetwork
+- title: "Searching for Public TCR/BCR Clusters"
+  desc: >
+    Search for public TCR/BCR clusters across multiple samples of AIRR-seq data
+  contents:
+  - findPublicClusters
+  - buildPublicClusterNetwork
+  - buildPublicClusterNetworkByRepresentative
+- title: "Network Properties"
+  desc: "Compute network properties and perform cluster analysis"
+  contents:
+  - addNodeNetworkStats
+  - chooseNodeStats
+  - exclusiveNodeStats
+  - addClusterMembership
+  - getClusterStats
+  - clustering_algorithms
+  - starts_with("cluster_")
+- title: "Network Visualization"
+  desc: "Generate or modify plots of a network graph"
+  contents:
+  - generateNetworkGraphPlots
+  - plotNetworkGraph
+  - addClusterLabels
+  - addGraphLabels
+- title: "Manual Generation of Network Components"
+  contents:
+  - generateNetworkObjects
+  - generateNetworkFromAdjacencyMat
+  - sparseAdjacencyMatFromSeqs
+- title: "Loading, Filtering and Saving Data"
+  contents:
+  - loadDataFromFileList
+  - combineSamples
+  - filterInputData
+  - aggregateIdenticalClones
+  - getNeighborhood
+  - saveNetwork
+  - saveNetworkPlots
+- title: "Distance Functions"
+  desc: "Used to quantify similarity between receptor sequences"
+  contents:
+  - hamDistBounded
+  - levDistBounded
+- title: "Analysis Using TESSA"
+  desc: "Analyze TCR CDR3 amino acid sequence data using deep learning"
+  contents:
+  - installPythonModules
+  - encodeTCRSeqsByAtchleyFactor
+  - adjacencyMatAtchleyFromSeqs
+  - kmeansAtchley
+- title: "Miscellaneous Functions"
+  contents:
+  - simulateToyData

@@ -93,7 +93,7 @@ head(readRDS(file.path(dir_input_samples, "Sample1.rds")))
 
 # <a name="step1"></a> Step 1: Find Associated Sequences {.tabset}
 
-The first step is to conduct a systematic search for associated sequences within the provided samples using the `findAssociatedSeqs` function. 
+The first step is to conduct a systematic search for associated sequences within the provided samples using `findAssociatedSeqs()`. 
 
 This search is a two-stage procedure. 
 
@@ -101,7 +101,7 @@ The unique receptor sequences are first filtered according to basic criteria in 
 
 For each candidate sequence, we then compute the P-value for Fisher's exact test of independence between the binary variable of interest and the observed presence of the sequence within a sample/subject. The user specifies the P-value cutoff below which an association is detected.
 
-Below, we explain the usage and behavior of the `findAssociatedSeqs` function.
+Below, we explain the usage and behavior of `findAssociatedSeqs()`.
 
 
 ## Search Criteria for Associated Sequences {.tabset}
@@ -120,24 +120,24 @@ By default, only sequences that contain at least seven characters will be consid
 
 Sequences can be filtered based on the character content they contain. **It is recommended to filter out sequences containing special characters that are invalid for use in file names.**
 
-By default, sequences containing characters `*` or `_` will be excluded from consideration. This can be changed using the `drop_matches` argument, which accommodates a character string or regular expression specifying the pattern of content to search for. The content of each sequence is checked for a match to this pattern using the `grep` function from base R. If a match is found, the sequence is excluded from consideration. Setting the value to `NULL` bypasses this check. 
+By default, sequences containing characters `*` or `_` will be excluded from consideration. This can be changed using the `drop_matches` argument, which accommodates a character string or regular expression specifying the pattern of content to search for. The content of each sequence is checked for a match to this pattern using `grep()`. If a match is found, the sequence is excluded from consideration. Setting the value to `NULL` bypasses this check. 
 
-For details on how the pattern matching is performed, please refer to the base R documentation files for `regex` and `grep`.
+For details on how the pattern matching is performed, please refer to the base R documentation files for `regex()` and `grep()`.
 
 ### P-value Cutoff
 
-By default, sequences with a P-value below 0.05 on Fisher's exact test are included in the output of `findAssociatedSeqs`. The cutoff can be set to a different value using the `pval_cutoff` argument. The lower the cutoff value, the stronger the evidence of an association is required for a sequence to be included in the output.
+By default, sequences with a P-value below 0.05 on Fisher's exact test are included in the output of `findAssociatedSeqs()`. The cutoff can be set to a different value using the `pval_cutoff` argument. The lower the cutoff value, the stronger the evidence of an association is required for a sequence to be included in the output.
 
-It should be noted that the sequences returned by `findAssociatedSeqs` are ordered by P-value, and any subset of them can be used in [step2](#step2). Thus it is not necessary to rerun `findAssociatedSeqs` in order to impose a stricter P-value cutoff. The user can instead subset the results in order to use only those sequences below a specified P-value.
+It should be noted that the sequences returned by `findAssociatedSeqs()` are ordered by P-value, and any subset of them can be used in [step2](#step2). Thus it is not necessary to rerun `findAssociatedSeqs()` in order to impose a stricter P-value cutoff. The user can instead subset the results in order to use only those sequences below a specified P-value.
 
 
 ## <a name="input_settings"></a> Specify Input Data for Step 1 {.tabset}
 
 ### <a name="input_files"></a> File Paths of Sample Data
 
-The main argument of the `findAssociatedSeqs` function is the `file_list` argument, which accepts a vector containing file paths. Each file is assumed to contain the AIRR-Seq data for a single sample, with observations indexed by row.
+The main argument of `findAssociatedSeqs()` is the `file_list` argument, which accepts a vector containing file paths. Each file is assumed to contain the AIRR-Seq data for a single sample, with observations indexed by row.
 
-Below, we prepare the vector `input_files` to be provided to the `file_list` argument of `findAssociatedSeqs`:
+Below, we prepare the vector `input_files` to be provided to the `file_list` argument of `findAssociatedSeqs()`:
 
 ```{r}
 # input files for step 1 (one per sample)
@@ -147,7 +147,7 @@ head(input_files)
 
 ### <a name="input_type"></a> File Format of Sample Data
 
-The file format of the input files for `findAssociatedSeqs` is specified using the `input_type` parameter. The supported formats include `"rds"`, `"rda"`, `"csv"`, as well as files that can be read using the `read.table` function, such as `"tsv"` and `"txt"`. 
+The file format of the input files for `findAssociatedSeqs()` is specified using the `input_type` parameter. The supported formats include `"rds"`, `"rda"`, `"csv"`, as well as files that can be read using the `read.table()` function, such as `"tsv"` and `"txt"`. 
 
 Our samples are stored in .rds files, so we use `input_type = "rds"`. 
 
@@ -161,7 +161,7 @@ For the `"rda"` (Rdata) format, the `data_symbols` argument is used to specify t
 
 The `seq_col` argument is used to specify the column containing the clone sequences in the input data for each sample. The argument accepts either the column name or column index.
 
-In our simulated data, the column containing the clone sequences is named `CloneSeq`. Hence we specify `seq_col = "CloneSeq"` when calling `findAssociatedSeqs`.
+In our simulated data, the column containing the clone sequences is named `CloneSeq`. Hence we specify `seq_col = "CloneSeq"` when calling `findAssociatedSeqs()`.
 
 
 ### <a name="group_ids"></a> Assigning Samples to Groups
@@ -170,7 +170,7 @@ The `group_ids` argument is used to assign each sample to one of the two groups,
 
 For instance, in our simulated data, the first half of the samples belong to the control group, while the second half belong to the treatment group. Thus, we should assign one group label to the first 15 samples and a different group label to the last 15 samples. Here we choose to label the first 15 samples as `"reference"` and the last 15 samples as `"comparison"`. However, it should be noted that the results will be unchanged if the labels are reversed, or if a different pair of labels is used, as long as the first 15 samples are assigned to one group and the last 15 samples to the other.
 
-The vector we will provide to the `group_ids` argument of `findAssociatedSeqs` is created below:
+The vector we will provide to the `group_ids` argument of `findAssociatedSeqs()` is created below:
 
 ```{r}
 # group label assignments for the samples
@@ -195,14 +195,14 @@ Subject IDs should be provided when the binary variable of interest is subject-s
 
 The `freq_col` argument can be used to specify the column in each sample's data frame that contains the clone frequencies (i.e., clone count divided by the sum of the clone counts across all clones in the sample). The argument accepts either the column name or column index.
 
-If clone frequencies are provided, the maximum clone frequency (across all samples) for each associated sequence will be included in the content of the data frame returned by `findAssociatedSeqs`.
+If clone frequencies are provided, the maximum clone frequency (across all samples) for each associated sequence will be included in the content of the data frame returned by `findAssociatedSeqs()`.
 
 
 ## Output File Path for Step 1
 
-The `findAssociatedSeqs` function returns a data frame containing the associated sequences along with some additional information (see the [demonstration](#demo1) below). 
+`findAssociatedSeqs()` returns a data frame containing the associated sequences along with some additional information (see the [demonstration](#demo1) below). 
 
-By default, the data frame returned by `findAssociatedSeqs` is also saved to the current working directory as a csv file named `associated_seqs.csv`.
+By default, the data frame returned by `findAssociatedSeqs()` is also saved to the current working directory as a csv file named `associated_seqs.csv`.
 
 A different file name and/or directory can be specified by providing a file path to the `outfile` argument. For example, setting `outfile = "myfile.csv"` will save the file to the current working directory as `myfile.csv`, while setting `outfile = "~/myfolder/myfile.csv"` will save the file within the subdirectory `myfolder` located within the current working directory.
 
@@ -211,9 +211,9 @@ The user can also specify `outfile = NULL` in order to prevent the output from b
 
 ## <a name="demo1"></a> Demonstration (Step 1)
 
-### Execute `findAssociatedSeqs`
+### Execute `findAssociatedSeqs()`
 
-We execute the `findAssociatedSeqs` function using the [inputs we prepared earlier](#input_settings) for the [`file_list`](#input_files) and [`group_ids`](#group_ids) arguments:
+We execute `findAssociatedSeqs()` using the [inputs we prepared earlier](#input_settings) for the [`file_list`](#input_files) and [`group_ids`](#group_ids) arguments:
 
 ```{r}
 # search across samples for associated sequences using Fisher's exact test
@@ -226,9 +226,10 @@ associated_seqs <- findAssociatedSeqs(
   pval_cutoff = 0.1,
   outfile = NULL)
 ```
-### Output of `findAssociatedSeqs`
 
-`findAssociatedSeqs` returns a data frame containing the associated sequences based on the specified search criteria.
+### Output of `findAssociatedSeqs()`
+
+`findAssociatedSeqs()` returns a data frame containing the associated sequences based on the specified search criteria.
 
 ```{r}
 # view first few rows of output
@@ -256,9 +257,9 @@ The following additional variables will be included if subject IDs are specified
 
 # <a name="step2"></a> Step 2: Find Associated Clones {.tabset}
 
-In the [previous step](#step1), we used `findAssociatedSeqs` to identify receptor sequences associated with the binary variable of interest.
+In the [previous step](#step1), we used `findAssociatedSeqs()` to identify receptor sequences associated with the binary variable of interest.
 
-The next step is to use the `findAssociatedClones` function to search across samples and identify all clones with sequences similar to the associated sequences identified in step 1.
+The next step is to use `findAssociatedClones()` to search across samples and identify all clones with sequences similar to the associated sequences identified in step 1.
 
 For each associated sequence, we define its neighborhood as the set of all sequences that fall within a specified distance (e.g., a maximum Hamming distance of 1). We then identify all clones (from all samples) whose sequences belong to this neighborhood.
 
@@ -270,9 +271,9 @@ The data for each associated sequence's neighborhood is then saved to a separate
 
 The associated sequences are specified via the `assoc_seqs` argument, which accepts a character vector containing the associated sequences.
 
-Typically, the vector provided to `assoc_seqs` will be the `ReceptorSeq` column of the data frame returned by `findAssociatedSeqs`. This considers all of the associated sequences found in [step 1](#step1). 
+Typically, the vector provided to `assoc_seqs` will be the `ReceptorSeq` column of the data frame returned by `findAssociatedSeqs()`. This considers all of the associated sequences found in [step 1](#step1). 
 
-However, it may be desirable to consider only a subset of the sequences returned by `findAssociatedSeqs`. The sequences are ordered by Fisher's exact test P-value to facilitate reference. For example, if we had many associated sequences, we could choose to consider only the 10 with the lowest P-values by specifying `assoc_seqs = associated_seqs$ReceptorSeq[1:10]`.
+However, it may be desirable to consider only a subset of the sequences returned by `findAssociatedSeqs()`. The sequences are ordered by Fisher's exact test P-value to facilitate reference. For example, if we had many associated sequences, we could choose to consider only the 10 with the lowest P-values by specifying `assoc_seqs = associated_seqs$ReceptorSeq[1:10]`.
 
 
 
@@ -280,7 +281,7 @@ However, it may be desirable to consider only a subset of the sequences returned
 
 ### <a name="files2"></a> Arguments from Step 1
 
-In order for `findAssociatedClones` to conduct its search, we must provide specifications for our sample data, just as we did when calling `findAssociatedSeqs`. 
+In order for `findAssociatedClones()` to conduct its search, we must provide specifications for our sample data, just as we did when calling `findAssociatedSeqs()`. 
 
 [As before](#input_settings), this is done using the following arguments:
 
@@ -290,7 +291,7 @@ In order for `findAssociatedClones` to conduct its search, we must provide speci
 * [`group_ids`](#group_ids)
 * [`subject_ids`](#subject_ids) (if applicable)
 
-The user should use the same values for these arguments as they did when calling `findAssociatedSeqs` in [step 1](#step1).
+The user should use the same values for these arguments as they did when calling `findAssociatedSeqs()` in [step 1](#step1).
 
 
 
@@ -349,7 +350,7 @@ For example, if `nbd_radius = 2`, then each associated sequence's neighborhood w
 
 ## Output Settings for Step 2 {.tabset}
 
-The `findAssociatedClones` function does not return any direct output. Instead, it saves the data for the associated sequence's neighborhoods to files that will be used as inputs in [step 3](#step3). 
+`findAssociatedClones()` does not return any direct output. Instead, it saves the data for the associated sequence's neighborhoods to files that will be used as inputs in [step 3](#step3). 
 
 For each neighborhood, a data frame is saved to an individual file. The data frame contains one row for each clone in the neighborhood, and it includes variables for each clone's sample ID, the group ID for its sample, and (if provided) the subject ID for its sample. The following arguments can be used to customize the output. 
 
@@ -390,9 +391,9 @@ If files are saved using the `"rda"` (Rdata) format, each data frame will be nam
 
 ## <a name="demo2"></a> Demonstration (Step 2)
 
-### Execute `findAssociatedClones`
+### Execute `findAssociatedClones()`
 
-We execute the `findAssociatedClones` function using the [inputs from step 1](#files2) for the [`file_list`](#input_files) and [`group_ids`](#group_ids) arguments, the [associated sequences from step 1](#assoc_seqs), as well as the [output directory file path we created for the current step](#output2):
+We execute `findAssociatedClones()` using the [inputs from step 1](#files2) for the [`file_list`](#input_files) and [`group_ids`](#group_ids) arguments, the [associated sequences from step 1](#assoc_seqs), as well as the [output directory file path we created for the current step](#output2):
 
 ```{r}
 # Identify clones in a neighborhood around each associated sequence
@@ -405,7 +406,7 @@ findAssociatedClones(
   output_dir = dir_nbds)
 ```
 
-### <a name="nbd_output"></a> Output of `findAssociatedClones`
+### <a name="nbd_output"></a> Output of `findAssociatedClones()`
 
 The following files are created in the directory [specified by the `output_dir` argument](#output2):
 
@@ -431,16 +432,16 @@ head(nbd1)
 
 # <a name="step3"></a> Step 3: Global Network of Associated Clusters {.tabset}
 
-Now that we have identified the clones in each associated sequence's neighborhood, the final step is to use the `buildAssociatedClusterNetwork` function to combine the clones from all neighborhoods into a single global network. We then use clustering analysis to partition the global network into clusters, which are considered as the associated clusters.
+Now that we have identified the clones in each associated sequence's neighborhood, the final step is to use `buildAssociatedClusterNetwork()` to combine the clones from all neighborhoods into a single global network. We then use clustering analysis to partition the global network into clusters, which are considered as the associated clusters.
 
 
 ## Specify Input Data for Step 3 {.tabset}
 
-The [output files created in the previous step](#demo2) are used as the input files for `buildAssociatedClusterNetwork` in the current step. Each of these files contains the neighborhood data for an associated sequence.
+The [output files created in the previous step](#demo2) are used as the input files for `buildAssociatedClusterNetwork()` in the current step. Each of these files contains the neighborhood data for an associated sequence.
 
 ### <a name="input_files3"></a> File Paths of Neighborhood Data
 
-The `file_list` argument of  `buildAssociatedClusterNetwork` is used to specify the location of the neighborhood data files. It accepts a character vector of file paths. 
+The `file_list` argument of  `buildAssociatedClusterNetwork()` is used to specify the location of the neighborhood data files. It accepts a character vector of file paths. 
 
 The neighborhood data files are located in the [output directory from step 2](#output2). If the files from step 2 were saved to a new or empty directory as recommended, then they can easily be referenced using `list.files` with `full.names = TRUE`, as seen below. 
 
@@ -453,11 +454,11 @@ nbd_files <- list.files(dir_nbds, full.names = TRUE)
 
 ### File Format of Neighborhood Data
 
-If `findAssociatedClones` was called using the default value of `output_type`, then it is not necessary to specify the input type when calling `buildAssociatedClusterNetwork`. 
+If `findAssociatedClones()` was called using the default value of `output_type`, then it is not necessary to specify the input type when calling `buildAssociatedClusterNetwork()`. 
 
-If the files created by `findAssociatedClones` were saved using a different file format, the `input_type` argument can be used to specify the format used. This argument has the [same behavior described earlier](#input_type) in `findAssociatedSeqs` and `findAssociatedClones`. The situational arguments `header`, `sep` and `data_symbols` also perform the same roles as before.
+If the files created by `findAssociatedClones()` were saved using a different file format, the `input_type` argument can be used to specify the format used. This argument has the [same behavior described earlier](#input_type) in `findAssociatedSeqs()` and `findAssociatedClones()`. The situational arguments `header`, `sep` and `data_symbols` also perform the same roles as before.
 
-**Note about Rdata file format:** If the `"rda"` (Rdata) input file format is specified using `input_type = "rda"`, then the `data_symbols` argument is used to specify the name of each neighborhood's data frame within its respective Rdata file. If `findAssociatedClones` was called with `output_type = "rda"`, then the data frame for each sample will be named `data`. Accordingly, the default value of `data_symbols` for `buildAssociatedClusterNetwork` is `data`, so the user should not need to manually specify the value of `data_symbols` unless the names within the files have been manually changed.
+**Note about Rdata file format:** If the `"rda"` (Rdata) input file format is specified using `input_type = "rda"`, then the `data_symbols` argument is used to specify the name of each neighborhood's data frame within its respective Rdata file. If `findAssociatedClones()` was called with `output_type = "rda"`, then the data frame for each sample will be named `data`. Accordingly, the default value of `data_symbols` for `buildAssociatedClusterNetwork()` is `data`, so the user should not need to manually specify the value of `data_symbols` unless the names within the files have been manually changed.
 
 
 
@@ -465,7 +466,7 @@ If the files created by `findAssociatedClones` were saved using a different file
 
 ### Network Construction
 
-The parameters used by `buildAssociatedClusterNetwork` when constructing the global network are shown below along with their default values.
+The parameters used by `buildAssociatedClusterNetwork()` when constructing the global network are shown below along with their default values.
 
 * `dist_type = "hamming"` 
 * `dist_cutoff = 1`
@@ -476,26 +477,26 @@ Refer to [this section of the buildRepSeqNetwork vignette](buildRepSeqNetwork.ht
 
 ### Clustering Algorithm
 
-After constructing the global network, `buildAssociatedClusterNetwork` performs cluster analysis on the network nodes, partitioning the global network graph into densely-connected subgraphs. 
+After constructing the global network, `buildAssociatedClusterNetwork()` performs cluster analysis on the network nodes, partitioning the global network graph into densely-connected subgraphs. 
 
 If the neighborhoods for two different associated sequences are very similar, i.e., the network contains many edge connections joining the nodes from one neighborhood to the nodes from the other neighborhood, then the two neighborhoods will have a high chance of belonging to the same cluster. Thus, cluster analysis assists in identifying distinct groups of clones/sequences that are associated with the binary variable of interest.
 
-By default, clustering is performed using the `cluster_fast_greedy` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](buildRepSeqNetwork.html#cluster_alg) for details.
+By default, clustering is performed using the `cluster_fast_greedy()` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](buildRepSeqNetwork.html#cluster_alg) for details.
 
 
 
 ### <a name="global_network_properties"></a> Network Properties
 
-By default, `buildAssociatedClusterNetwork` computes both [node-level](buildRepSeqNetwork.html#node_properties) and [cluster-level](buildRepSeqNetwork.html#cluster_properties) properties of the global network. Node-level properties can be excluded by setting `node_stats = FALSE`, and cluster-level properties can be excluded by setting `cluster_stats = FALSE`.
+By default, `buildAssociatedClusterNetwork()` computes both [node-level](buildRepSeqNetwork.html#node_properties) and [cluster-level](buildRepSeqNetwork.html#cluster_properties) properties of the global network. Node-level properties can be excluded by setting `node_stats = FALSE`, and cluster-level properties can be excluded by setting `cluster_stats = FALSE`.
 
 The set of node-level properties to be computed can be specified using the `stats_to_include` argument. Refer to the ["Specifying the Node-Level Properties" section of the buildRepSeqNetwork vignette](buildRepSeqNetwork.html#choose_node_stats) for an explanation of its usage.
 
-Note that regardless of the value of the `stats_to_include` argument, the node-level property `cluster_id` is always computed as part of the clustering analysis performed by `buildAssociatedClusterNetwork`, and is always included as a variable in the node-level metadata for the global network.
+Note that regardless of the value of the `stats_to_include` argument, the node-level property `cluster_id` is always computed as part of the clustering analysis performed by `buildAssociatedClusterNetwork()`, and is always included as a variable in the node-level metadata for the global network.
 
 
 ### <a name="vis"></a> Visualization of Global Network
 
-By default, `buildAssociatedClusterNetwork` produces a visual plot of the global network graph. This step can be omitted by setting `plots = FALSE`.
+By default, `buildAssociatedClusterNetwork()` produces a visual plot of the global network graph. This step can be omitted by setting `plots = FALSE`.
 
 By default, the plot colors the nodes according to the binary variable of interest. This assists in validating each cluster's association to the binary variable. It also allows one to visually identify clusters in which only a single level of the binary variable is present (e.g., disease-only clusters).
 
@@ -512,13 +513,13 @@ The `color_nodes_by` argument also accommodates a character vector specifying mu
 
 ## Output Settings for Step 3 {.tabset}
 
-The output returned by `buildAssociatedClusterNetwork` has the [same structure](buildRepSeqNetwork.html#base_output) as the output of `buildRepSeqNetwork`. The function returns a list containing data frames with the node-level and cluster-level metadata for the global network, as well as any plots generated, in addition to the network adjacency matrix and the `igraph` network edge list.
+The output returned by `buildAssociatedClusterNetwork()` has the [same structure](buildRepSeqNetwork.html#base_output) as the output of `buildRepSeqNetwork()`. The function returns a list containing data frames with the node-level and cluster-level metadata for the global network, as well as any plots generated, in addition to the network adjacency matrix and the `igraph` network edge list.
 
 The following settings allow control over whether and how this output is saved.
 
 ### Output Directory for Step 3
 
-By default, the contents of the list returned by `buildAssociatedClusterNetwork` are saved to the current working directory. 
+By default, the contents of the list returned by `buildAssociatedClusterNetwork()` are saved to the current working directory. 
 
 The output can be saved to a different directory by providing a file path to the `output_dir` argument. The specified directory will be created if it does not already exist. 
 
@@ -526,14 +527,14 @@ The user can also specify `output_dir = NULL` in order to prevent the output fro
 
 ### Output File Format for Step 3
 
-Each element of the output list is saved as an individual file using the [default file formats from `buildRepSeqNetwork`](buildRepSeqNetwork.html#output_format). In particular, the node-level and cluster-level metadata are saved as csv files. 
+Each element of the output list is saved as an individual file using the [default file formats from `buildRepSeqNetwork()`](buildRepSeqNetwork.html#output_format). In particular, the node-level and cluster-level metadata are saved as csv files. 
 
 Alternatively, the user can save the entire output list to a single compressed rds or rda file by setting `output_type = "rds"` or `output_type = "rda"`, respectively.
 
 ### PDF of Global Network Graph Plots
 
 * Regardless of the output file format specified, a separate pdf file is created in `output_dir` containing all graph plots generated for the global network. The dimensions (in inches) for the pdf can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively. The pdf file is not created if no plots are generated (i.e., if the argument `plots` is set to `FALSE`).
-* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot` function as described [here](network_visualization.html#new_plots).
+* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using `generateNetworkGraphPlots()` as described [here](network_visualization.html#new_plots).
 
 
 ### Output File Name(s) for Step 3
@@ -546,9 +547,9 @@ Refer to [this vignette](buildRepSeqNetwork.html#output_filenames) for further d
 
 ## <a name="demo3"></a> Demonstration (Step 3)
 
-### Execute `buildAssociatedClusterNetwork`
+### Execute `buildAssociatedClusterNetwork()`
 
-We execute the `buildAssociatedClusterNetwork` function using the [input we prepared earlier](#input_files3) for the `file_list` argument:
+We execute `buildAssociatedClusterNetwork()` using the [input we prepared earlier](#input_files3) for the `file_list` argument:
 
 ```{r}
 # Combine neighborhoods and perform network analysis
@@ -561,23 +562,23 @@ all_clusters <- buildAssociatedClusterNetwork(
 
 In the graph plot of the global network, where the nodes are colored according to the binary variable of interest, we see that the treatment group shows high representation in the clusters, affirming the association between these sequences and the treatment variable.
 
-### Output of `buildAssociatedClusterNetwork`
+### Output of `buildAssociatedClusterNetwork()`
 
-The default files saved by `buildAssociatedClusterNetwork` have the following names:
+The default files saved by `buildAssociatedClusterNetwork()` have the following names:
 
 ```{r}
 # Files saved by buildAssociatedClusterNetwork
 list.files(file.path(data_dir, "assoc_clusters"))
 ```
 
-The elements of the output list returned by `buildAssociatedClusterNetwork` have the following names:
+The elements of the output list returned by `buildAssociatedClusterNetwork()` have the following names:
 
 ```{r}
 # output returned by buildAssociatedClusterNetwork
 names(all_clusters)
 ```
 
-Below, we examine the data frames `node_data` and `cluster_data`. For details on the other list elements, refer to [the output of the `buildRepSeqNetwork` function](buildRepSeqNetwork.html#base_output).
+Below, we examine the data frames `node_data` and `cluster_data`. For details on the other list elements, refer to [the output of the `buildRepSeqNetwork()` function](buildRepSeqNetwork.html#base_output).
 
 #### <a name="node_variables"></a> Node Metadata for Global Network
 
@@ -610,9 +611,9 @@ Refer [here](buildRepSeqNetwork.html#cluster_properties) for more information ab
 
 
 
-# Step 4: Additional Tasks {.tabset}
+# <a name="step4"></a> Step 4: Additional Tasks {.tabset}
 
-After calling `buildAssociatedClusterNetwork`, the following tasks can be performed using the returned output.
+After calling `buildAssociatedClusterNetwork()`, the following tasks can be performed using the returned output.
 
 ## Additional Plots of the Global Network
 
@@ -629,6 +630,7 @@ all_clusters$plots$AssocSeq <-
     igraph = all_clusters$igraph,
     data = all_clusters$node_data,
     color_nodes_by = "AssocSeq",
+    color_title = "Neighborhood Sequence",
     size_nodes_by = 1.5
   )
 ```
@@ -640,7 +642,7 @@ In the largest cluster, we see that the neighborhoods for two distinct associate
 
 In order to more easily cross-reference the clusters in the visual plot with the clusters in the data, we can label the clusters with their ID numbers. 
 
-This is accomplished using the `addClusterLabels` function [as described here](network_visualization.html#labeling_clusters).
+This is accomplished using the `addClusterLabels()` function [as described here](network_visualization.html#labeling_clusters).
 
 We label the clusters in the global network plot with their cluster IDs:
 
@@ -661,7 +663,7 @@ all_clusters$plots[[1]]
 
 ## Focusing on Individual Clusters of Interest
 
-If we wish to focus on a particular cluster of interest within the global network, we can build a network exclusively using the clones from that cluster. This is accomplished using the `buildRepSeqNetwork` function, where we subset our data according to the value of the `cluster_id` column, which contains the global cluster IDs. 
+If we wish to focus on a particular cluster of interest within the global network, we can build a network exclusively using the clones from that cluster. This is accomplished using the `buildRepSeqNetwork()` function, where we subset our data according to the value of the `cluster_id` column, which contains the global cluster IDs. 
 
 Below, we focus on the first cluster, which for our example is the largest cluster by node count.
 
@@ -695,7 +697,7 @@ The correlation in fraction of TCRs per cluster is computed between pairs of sam
 
 Two heatmaps are produced for comparing the samples. The first heatmap depicts each sample's fraction of TCRs in each cluster. The second heatmap depicts the pairwise correlation between samples that is described above. In both heatmaps, each column corresponds to a sample. A colored bar appears above each column, with the color indicating the group to which the sample belongs, based on the group assignments specified by the `group_ids` argument. This aids in the detection of differences and similarities within and between groups.
 
-All of these steps are performed by the function `kmeansAtchley()`.
+All of these steps are performed by `kmeansAtchley()`.
 
 ```{r, eval = FALSE}
 atchley_results <- kmeansAtchley(

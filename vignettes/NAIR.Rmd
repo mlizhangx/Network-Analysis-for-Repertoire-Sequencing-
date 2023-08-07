@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 We introduce the `NAIR` package, a powerful tool for analyzing the adaptive immune repertoire using network analysis based on similarities among receptor sequences, which implements methods from the following paper:
 
-Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang. NAIR: Network Analysis of Immune Repertoire. *Frontiers in Immunology* (forthcoming).
+[Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. *Frontiers in Immunology*, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825](https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825)
 
 
 <!-- ### What can `NAIR` do? -->
@@ -69,20 +69,19 @@ To aid in visualization and interpretation of the immune repertoire network, our
 
 # The `buildRepSeqNetwork` function
 
-General network analysis on AIRR-Seq data is performed using the `buildRepSeqNetwork` function. This function does the following:
+General network analysis on AIRR-Seq data is performed using `buildRepSeqNetwork()`. This function does the following:
 
 * Filters the input AIRR-Seq data according to user specifications
 * Builds the network graph for the immune repertoire
-* Performs desired network analysis
+* Performs additional network analysis, which can include:
     * Cluster analysis
     * Computation of network properties
-* Generates customized visual plot of the network graph using `ggraph`
+* Generates customizable visual plots of the network graph
 * Saves and returns the following output: 
-    * Meta-data for the nodes in the network, including network properties
-    * Meta-data for the clusters in the network
-    * Network graph plot (returned as `ggraph` object and saved as pdf)
-    * Network adjacency matrix in sparse matrix format
-    * `igraph` object containing the list of edges in the network graph 
+    * Metadata for the nodes in the network
+    * Metadata for the clusters in the network
+    * The plots of the network graph
+    * The network graph itself, both as an adjacency matrix and as an `igraph` object
 
 See [this vignette](buildRepSeqNetwork.html) for a tutorial on the function's usage and output.
 
@@ -90,14 +89,14 @@ See [this vignette](buildRepSeqNetwork.html) for a tutorial on the function's us
 
 # Visualization
 
-The `buildRepSeqNetwork` function includes various arguments that facilitate customization of the network visualization. See [this vignette](network_visualization.html) for an overview.
+`buildRepSeqNetwork()` accepts various arguments for customizing the network visualization. See [this vignette](network_visualization.html) for an overview.
 
 
 
 
 # Searching for Associated Clusters
 
-Given multiple samples of AIRR-Seq data, the `NAIR` package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome. 
+Given multiple samples of bulk AIRR-Seq data, the `NAIR` package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome. 
 
 See [this vignette](associated_clusters.html) for a detailed tutorial.
 
@@ -105,7 +104,7 @@ See [this vignette](associated_clusters.html) for a detailed tutorial.
 
 # Searching for Public Clusters
 
-The `NAIR` package includes a set of functions that facilitate searching for public TCR/BCR clusters across multiple samples of AIRR-seq data. 
+The `NAIR` package includes a set of functions that facilitate searching for public TCR/BCR clusters across multiple samples of bulk AIRR-seq data. 
 
 In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual). 
 

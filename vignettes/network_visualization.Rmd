@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The `buildRepSeqNetwork` function includes various arguments that facilitate customization of the network visualization. In this vignette, we provide an overview and demonstration of these arguments.
+`buildRepSeqNetwork()` includes various arguments that facilitate customization of the network visualization. In this vignette, we provide an overview and demonstration of these arguments.
 
 
 ## Simulate Data for Demonstration
@@ -51,14 +51,14 @@ The nodes in the graph can be colored according to available metadata. This is a
 
 The variable can be any variable present in the input data, as well as any [node-level network properties](buildRepSeqNetwork.html#node_properties) that are computed for the network.
 
-For example, when calling `buildRepSeqNetwork`, we can color the nodes based on the `CloneCount` column of the input data by setting `color_nodes_by = "CloneCount"` as seen below.
+For example, when calling `buildRepSeqNetwork()`, we can color the nodes based on the `CloneCount` column of the input data by setting `color_nodes_by = "CloneCount"` as seen below.
 
 ```{r}
 buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
                    color_nodes_by = "CloneCount", output_dir = NULL)
 ```
 
-If the `color_nodes_by` argument is left unspecified, `buildRepSeqNetwork` will attempt to use an available variable to color the nodes. If a variable for abundance is provided using the `count_col` argument, this will be used. Otherwise the `cluster_id` variable will be used if it exists, followed by `degree`, then by other network properties. If no suitable options are available, the nodes will be left uncolored.
+If the `color_nodes_by` argument is left unspecified, `buildRepSeqNetwork()` will attempt to use an available variable to color the nodes. If a variable for abundance is provided using the `count_col` argument, this will be used. Otherwise the `cluster_id` variable will be used if it exists, followed by `degree`, then by other network properties. If no suitable options are available, the nodes will be left uncolored.
 
 If the user does not wish the nodes to be colored dynamically, this can be specified by setting `color_nodes_by = NULL`. 
 
@@ -68,7 +68,7 @@ If the user does not wish the nodes to be colored dynamically, this can be speci
 A preset color palette can be used to color the nodes by providing the appropriate character string to the `color_scheme` argument. The argument accepts the following values:
 
 * `"default"` for default `ggplot2` colors
-* One of the following color scales from the `viridisLite` package. These scales are designed to maintain their perceptual uniformity (consistently across the scale, values close together appear similar, while values far apart appear distinct) when printed in grey scale or when viewed by individuals with common forms of color-blindness or color vision deficiency. More information, including images of the color scales, can be referenced in the [Introduction to the viridis color maps](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html) vignette hosted on CRAN's website.
+* One of the following color scales from the `viridisLite` package. These scales are designed to maintain their perceptual uniformity (consistently across the scale, values close together appear similar, while values far apart appear distinct) when printed in grey scale or when viewed by individuals with common forms of color-blindness or color vision deficiency. More information, including images of the color scales, can be referenced in the [Introduction to the viridis color maps vignette](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html).
 * `"magma"` (or `"A"`)
 * `"inferno"` (or `"B"`)
 * `"plasma"` (or `"C"`)
@@ -92,7 +92,7 @@ buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
 
 ### Use Custom Color Palette
 
-The color scales that are available through the `color_scheme` argument of the `buildRepSeqNetwork` function are limited to a selection of preset color scales. If the user wishes to specify a custom color scheme for the nodes, this can be done by [modifying the plot after it is created](#modifying_plots). 
+The color scales that are available through the `color_scheme` argument of `buildRepSeqNetwork()` are limited to a selection of preset color scales. If the user wishes to specify a custom color scheme for the nodes, this can be done by [modifying the plot after it is created](#modifying_plots). 
 
 
 ## <a name="node_size"></a> Node Size {.tabset}
@@ -143,17 +143,17 @@ This section covers arguments that control text elements in the plot, such as ti
 
 # <a name="labeling_clusters"></a> Labeling Clusters
 
-If [cluster analysis is performed](buildRepSeqNetwork.html#cluster-analysis) when calling `buildRepSeqNetwork`, the output will include data on the resulting clusters, with each cluster identified by a cluster ID.
+If [cluster analysis is performed](buildRepSeqNetwork.html#cluster-analysis) when calling `buildRepSeqNetwork()`, the output will include data on the resulting clusters, with each cluster identified by a cluster ID.
 
-In order to more easily reference these clusters within the visual plot of the network graph, it is possible to label the clusters in the plot with their cluster IDs. This must be done after calling `buildRepSeqNetwork`, and is accomplished by using the the `addClusterLabels` function to modify the plot contained in the output of `buildRepSeqNetwork`. Note that `buildRepSeqNetwork` returns a list, and one of the elements of this list is another list named `plots`, which contains all plots generated by `buildRepSeqNetwork`.
+In order to more easily reference these clusters within the visual plot of the network graph, it is possible to label the clusters in the plot with their cluster IDs. This must be done after calling `buildRepSeqNetwork()`, and is accomplished by using the `addClusterLabels()` to modify the plot contained in the output of `buildRepSeqNetwork()`. Note that `buildRepSeqNetwork()` returns a list, and one of the elements of this list is another list named `plots`, which contains all plots generated by `buildRepSeqNetwork()`.
 
-The `addClusterLabels` function has two primary arguments. The plot to be modified is provided to the `plot` argument. The entire output list returned by `buildRepSeqNetwork` is provided to the `net` argument.
+`addClusterLabels()` has two primary arguments. The plot to be modified is provided to the `plot` argument. The entire output list returned by `buildRepSeqNetwork()` is provided to the `net` argument.
 
-By default, only the 20 largest clusters by node count are labeled in order to preserve legibility. This number can be changed by providing a different value to the `top_n_clusters` argument. Instead of prioritizing the clusters to label based on their node count, a different variable within the cluster-level metadata can be used, so long as the variable is numeric. This is achieved by providing the column name of the variable to the `criterion` argument. The variable should be present in the `cluster_data` data frame contained in the output list of `buildRepSeqNetwork`. Rather than prioritizing the clusters with the greatest values of this variable, those with the lowest values can instead be prioritized for labeling by setting `greatest_values = FALSE`.
+By default, only the 20 largest clusters by node count are labeled in order to preserve legibility. This number can be changed by providing a different value to the `top_n_clusters` argument. Instead of prioritizing the clusters to label based on their node count, a different variable within the cluster-level metadata can be used, so long as the variable is numeric. This is achieved by providing the column name of the variable to the `criterion` argument. The variable should be present in the `cluster_data` data frame contained in the output list of `buildRepSeqNetwork()`. Rather than prioritizing the clusters with the greatest values of this variable, those with the lowest values can instead be prioritized for labeling by setting `greatest_values = FALSE`.
 
 The size of the cluster ID labels can be adjusted by providing a numeric value to the `size` argument (the default is 5), and their color can be adjusted by providing a valid character string to the `color` argument (the default is `"black"`).
 
-The `addClusterLabels` function assumes that the node-level metadata includes a variable named `cluster_id` that records the cluster membership of each node. This is the case when `buildRepSeqNetwork` is called with cluster analysis enabled. If this variable has a name different from `cluster_id` (e.g., if columns are manually renamed), the correct variable name must be provided to the `cluster_id_col` argument.
+`addClusterLabels()` assumes that the node-level metadata includes a variable named `cluster_id` that records the cluster membership of each node. This is the case when `buildRepSeqNetwork()` is called with cluster analysis enabled. If this variable has a name different from `cluster_id` (e.g., if columns are manually renamed), the correct variable name must be provided to the `cluster_id_col` argument.
 
 
 ```{r}
@@ -177,7 +177,7 @@ addClusterLabels(plot = network$plots$transitivity,
 
 ## Title and Subtitle
 
-The `output_name` argument is used in the names of files saved by `buildRepSeqNetwork`. By default, it is also used as the title for each plot generated by `buildRepSeqNetwork`. The default value of `output_name` is `"MyRepSeqNetwork"`.
+The `output_name` argument is used in the names of files saved by `buildRepSeqNetwork()`. By default, it is also used as the title for each plot generated by `buildRepSeqNetwork()`. The default value of `output_name` is `"MyRepSeqNetwork"`.
 
 By default, the subtitle of each plot contains information about the settings used to construct the network, including the values of the `dist_type` and `dist_cutoff` arguments.
 
@@ -214,7 +214,7 @@ If a vector is provided to the `color_nodes_by` argument in order to [generate m
 
 # <a name="multiple_plots"></a> Generate Multiple Plots of a Network
 
-The `buildRepSeqNetwork` can generate multiple plots of the same network graph, with each plot coloring the nodes according to a different variable. This is accomplished by providing a vector of column names to the `color_nodes_by` argument instead of a single column name.
+The `buildRepSeqNetwork()` can generate multiple plots of the same network graph, with each plot coloring the nodes according to a different variable. This is accomplished by providing a vector of column names to the `color_nodes_by` argument instead of a single column name.
 
 A different [color palette](#node_colors) can be used for each plot. This is achieved by providing a character vector to the `color_scheme` argument. This vector must have the same length as the vector provided to the `color_nodes_by` argument. The color palette specified by each entry will be applied to the corresponding plot. If, instead, a single value is provided to the `color_scheme` argument, the specified color palette will be applied to all of the plots.
 
@@ -227,7 +227,7 @@ network <- buildRepSeqNetwork(
   output_dir = NULL)
 ```
 
-Both plots are stored in the `plots` list, which is contained within the output list of `buildRepSeqNetwork`. 
+Both plots are stored in the `plots` list, which is contained within the output list of `buildRepSeqNetwork()`. 
 
 ```{r}
 names(network$plots)
@@ -238,7 +238,7 @@ Each plot is named according to the variable used to color the nodes.
 
 # Downstream Tasks {.tabset}
 
-This section covers functionality within the `NAIR` package that facilitates additional visual analysis of the results from the `buildRepSeqNetwork` function.
+This section covers functionality within the `NAIR` package that facilitates additional visual analysis of the results from `buildRepSeqNetwork()`.
 
 
 ## <a name="modifying_plots"></a> Modifying Plots After Creation {.tabset}
@@ -246,33 +246,33 @@ This section covers functionality within the `NAIR` package that facilitates add
 
 ### Motivation
 
-In some cases, the user may wish to make changes to a plot that was previously created by the `buildRepSeqNetwork` function. 
+In some cases, the user may wish to make changes to a plot that was previously created by `buildRepSeqNetwork()`. 
 
-For example, suppose we call `buildRepSeqNetwork` in order to construct the network for our simulated data:
+For example, suppose we call `buildRepSeqNetwork()` in order to construct the network for our simulated data:
 
 ```{r}
 output <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE,
                              output_dir = NULL)
 ```
 
-Now suppose we wish to modify the plot seen above. We could call `buildRepSeqNetwork` again, using the appropriate arguments to customize the plot as desired. However, this would involve reconstructing the network, which is unnecessary for our purposes and could take substantial time if the network is very large.
+Now suppose we wish to modify the plot seen above. We could call `buildRepSeqNetwork()` again, using the appropriate arguments to customize the plot as desired. However, this would involve reconstructing the network, which is unnecessary for our purposes and could take substantial time if the network is very large.
 
-Another option is to directly modify the plot contained within the already-existing output of `buildRepSeqNetwork`. 
+Another option is to directly modify the plot contained within the already-existing output of `buildRepSeqNetwork()`. 
 
 
 ### How to Modify Plots
 
-The list that was returned by  `buildRepSeqNetwork` contains a sublist named `plots`:
+The list that was returned by  `buildRepSeqNetwork()` contains a sublist named `plots`:
 
 ```{r}
 names(output$plots)
 ```
 
-Each plot created by `buildRepSeqNetwork` is contained in this list, with each plot named according to the variable used to color the nodes. Here the list contains one plot named `degree`.
+Each plot created by `buildRepSeqNetwork()` is contained in this list, with each plot named according to the variable used to color the nodes. Here the list contains one plot named `degree`.
 
 Each plot exists as an object of class `ggraph` from the `ggraph` package. The `ggraph` class inherits the structure of the `ggplot` class from the `ggplot2` package. Each plot can therefore be modified using `ggplot2` functions and syntax, for which [many excellent informational resources are available](https://ggplot2.tidyverse.org). 
 
-The `ggraph` class extends the `ggplot` class through the addition of graph-specific geoms and layouts. The plots produced by `buildRepSeqNetwork` use the geoms `geom_edge_link0` for the edges and `geom_node_point` for the nodes. 
+The `ggraph` class extends the `ggplot` class through the addition of graph-specific geoms and layouts. The plots produced by `buildRepSeqNetwork()` use the geoms `geom_edge_link0()` for the edges and `geom_node_point()` for the nodes. 
 
 As a demonstration below, we remove the plot title and subtitle, adjust the node size, color the nodes using the `CloneCount` variable and change the color scale. 
 
@@ -295,7 +295,7 @@ modified_plot <-
 modified_plot
 ```
 
-We can replace the original plot contained in the output of `buildRepSeqNetwork` with the modified plot. If the variable used to color the nodes has been modified, we can also rename the plot accordingly.
+We can replace the original plot contained in the output of `buildRepSeqNetwork()` with the modified plot. If the variable used to color the nodes has been modified, we can also rename the plot accordingly.
 
 ```{r, eval = FALSE}
 # replace original plot with modified plot
@@ -305,7 +305,7 @@ output$plots$degree <- modified_plot
 names(output$plots) <- "CloneCount"
 ```
 
-Alternatively, we can keep the original plot and add the modified plot to the plot list contained in the existing output of `buildRepSeqNetwork`.
+Alternatively, we can keep the original plot and add the modified plot to the plot list contained in the existing output of `buildRepSeqNetwork()`.
 
 ```{r}
 # add modified plot to list containing the original plot
@@ -314,16 +314,16 @@ output$plots$CloneCount <- modified_plot
 names(output$plots)
 ```
 
-The complete set of functions, geoms and aesthetics within the `ggraph` and `ggplot2` packages allow the user to customize plots beyond what is possible using only the arguments of `buildRepSeqNetwork`.
+The complete set of functions, geoms and aesthetics within the `ggraph` and `ggplot2` packages allow the user to customize plots beyond what is possible using only the arguments of `buildRepSeqNetwork()`.
 
 
 ### Custom Color Scales {.tabset}
 
-The color scales that are available through the `color_scheme` argument of the `buildRepSeqNetwork` function are limited to a selection of preset color scales. If the user wishes to manually customize the color scheme for the nodes, this can be done by modifying the plot after it is created.
+The color scales that are available through the `color_scheme` argument of `buildRepSeqNetwork()` are limited to a selection of preset color scales. If the user wishes to manually customize the color scheme for the nodes, this can be done by modifying the plot after it is created.
 
 #### For Continuous Variables
 
-If the variable used to color the nodes is continuous, a custom color gradient can be specified using the `scale_color_gradient` function, which allows the user to specify the color at each end of the gradient using the arguments `low` and `high`. Below, we use `buildRepSeqNetwork` to generate a plot where the nodes are colored using the `CloneCount` variable. We then modify the plot to use a custom color gradient.
+If the variable used to color the nodes is continuous, a custom color gradient can be specified using `scale_color_gradient()`, which allows the user to specify the color at each end of the gradient using the arguments `low` and `high`. Below, we use `buildRepSeqNetwork()` to generate a plot where the nodes are colored using the `CloneCount` variable. We then modify the plot to use a custom color gradient.
 
 ```{r}
 # generate plot with nodes colored by clone count
@@ -344,7 +344,7 @@ output$plots$CloneCount
 
 #### For Discrete Variables
 
-If the variable used to color the nodes is discrete, a custom color palette can be specified using the `scale_color_manual` function, which allows the user to specify the color used for each value of the discrete variable. The argument `values` accepts a vector of colors whose length must match the number of unique values in the discrete variable. Below, we use `buildRepSeqNetwork` to generate a plot where the nodes are colored using the `SampleID` variable. We then modify the plot to use a custom color palette.
+If the variable used to color the nodes is discrete, a custom color palette can be specified using the `scale_color_manual()` function, which allows the user to specify the color used for each value of the discrete variable. The argument `values` accepts a vector of colors whose length must match the number of unique values in the discrete variable. Below, we use `buildRepSeqNetwork()` to generate a plot where the nodes are colored using the `SampleID` variable. We then modify the plot to use a custom color palette.
 
 ```{r}
 # generate plot with nodes colored by sample ID
@@ -365,13 +365,13 @@ output$plots[[1]] +
 
 In some cases, rather than modifying an existing plot, the user may wish to generate an entirely new plot of the same network graph. For example, it may be the case that the user wants to keep their existing plots, but also wants additional plots with the nodes colored according to new variables not used in any of the current plots. 
 
-While new plots can be generated by calling `buildRepSeqNetwork` again, the user may wish to avoid reconstructing the same network, which is redundant and could be time-consuming for large networks.
+While new plots can be generated by calling `buildRepSeqNetwork()` again, the user may wish to avoid reconstructing the same network, which is redundant and could be time-consuming for large networks.
 
-Instead, new plots can be generated using the `generateNetworkGraphPlots` function in combination with the existing output of `buildRepSeqNetwork`. The function's first and second arguments accept the `igraph` and `node_data` objects, respectively, that are contained in the output list of `buildRepSeqNetwork`.
+Instead, new plots can be generated using `generateNetworkGraphPlots()` in combination with the existing output of `buildRepSeqNetwork()`. The function's first and second arguments accept the `igraph` and `node_data` objects, respectively, that are contained in the output list of `buildRepSeqNetwork()`.
 
-The remaining arguments of `generateNetworkGraphPlots` are used to customize the plot and behave identically to those of `buildRepSeqNetwork` covered in this vignette.
+The remaining arguments of `generateNetworkGraphPlots()` are used to customize the plot and behave identically to those of `buildRepSeqNetwork()` covered in this vignette.
 
-The `generateNetworkGraphPlots` function can be used to generate multiple plots in a similar fashion to `buildRepSeqNetwork` by [supplying a vector of column references](#multiple_plots) to the `color_nodes_by` argument. 
+`generateNetworkGraphPlots()` can be used to generate multiple plots in a similar fashion to `buildRepSeqNetwork()` by [supplying a vector of column references](#multiple_plots) to the `color_nodes_by` argument. 
 
 The function returns a list containing one item for each plot. By default, the plots will also be printed to the plots pane in R. 
 
@@ -384,9 +384,9 @@ new_plots <- generateNetworkGraphPlots(
   size_nodes_by = 1)
 ```
 
-By default, plots generated using `generateNetworkGraphPlots` do not have a title or subtitle. These can be set using the `plot_title` and `plot_subtitle` arguments, respectively.
+By default, plots generated using `generateNetworkGraphPlots()` do not have a title or subtitle. These can be set using the `plot_title` and `plot_subtitle` arguments, respectively.
 
-The new plots can be added to the original list of plots by appending the list returned by `generateNetworkGraphPlots`. 
+The new plots can be added to the original list of plots by appending the list returned by `generateNetworkGraphPlots()`. 
 
 ```{r}
 # add new plots to original list of plots
@@ -395,9 +395,9 @@ output$plots <- c(output$plots, new_plots)
 names(output$plots)
 ```
 
-<!-- The `plotNetworkGraph` function can be used to generate a single plot using the output of `buildRepSeqNetwork`. The function's primary argument accepts the `igraph` object contained in the output list of `buildRepSeqNetwork`.  -->
+<!-- The `plotNetworkGraph` function can be used to generate a single plot using the output of `buildRepSeqNetwork()`. The function's primary argument accepts the `igraph` object contained in the output list of `buildRepSeqNetwork()`.  -->
 
-<!-- The remaining arguments of `plotNetworkGraph` are used to customize the plot and behave identically to those of `buildRepSeqNetwork`, with one important exception that concerns the `color_nodes_by` and `size_nodes_by` arguments. In `buildRepSeqNetwork`, each of these arguments accepts a column name or column index referencing the data column that contains the desired variable to be used. In `plotNetworkGraph`, however, each argument accepts the data column itself, rather than its name or index. -->
+<!-- The remaining arguments of `plotNetworkGraph` are used to customize the plot and behave identically to those of `buildRepSeqNetwork()`, with one important exception that concerns the `color_nodes_by` and `size_nodes_by` arguments. In `buildRepSeqNetwork()`, each of these arguments accepts a column name or column index referencing the data column that contains the desired variable to be used. In `plotNetworkGraph`, however, each argument accepts the data column itself, rather than its name or index. -->
 
 ```{r eval=FALSE, include=FALSE}
 plotNetworkGraph(igraph = output$igraph,
@@ -413,9 +413,9 @@ plotNetworkGraph(igraph = output$igraph,
 
 ## Saving Plots
 
-After making changes to the list of plots contained in the output of `buildRepSeqNetwork`, such as replacing a plot with a modified version or adding new plots to the list, the user may wish to save the plots to a pdf file.
+After making changes to the list of plots contained in the output of `buildRepSeqNetwork()`, such as replacing a plot with a modified version or adding new plots to the list, the user may wish to save the plots to a pdf file.
 
-This can be conveniently accomplished by passing the list of plots to the `saveNetworkPlots` function and specifying a file path for the pdf file using the `outfile` argument. All of the plots in the list will be saved to a single pdf.
+This can be conveniently accomplished by passing the list of plots to `saveNetworkPlots()` and specifying a file path for the pdf file using the `outfile` argument. All of the plots in the list will be saved to a single pdf.
 
 ```{r}
 saveNetworkPlots(output$plots, outfile = file.path(dir_out, "plots.pdf"))
