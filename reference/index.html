@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9043</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +57,142 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="main-function">Main Function<a class="anchor" aria-label="anchor" href="#main-function"></a></h2>
+      
+      <p class="section-desc"></p><p>All-in-one function for network analysis</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> 
+        </dt>
+        <dd>Network Analysis of Immune Repertoire</dd>
+      </dl></div><div class="section level2">
+      <h2 id="searching-for-associated-tcr-bcr-clusters">Searching for Associated TCR/BCR Clusters<a class="anchor" aria-label="anchor" href="#searching-for-associated-tcr-bcr-clusters"></a></h2>
+      
+      <p class="section-desc"></p><p>Given multiple samples of AIRR-Seq data, search for TCR/BCR clusters associated with a binary variable of interest</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="findAssociatedSeqs.html">findAssociatedSeqs()</a></code> <code><a href="findAssociatedSeqs.html">findAssociatedSeqs2()</a></code> 
+        </dt>
+        <dd>Identify TCR/BCR Sequences Associated With a Binary Variable</dd>
+      </dl><dl><dt>
+          
+          <code><a href="findAssociatedClones.html">findAssociatedClones()</a></code> 
+        </dt>
+        <dd>Identify TCR/BCR Clones in a Neighborhood Around Each Associated Sequence</dd>
+      </dl><dl><dt>
+          
+          <code><a href="buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> 
+        </dt>
+        <dd>Build Global Network of Associated TCR/BCR Clusters</dd>
+      </dl></div><div class="section level2">
+      <h2 id="searching-for-public-tcr-bcr-clusters">Searching for Public TCR/BCR Clusters<a class="anchor" aria-label="anchor" href="#searching-for-public-tcr-bcr-clusters"></a></h2>
+      
+      <p class="section-desc"></p><p>Search for public TCR/BCR clusters across multiple samples of AIRR-seq data</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="findPublicClusters.html">findPublicClusters()</a></code> 
+        </dt>
+        <dd>Find Public Clusters Among RepSeq Samples</dd>
+      </dl><dl><dt>
+          
+          <code><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork()</a></code> 
+        </dt>
+        <dd>Build Global Network of Public TCR/BCR Clusters</dd>
+      </dl><dl><dt>
+          
+          <code><a href="buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative()</a></code> 
+        </dt>
+        <dd>Build Global Network of Public TCR/BCR Clusters Using Representative Clones</dd>
+      </dl></div><div class="section level2">
+      <h2 id="network-properties">Network Properties<a class="anchor" aria-label="anchor" href="#network-properties"></a></h2>
+      
+      <p class="section-desc"></p><p>Compute network properties and perform cluster analysis</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="addNodeNetworkStats.html">addNodeNetworkStats()</a></code> 
+        </dt>
+        <dd>Compute Node-Level Network Properties</dd>
+      </dl><dl><dt>
+          
+          <code><a href="chooseNodeStats.html">chooseNodeStats()</a></code> <code><a href="chooseNodeStats.html">exclusiveNodeStats()</a></code> 
+        </dt>
+        <dd>Specify Node-level Network Properties to Compute</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addClusterMembership.html">addClusterMembership()</a></code> 
+        </dt>
+        <dd>Perform Cluster Analysis on the Nodes of a Network Graph</dd>
+      </dl><dl><dt>
+          
+          <code><a href="getClusterStats.html">getClusterStats()</a></code> 
+        </dt>
+        <dd>Compute Cluster-Level Network Statistics</dd>
+      </dl><dl><dt>
+          
+          <code><a href="clustering_algorithms.html">clustering_algorithms</a></code> <code><a href="clustering_algorithms.html">cluster_edge_betweenness</a></code> <code><a href="clustering_algorithms.html">cluster_fast_greedy</a></code> <code><a href="clustering_algorithms.html">cluster_fluid_communities</a></code> <code><a href="clustering_algorithms.html">cluster_infomap</a></code> <code><a href="clustering_algorithms.html">cluster_label_prop</a></code> <code><a href="clustering_algorithms.html">cluster_leading_eigen</a></code> <code><a href="clustering_algorithms.html">cluster_leiden</a></code> <code><a href="clustering_algorithms.html">cluster_louvain</a></code> <code><a href="clustering_algorithms.html">cluster_optimal</a></code> <code><a href="clustering_algorithms.html">cluster_spinglass</a></code> <code><a href="clustering_algorithms.html">cluster_walktrap</a></code> 
+        </dt>
+        <dd>Available Clustering Algorithms</dd>
+      </dl></div><div class="section level2">
+      <h2 id="network-visualization">Network Visualization<a class="anchor" aria-label="anchor" href="#network-visualization"></a></h2>
+      
+      <p class="section-desc"></p><p>Generate or modify plots of a network graph</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> 
+        </dt>
+        <dd>Generate Plots of a Network Graph</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plotNetworkGraph.html">plotNetworkGraph()</a></code> 
+        </dt>
+        <dd>Plot the Graph of an Immune Repertoire Network</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addClusterLabels.html">addClusterLabels()</a></code> 
+        </dt>
+        <dd>Label Clusters in a Network Graph Plot</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addGraphLabels.html">addGraphLabels()</a></code> 
+        </dt>
+        <dd>Label Nodes in a Network Graph Plot</dd>
+      </dl></div><div class="section level2">
+      <h2 id="manual-generation-of-network-components">Manual Generation of Network Components<a class="anchor" aria-label="anchor" href="#manual-generation-of-network-components"></a></h2>
       
       
 
@@ -69,94 +204,9 @@
 
       <dl><dt>
           
-          <code><a href="addClusterLabels.html">addClusterLabels()</a></code> 
+          <code><a href="generateNetworkObjects.html">generateNetworkObjects()</a></code> 
         </dt>
-        <dd>Label Clusters in a Network Graph Plot</dd>
-      </dl><dl><dt>
-          
-          <code><a href="addClusterMembership.html">addClusterMembership()</a></code> 
-        </dt>
-        <dd>Perform Cluster Analysis on the Nodes of a Network Graph</dd>
-      </dl><dl><dt>
-          
-          <code><a href="addGraphLabels.html">addGraphLabels()</a></code> 
-        </dt>
-        <dd>Label Nodes in a Network Graph Plot</dd>
-      </dl><dl><dt>
-          
-          <code><a href="addNodeNetworkStats.html">addNodeNetworkStats()</a></code> 
-        </dt>
-        <dd>Compute Node-Level Network Properties</dd>
-      </dl><dl><dt>
-          
-          <code><a href="adjacencyMatAtchleyFromSeqs.html">adjacencyMatAtchleyFromSeqs()</a></code> 
-        </dt>
-        <dd>Network Adjacency Matrix Based on Atchley Factor Representations</dd>
-      </dl><dl><dt>
-          
-          <code><a href="aggregateIdenticalClones.html">aggregateIdenticalClones()</a></code> 
-        </dt>
-        <dd>Aggregate Counts/Frequencies for Clones With Identical Receptor Sequences</dd>
-      </dl><dl><dt>
-          
-          <code><a href="buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> 
-        </dt>
-        <dd>Build Global Network of Associated TCR/BCR Clusters</dd>
-      </dl><dl><dt>
-          
-          <code><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork()</a></code> 
-        </dt>
-        <dd>Build Global Network of Public TCR/BCR Clusters</dd>
-      </dl><dl><dt>
-          
-          <code><a href="buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative()</a></code> 
-        </dt>
-        <dd>Build Global Network of Public TCR/BCR Clusters Using Representative Clones</dd>
-      </dl><dl><dt>
-          
-          <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> 
-        </dt>
-        <dd>Network Analysis of Immune Repertoire</dd>
-      </dl><dl><dt>
-          
-          <code><a href="chooseNodeStats.html">chooseNodeStats()</a></code> <code><a href="chooseNodeStats.html">exclusiveNodeStats()</a></code> 
-        </dt>
-        <dd>Specify Node-level Network Properties to Compute</dd>
-      </dl><dl><dt>
-          
-          <code><a href="clustering_algorithms.html">clustering_algorithms</a></code> <code><a href="clustering_algorithms.html">cluster_edge_betweenness</a></code> <code><a href="clustering_algorithms.html">cluster_fast_greedy</a></code> <code><a href="clustering_algorithms.html">cluster_fluid_communities</a></code> <code><a href="clustering_algorithms.html">cluster_infomap</a></code> <code><a href="clustering_algorithms.html">cluster_label_prop</a></code> <code><a href="clustering_algorithms.html">cluster_leading_eigen</a></code> <code><a href="clustering_algorithms.html">cluster_leiden</a></code> <code><a href="clustering_algorithms.html">cluster_louvain</a></code> <code><a href="clustering_algorithms.html">cluster_optimal</a></code> <code><a href="clustering_algorithms.html">cluster_spinglass</a></code> <code><a href="clustering_algorithms.html">cluster_walktrap</a></code> 
-        </dt>
-        <dd>Available Clustering Algorithms</dd>
-      </dl><dl><dt>
-          
-          <code><a href="combineSamples.html">loadDataFromFileList()</a></code> <code><a href="combineSamples.html">combineSamples()</a></code> 
-        </dt>
-        <dd>Load and Combine Data From Multiple Samples</dd>
-      </dl><dl><dt>
-          
-          <code><a href="encodeTCRSeqsByAtchleyFactor.html">encodeTCRSeqsByAtchleyFactor()</a></code> 
-        </dt>
-        <dd>Encode TCR Sequences Numerically Based on Atchley Factor Representations</dd>
-      </dl><dl><dt>
-          
-          <code><a href="filterInputData.html">filterInputData()</a></code> 
-        </dt>
-        <dd>Filter Data Rows and Subset Data Columns</dd>
-      </dl><dl><dt>
-          
-          <code><a href="findAssociatedClones.html">findAssociatedClones()</a></code> 
-        </dt>
-        <dd>Identify TCR/BCR Clones in a Neighborhood Around Each Associated Sequence</dd>
-      </dl><dl><dt>
-          
-          <code><a href="findAssociatedSeqs.html">findAssociatedSeqs()</a></code> <code><a href="findAssociatedSeqs.html">findAssociatedSeqs2()</a></code> 
-        </dt>
-        <dd>Identify TCR/BCR Sequences Associated With a Binary Variable</dd>
-      </dl><dl><dt>
-          
-          <code><a href="findPublicClusters.html">findPublicClusters()</a></code> 
-        </dt>
-        <dd>Find Public Clusters Among RepSeq Samples</dd>
+        <dd>Generate Basic Output for an Immune Repertoire Network</dd>
       </dl><dl><dt>
           
           <code><a href="generateNetworkFromAdjacencyMat.html">generateNetworkFromAdjacencyMat()</a></code> 
@@ -164,49 +214,40 @@
         <dd>Generate an igraph From a Network Adjacency Matrix</dd>
       </dl><dl><dt>
           
-          <code><a href="generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> 
+          <code><a href="sparseAdjacencyMatFromSeqs.html">sparseAdjacencyMatFromSeqs()</a></code> 
         </dt>
-        <dd>Generate Plots of a Network Graph</dd>
+        <dd>Compute Graph Adjacency Matrix for Immune Repertoire Network</dd>
+      </dl></div><div class="section level2">
+      <h2 id="loading-filtering-and-saving-data">Loading, Filtering and Saving Data<a class="anchor" aria-label="anchor" href="#loading-filtering-and-saving-data"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="combineSamples.html">loadDataFromFileList()</a></code> <code><a href="combineSamples.html">combineSamples()</a></code> 
+        </dt>
+        <dd>Load and Combine Data From Multiple Samples</dd>
       </dl><dl><dt>
           
-          <code><a href="generateNetworkObjects.html">generateNetworkObjects()</a></code> 
+          <code><a href="filterInputData.html">filterInputData()</a></code> 
         </dt>
-        <dd>Generate Basic Output for an Immune Repertoire Network</dd>
+        <dd>Filter Data Rows and Subset Data Columns</dd>
       </dl><dl><dt>
           
-          <code><a href="getClusterStats.html">getClusterStats()</a></code> 
+          <code><a href="aggregateIdenticalClones.html">aggregateIdenticalClones()</a></code> 
         </dt>
-        <dd>Compute Cluster-Level Network Statistics</dd>
+        <dd>Aggregate Counts/Frequencies for Clones With Identical Receptor Sequences</dd>
       </dl><dl><dt>
           
           <code><a href="getNeighborhood.html">getNeighborhood()</a></code> 
         </dt>
         <dd>Identify Cells or Clones in a Neighborhood Around a Target Sequence</dd>
-      </dl><dl><dt>
-          
-          <code><a href="hamDistBounded.html">hamDistBounded()</a></code> 
-        </dt>
-        <dd>Bounded Computation of Hamming Distance</dd>
-      </dl><dl><dt>
-          
-          <code><a href="installPythonModules.html">installPythonModules()</a></code> 
-        </dt>
-        <dd>Install Python Modules Used by NAIR</dd>
-      </dl><dl><dt>
-          
-          <code><a href="kmeansAtchley.html">kmeansAtchley()</a></code> 
-        </dt>
-        <dd>Encode TCR Sequences Using Atchley Factors, Perform K-Means Clustering, Compare Samples by TCR Frequency Per Cluster</dd>
-      </dl><dl><dt>
-          
-          <code><a href="levDistBounded.html">levDistBounded()</a></code> 
-        </dt>
-        <dd>Bounded Computation of Levenshtein Distance</dd>
-      </dl><dl><dt>
-          
-          <code><a href="plotNetworkGraph.html">plotNetworkGraph()</a></code> 
-        </dt>
-        <dd>Plot the Graph of an Immune Repertoire Network</dd>
       </dl><dl><dt>
           
           <code><a href="saveNetwork.html">saveNetwork()</a></code> 
@@ -217,18 +258,77 @@
           <code><a href="saveNetworkPlots.html">saveNetworkPlots()</a></code> 
         </dt>
         <dd>Write Plots to a PDF</dd>
+      </dl></div><div class="section level2">
+      <h2 id="distance-functions">Distance Functions<a class="anchor" aria-label="anchor" href="#distance-functions"></a></h2>
+      
+      <p class="section-desc"></p><p>Used to quantify similarity between receptor sequences</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="hamDistBounded.html">hamDistBounded()</a></code> 
+        </dt>
+        <dd>Bounded Computation of Hamming Distance</dd>
       </dl><dl><dt>
+          
+          <code><a href="levDistBounded.html">levDistBounded()</a></code> 
+        </dt>
+        <dd>Bounded Computation of Levenshtein Distance</dd>
+      </dl></div><div class="section level2">
+      <h2 id="analysis-using-tessa">Analysis Using TESSA<a class="anchor" aria-label="anchor" href="#analysis-using-tessa"></a></h2>
+      
+      <p class="section-desc"></p><p>Analyze TCR CDR3 amino acid sequence data using deep learning</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="installPythonModules.html">installPythonModules()</a></code> 
+        </dt>
+        <dd>Install Python Modules Used by NAIR</dd>
+      </dl><dl><dt>
+          
+          <code><a href="encodeTCRSeqsByAtchleyFactor.html">encodeTCRSeqsByAtchleyFactor()</a></code> 
+        </dt>
+        <dd>Encode TCR Sequences Numerically Based on Atchley Factor Representations</dd>
+      </dl><dl><dt>
+          
+          <code><a href="adjacencyMatAtchleyFromSeqs.html">adjacencyMatAtchleyFromSeqs()</a></code> 
+        </dt>
+        <dd>Network Adjacency Matrix Based on Atchley Factor Representations</dd>
+      </dl><dl><dt>
+          
+          <code><a href="kmeansAtchley.html">kmeansAtchley()</a></code> 
+        </dt>
+        <dd>Encode TCR Sequences Using Atchley Factors, Perform K-Means Clustering, Compare Samples by TCR Frequency Per Cluster</dd>
+      </dl></div><div class="section level2">
+      <h2 id="miscellaneous-functions">Miscellaneous Functions<a class="anchor" aria-label="anchor" href="#miscellaneous-functions"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="simulateToyData.html">simulateToyData()</a></code> 
         </dt>
         <dd>Generate Toy AIRR-Seq Data</dd>
-      </dl><dl><dt>
-          
-          <code><a href="sparseAdjacencyMatFromSeqs.html">sparseAdjacencyMatFromSeqs()</a></code> 
-        </dt>
-        <dd>Compute Graph Adjacency Matrix for Immune Repertoire Network</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

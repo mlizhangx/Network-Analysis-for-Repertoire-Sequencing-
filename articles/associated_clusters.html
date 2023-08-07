@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9043</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -197,8 +197,8 @@ follows:</p>
 Sequences<a class="anchor" aria-label="anchor" href="#step-1-find-associated-sequences"></a>
 </h2>
 <p>The first step is to conduct a systematic search for associated
-sequences within the provided samples using the
-<code>findAssociatedSeqs</code> function.</p>
+sequences within the provided samples using
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
 <p>This search is a two-stage procedure.</p>
 <p>The unique receptor sequences are first filtered according to basic
 criteria in order to narrow the list of candidates.</p>
@@ -206,8 +206,8 @@ criteria in order to narrow the list of candidates.</p>
 exact test of independence between the binary variable of interest and
 the observed presence of the sequence within a sample/subject. The user
 specifies the P-value cutoff below which an association is detected.</p>
-<p>Below, we explain the usage and behavior of the
-<code>findAssociatedSeqs</code> function.</p>
+<p>Below, we explain the usage and behavior of
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
 <div class="section level3">
 <h3 class="tabset" id="search-criteria-for-associated-sequences">Search Criteria for Associated Sequences<a class="anchor" aria-label="anchor" href="#search-criteria-for-associated-sequences"></a>
 </h3>
@@ -243,27 +243,27 @@ special characters that are invalid for use in file names.</strong></p>
 using the <code>drop_matches</code> argument, which accommodates a
 character string or regular expression specifying the pattern of content
 to search for. The content of each sequence is checked for a match to
-this pattern using the <code>grep</code> function from base R. If a
-match is found, the sequence is excluded from consideration. Setting the
-value to <code>NULL</code> bypasses this check.</p>
+this pattern using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>. If a match is found, the
+sequence is excluded from consideration. Setting the value to
+<code>NULL</code> bypasses this check.</p>
 <p>For details on how the pattern matching is performed, please refer to
-the base R documentation files for <code>regex</code> and
-<code>grep</code>.</p>
+the base R documentation files for <code>regex()</code> and
+<code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 id="p-value-cutoff">P-value Cutoff<a class="anchor" aria-label="anchor" href="#p-value-cutoff"></a>
 </h4>
 <p>By default, sequences with a P-value below 0.05 on Fisher’s exact
-test are included in the output of <code>findAssociatedSeqs</code>. The
-cutoff can be set to a different value using the
+test are included in the output of <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.
+The cutoff can be set to a different value using the
 <code>pval_cutoff</code> argument. The lower the cutoff value, the
 stronger the evidence of an association is required for a sequence to be
 included in the output.</p>
 <p>It should be noted that the sequences returned by
-<code>findAssociatedSeqs</code> are ordered by P-value, and any subset
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> are ordered by P-value, and any subset
 of them can be used in <a href="#step2">step2</a>. Thus it is not
-necessary to rerun <code>findAssociatedSeqs</code> in order to impose a
-stricter P-value cutoff. The user can instead subset the results in
+necessary to rerun <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> in order to impose
+a stricter P-value cutoff. The user can instead subset the results in
 order to use only those sequences below a specified P-value.</p>
 </div>
 </div>
@@ -276,34 +276,34 @@ Step 1<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-1
 <h4 id="file-paths-of-sample-data">
 <a name="input_files"></a> File Paths of Sample Data<a class="anchor" aria-label="anchor" href="#file-paths-of-sample-data"></a>
 </h4>
-<p>The main argument of the <code>findAssociatedSeqs</code> function is
-the <code>file_list</code> argument, which accepts a vector containing
-file paths. Each file is assumed to contain the AIRR-Seq data for a
-single sample, with observations indexed by row.</p>
+<p>The main argument of <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is the
+<code>file_list</code> argument, which accepts a vector containing file
+paths. Each file is assumed to contain the AIRR-Seq data for a single
+sample, with observations indexed by row.</p>
 <p>Below, we prepare the vector <code>input_files</code> to be provided
 to the <code>file_list</code> argument of
-<code>findAssociatedSeqs</code>:</p>
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
 <span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmppzTOrP/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmppzTOrP/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmppzTOrP/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmppzTOrP/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmppzTOrP/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmppzTOrP/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpMDTs6F/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpMDTs6F/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmpMDTs6F/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmpMDTs6F/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmpMDTs6F/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmpMDTs6F/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
 <a name="input_type"></a> File Format of Sample Data<a class="anchor" aria-label="anchor" href="#file-format-of-sample-data"></a>
 </h4>
 <p>The file format of the input files for
-<code>findAssociatedSeqs</code> is specified using the
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is specified using the
 <code>input_type</code> parameter. The supported formats include
 <code>"rds"</code>, <code>"rda"</code>, <code>"csv"</code>, as well as
-files that can be read using the <code>read.table</code> function, such
-as <code>"tsv"</code> and <code>"txt"</code>.</p>
+files that can be read using the <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code> function,
+such as <code>"tsv"</code> and <code>"txt"</code>.</p>
 <p>Our samples are stored in .rds files, so we use
 <code>input_type = "rds"</code>.</p>
 <p>For text formats such as <code>"csv"</code>, <code>"tsv"</code> and
@@ -336,7 +336,7 @@ argument accepts either the column name or column index.</p>
 <p>In our simulated data, the column containing the clone sequences is
 named <code>CloneSeq</code>. Hence we specify
 <code>seq_col = "CloneSeq"</code> when calling
-<code>findAssociatedSeqs</code>.</p>
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 id="assigning-samples-to-groups">
@@ -359,7 +359,7 @@ noted that the results will be unchanged if the labels are reversed, or
 if a different pair of labels is used, as long as the first 15 samples
 are assigned to one group and the last 15 samples to the other.</p>
 <p>The vector we will provide to the <code>group_ids</code> argument of
-<code>findAssociatedSeqs</code> is created below:</p>
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is created below:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># group label assignments for the samples</span></span>
 <span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">samples_c</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">samples_t</span><span class="op">)</span><span class="op">)</span></span>
@@ -409,17 +409,16 @@ index.</p>
 <p>If clone frequencies are provided, the maximum clone frequency
 (across all samples) for each associated sequence will be included in
 the content of the data frame returned by
-<code>findAssociatedSeqs</code>.</p>
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="output-file-path-for-step-1">Output File Path for Step 1<a class="anchor" aria-label="anchor" href="#output-file-path-for-step-1"></a>
 </h3>
-<p>The <code>findAssociatedSeqs</code> function returns a data frame
-containing the associated sequences along with some additional
-information (see the <a href="#demo1">demonstration</a> below).</p>
+<p><code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> returns a data frame containing the
+associated sequences along with some additional information (see the <a href="#demo1">demonstration</a> below).</p>
 <p>By default, the data frame returned by
-<code>findAssociatedSeqs</code> is also saved to the current working
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is also saved to the current working
 directory as a csv file named <code>associated_seqs.csv</code>.</p>
 <p>A different file name and/or directory can be specified by providing
 a file path to the <code>outfile</code> argument. For example, setting
@@ -436,9 +435,9 @@ prevent the output from being saved.</p>
 <a name="demo1"></a> Demonstration (Step 1)<a class="anchor" aria-label="anchor" href="#demonstration-step-1"></a>
 </h3>
 <div class="section level4">
-<h4 id="execute-findassociatedseqs">Execute <code>findAssociatedSeqs</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedseqs"></a>
+<h4 id="execute-findassociatedseqs">Execute <code>findAssociatedSeqs()</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedseqs"></a>
 </h4>
-<p>We execute the <code>findAssociatedSeqs</code> function using the <a href="#input_settings">inputs we prepared earlier</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments:</p>
+<p>We execute <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> using the <a href="#input_settings">inputs we prepared earlier</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># search across samples for associated sequences using Fisher's exact test</span></span>
 <span><span class="va">associated_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span></span>
@@ -488,9 +487,9 @@ prevent the output from being saved.</p>
 <span><span class="co">#&gt; All done. Sorting results by Fisher's exact test P-value and returning.</span></span></code></pre></div>
 </div>
 <div class="section level4">
-<h4 id="output-of-findassociatedseqs">Output of <code>findAssociatedSeqs</code><a class="anchor" aria-label="anchor" href="#output-of-findassociatedseqs"></a>
+<h4 id="output-of-findassociatedseqs">Output of <code>findAssociatedSeqs()</code><a class="anchor" aria-label="anchor" href="#output-of-findassociatedseqs"></a>
 </h4>
-<p><code>findAssociatedSeqs</code> returns a data frame containing the
+<p><code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> returns a data frame containing the
 associated sequences based on the specified search criteria.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># view first few rows of output</span></span>
@@ -550,11 +549,11 @@ observed, the number of subjects belonging to the second group</li>
 Clones<a class="anchor" aria-label="anchor" href="#step-2-find-associated-clones"></a>
 </h2>
 <p>In the <a href="#step1">previous step</a>, we used
-<code>findAssociatedSeqs</code> to identify receptor sequences
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> to identify receptor sequences
 associated with the binary variable of interest.</p>
-<p>The next step is to use the <code>findAssociatedClones</code>
-function to search across samples and identify all clones with sequences
-similar to the associated sequences identified in step 1.</p>
+<p>The next step is to use <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> to search
+across samples and identify all clones with sequences similar to the
+associated sequences identified in step 1.</p>
 <p>For each associated sequence, we define its neighborhood as the set
 of all sequences that fall within a specified distance (e.g., a maximum
 Hamming distance of 1). We then identify all clones (from all samples)
@@ -571,11 +570,11 @@ a separate file to be used as an input in <a href="#step3">step
 containing the associated sequences.</p>
 <p>Typically, the vector provided to <code>assoc_seqs</code> will be the
 <code>ReceptorSeq</code> column of the data frame returned by
-<code>findAssociatedSeqs</code>. This considers all of the associated
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>. This considers all of the associated
 sequences found in <a href="#step1">step 1</a>.</p>
 <p>However, it may be desirable to consider only a subset of the
-sequences returned by <code>findAssociatedSeqs</code>. The sequences are
-ordered by Fisher’s exact test P-value to facilitate reference. For
+sequences returned by <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>. The sequences
+are ordered by Fisher’s exact test P-value to facilitate reference. For
 example, if we had many associated sequences, we could choose to
 consider only the 10 with the lowest P-values by specifying
 <code>assoc_seqs = associated_seqs$ReceptorSeq[1:10]</code>.</p>
@@ -587,9 +586,9 @@ consider only the 10 with the lowest P-values by specifying
 <h4 id="arguments-from-step-1">
 <a name="files2"></a> Arguments from Step 1<a class="anchor" aria-label="anchor" href="#arguments-from-step-1"></a>
 </h4>
-<p>In order for <code>findAssociatedClones</code> to conduct its search,
-we must provide specifications for our sample data, just as we did when
-calling <code>findAssociatedSeqs</code>.</p>
+<p>In order for <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> to conduct its
+search, we must provide specifications for our sample data, just as we
+did when calling <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
 <p><a href="#input_settings">As before</a>, this is done using the
 following arguments:</p>
 <ul>
@@ -602,7 +601,7 @@ following arguments:</p>
 applicable)</li>
 </ul>
 <p>The user should use the same values for these arguments as they did
-when calling <code>findAssociatedSeqs</code> in <a href="#step1">step
+when calling <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> in <a href="#step1">step
 1</a>.</p>
 </div>
 <div class="section level4">
@@ -709,8 +708,8 @@ sequences and clones that belong to each neighborhood.</p>
 <div class="section level3">
 <h3 class="tabset" id="output-settings-for-step-2">Output Settings for Step 2<a class="anchor" aria-label="anchor" href="#output-settings-for-step-2"></a>
 </h3>
-<p>The <code>findAssociatedClones</code> function does not return any
-direct output. Instead, it saves the data for the associated sequence’s
+<p><code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> does not return any direct
+output. Instead, it saves the data for the associated sequence’s
 neighborhoods to files that will be used as inputs in <a href="#step3">step 3</a>.</p>
 <p>For each neighborhood, a data frame is saved to an individual file.
 The data frame contains one row for each clone in the neighborhood, and
@@ -775,10 +774,9 @@ Rdata file is loaded.</p>
 <a name="demo2"></a> Demonstration (Step 2)<a class="anchor" aria-label="anchor" href="#demonstration-step-2"></a>
 </h3>
 <div class="section level4">
-<h4 id="execute-findassociatedclones">Execute <code>findAssociatedClones</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedclones"></a>
+<h4 id="execute-findassociatedclones">Execute <code>findAssociatedClones()</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedclones"></a>
 </h4>
-<p>We execute the <code>findAssociatedClones</code> function using the
-<a href="#files2">inputs from step 1</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments, the <a href="#assoc_seqs">associated sequences from step 1</a>, as well as the
+<p>We execute <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> using the <a href="#files2">inputs from step 1</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments, the <a href="#assoc_seqs">associated sequences from step 1</a>, as well as the
 <a href="#output2">output directory file path we created for the current
 step</a>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -887,12 +885,12 @@ step</a>:</p>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_seq_nbds</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpMDTs6F/assoc_seq_nbds</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findassociatedclones">
 <a name="nbd_output"></a> Output of
-<code>findAssociatedClones</code><a class="anchor" aria-label="anchor" href="#output-of-findassociatedclones"></a>
+<code>findAssociatedClones()</code><a class="anchor" aria-label="anchor" href="#output-of-findassociatedclones"></a>
 </h4>
 <p>The following files are created in the directory <a href="#output2">specified by the <code>output_dir</code>
 argument</a>:</p>
@@ -933,25 +931,25 @@ for a single associated sequence.</p>
 Associated Clusters<a class="anchor" aria-label="anchor" href="#step-3-global-network-of-associated-clusters"></a>
 </h2>
 <p>Now that we have identified the clones in each associated sequence’s
-neighborhood, the final step is to use the
-<code>buildAssociatedClusterNetwork</code> function to combine the
-clones from all neighborhoods into a single global network. We then use
-clustering analysis to partition the global network into clusters, which
-are considered as the associated clusters.</p>
+neighborhood, the final step is to use
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> to combine the clones from
+all neighborhoods into a single global network. We then use clustering
+analysis to partition the global network into clusters, which are
+considered as the associated clusters.</p>
 <div class="section level3">
 <h3 class="tabset" id="specify-input-data-for-step-3">Specify Input Data for Step 3<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-3"></a>
 </h3>
 <p>The <a href="#demo2">output files created in the previous step</a>
 are used as the input files for
-<code>buildAssociatedClusterNetwork</code> in the current step. Each of
-these files contains the neighborhood data for an associated
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> in the current step. Each
+of these files contains the neighborhood data for an associated
 sequence.</p>
 <div class="section level4">
 <h4 id="file-paths-of-neighborhood-data">
 <a name="input_files3"></a> File Paths of Neighborhood Data<a class="anchor" aria-label="anchor" href="#file-paths-of-neighborhood-data"></a>
 </h4>
 <p>The <code>file_list</code> argument of
-<code>buildAssociatedClusterNetwork</code> is used to specify the
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> is used to specify the
 location of the neighborhood data files. It accepts a character vector
 of file paths.</p>
 <p>The neighborhood data files are located in the <a href="#output2">output directory from step 2</a>. If the files from step
@@ -965,26 +963,28 @@ easily be referenced using <code>list.files</code> with
 <div class="section level4">
 <h4 id="file-format-of-neighborhood-data">File Format of Neighborhood Data<a class="anchor" aria-label="anchor" href="#file-format-of-neighborhood-data"></a>
 </h4>
-<p>If <code>findAssociatedClones</code> was called using the default
+<p>If <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> was called using the default
 value of <code>output_type</code>, then it is not necessary to specify
 the input type when calling
-<code>buildAssociatedClusterNetwork</code>.</p>
-<p>If the files created by <code>findAssociatedClones</code> were saved
-using a different file format, the <code>input_type</code> argument can
-be used to specify the format used. This argument has the <a href="#input_type">same behavior described earlier</a> in
-<code>findAssociatedSeqs</code> and <code>findAssociatedClones</code>.
-The situational arguments <code>header</code>, <code>sep</code> and
-<code>data_symbols</code> also perform the same roles as before.</p>
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>.</p>
+<p>If the files created by <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> were
+saved using a different file format, the <code>input_type</code>
+argument can be used to specify the format used. This argument has the
+<a href="#input_type">same behavior described earlier</a> in
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> and
+<code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>. The situational arguments
+<code>header</code>, <code>sep</code> and <code>data_symbols</code> also
+perform the same roles as before.</p>
 <p><strong>Note about Rdata file format:</strong> If the
 <code>"rda"</code> (Rdata) input file format is specified using
 <code>input_type = "rda"</code>, then the <code>data_symbols</code>
 argument is used to specify the name of each neighborhood’s data frame
-within its respective Rdata file. If <code>findAssociatedClones</code>
+within its respective Rdata file. If <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>
 was called with <code>output_type = "rda"</code>, then the data frame
 for each sample will be named <code>data</code>. Accordingly, the
 default value of <code>data_symbols</code> for
-<code>buildAssociatedClusterNetwork</code> is <code>data</code>, so the
-user should not need to manually specify the value of
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> is <code>data</code>, so
+the user should not need to manually specify the value of
 <code>data_symbols</code> unless the names within the files have been
 manually changed.</p>
 </div>
@@ -995,7 +995,7 @@ manually changed.</p>
 <div class="section level4">
 <h4 id="network-construction">Network Construction<a class="anchor" aria-label="anchor" href="#network-construction"></a>
 </h4>
-<p>The parameters used by <code>buildAssociatedClusterNetwork</code>
+<p>The parameters used by <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>
 when constructing the global network are shown below along with their
 default values.</p>
 <ul>
@@ -1011,8 +1011,8 @@ their meaning.</p>
 <h4 id="clustering-algorithm">Clustering Algorithm<a class="anchor" aria-label="anchor" href="#clustering-algorithm"></a>
 </h4>
 <p>After constructing the global network,
-<code>buildAssociatedClusterNetwork</code> performs cluster analysis on
-the network nodes, partitioning the global network graph into
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> performs cluster analysis
+on the network nodes, partitioning the global network graph into
 densely-connected subgraphs.</p>
 <p>If the neighborhoods for two different associated sequences are very
 similar, i.e., the network contains many edge connections joining the
@@ -1022,17 +1022,18 @@ same cluster. Thus, cluster analysis assists in identifying distinct
 groups of clones/sequences that are associated with the binary variable
 of interest.</p>
 <p>By default, clustering is performed using the
-<code>cluster_fast_greedy</code> algorithm from the <code>igraph</code>
-package. A different clustering algorithm can be specified using the
-<code>cluster_fun</code> argument. See <a href="buildRepSeqNetwork.html#cluster_alg">this section of the
+<code><a href="../reference/clustering_algorithms.html">cluster_fast_greedy()</a></code> algorithm from the
+<code>igraph</code> package. A different clustering algorithm can be
+specified using the <code>cluster_fun</code> argument. See <a href="buildRepSeqNetwork.html#cluster_alg">this section of the
 buildRepSeqNetwork vignette</a> for details.</p>
 </div>
 <div class="section level4">
 <h4 id="network-properties">
 <a name="global_network_properties"></a> Network Properties<a class="anchor" aria-label="anchor" href="#network-properties"></a>
 </h4>
-<p>By default, <code>buildAssociatedClusterNetwork</code> computes both
-<a href="buildRepSeqNetwork.html#node_properties">node-level</a> and <a href="buildRepSeqNetwork.html#cluster_properties">cluster-level</a>
+<p>By default, <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> computes
+both <a href="buildRepSeqNetwork.html#node_properties">node-level</a>
+and <a href="buildRepSeqNetwork.html#cluster_properties">cluster-level</a>
 properties of the global network. Node-level properties can be excluded
 by setting <code>node_stats = FALSE</code>, and cluster-level properties
 can be excluded by setting <code>cluster_stats = FALSE</code>.</p>
@@ -1043,15 +1044,15 @@ for an explanation of its usage.</p>
 <p>Note that regardless of the value of the
 <code>stats_to_include</code> argument, the node-level property
 <code>cluster_id</code> is always computed as part of the clustering
-analysis performed by <code>buildAssociatedClusterNetwork</code>, and is
-always included as a variable in the node-level metadata for the global
-network.</p>
+analysis performed by <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>, and
+is always included as a variable in the node-level metadata for the
+global network.</p>
 </div>
 <div class="section level4">
 <h4 id="visualization-of-global-network">
 <a name="vis"></a> Visualization of Global Network<a class="anchor" aria-label="anchor" href="#visualization-of-global-network"></a>
 </h4>
-<p>By default, <code>buildAssociatedClusterNetwork</code> produces a
+<p>By default, <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> produces a
 visual plot of the global network graph. This step can be omitted by
 setting <code>plots = FALSE</code>.</p>
 <p>By default, the plot colors the nodes according to the binary
@@ -1084,10 +1085,10 @@ legend.</p>
 <div class="section level3">
 <h3 class="tabset" id="output-settings-for-step-3">Output Settings for Step 3<a class="anchor" aria-label="anchor" href="#output-settings-for-step-3"></a>
 </h3>
-<p>The output returned by <code>buildAssociatedClusterNetwork</code> has
-the <a href="buildRepSeqNetwork.html#base_output">same structure</a> as
-the output of <code>buildRepSeqNetwork</code>. The function returns a
-list containing data frames with the node-level and cluster-level
+<p>The output returned by <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>
+has the <a href="buildRepSeqNetwork.html#base_output">same structure</a>
+as the output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. The function returns
+a list containing data frames with the node-level and cluster-level
 metadata for the global network, as well as any plots generated, in
 addition to the network adjacency matrix and the <code>igraph</code>
 network edge list.</p>
@@ -1097,7 +1098,7 @@ is saved.</p>
 <h4 id="output-directory-for-step-3">Output Directory for Step 3<a class="anchor" aria-label="anchor" href="#output-directory-for-step-3"></a>
 </h4>
 <p>By default, the contents of the list returned by
-<code>buildAssociatedClusterNetwork</code> are saved to the current
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> are saved to the current
 working directory.</p>
 <p>The output can be saved to a different directory by providing a file
 path to the <code>output_dir</code> argument. The specified directory
@@ -1110,8 +1111,8 @@ prevent the output from being saved.</p>
 </h4>
 <p>Each element of the output list is saved as an individual file using
 the <a href="buildRepSeqNetwork.html#output_format">default file formats
-from <code>buildRepSeqNetwork</code></a>. In particular, the node-level
-and cluster-level metadata are saved as csv files.</p>
+from <code>buildRepSeqNetwork()</code></a>. In particular, the
+node-level and cluster-level metadata are saved as csv files.</p>
 <p>Alternatively, the user can save the entire output list to a single
 compressed rds or rda file by setting <code>output_type = "rds"</code>
 or <code>output_type = "rda"</code>, respectively.</p>
@@ -1134,8 +1135,7 @@ is only saved if the user sets <code>output_type = "rds"</code> or
 <code>output_type = "rda"</code>. Using one of these settings is
 recommended used if the user wishes to modify any plots in the future.
 Note, however, that plots can always be re-generated from the node-level
-meta data using the <code>generateGraphPlot</code> function as described
-<a href="network_visualization.html#new_plots">here</a>.</li>
+meta data using <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> as described <a href="network_visualization.html#new_plots">here</a>.</li>
 </ul>
 </div>
 <div class="section level4">
@@ -1154,10 +1154,9 @@ vignette</a> for further details on how the output files are named.</p>
 <a name="demo3"></a> Demonstration (Step 3)<a class="anchor" aria-label="anchor" href="#demonstration-step-3"></a>
 </h3>
 <div class="section level4">
-<h4 id="execute-buildassociatedclusternetwork">Execute <code>buildAssociatedClusterNetwork</code><a class="anchor" aria-label="anchor" href="#execute-buildassociatedclusternetwork"></a>
+<h4 id="execute-buildassociatedclusternetwork">Execute <code>buildAssociatedClusterNetwork()</code><a class="anchor" aria-label="anchor" href="#execute-buildassociatedclusternetwork"></a>
 </h4>
-<p>We execute the <code>buildAssociatedClusterNetwork</code> function
-using the <a href="#input_files3">input we prepared earlier</a> for the
+<p>We execute <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> using the <a href="#input_files3">input we prepared earlier</a> for the
 <code>file_list</code> argument:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combine neighborhoods and perform network analysis</span></span>
@@ -1176,26 +1175,27 @@ using the <a href="#input_files3">input we prepared earlier</a> for the
 <span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpMDTs6F/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpMDTs6F/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpMDTs6F/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpMDTs6F/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppzTOrP/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmpMDTs6F/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>In the graph plot of the global network, where the nodes are colored
 according to the binary variable of interest, we see that the treatment
 group shows high representation in the clusters, affirming the
 association between these sequences and the treatment variable.</p>
 </div>
 <div class="section level4">
-<h4 id="output-of-buildassociatedclusternetwork">Output of <code>buildAssociatedClusterNetwork</code><a class="anchor" aria-label="anchor" href="#output-of-buildassociatedclusternetwork"></a>
+<h4 id="output-of-buildassociatedclusternetwork">Output of <code>buildAssociatedClusterNetwork()</code><a class="anchor" aria-label="anchor" href="#output-of-buildassociatedclusternetwork"></a>
 </h4>
-<p>The default files saved by <code>buildAssociatedClusterNetwork</code>
-have the following names:</p>
+<p>The default files saved by
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> have the following
+names:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Files saved by buildAssociatedClusterNetwork</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span><span class="op">)</span></span>
@@ -1205,7 +1205,8 @@ have the following names:</p>
 <span><span class="co">#&gt; [4] "AssociatedClusterNetwork_NodeMetadata.csv"   </span></span>
 <span><span class="co">#&gt; [5] "AssociatedClusterNetwork.pdf"</span></span></code></pre></div>
 <p>The elements of the output list returned by
-<code>buildAssociatedClusterNetwork</code> have the following names:</p>
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> have the following
+names:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># output returned by buildAssociatedClusterNetwork</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">)</span></span>
@@ -1214,7 +1215,7 @@ have the following names:</p>
 <p>Below, we examine the data frames <code>node_data</code> and
 <code>cluster_data</code>. For details on the other list elements, refer
 to <a href="buildRepSeqNetwork.html#base_output">the output of the
-<code>buildRepSeqNetwork</code> function</a>.</p>
+<code>buildRepSeqNetwork()</code> function</a>.</p>
 <div class="section level5">
 <h5 id="node-metadata-for-global-network">
 <a name="node_variables"></a> Node Metadata for Global Network<a class="anchor" aria-label="anchor" href="#node-metadata-for-global-network"></a>
@@ -1270,9 +1271,10 @@ for more information about the cluster-level network properties.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 class="tabset" id="step-4-additional-tasks">Step 4: Additional Tasks<a class="anchor" aria-label="anchor" href="#step-4-additional-tasks"></a>
+<h2 class="tabset" id="step-4-additional-tasks">
+<a name="step4"></a> Step 4: Additional Tasks<a class="anchor" aria-label="anchor" href="#step-4-additional-tasks"></a>
 </h2>
-<p>After calling <code>buildAssociatedClusterNetwork</code>, the
+<p>After calling <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>, the
 following tasks can be performed using the returned output.</p>
 <div class="section level3">
 <h3 id="additional-plots-of-the-global-network">Additional Plots of the Global Network<a class="anchor" aria-label="anchor" href="#additional-plots-of-the-global-network"></a>
@@ -1293,6 +1295,7 @@ which they belong.</p>
 <span>    igraph <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">igraph</span>,</span>
 <span>    data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
 <span>    color_nodes_by <span class="op">=</span> <span class="st">"AssocSeq"</span>,</span>
+<span>    color_title <span class="op">=</span> <span class="st">"Neighborhood Sequence"</span>,</span>
 <span>    size_nodes_by <span class="op">=</span> <span class="fl">1.5</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by AssocSeq...</span></span></code></pre></div>
@@ -1309,9 +1312,9 @@ sequences differ by only a single amino acid.</p>
 <p>In order to more easily cross-reference the clusters in the visual
 plot with the clusters in the data, we can label the clusters with their
 ID numbers.</p>
-<p>This is accomplished using the <code>addClusterLabels</code> function
-<a href="network_visualization.html#labeling_clusters">as described
-here</a>.</p>
+<p>This is accomplished using the <code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code>
+function <a href="network_visualization.html#labeling_clusters">as
+described here</a>.</p>
 <p>We label the clusters in the global network plot with their cluster
 IDs:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -1334,7 +1337,7 @@ IDs:</p>
 <p>If we wish to focus on a particular cluster of interest within the
 global network, we can build a network exclusively using the clones from
 that cluster. This is accomplished using the
-<code>buildRepSeqNetwork</code> function, where we subset our data
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> function, where we subset our data
 according to the value of the <code>cluster_id</code> column, which
 contains the global cluster IDs.</p>
 <p>Below, we focus on the first cluster, which for our example is the
@@ -1406,8 +1409,7 @@ A colored bar appears above each column, with the color indicating the
 group to which the sample belongs, based on the group assignments
 specified by the <code>group_ids</code> argument. This aids in the
 detection of differences and similarities within and between groups.</p>
-<p>All of these steps are performed by the function
-<code><a href="../reference/kmeansAtchley.html">kmeansAtchley()</a></code>.</p>
+<p>All of these steps are performed by <code><a href="../reference/kmeansAtchley.html">kmeansAtchley()</a></code>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">atchley_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kmeansAtchley.html">kmeansAtchley</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>

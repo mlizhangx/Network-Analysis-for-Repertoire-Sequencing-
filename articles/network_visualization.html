@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9043</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,10 +90,9 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The <code>buildRepSeqNetwork</code> function includes various
-arguments that facilitate customization of the network visualization. In
-this vignette, we provide an overview and demonstration of these
-arguments.</p>
+<p><code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> includes various arguments that
+facilitate customization of the network visualization. In this vignette,
+we provide an overview and demonstration of these arguments.</p>
 <div class="section level3">
 <h3 id="simulate-data-for-demonstration">Simulate Data for Demonstration<a class="anchor" aria-label="anchor" href="#simulate-data-for-demonstration"></a>
 </h3>
@@ -134,7 +133,7 @@ variable.</p>
 <p>The variable can be any variable present in the input data, as well
 as any <a href="buildRepSeqNetwork.html#node_properties">node-level
 network properties</a> that are computed for the network.</p>
-<p>For example, when calling <code>buildRepSeqNetwork</code>, we can
+<p>For example, when calling <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>, we can
 color the nodes based on the <code>CloneCount</code> column of the input
 data by setting <code>color_nodes_by = "CloneCount"</code> as seen
 below.</p>
@@ -150,7 +149,7 @@ below.</p>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-2-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 <p>If the <code>color_nodes_by</code> argument is left unspecified,
-<code>buildRepSeqNetwork</code> will attempt to use an available
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> will attempt to use an available
 variable to color the nodes. If a variable for abundance is provided
 using the <code>count_col</code> argument, this will be used. Otherwise
 the <code>cluster_id</code> variable will be used if it exists, followed
@@ -175,7 +174,7 @@ similar, while values far apart appear distinct) when printed in grey
 scale or when viewed by individuals with common forms of color-blindness
 or color vision deficiency. More information, including images of the
 color scales, can be referenced in the <a href="https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html" class="external-link">Introduction
-to the viridis color maps</a> vignette hosted on CRAN’s website.</li>
+to the viridis color maps vignette</a>.</li>
 <li>
 <code>"magma"</code> (or <code>"A"</code>)</li>
 <li>
@@ -220,11 +219,9 @@ the color scale reversed:</p>
 <h4 id="use-custom-color-palette">Use Custom Color Palette<a class="anchor" aria-label="anchor" href="#use-custom-color-palette"></a>
 </h4>
 <p>The color scales that are available through the
-<code>color_scheme</code> argument of the
-<code>buildRepSeqNetwork</code> function are limited to a selection of
-preset color scales. If the user wishes to specify a custom color scheme
-for the nodes, this can be done by <a href="#modifying_plots">modifying
-the plot after it is created</a>.</p>
+<code>color_scheme</code> argument of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+are limited to a selection of preset color scales. If the user wishes to
+specify a custom color scheme for the nodes, this can be done by <a href="#modifying_plots">modifying the plot after it is created</a>.</p>
 </div>
 </div>
 <div class="section level3">
@@ -301,22 +298,22 @@ such as titles, annotations and legends.</p>
 <a name="labeling_clusters"></a> Labeling Clusters<a class="anchor" aria-label="anchor" href="#labeling-clusters"></a>
 </h2>
 <p>If <a href="buildRepSeqNetwork.html#cluster-analysis">cluster
-analysis is performed</a> when calling <code>buildRepSeqNetwork</code>,
-the output will include data on the resulting clusters, with each
-cluster identified by a cluster ID.</p>
+analysis is performed</a> when calling
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>, the output will include data on the
+resulting clusters, with each cluster identified by a cluster ID.</p>
 <p>In order to more easily reference these clusters within the visual
 plot of the network graph, it is possible to label the clusters in the
 plot with their cluster IDs. This must be done after calling
-<code>buildRepSeqNetwork</code>, and is accomplished by using the the
-<code>addClusterLabels</code> function to modify the plot contained in
-the output of <code>buildRepSeqNetwork</code>. Note that
-<code>buildRepSeqNetwork</code> returns a list, and one of the elements
-of this list is another list named <code>plots</code>, which contains
-all plots generated by <code>buildRepSeqNetwork</code>.</p>
-<p>The <code>addClusterLabels</code> function has two primary arguments.
-The plot to be modified is provided to the <code>plot</code> argument.
-The entire output list returned by <code>buildRepSeqNetwork</code> is
-provided to the <code>net</code> argument.</p>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>, and is accomplished by using the
+<code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code> to modify the plot contained in the
+output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. Note that
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> returns a list, and one of the
+elements of this list is another list named <code>plots</code>, which
+contains all plots generated by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
+<p><code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code> has two primary arguments. The plot
+to be modified is provided to the <code>plot</code> argument. The entire
+output list returned by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> is provided to
+the <code>net</code> argument.</p>
 <p>By default, only the 20 largest clusters by node count are labeled in
 order to preserve legibility. This number can be changed by providing a
 different value to the <code>top_n_clusters</code> argument. Instead of
@@ -325,21 +322,22 @@ different variable within the cluster-level metadata can be used, so
 long as the variable is numeric. This is achieved by providing the
 column name of the variable to the <code>criterion</code> argument. The
 variable should be present in the <code>cluster_data</code> data frame
-contained in the output list of <code>buildRepSeqNetwork</code>. Rather
-than prioritizing the clusters with the greatest values of this
+contained in the output list of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.
+Rather than prioritizing the clusters with the greatest values of this
 variable, those with the lowest values can instead be prioritized for
 labeling by setting <code>greatest_values = FALSE</code>.</p>
 <p>The size of the cluster ID labels can be adjusted by providing a
 numeric value to the <code>size</code> argument (the default is 5), and
 their color can be adjusted by providing a valid character string to the
 <code>color</code> argument (the default is <code>"black"</code>).</p>
-<p>The <code>addClusterLabels</code> function assumes that the
-node-level metadata includes a variable named <code>cluster_id</code>
-that records the cluster membership of each node. This is the case when
-<code>buildRepSeqNetwork</code> is called with cluster analysis enabled.
-If this variable has a name different from <code>cluster_id</code>
-(e.g., if columns are manually renamed), the correct variable name must
-be provided to the <code>cluster_id_col</code> argument.</p>
+<p><code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code> assumes that the node-level metadata
+includes a variable named <code>cluster_id</code> that records the
+cluster membership of each node. This is the case when
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> is called with cluster analysis
+enabled. If this variable has a name different from
+<code>cluster_id</code> (e.g., if columns are manually renamed), the
+correct variable name must be provided to the
+<code>cluster_id_col</code> argument.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate network, but don't print the graph plot yet</span></span>
 <span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
@@ -369,10 +367,10 @@ be provided to the <code>cluster_id_col</code> argument.</p>
 <h3 id="title-and-subtitle">Title and Subtitle<a class="anchor" aria-label="anchor" href="#title-and-subtitle"></a>
 </h3>
 <p>The <code>output_name</code> argument is used in the names of files
-saved by <code>buildRepSeqNetwork</code>. By default, it is also used as
-the title for each plot generated by <code>buildRepSeqNetwork</code>.
-The default value of <code>output_name</code> is
-<code>"MyRepSeqNetwork"</code>.</p>
+saved by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. By default, it is also used
+as the title for each plot generated by
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. The default value of
+<code>output_name</code> is <code>"MyRepSeqNetwork"</code>.</p>
 <p>By default, the subtitle of each plot contains information about the
 settings used to construct the network, including the values of the
 <code>dist_type</code> and <code>dist_cutoff</code> arguments.</p>
@@ -442,7 +440,7 @@ corresponding plot.</p>
 <a name="multiple_plots"></a> Generate Multiple Plots of a
 Network<a class="anchor" aria-label="anchor" href="#generate-multiple-plots-of-a-network"></a>
 </h2>
-<p>The <code>buildRepSeqNetwork</code> can generate multiple plots of
+<p>The <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> can generate multiple plots of
 the same network graph, with each plot coloring the nodes according to a
 different variable. This is accomplished by providing a vector of column
 names to the <code>color_nodes_by</code> argument instead of a single
@@ -474,7 +472,8 @@ applied to all of the plots.</p>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-8-2.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 <p>Both plots are stored in the <code>plots</code> list, which is
-contained within the output list of <code>buildRepSeqNetwork</code>.</p>
+contained within the output list of
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "transitivity" "CloneCount"</span></span></code></pre></div>
@@ -486,7 +485,7 @@ nodes.</p>
 </h2>
 <p>This section covers functionality within the <code>NAIR</code>
 package that facilitates additional visual analysis of the results from
-the <code>buildRepSeqNetwork</code> function.</p>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
 <div class="section level3">
 <h3 class="tabset" id="modifying-plots-after-creation">
 <a name="modifying_plots"></a> Modifying Plots After
@@ -496,9 +495,9 @@ Creation<a class="anchor" aria-label="anchor" href="#modifying-plots-after-creat
 <h4 id="motivation">Motivation<a class="anchor" aria-label="anchor" href="#motivation"></a>
 </h4>
 <p>In some cases, the user may wish to make changes to a plot that was
-previously created by the <code>buildRepSeqNetwork</code> function.</p>
-<p>For example, suppose we call <code>buildRepSeqNetwork</code> in order
-to construct the network for our simulated data:</p>
+previously created by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
+<p>For example, suppose we call <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> in
+order to construct the network for our simulated data:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                             output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
@@ -511,24 +510,24 @@ to construct the network for our simulated data:</p>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-10-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 <p>Now suppose we wish to modify the plot seen above. We could call
-<code>buildRepSeqNetwork</code> again, using the appropriate arguments
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> again, using the appropriate arguments
 to customize the plot as desired. However, this would involve
 reconstructing the network, which is unnecessary for our purposes and
 could take substantial time if the network is very large.</p>
 <p>Another option is to directly modify the plot contained within the
-already-existing output of <code>buildRepSeqNetwork</code>.</p>
+already-existing output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 id="how-to-modify-plots">How to Modify Plots<a class="anchor" aria-label="anchor" href="#how-to-modify-plots"></a>
 </h4>
-<p>The list that was returned by <code>buildRepSeqNetwork</code>
+<p>The list that was returned by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
 contains a sublist named <code>plots</code>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "degree"</span></span></code></pre></div>
-<p>Each plot created by <code>buildRepSeqNetwork</code> is contained in
-this list, with each plot named according to the variable used to color
-the nodes. Here the list contains one plot named
+<p>Each plot created by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> is contained
+in this list, with each plot named according to the variable used to
+color the nodes. Here the list contains one plot named
 <code>degree</code>.</p>
 <p>Each plot exists as an object of class <code>ggraph</code> from the
 <code>ggraph</code> package. The <code>ggraph</code> class inherits the
@@ -538,9 +537,9 @@ functions and syntax, for which <a href="https://ggplot2.tidyverse.org" class="e
 resources are available</a>.</p>
 <p>The <code>ggraph</code> class extends the <code>ggplot</code> class
 through the addition of graph-specific geoms and layouts. The plots
-produced by <code>buildRepSeqNetwork</code> use the geoms
-<code>geom_edge_link0</code> for the edges and
-<code>geom_node_point</code> for the nodes.</p>
+produced by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> use the geoms
+<code><a href="https://ggraph.data-imaginist.com/reference/geom_edge_link.html" class="external-link">geom_edge_link0()</a></code> for the edges and
+<code><a href="https://ggraph.data-imaginist.com/reference/geom_node_point.html" class="external-link">geom_node_point()</a></code> for the nodes.</p>
 <p>As a demonstration below, we remove the plot title and subtitle,
 adjust the node size, color the nodes using the <code>CloneCount</code>
 variable and change the color scale.</p>
@@ -564,9 +563,9 @@ variable and change the color scale.</p>
 <span><span class="va">modified_plot</span></span></code></pre></div>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
 <p>We can replace the original plot contained in the output of
-<code>buildRepSeqNetwork</code> with the modified plot. If the variable
-used to color the nodes has been modified, we can also rename the plot
-accordingly.</p>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> with the modified plot. If the
+variable used to color the nodes has been modified, we can also rename
+the plot accordingly.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># replace original plot with modified plot</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">degree</span> <span class="op">&lt;-</span> <span class="va">modified_plot</span></span>
@@ -575,7 +574,7 @@ accordingly.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"CloneCount"</span></span></code></pre></div>
 <p>Alternatively, we can keep the original plot and add the modified
 plot to the plot list contained in the existing output of
-<code>buildRepSeqNetwork</code>.</p>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># add modified plot to list containing the original plot</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">CloneCount</span> <span class="op">&lt;-</span> <span class="va">modified_plot</span></span>
@@ -585,27 +584,26 @@ plot to the plot list contained in the existing output of
 <p>The complete set of functions, geoms and aesthetics within the
 <code>ggraph</code> and <code>ggplot2</code> packages allow the user to
 customize plots beyond what is possible using only the arguments of
-<code>buildRepSeqNetwork</code>.</p>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
 </div>
 <div class="section level4">
 <h4 class="tabset" id="custom-color-scales">Custom Color Scales<a class="anchor" aria-label="anchor" href="#custom-color-scales"></a>
 </h4>
 <p>The color scales that are available through the
-<code>color_scheme</code> argument of the
-<code>buildRepSeqNetwork</code> function are limited to a selection of
-preset color scales. If the user wishes to manually customize the color
-scheme for the nodes, this can be done by modifying the plot after it is
-created.</p>
+<code>color_scheme</code> argument of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+are limited to a selection of preset color scales. If the user wishes to
+manually customize the color scheme for the nodes, this can be done by
+modifying the plot after it is created.</p>
 <div class="section level5">
 <h5 id="for-continuous-variables">For Continuous Variables<a class="anchor" aria-label="anchor" href="#for-continuous-variables"></a>
 </h5>
 <p>If the variable used to color the nodes is continuous, a custom color
-gradient can be specified using the <code>scale_color_gradient</code>
-function, which allows the user to specify the color at each end of the
-gradient using the arguments <code>low</code> and <code>high</code>.
-Below, we use <code>buildRepSeqNetwork</code> to generate a plot where
-the nodes are colored using the <code>CloneCount</code> variable. We
-then modify the plot to use a custom color gradient.</p>
+gradient can be specified using <code><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient()</a></code>,
+which allows the user to specify the color at each end of the gradient
+using the arguments <code>low</code> and <code>high</code>. Below, we
+use <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> to generate a plot where the nodes
+are colored using the <code>CloneCount</code> variable. We then modify
+the plot to use a custom color gradient.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># generate plot with nodes colored by clone count</span></span>
 <span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
@@ -631,12 +629,12 @@ then modify the plot to use a custom color gradient.</p>
 <h5 id="for-discrete-variables">For Discrete Variables<a class="anchor" aria-label="anchor" href="#for-discrete-variables"></a>
 </h5>
 <p>If the variable used to color the nodes is discrete, a custom color
-palette can be specified using the <code>scale_color_manual</code>
+palette can be specified using the <code><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual()</a></code>
 function, which allows the user to specify the color used for each value
 of the discrete variable. The argument <code>values</code> accepts a
 vector of colors whose length must match the number of unique values in
-the discrete variable. Below, we use <code>buildRepSeqNetwork</code> to
-generate a plot where the nodes are colored using the
+the discrete variable. Below, we use <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+to generate a plot where the nodes are colored using the
 <code>SampleID</code> variable. We then modify the plot to use a custom
 color palette.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
@@ -669,23 +667,22 @@ example, it may be the case that the user wants to keep their existing
 plots, but also wants additional plots with the nodes colored according
 to new variables not used in any of the current plots.</p>
 <p>While new plots can be generated by calling
-<code>buildRepSeqNetwork</code> again, the user may wish to avoid
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> again, the user may wish to avoid
 reconstructing the same network, which is redundant and could be
 time-consuming for large networks.</p>
-<p>Instead, new plots can be generated using the
-<code>generateNetworkGraphPlots</code> function in combination with the
-existing output of <code>buildRepSeqNetwork</code>. The function’s first
-and second arguments accept the <code>igraph</code> and
+<p>Instead, new plots can be generated using
+<code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> in combination with the
+existing output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. The function’s
+first and second arguments accept the <code>igraph</code> and
 <code>node_data</code> objects, respectively, that are contained in the
-output list of <code>buildRepSeqNetwork</code>.</p>
-<p>The remaining arguments of <code>generateNetworkGraphPlots</code> are
-used to customize the plot and behave identically to those of
-<code>buildRepSeqNetwork</code> covered in this vignette.</p>
-<p>The <code>generateNetworkGraphPlots</code> function can be used to
-generate multiple plots in a similar fashion to
-<code>buildRepSeqNetwork</code> by <a href="#multiple_plots">supplying a
-vector of column references</a> to the <code>color_nodes_by</code>
-argument.</p>
+output list of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
+<p>The remaining arguments of <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code>
+are used to customize the plot and behave identically to those of
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> covered in this vignette.</p>
+<p><code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> can be used to generate
+multiple plots in a similar fashion to <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+by <a href="#multiple_plots">supplying a vector of column references</a>
+to the <code>color_nodes_by</code> argument.</p>
 <p>The function returns a list containing one item for each plot. By
 default, the plots will also be printed to the plots pane in R.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -702,36 +699,36 @@ default, the plots will also be printed to the plots pane in R.</p>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-17-2.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 <p>By default, plots generated using
-<code>generateNetworkGraphPlots</code> do not have a title or subtitle.
-These can be set using the <code>plot_title</code> and
+<code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> do not have a title or
+subtitle. These can be set using the <code>plot_title</code> and
 <code>plot_subtitle</code> arguments, respectively.</p>
 <p>The new plots can be added to the original list of plots by appending
-the list returned by <code>generateNetworkGraphPlots</code>.</p>
+the list returned by <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code>.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># add new plots to original list of plots</span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span>, <span class="va">new_plots</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "SampleID"   "CloneCount" "CloneSeq"</span></span></code></pre></div>
-<!-- The `plotNetworkGraph` function can be used to generate a single plot using the output of `buildRepSeqNetwork`. The function's primary argument accepts the `igraph` object contained in the output list of `buildRepSeqNetwork`.  -->
-<!-- The remaining arguments of `plotNetworkGraph` are used to customize the plot and behave identically to those of `buildRepSeqNetwork`, with one important exception that concerns the `color_nodes_by` and `size_nodes_by` arguments. In `buildRepSeqNetwork`, each of these arguments accepts a column name or column index referencing the data column that contains the desired variable to be used. In `plotNetworkGraph`, however, each argument accepts the data column itself, rather than its name or index. -->
+<!-- The `plotNetworkGraph` function can be used to generate a single plot using the output of `buildRepSeqNetwork()`. The function's primary argument accepts the `igraph` object contained in the output list of `buildRepSeqNetwork()`.  -->
+<!-- The remaining arguments of `plotNetworkGraph` are used to customize the plot and behave identically to those of `buildRepSeqNetwork()`, with one important exception that concerns the `color_nodes_by` and `size_nodes_by` arguments. In `buildRepSeqNetwork()`, each of these arguments accepts a column name or column index referencing the data column that contains the desired variable to be used. In `plotNetworkGraph`, however, each argument accepts the data column itself, rather than its name or index. -->
 <!-- By default, plots generated using `plotNetworkGraph` do not have a title or subtitle. These can be set using the `plot_title` and `plot_subtitle` arguments, respectively. -->
 </div>
 <div class="section level3">
 <h3 id="saving-plots">Saving Plots<a class="anchor" aria-label="anchor" href="#saving-plots"></a>
 </h3>
 <p>After making changes to the list of plots contained in the output of
-<code>buildRepSeqNetwork</code>, such as replacing a plot with a
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>, such as replacing a plot with a
 modified version or adding new plots to the list, the user may wish to
 save the plots to a pdf file.</p>
 <p>This can be conveniently accomplished by passing the list of plots to
-the <code>saveNetworkPlots</code> function and specifying a file path
-for the pdf file using the <code>outfile</code> argument. All of the
-plots in the list will be saved to a single pdf.</p>
+<code><a href="../reference/saveNetworkPlots.html">saveNetworkPlots()</a></code> and specifying a file path for the pdf
+file using the <code>outfile</code> argument. All of the plots in the
+list will be saved to a single pdf.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/saveNetworkPlots.html">saveNetworkPlots</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span>, outfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_out</span>, <span class="st">"plots.pdf"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpFsIUyX/plots.pdf</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpPCVaoo/plots.pdf</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

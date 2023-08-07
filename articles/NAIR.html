@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9042</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9043</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,9 +94,11 @@
 analyzing the adaptive immune repertoire using network analysis based on
 similarities among receptor sequences, which implements methods from the
 following paper:</p>
-<p>Hai Yang, Jason Cham, Zenghua Fan, Brian Neal, Tao He and Li Zhang.
+<p><a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825" class="external-link">Hai
+Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
 NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in
-Immunology</em> (forthcoming).</p>
+Immunology</em>, vol. 14.
+https://doi.org/10.3389/fimmu.2023.1181825</a></p>
 <!-- ### What can `NAIR` do? -->
 <!-- `NAIR` allows the user to: -->
 <!-- * Perform general network analysis on Adaptive Immune Receptor Repertoire (AIRR-Seq) data, including computing local and global network properties of nodes and clusters -->
@@ -176,33 +178,26 @@ sample ID, cluster ID, clone count, etc.)</li>
 <div class="section level2">
 <h2 id="the-buildrepseqnetwork-function">The <code>buildRepSeqNetwork</code> function<a class="anchor" aria-label="anchor" href="#the-buildrepseqnetwork-function"></a>
 </h2>
-<p>General network analysis on AIRR-Seq data is performed using the
-<code>buildRepSeqNetwork</code> function. This function does the
-following:</p>
+<p>General network analysis on AIRR-Seq data is performed using
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. This function does the following:</p>
 <ul>
 <li>Filters the input AIRR-Seq data according to user
 specifications</li>
 <li>Builds the network graph for the immune repertoire</li>
-<li>Performs desired network analysis
+<li>Performs additional network analysis, which can include:
 <ul>
 <li>Cluster analysis</li>
 <li>Computation of network properties</li>
 </ul>
 </li>
-<li>Generates customized visual plot of the network graph using
-<code>ggraph</code>
-</li>
+<li>Generates customizable visual plots of the network graph</li>
 <li>Saves and returns the following output:
 <ul>
-<li>Meta-data for the nodes in the network, including network
-properties</li>
-<li>Meta-data for the clusters in the network</li>
-<li>Network graph plot (returned as <code>ggraph</code> object and saved
-as pdf)</li>
-<li>Network adjacency matrix in sparse matrix format</li>
-<li>
-<code>igraph</code> object containing the list of edges in the
-network graph</li>
+<li>Metadata for the nodes in the network</li>
+<li>Metadata for the clusters in the network</li>
+<li>The plots of the network graph</li>
+<li>The network graph itself, both as an adjacency matrix and as an
+<code>igraph</code> object</li>
 </ul>
 </li>
 </ul>
@@ -212,15 +207,13 @@ tutorial on the function’s usage and output.</p>
 <div class="section level2">
 <h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
 </h2>
-<p>The <code>buildRepSeqNetwork</code> function includes various
-arguments that facilitate customization of the network visualization.
-See <a href="network_visualization.html">this vignette</a> for an
-overview.</p>
+<p><code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> accepts various arguments for
+customizing the network visualization. See <a href="network_visualization.html">this vignette</a> for an overview.</p>
 </div>
 <div class="section level2">
 <h2 id="searching-for-associated-clusters">Searching for Associated Clusters<a class="anchor" aria-label="anchor" href="#searching-for-associated-clusters"></a>
 </h2>
-<p>Given multiple samples of AIRR-Seq data, the <code>NAIR</code>
+<p>Given multiple samples of bulk AIRR-Seq data, the <code>NAIR</code>
 package can be used to search for TCR/BCR clusters associated with a
 binary variable of interest, such as a disease condition, treatment or
 clinical outcome.</p>
@@ -232,7 +225,7 @@ detailed tutorial.</p>
 </h2>
 <p>The <code>NAIR</code> package includes a set of functions that
 facilitate searching for public TCR/BCR clusters across multiple samples
-of AIRR-seq data.</p>
+of bulk AIRR-seq data.</p>
 <p>In this context, a public cluster consists of similar TCR/BCR clones
 (e.g., those whose CDR3 amino acid sequences differ by at most one amino
 acid) that are shared across samples (e.g., across individuals or across
