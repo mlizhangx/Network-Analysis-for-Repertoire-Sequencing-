@@ -158,7 +158,7 @@
 <dd><p>Optional. Specifies a variable to be used as metadata for coloring the nodes in the network graph plot. Accepts a character string. This can be a column name of <code>data</code> or (if <code>node_stats = TRUE</code>) the name of a computed node-level network property (based on <code>stats_to_include</code>). Also accepts a character vector specifying multiple variables, in which case one plot will be generated for each variable. The default value <code>"auto"</code> attempts to use one of several potential variables to color the nodes, depending on what is available.</p></dd>
 
   <dt>...</dt>
-<dd><p>Other arguments to <code>generateNetworkGraphPlots</code>.</p></dd>
+<dd><p>Other arguments to <code><a href="generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></code>.</p></dd>
 
   <dt>output_dir</dt>
 <dd><p>A file path specifying the directory for saving the output. The directory will be created if it does not exist. If <code>NULL</code>, output will be returned but not saved.</p></dd>
@@ -180,7 +180,7 @@
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>To construct the immune repertoire network, each TCR/BCR clone (bulk data) or cell (single-cell data) is modeled as a node in the network graph, corresponding to a single row of the AIRR-Seq data. For each node, the corresponding receptor sequence is considered. Both nucleotide and amino acid sequences are supported for this purpose. The receptor sequence is used as the basis of similarity and distance between nodes in the network.</p>
 <p>Similarity between sequences is measured using either the Hamming distance or Levenshtein (edit) distance. The similarity determines the pairwise distance between nodes in the network graph. The more similar two sequences are, the shorter the distance between their respective nodes. Two nodes in the graph are joined by an edge if the distance between them is sufficiently small, i.e., if their receptor sequences are sufficiently similar.</p>
-<p>See the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a> package vignette for more details. The vignette can be accessed offline using <code><a href="../articles/buildRepSeqNetwork.html">vignette("buildRepSeqNetwork")</a></code>.</p>
+<p>See the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html">buildRepSeqNetwork package vignette</a> for more details. The vignette can be accessed offline using <code><a href="../articles/buildRepSeqNetwork.html">vignette("buildRepSeqNetwork")</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -205,7 +205,7 @@
 </dl></div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. <a href="https://doi.org/10.3389/fimmu.2023.1181825" class="external-link">https://doi.org/10.3389/fimmu.2023.1181825</a></p>
+    <p>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. <a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full" class="external-link">doi: 10.3389/fimmu.2023.1181825</a></p>
 <p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html">Webpage for the NAIR package</a></p>
 <p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html">buildRepSeqNetwork vignette</a></p>
     </div>

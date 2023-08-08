@@ -116,7 +116,7 @@
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. <a href="https://doi.org/10.3389/fimmu.2023.1181825" class="external-link">https://doi.org/10.3389/fimmu.2023.1181825</a></p>
+    <p>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. <a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full" class="external-link">doi: 10.3389/fimmu.2023.1181825</a></p>
 <p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html">Webpage for the NAIR package</a></p>
     </div>
     <div class="section level2">
@@ -131,11 +131,16 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Generate network</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
-<span class="r-in"><span>  node_stats <span class="op">=</span> <span class="cn">TRUE</span>, cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span></span>
-<span class="r-in"><span>  size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  print_plots <span class="op">=</span> <span class="cn">FALSE</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span>  <span class="va">toy_data</span>,</span></span>
+<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>  node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>,</span></span>
+<span class="r-in"><span>  color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span></span>
+<span class="r-in"><span>  size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
+<span class="r-in"><span>  node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  print_plots <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Label two largest clusters</span></span></span>
