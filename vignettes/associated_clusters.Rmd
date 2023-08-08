@@ -687,7 +687,7 @@ buildRepSeqNetwork(
 
 **NOTE: This step applies to TCR CDR3 amino acid sequences only**
 
-As an additional step in our analysis, we can take the TCR sequences from the global network and use a deep learning algorithm to encode each TCR sequence as a 30-dimensional numeric vector based on the Atchley-factor representations of its amino acids. This is done using the software [TESSA](https://doi.org/10.1038/s41592-020-01020-3).
+As an additional step in our analysis, we can take the TCR sequences from the global network and use a deep learning algorithm to encode each TCR sequence as a 30-dimensional numeric vector based on the Atchley-factor representations of its amino acids. This is done using the software [TESSA](https://www.nature.com/articles/s41592-020-01020-3).
 
 We can then perform $K$-means clustering on the TCR sequences based on their numerically encoded values, resulting in $K$ clusters.
 

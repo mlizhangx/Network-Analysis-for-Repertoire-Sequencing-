@@ -15,7 +15,7 @@ paper:
 [Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang.
 (2023). NAIR: Network Analysis of Immune Repertoire. *Frontiers in
 Immunology*, vol. 14.
-https://doi.org/10.3389/fimmu.2023.1181825](https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825)
+https://doi.org/10.3389/fimmu.2023.1181825](https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full)
 
 Our immune repertoire analysis tool allows users to perform various
 network analysis tasks on AIRR-Seq data. This includes computing local

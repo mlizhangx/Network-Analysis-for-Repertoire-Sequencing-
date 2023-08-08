@@ -99,7 +99,7 @@ buildRepSeqNetwork(
     Optional. Specifies a variable to be used as metadata for coloring the nodes in the network graph plot. Accepts a character string. This can be a column name of \code{data} or (if \code{node_stats = TRUE}) the name of a computed node-level network property (based on \code{stats_to_include}). Also accepts a character vector specifying multiple variables, in which case one plot will be generated for each variable. The default value \code{"auto"} attempts to use one of several potential variables to color the nodes, depending on what is available.
 }
   \item{...}{
-  Other arguments to \code{generateNetworkGraphPlots}.
+  Other arguments to \code{\link{generateNetworkGraphPlots}}.
 }
   \item{output_dir}{
   A file path specifying the directory for saving the output. The directory will be created if it does not exist. If \code{NULL}, output will be returned but not saved.
@@ -122,7 +122,7 @@ buildRepSeqNetwork(
 
     Similarity between sequences is measured using either the Hamming distance or Levenshtein (edit) distance. The similarity determines the pairwise distance between nodes in the network graph. The more similar two sequences are, the shorter the distance between their respective nodes. Two nodes in the graph are joined by an edge if the distance between them is sufficiently small, i.e., if their receptor sequences are sufficiently similar.
 
-    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html}{buildRepSeqNetwork} package vignette for more details. The vignette can be accessed offline using \code{vignette("buildRepSeqNetwork")}.
+    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html}{buildRepSeqNetwork package vignette} for more details. The vignette can be accessed offline using \code{vignette("buildRepSeqNetwork")}.
 }
 \value{
     If the constructed network contains no nodes, the function will return \code{NULL} with a warning. Otherwise, the function invisibly returns a list containing the following items:
@@ -134,7 +134,7 @@ buildRepSeqNetwork(
     \item{plots}{A list containing each plot generated for the network graph. Each plot is an object of class \code{\link[ggraph]{ggraph}}. Only included if \code{plots = TRUE}.}
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 

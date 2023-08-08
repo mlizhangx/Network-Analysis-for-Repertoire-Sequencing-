@@ -39,7 +39,7 @@ A sparse matrix of class \code{dgCMatrix} (see \code{\link[Matrix]{dgCMatrix-cla
 If \code{drop_isolated_nodes = TRUE}, the row and column names of the matrix indicate which receptor sequences in the \code{seqs} vector correspond to each row and column of the matrix. The row and column names can be accessed using \code{dimnames()}. This returns a list containing two character vectors, one for the row names and one for the column names. The name of the \eqn{i}th matrix row is the index of the \code{seqs} vector corresponding to the \eqn{i}th row and \eqn{i}th column of the matrix. The  name of the \eqn{j}th matrix column is the receptor sequence corresponding to the \eqn{j}th row and \eqn{j}th column of the matrix.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 }

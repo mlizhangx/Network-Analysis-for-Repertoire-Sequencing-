@@ -52,7 +52,7 @@ addClusterLabels(
 \code{\link{generateNetworkGraphPlots}}
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 }
@@ -65,11 +65,16 @@ toy_data <- simulateToyData()
 
 # Generate network
 network <- buildRepSeqNetwork(
-  toy_data, seq_col = "CloneSeq",
-  node_stats = TRUE, cluster_stats = TRUE,
-  color_nodes_by = "transitivity", color_scheme = "plasma-1",
-  size_nodes_by = "degree", node_size_limits = c(0.5, 1.5),
-  print_plots = FALSE, output_dir = NULL
+  toy_data,
+  seq_col = "CloneSeq",
+  node_stats = TRUE,
+  cluster_stats = TRUE,
+  color_nodes_by = "transitivity",
+  color_scheme = "plasma-1",
+  size_nodes_by = "degree",
+  node_size_limits = c(0.5, 1.5),
+  print_plots = FALSE,
+  output_dir = NULL
 )
 
 # Label two largest clusters

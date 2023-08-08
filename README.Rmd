@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 We introduce the `NAIR` package, a powerful tool for analyzing the adaptive immune repertoire using network analysis based on similarities among receptor sequences, which implements methods from the following paper:
 
-[Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. *Frontiers in Immunology*, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825](https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825)
+[Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. *Frontiers in Immunology*, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825](https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full)
 
 Our immune repertoire analysis tool allows users to perform various network analysis tasks on AIRR-Seq data. This includes computing local and global network properties of nodes and clusters, which can provide insights into the structural organization of the immune repertoire network.
 

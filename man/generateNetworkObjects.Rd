@@ -44,7 +44,7 @@ generateNetworkObjects(data, seq_col,
     \item{node_data}{ A data frame containing containing metadata for the network nodes, where each row corresponds to a node in the network graph. This data frame contains all variables from \code{data} (unless otherwise specified via \code{subset_cols}) in addition to the computed node-level network properties if \code{node_stats = TRUE}. Each row's name is the name of the corresponding row from \code{data}.}
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \url{https://doi.org/10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
