@@ -19,7 +19,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.0.2)
-Imports: Rcpp (>= 1.0.8), reticulate, igraph, ggraph, ggplot2, gplots, graphics, grDevices, utils, Matrix, stats, plyr, dplyr, reshape2, RColorBrewer, viridisLite
+Imports: reticulate, igraph, ggraph, ggplot2, gplots, graphics, grDevices, utils, Matrix, stats, plyr, dplyr, reshape2, RColorBrewer, viridisLite
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 LinkingTo: Rcpp (>= 1.0.8), RcppArmadillo (>= 0.10.8.0.0)
 VignetteBuilder: knitr
