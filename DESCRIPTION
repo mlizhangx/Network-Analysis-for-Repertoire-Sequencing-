@@ -9,15 +9,18 @@ Authors@R: c(
     person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"),
     person("Ze", "Zhang", email = "Ze.Zhang@UTsouthwestern.edu", role = "ctb",
            comment = "Author of TESSA (BriseisEncoder.py)"))
-Description: Pipelines for studying the immune repertoire of T and B cells 
-    via network analysis based on the similarity of their receptor sequences. 
-    Relate clinical outcomes to immune repertoires based on their network 
-    properties, or to particular clusters and clones within a repertoire.
+Description: Pipelines for studying the adaptive immune repertoire of T
+    and B cells via network analysis based on the similarity of their receptor 
+    sequences. Relate clinical outcomes to immune repertoires based on their 
+    network properties, or to particular clusters and clones within a 
+    repertoire. 
+    Yang et al. (2023) <doi:10.3389/fimmu.2023.1181825>.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp (>= 1.0.8), Matrix, reticulate, igraph, ggraph, ggplot2, stats, 
-    utils, grDevices, plyr, dplyr, reshape2, gplots, RColorBrewer, viridisLite, graphics
+    utils, grDevices, plyr, dplyr, reshape2, gplots, RColorBrewer, viridisLite, 
+    graphics
 LinkingTo: Rcpp (>= 1.0.8), RcppArmadillo (>= 0.10.8.0.0)
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr
