@@ -10,10 +10,9 @@ Authors@R: c(
     person("Ze", "Zhang", email = "Ze.Zhang@UTsouthwestern.edu", role = "ctb",
            comment = "Author of TESSA (BriseisEncoder.py)"))
 Description: Pipelines for studying the adaptive immune repertoire of T
-    and B cells via network analysis based on the similarity of their receptor 
-    sequences. Relate clinical outcomes to immune repertoires based on their 
-    network properties, or to particular clusters and clones within a 
-    repertoire. 
+    and B cells via network analysis based on receptor sequence similarity. 
+    Relate clinical outcomes to immune repertoires based on their network 
+    properties, or to particular clusters and clones within a repertoire. 
     Yang et al. (2023) <doi:10.3389/fimmu.2023.1181825>.
 License: GPL (>= 3)
 Encoding: UTF-8
