@@ -31,8 +31,6 @@ export(simulateToyData)
 
 useDynLib(NAIR, .registration=TRUE)
 
-importFrom(Rcpp, evalCpp)
-
 importFrom(igraph, cluster_fast_greedy)
 importFrom(igraph, cluster_edge_betweenness)
 importFrom(igraph, cluster_fluid_communities)
