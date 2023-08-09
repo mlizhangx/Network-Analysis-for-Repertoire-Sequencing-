@@ -8,15 +8,12 @@
 ##
 ## And with R 3.4.0, and RcppArmadillo 0.7.960.*, we turn C++11 on as OpenMP
 ## support within Armadillo prefers / requires it
-## CXX_STD = CXX11
+##
+## R 4.0.0 made C++11 the default, R 4.1.0 switched to C++14, R 4.3.0 to C++17
+## _In general_ we should no longer need to set a standard as any recent R
+## installation will do the right thing. Should you need it, uncomment it and
+## set the appropriate value, possibly CXX17.
+#CXX_STD = CXX11
 
-## OpenMP is used by Armadillo to automatically parallelize certain expensive
-## operations such as elementwise matrix operations; it is not supported on
-## MacOS, so we leave it disabled it by default:
-PKG_CXXFLAGS =  -DARMA_64BIT_WORD=1
-PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
-
-## If installing on Linux, OpenMP can be enabled by commenting out the two lines
-## above and uncommenting the two lines below:
-## PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -DARMA_64BIT_WORD=1
-## PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -DARMA_64BIT_WORD=1
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
