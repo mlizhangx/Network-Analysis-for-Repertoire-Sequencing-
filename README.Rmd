@@ -60,10 +60,11 @@ The development version of `NAIR` is [hosted on Github](https://github.com/mlizh
 
 ```{r, eval = FALSE}
 devtools::install_github(
-  "mlizhangx/Network-Analysis-for-Repertoire-Sequencing-"
+  "mlizhangx/Network-Analysis-for-Repertoire-Sequencing-",
+  dependencies = TRUE, 
+  build_vignettes = TRUE
 )
 ```
-
 
 <!-- Installing the development version requires a toolchain compiler. On Windows, this means downloading and installing Rtools. On MacOS, this entails installing XCode Command Line Tools ("XCode CLI") and the correct version of gfortran for your macOS version (instructions [here](https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/)). -->
 

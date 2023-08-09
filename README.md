@@ -81,7 +81,9 @@ and can be installed from source using the following command:
 
 ``` r
 devtools::install_github(
-  "mlizhangx/Network-Analysis-for-Repertoire-Sequencing-"
+  "mlizhangx/Network-Analysis-for-Repertoire-Sequencing-",
+  dependencies = TRUE, 
+  build_vignettes = TRUE
 )
 ```
 
