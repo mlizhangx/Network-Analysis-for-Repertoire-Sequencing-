@@ -1318,11 +1318,11 @@ plotNetworkGraph <- function(
                               "magma", "inferno", "plasma", "rocket", "mako")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme,
-                                      begin = 0.2, end = 0.8)
+                                      begin = 0.05, end = 0.95)
       } else if (color_scheme %in% c("D", "viridis")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme,
-                                      begin = 0, end = 0.9)
+                                      begin = 0, end = 0.95)
       } else if (color_scheme %in% c("E", "H", "cividis",  "turbo")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme)
@@ -1330,11 +1330,11 @@ plotNetworkGraph <- function(
                                      "magma-1", "inferno-1", "plasma-1", "rocket-1", "mako-1")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]],
-                                      begin = 0.2, end = 0.8, direction = -1)
+                                      begin = 0.05, end = 0.95, direction = -1)
       } else if (color_scheme %in% c("D-1", "viridis-1")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]],
-                                      begin = 0, end = 0.9, direction = -1)
+                                      begin = 0, end = 0.95, direction = -1)
       } else if (color_scheme %in% c("E-1", "H-1", "cividis-1",  "turbo-1")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], direction = -1)
@@ -1345,11 +1345,11 @@ plotNetworkGraph <- function(
                               "magma", "inferno", "plasma", "rocket", "mako")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE,
-                                      begin = 0.2, end = 0.8)
+                                      begin = 0.05, end = 0.95)
       } else if (color_scheme %in% c("D", "viridis")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE,
-                                      begin = 0, end = 0.9)
+                                      begin = 0, end = 0.95)
       } else if (color_scheme %in% c("E", "H", "cividis",  "turbo")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = color_scheme, discrete = TRUE,)
@@ -1357,11 +1357,11 @@ plotNetworkGraph <- function(
                                      "magma-1", "inferno-1", "plasma-1", "rocket-1", "mako-1")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], discrete = TRUE,
-                                      begin = 0.2, end = 0.8, direction = -1)
+                                      begin = 0.05, end = 0.95, direction = -1)
       } else if (color_scheme %in% c("D-1", "viridis-1")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], discrete = TRUE,
-                                      begin = 0, end = 0.9, direction = -1)
+                                      begin = 0, end = 0.95, direction = -1)
       } else if (color_scheme %in% c("E-1", "H-1", "cividis-1",  "turbo-1")) {
         graph_plot <- graph_plot +
           ggraph::scale_color_viridis(option = strsplit(color_scheme, "-1")[[1]], discrete = TRUE,
