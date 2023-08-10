@@ -54,8 +54,12 @@ The variable can be any variable present in the input data, as well as any [node
 For example, when calling `buildRepSeqNetwork()`, we can color the nodes based on the `CloneCount` column of the input data by setting `color_nodes_by = "CloneCount"` as seen below.
 
 ```{r}
-buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
-                   color_nodes_by = "CloneCount", output_dir = NULL)
+buildRepSeqNetwork(toy_data, 
+                   seq_col = "CloneSeq", 
+                   node_stats = TRUE,
+                   color_nodes_by = "CloneCount", 
+                   output_dir = NULL
+)
 ```
 
 If the `color_nodes_by` argument is left unspecified, `buildRepSeqNetwork()` will attempt to use an available variable to color the nodes. If a variable for abundance is provided using the `count_col` argument, this will be used. Otherwise the `cluster_id` variable will be used if it exists, followed by `degree`, then by other network properties. If no suitable options are available, the nodes will be left uncolored.
@@ -85,9 +89,13 @@ Below we show an example of using the `plasma` color scheme from the `viridisLit
 
 ```{r}
 # Using the "plasma" color scheme with reversed color gradient
-buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
+buildRepSeqNetwork(toy_data, 
+                   seq_col = "CloneSeq", 
+                   node_stats = TRUE,
                    color_nodes_by = "transitivity", 
-                   color_scheme = "plasma-1", output_dir = NULL)
+                   color_scheme = "plasma-1", 
+                   output_dir = NULL
+)
 ```
 
 ### Use Custom Color Palette
@@ -104,9 +112,14 @@ By default, all nodes are drawn at a uniform size value of 0.5. This results in 
 A different uniform node size can be specified by providing a numeric value to the `size_nodes_by` argument. Below, we set the node size to 1.5, which is three times as large as the default node size:
 
 ```{r}
-buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
-                   color_nodes_by = "transitivity", color_scheme = "plasma-1",
-                   size_nodes_by = 1.5, output_dir = NULL)
+buildRepSeqNetwork(toy_data, 
+                   seq_col = "CloneSeq", 
+                   node_stats = TRUE,
+                   color_nodes_by = "transitivity", 
+                   color_scheme = "plasma-1",
+                   size_nodes_by = 1.5, 
+                   output_dir = NULL
+)
 ```
 
 
@@ -119,10 +132,15 @@ The minimum and maximum node sizes can be specified using the `node_size_limits`
 
 ```{r}
 # Size nodes dynamically by network degree; use custom size range
-buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
-                   color_nodes_by = "transitivity", color_scheme = "plasma-1",
+buildRepSeqNetwork(toy_data, 
+                   seq_col = "CloneSeq", 
+                   node_stats = TRUE,
+                   color_nodes_by = "transitivity", 
+                   color_scheme = "plasma-1",
                    size_nodes_by = "degree", 
-                   node_size_limits = c(0.5, 1.5), output_dir = NULL)
+                   node_size_limits = c(0.5, 1.5), 
+                   output_dir = NULL
+)
 ```
 
 
@@ -158,12 +176,18 @@ The size of the cluster ID labels can be adjusted by providing a numeric value t
 
 ```{r}
 # Generate network, but don't print the graph plot yet
-network <- buildRepSeqNetwork(
-  toy_data, seq_col = "CloneSeq", 
-  node_stats = TRUE, cluster_stats = TRUE,
-  color_nodes_by = "transitivity", color_scheme = "plasma-1",
-  size_nodes_by = "degree", node_size_limits = c(0.5, 1.5), 
-  print_plots = FALSE, output_dir = NULL)
+network <- 
+  buildRepSeqNetwork(toy_data, 
+                     seq_col = "CloneSeq", 
+                     node_stats = TRUE, 
+                     cluster_stats = TRUE,
+                     color_nodes_by = "transitivity", 
+                     color_scheme = "plasma-1",
+                     size_nodes_by = "degree", 
+                     node_size_limits = c(0.5, 1.5), 
+                     print_plots = FALSE, 
+                     output_dir = NULL
+  )
 
 # Add labels to the two largest clusters and print the plot
 addClusterLabels(plot = network$plots$transitivity,
@@ -184,10 +208,17 @@ By default, the subtitle of each plot contains information about the settings us
 A custom plot title and subtitle can be specified using the `plot_title` and `plot_subtitle` arguments, respectively. Either element can be omitted from the plot by supplying a `NULL` value to the corresponding argument, as shown below.
 
 ```{r}
-buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", node_stats = TRUE,
-                   color_nodes_by = "transitivity", color_scheme = "plasma-1",
-                   size_nodes_by = "degree", node_size_limits = c(0.5, 2.5),
-                   plot_title = NULL, plot_subtitle = NULL, output_dir = NULL)
+buildRepSeqNetwork(toy_data, 
+                   seq_col = "CloneSeq", 
+                   node_stats = TRUE,
+                   color_nodes_by = "transitivity", 
+                   color_scheme = "plasma-1",
+                   size_nodes_by = "degree", 
+                   node_size_limits = c(0.5, 2.5),
+                   plot_title = NULL, 
+                   plot_subtitle = NULL, 
+                   output_dir = NULL
+)
 ```
 
 
@@ -219,12 +250,16 @@ The `buildRepSeqNetwork()` can generate multiple plots of the same network graph
 A different [color palette](#node_colors) can be used for each plot. This is achieved by providing a character vector to the `color_scheme` argument. This vector must have the same length as the vector provided to the `color_nodes_by` argument. The color palette specified by each entry will be applied to the corresponding plot. If, instead, a single value is provided to the `color_scheme` argument, the specified color palette will be applied to all of the plots.
 
 ```{r}
-network <- buildRepSeqNetwork(
-  toy_data, seq_col = "CloneSeq", node_stats = TRUE, 
-  color_nodes_by = c("transitivity", "CloneCount"),
-  color_scheme = c("plasma-1", "default"),
-  size_nodes_by = "CloneCount", node_size_limits = c(0.1, 2.5),
-  output_dir = NULL)
+network <- 
+  buildRepSeqNetwork(toy_data, 
+                     seq_col = "CloneSeq", 
+                     node_stats = TRUE, 
+                     color_nodes_by = c("transitivity", "CloneCount"),
+                     color_scheme = c("plasma-1", "default"),
+                     size_nodes_by = "CloneCount", 
+                     node_size_limits = c(0.1, 2.5),
+                     output_dir = NULL
+  )
 ```
 
 Both plots are stored in the `plots` list, which is contained within the output list of `buildRepSeqNetwork()`. 
@@ -251,8 +286,10 @@ In some cases, the user may wish to make changes to a plot that was previously c
 For example, suppose we call `buildRepSeqNetwork()` in order to construct the network for our simulated data:
 
 ```{r}
-output <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE,
-                             output_dir = NULL)
+output <- buildRepSeqNetwork(toy_data, "CloneSeq", 
+                             node_stats = TRUE,
+                             output_dir = NULL
+)
 ```
 
 Now suppose we wish to modify the plot seen above. We could call `buildRepSeqNetwork()` again, using the appropriate arguments to customize the plot as desired. However, this would involve reconstructing the network, which is unnecessary for our purposes and could take substantial time if the network is very large.
@@ -280,8 +317,7 @@ As a demonstration below, we remove the plot title and subtitle, adjust the node
 library(ggraph)
 
 # modify plot
-modified_plot <- 
-  output$plots$degree + 
+modified_plot <- output$plots$degree + 
   # remove title and subtitle
   labs(title = NULL, subtitle = NULL) +  
   # adjust node size and node color variable
@@ -327,15 +363,15 @@ If the variable used to color the nodes is continuous, a custom color gradient c
 
 ```{r}
 # generate plot with nodes colored by clone count
-output <- buildRepSeqNetwork(
-  toy_data, "CloneSeq", 
-  color_nodes_by = "CloneCount", 
-  size_nodes_by = 1.5,
-  print_plots = FALSE, output_dir = NULL)
+output <- buildRepSeqNetwork(toy_data, "CloneSeq", 
+                             color_nodes_by = "CloneCount", 
+                             size_nodes_by = 1.5,
+                             print_plots = FALSE, 
+                             output_dir = NULL
+)
 
 # modify plot to use custom color gradient; replace original plot
-output$plots$CloneCount <- 
-  output$plots$CloneCount +
+output$plots$CloneCount <- output$plots$CloneCount +
   scale_color_gradient(low = "pink", high = "purple4")  
 
 output$plots$CloneCount
@@ -348,15 +384,15 @@ If the variable used to color the nodes is discrete, a custom color palette can 
 
 ```{r}
 # generate plot with nodes colored by sample ID
-output <- buildRepSeqNetwork(
-  toy_data, "CloneSeq", 
-  color_nodes_by = "SampleID", 
-  size_nodes_by = 1.5,
-  print_plots = FALSE, output_dir = NULL)
+output <- buildRepSeqNetwork(toy_data, "CloneSeq", 
+                             color_nodes_by = "SampleID", 
+                             size_nodes_by = 1.5,
+                             print_plots = FALSE, 
+                             output_dir = NULL
+  )
 
 # modify plot to use custom color palette
-output$plots[[1]] + 
-  scale_color_manual(values = c("deepskyblue", "red2"))
+output$plots[[1]] + scale_color_manual(values = c("deepskyblue", "red2"))
 ```
 
 
@@ -377,11 +413,13 @@ The function returns a list containing one item for each plot. By default, the p
 
 ```{r}
 # Generate new plots using previous output of buildRepSeqNetwork
-new_plots <- generateNetworkGraphPlots(
-  igraph = output$igraph, data = output$node_data,
-  color_nodes_by = c("CloneCount", "CloneSeq"), 
-  color_scheme = c("default", "turbo"),
-  size_nodes_by = 1)
+new_plots <- 
+  generateNetworkGraphPlots(igraph = output$igraph, 
+                            data = output$node_data,
+                            color_nodes_by = c("CloneCount", "CloneSeq"), 
+                            color_scheme = c("default", "turbo"),
+                            size_nodes_by = 1
+  )
 ```
 
 By default, plots generated using `generateNetworkGraphPlots()` do not have a title or subtitle. These can be set using the `plot_title` and `plot_subtitle` arguments, respectively.
@@ -405,7 +443,8 @@ plotNetworkGraph(igraph = output$igraph,
                  color_title = "Sample ID",
                  size_nodes_by = output$node_data$CloneCount,
                  size_title = "Clone Count",
-                 node_size_limits = c(0.1, 2)) 
+                 node_size_limits = c(0.1, 2)
+) 
 ```
 
 <!-- By default, plots generated using `plotNetworkGraph` do not have a title or subtitle. These can be set using the `plot_title` and `plot_subtitle` arguments, respectively. -->
@@ -418,7 +457,9 @@ After making changes to the list of plots contained in the output of `buildRepSe
 This can be conveniently accomplished by passing the list of plots to `saveNetworkPlots()` and specifying a file path for the pdf file using the `outfile` argument. All of the plots in the list will be saved to a single pdf.
 
 ```{r}
-saveNetworkPlots(output$plots, outfile = file.path(dir_out, "plots.pdf"))
+saveNetworkPlots(output$plots, 
+                 outfile = file.path(dir_out, "plots.pdf")
+)
 ```
 
 

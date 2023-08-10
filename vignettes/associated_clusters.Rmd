@@ -143,7 +143,9 @@ Below, we prepare the vector `input_files` to be provided to the `file_list` arg
 
 ```{r}
 # input files for step 1 (one per sample)
-input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
+input_files <- file.path(dir_input_samples,
+                         paste0("Sample", 1:samples, ".rds")
+)
 head(input_files)
 ```
 
@@ -176,7 +178,8 @@ The vector we will provide to the `group_ids` argument of `findAssociatedSeqs()`
 
 ```{r}
 # group label assignments for the samples
-group_labels <- c(rep("reference", samples_c), rep("comparison", samples_t))
+group_labels <- c(rep("reference", samples_c), 
+                  rep("comparison", samples_t))
 group_labels
 ```
 
@@ -219,14 +222,16 @@ We execute `findAssociatedSeqs()` using the [inputs we prepared earlier](#input_
 
 ```{r}
 # search across samples for associated sequences using Fisher's exact test
-associated_seqs <- findAssociatedSeqs(
-  file_list = input_files, input_type = "rds", 
-  group_ids = group_labels, 
-  seq_col = "CloneSeq", 
-  min_seq_length = NULL, drop_matches = NULL, 
-  min_sample_membership = NULL, 
-  pval_cutoff = 0.1,
-  outfile = NULL)
+associated_seqs <- findAssociatedSeqs(file_list = input_files, 
+                                      input_type = "rds", 
+                                      group_ids = group_labels, 
+                                      seq_col = "CloneSeq", 
+                                      min_seq_length = NULL, 
+                                      drop_matches = NULL, 
+                                      min_sample_membership = NULL, 
+                                      pval_cutoff = 0.1,
+                                      outfile = NULL
+)
 ```
 
 ### Output of `findAssociatedSeqs()`
@@ -399,13 +404,15 @@ We execute `findAssociatedClones()` using the [inputs from step 1](#files2) for 
 
 ```{r}
 # Identify clones in a neighborhood around each associated sequence
-findAssociatedClones(
-  file_list = input_files, input_type = "rds", 
-  group_ids = group_labels, 
-  seq_col = "CloneSeq", 
-  assoc_seqs = associated_seqs$ReceptorSeq,
-  min_seq_length = NULL, drop_matches = NULL,
-  output_dir = dir_nbds)
+findAssociatedClones(file_list = input_files, 
+                     input_type = "rds", 
+                     group_ids = group_labels, 
+                     seq_col = "CloneSeq", 
+                     assoc_seqs = associated_seqs$ReceptorSeq,
+                     min_seq_length = NULL, 
+                     drop_matches = NULL,
+                     output_dir = dir_nbds
+)
 ```
 
 ### <a name="nbd_output"></a> Output of `findAssociatedClones()`
@@ -555,11 +562,13 @@ We execute `buildAssociatedClusterNetwork()` using the [input we prepared earlie
 
 ```{r}
 # Combine neighborhoods and perform network analysis
-all_clusters <- buildAssociatedClusterNetwork(
-  file_list = nbd_files, 
-  seq_col = "CloneSeq",
-  size_nodes_by = 1.5,
-  output_dir = file.path(data_dir, "assoc_clusters"))
+all_clusters <- 
+  buildAssociatedClusterNetwork(
+    file_list = nbd_files, 
+    seq_col = "CloneSeq",
+    size_nodes_by = 1.5,
+    output_dir = file.path(data_dir, "assoc_clusters")
+  )
 ```
 
 In the graph plot of the global network, where the nodes are colored according to the binary variable of interest, we see that the treatment group shows high representation in the clusters, affirming the association between these sequences and the treatment variable.
@@ -628,12 +637,11 @@ Below, we generate a new plot of the global network where the nodes are colored 
 ```{r}
 # global network plot, nodes colored by associated sequence
 all_clusters$plots$AssocSeq <- 
-  generateNetworkGraphPlots(
-    igraph = all_clusters$igraph,
-    data = all_clusters$node_data,
-    color_nodes_by = "AssocSeq",
-    color_title = "Neighborhood Sequence",
-    size_nodes_by = 1.5
+  generateNetworkGraphPlots(igraph = all_clusters$igraph,
+                            data = all_clusters$node_data,
+                            color_nodes_by = "AssocSeq",
+                            color_title = "Neighborhood Sequence",
+                            size_nodes_by = 1.5
   )
 ```
 
@@ -651,10 +659,9 @@ We label the clusters in the global network plot with their cluster IDs:
 ```{r}
 # Modify plot to add labels to the clusters
 all_clusters$plots[[1]] <- 
-  addClusterLabels(
-    plot = all_clusters$plots[[1]],
-    net = all_clusters,
-    size = 10
+  addClusterLabels(plot = all_clusters$plots[[1]],
+                   net = all_clusters,
+                   size = 10
   )
 
 # View modified plot
@@ -681,7 +688,8 @@ buildRepSeqNetwork(
   color_nodes_by = c("CloneSeq", "SampleID"), 
   color_scheme = c("plasma", "turbo"),
   size_nodes_by = 3, 
-  output_dir = NULL, output_name = "Cluster 1")
+  output_dir = NULL, output_name = "Cluster 1"
+)
 ```
 
 
@@ -702,15 +710,15 @@ Two heatmaps are produced for comparing the samples. The first heatmap depicts e
 All of these steps are performed by `kmeansAtchley()`.
 
 ```{r, eval = FALSE}
-atchley_results <- kmeansAtchley(
-  data = all_clusters$node_data,
-  amino_col = "CloneSeq", 
-  sample_col = "SampleID", 
-  group_col = "GroupID",
-  k = 5, 
-  output_dir = 
-    file.path(data_dir, "assoc_clusters"), 
-  return_output = TRUE)
+atchley_results <- 
+  kmeansAtchley(data = all_clusters$node_data,
+                amino_col = "CloneSeq", 
+                sample_col = "SampleID", 
+                group_col = "GroupID",
+                k = 5, 
+                output_dir = file.path(data_dir, "assoc_clusters"), 
+                return_output = TRUE
+  )
 ```
 
 The heatmaps are saved as pdfs. Data containing the numerically-encoded TCR values, their cluster membership, and each sample's fraction of TCRs in each cluster will be returned if `return_output = TRUE`.
@@ -719,7 +727,9 @@ The heatmaps are saved as pdfs. Data containing the numerically-encoded TCR valu
 
 ```{r include=FALSE}
 # clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE),
-       recursive = TRUE)
+unlink(
+  list.dirs(tempdir(), full.names = TRUE),
+  recursive = TRUE
+)
 ```
 

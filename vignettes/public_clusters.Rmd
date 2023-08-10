@@ -149,7 +149,8 @@ Below, we prepare the vector `input_files` to be provided to the `file_list` arg
 # input files for step 1 (one per sample)
 input_files <- 
   file.path(dir_input_samples, 
-            paste0("Sample", 1:samples, ".rds"))
+            paste0("Sample", 1:samples, ".rds")
+  )
 head(input_files)
 ```
 
@@ -293,12 +294,17 @@ The file path of our output directory is saved to the R variable named `dir_filt
 dir_filtered_samples <- file.path(data_dir, "filtered_samples")
 
 # Filter Clusters Within Each Sample
-findPublicClusters(
-  file_list = input_files, input_type = "rds",
-  seq_col = "CloneSeq", count_col = "CloneCount",
-  min_seq_length = NULL, drop_matches = NULL,
-  top_n_clusters = 3, min_node_count = 5, min_clone_count = 15000,
-  output_dir = dir_filtered_samples)
+findPublicClusters(file_list = input_files, 
+                   input_type = "rds",
+                   seq_col = "CloneSeq", 
+                   count_col = "CloneCount",
+                   min_seq_length = NULL, 
+                   drop_matches = NULL,
+                   top_n_clusters = 3, 
+                   min_node_count = 5, 
+                   min_clone_count = 15000,
+                   output_dir = dir_filtered_samples
+)
 ```
 
 ### Output of `findPublicClusters()`
@@ -489,11 +495,13 @@ We execute `buildPublicClusterNetwork()` using the [input we prepared earlier](#
 dir_out <- file.path(data_dir, "public_clusters")
 
 # Collect clones from all public clusters and perform network analysis
-public_clusters <- buildPublicClusterNetwork(
-  file_list = files_filtered_samples_node,
-  seq_col = "CloneSeq", count_col = "CloneCount",
-  size_nodes_by = 1,
-  output_dir = dir_out)
+public_clusters <- 
+  buildPublicClusterNetwork(file_list = files_filtered_samples_node,
+                            seq_col = "CloneSeq", 
+                            count_col = "CloneCount",
+                            size_nodes_by = 1,
+                            output_dir = dir_out
+  )
 ```
 
 From the plot of the global network graph, where the nodes are colored according to sample ID, we notice that many samples are represented among the larger clusters. Hence [these clusters may be of particular interest](#step3) as public clusters. 
@@ -560,12 +568,11 @@ Below, we label the six largest clusters in the plot with their cluster IDs:
 ```{r}
 # Modify plot to add labels to the clusters
 public_clusters$plots[[1]] <- 
-  addClusterLabels(
-    plot = public_clusters$plots[[1]],
-    net = public_clusters,
-    top_n_clusters = 6,
-    cluster_id_col = "ClusterIDPublic",
-    size = 7
+  addClusterLabels(plot = public_clusters$plots[[1]],
+                   net = public_clusters,
+                   top_n_clusters = 6,
+                   cluster_id_col = "ClusterIDPublic",
+                   size = 7
   )
 
 # View modified plot
@@ -584,9 +591,12 @@ buildRepSeqNetwork(
   data = 
     public_clusters$node_data[public_clusters$node_data$ClusterIDPublic == 1, ],
   seq_col = "CloneSeq", 
-  color_nodes_by = "CloneSeq", color_scheme = "plasma", 
+  color_nodes_by = "CloneSeq", 
+  color_scheme = "plasma", 
   size_nodes_by = 3, 
-  output_dir = NULL, output_name = "Cluster 1")
+  output_dir = NULL, 
+  output_name = "Cluster 1"
+)
 ```
 
 Next, we do the same for the sixth largest cluster:
@@ -597,15 +607,20 @@ buildRepSeqNetwork(
   data = 
     public_clusters$node_data[public_clusters$node_data$ClusterIDPublic == 6, ],
   seq_col = "CloneSeq", 
-  color_nodes_by = "CloneSeq", color_scheme = "plasma", 
+  color_nodes_by = "CloneSeq", 
+  color_scheme = "plasma", 
   size_nodes_by = 3, 
-  output_dir = NULL, output_name = "Cluster 6")
+  output_dir = NULL, 
+  output_name = "Cluster 6"
+)
 ```
 
 
 
 ```{r include=FALSE}
 # clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE),
-       recursive = TRUE)
+unlink(
+  list.dirs(tempdir(), full.names = TRUE),
+  recursive = TRUE
+)
 ```

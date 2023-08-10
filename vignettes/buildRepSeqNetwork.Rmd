@@ -72,7 +72,8 @@ Below, we execute the `buildRepSeqNetwork()` function. A visual plot of the netw
 
 ```{r}
 output <- buildRepSeqNetwork(toy_data, seq_col = "CloneSeq", 
-                             output_dir = dir_out)
+                             output_dir = dir_out
+)
 ```
 
 
@@ -260,8 +261,10 @@ Use the setting `node_stats = TRUE` to enable computation of node-level network 
 
 ```{r}
 # build network with computation of node-level network properties
-output2 <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
-                              output_dir = NULL)
+output2 <- buildRepSeqNetwork(toy_data, "CloneSeq", 
+                              node_stats = TRUE, 
+                              output_dir = NULL
+)
 ```
 
 The node data now contains node-level network properties in addition to the original data columns:
@@ -290,18 +293,24 @@ Below is an example where the user wishes to compute the `closeness` property in
 
 ```{r, eval = FALSE}
 # Modifying the default set of node-level properties
-output2 <- buildRepSeqNetwork(
-  toy_data, "CloneSeq", node_stats = TRUE,
-  stats_to_include = chooseNodeStats(closeness = TRUE, page_rank = FALSE))
+output2 <- 
+  buildRepSeqNetwork(toy_data, "CloneSeq", 
+                     node_stats = TRUE,
+                     stats_to_include = 
+                       chooseNodeStats(closeness = TRUE, page_rank = FALSE)
+  )
 ```
 
 If the user wishes to include only a small number of properties and exclude the rest, this requires setting many argument values of `chooseNodeStats` to `FALSE`, which can be inconvenient. In this case, it may instead be easier to use the `exclusiveNodeStats` function, which behaves in the same manner as `chooseNodeStats`, but all of its arguments are set to `FALSE` by default. 
 
 ```{r, eval = FALSE}
 # Include only the node-level properties specified below
-output2 <- buildRepSeqNetwork(
-  toy_data, "CloneSeq", node_stats = TRUE, 
-  stats_to_include = exclusiveNodeStats(degree = TRUE, transitivity = TRUE))
+output2 <- 
+  buildRepSeqNetwork(toy_data, "CloneSeq", 
+                     node_stats = TRUE, 
+                     stats_to_include = 
+                       exclusiveNodeStats(degree = TRUE, transitivity = TRUE)
+  )
 ```
 
 
@@ -350,9 +359,12 @@ These cluster-level network properties are recorded in their own data frame, con
 Below, we re-generate the output of `buildRepSeqNetwork()`, this time with cluster analysis included.
 
 ```{r}
-output3 <- buildRepSeqNetwork(toy_data, "CloneSeq", node_stats = TRUE, 
-                              cluster_stats = TRUE, print_plots = FALSE,
-                              output_dir = NULL)
+output3 <- buildRepSeqNetwork(toy_data, "CloneSeq", 
+                              node_stats = TRUE, 
+                              cluster_stats = TRUE, 
+                              print_plots = FALSE,
+                              output_dir = NULL
+)
 ```
 
 The output list now includes an additional data frame containing the cluster-level meta data:
@@ -481,7 +493,8 @@ Node-level network properties can be computed and added to the node-level meta d
 # Add network stats to node-level meta data 
 output$node_data <- addNodeNetworkStats(output$node_data,
                                         net = output$igraph,
-                                        stats_to_include = "all")
+                                        stats_to_include = "all"
+)
 ```
 
 ### Perform Cluster Analysis Downstream
@@ -493,7 +506,9 @@ Cluster-level properties can be computed by passing the node-level meta data to 
 output$cluster_data <- 
   getClusterStats(data = output$node_data,
                   adjacency_matrix = output$adjacency_matrix,
-                  seq_col = "CloneSeq", count_col = "CloneCount")
+                  seq_col = "CloneSeq", 
+                  count_col = "CloneCount"
+  )
 ```
 
 
@@ -565,12 +580,13 @@ Filtering the input data can be performed as a separate step prior to calling `g
 
 ```{r}
 # Filter input data as a preprocessing step
-filtered_data <- filterInputData(
-  toy_data, seq_col = "CloneSeq", 
-  min_seq_length = 5,
-  drop_matches = "[*|_]", 
-  subset_cols = c("SampleID"),
-  count_col = "CloneCount")
+filtered_data <- filterInputData(toy_data, 
+                                 seq_col = "CloneSeq", 
+                                 min_seq_length = 13,
+                                 drop_matches = "GGGG", 
+                                 subset_cols = c("CloneFrequency", "SampleID"),
+                                 count_col = "CloneCount"
+)
 ```
 
 ```{r}
@@ -592,6 +608,5 @@ Each of the omitted tasks can be performed as its own step using functions in th
 
 ```{r include=FALSE}
 # clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE),
-       recursive = TRUE)
+unlink(list.dirs(tempdir(), full.names = TRUE), recursive = TRUE)
 ```
