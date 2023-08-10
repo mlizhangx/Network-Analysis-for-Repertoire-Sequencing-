@@ -48,15 +48,19 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
-## Generate some toy data for demonstration
 raw_data <- simulateToyData()
 
-# Filter data
+# Remove sequences shorter than 13 characters,
+# as well as sequences containing the subsequence "GGGG".
+# Keep variables for clone sequence, clone frequency and sample ID
 filtered_data <-
-  filterInputData(raw_data, seq_col = "CloneSeq",
-                  min_seq_length = 13,
-                  drop_matches = "[*|_]",
-                  subset_cols = c("CloneSeq", "CloneFrequency", "SampleID"))
-}
+  filterInputData(
+    raw_data,
+    seq_col = "CloneSeq",
+    min_seq_length = 13,
+    drop_matches = "GGGG",
+    subset_cols =
+      c("CloneSeq", "CloneFrequency", "SampleID")
+  )
+
 }

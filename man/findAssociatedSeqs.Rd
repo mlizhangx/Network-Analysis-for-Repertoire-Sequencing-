@@ -155,7 +155,6 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 }
 \examples{
 
-\dontrun{
 ## Generate some toy data for demonstration ##
 # Use temp dir
 data_dir <- tempdir()
@@ -213,5 +212,10 @@ associated_seqs <- findAssociatedSeqs(
 
 # view first few rows of output
 head(associated_seqs)
-}
+
+
+# clean up temp directory
+unlink(list.dirs(data_dir, full.names = TRUE),
+       recursive = TRUE)
+
 }

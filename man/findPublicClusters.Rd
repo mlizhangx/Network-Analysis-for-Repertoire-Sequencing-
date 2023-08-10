@@ -122,9 +122,9 @@ findPublicClusters(
 
     The unfiltered network results for each sample can also be saved by supplying a directory to \code{output_dir_unfiltered}, if these results are desired for downstream analysis.
 
-    The files containing the node-level metadata for the filtered clusters can be supplied to \code{\link{buildPublicClusterNetwork}} in order to construct a global network of public clusters. See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("public_clusters")}.
+    The files containing the node-level metadata for the filtered clusters can be supplied to \code{\link{buildPublicClusterNetwork}} in order to construct a global network of public clusters. If the full global network is too large to practically construct, the files containing the cluster-level meta data for the filtered clusters can be supplied to \code{\link{buildPublicClusterNetworkByRepresentative}} to build a global network using only a single representative sequence from each cluster. This allows prominent public clusters to still be identified.
 
-    If the full global network is too large to practically construct, the files containing the cluster-level meta data for the filtered clusters can be supplied to \code{\link{buildPublicClusterNetworkByRepresentative}} to build a global network using only a single representative sequence from each cluster. This allows prominent public clusters to still be identified.
+    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("public_clusters")}.
 
 }
 \value{
@@ -144,4 +144,73 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 \code{\link{buildPublicClusterNetwork}}
 
 \code{\link{buildPublicClusterNetworkByRepresentative}}
+}
+\examples{
+
+## Generate some toy data for demonstration
+
+# Use temp dir
+data_dir <- tempdir()
+
+# Directory to store input files
+dir_input_samples <- file.path(data_dir, "input_samples")
+dir.create(dir_input_samples, showWarnings = FALSE)
+
+samples <- 30
+sample_size <- 30 # (seqs per sample)
+
+base_seqs <- c(
+  "CASSIEGQLSTDTQYF", "CASSEEGQLSTDTQYF", "CASSSVETQYF",
+  "CASSPEGQLSTDTQYF", "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF",
+  "CASSLTSGYNEQFF", "CASSETGYNEQFF", "CASSLTGGNEQFF", "CASSYLTGYNEQFF",
+  "CASSLTGNEQFF", "CASSLNGYNEQFF", "CASSFPWDGYGYTF", "CASTLARQGGELFF",
+  "CASTLSRQGGELFF", "CSVELLPTGPLETSYNEQFF", "CSVELLPTGPSETSYNEQFF",
+  "CVELLPTGPSETSYNEQFF", "CASLAGGRTQETQYF", "CASRLAGGRTQETQYF",
+  "CASSLAGGRTETQYF", "CASSLAGGRTQETQYF", "CASSRLAGGRTQETQYF",
+  "CASQYGGGNQPQHF", "CASSLGGGNQPQHF", "CASSNGGGNQPQHF", "CASSYGGGGNQPQHF",
+  "CASSYGGGQPQHF", "CASSYKGGNQPQHF", "CASSYTGGGNQPQHF",
+  "CAWSSQETQYF", "CASSSPETQYF", "CASSGAYEQYF", "CSVDLGKGNNEQFF")
+
+# relative generation probabilities
+pgen <- cbind(
+  stats::toeplitz(0.6^(0:(sample_size - 1))),
+  matrix(1, nrow = samples, ncol = length(base_seqs) - samples))
+
+# Simulate the data
+foo <- simulateToyData(
+  samples = samples, sample_size = sample_size,
+  prefix_length = 1, prefix_chars = c("", ""),
+  prefix_probs = cbind(rep(1, samples), rep(0, samples)),
+  affixes = base_seqs, affix_probs = pgen, num_edits = 0,
+  output_dir = dir_input_samples, no_return = FALSE)
+
+# View first few rows of data for sample 1
+head(readRDS(file.path(dir_input_samples, "Sample1.rds")))
+
+
+## 1. Find Public Clusters in Each Sample
+
+# input files for step 1 (one per sample)
+input_files <-
+  file.path(dir_input_samples,
+            paste0("Sample", 1:samples, ".rds"))
+head(input_files)
+
+# directory to save filtered sample data
+dir_filtered_samples <- file.path(data_dir, "filtered_samples")
+
+# Filter Clusters Within Each Sample
+findPublicClusters(
+  file_list = input_files, input_type = "rds",
+  seq_col = "CloneSeq", count_col = "CloneCount",
+  min_seq_length = NULL, drop_matches = NULL,
+  top_n_clusters = 3, min_node_count = 5, min_clone_count = 15000,
+  output_dir = dir_filtered_samples)
+
+
+# clean up temp directory
+unlink(list.dirs(data_dir, full.names = TRUE),
+       recursive = TRUE)
+
+
 }

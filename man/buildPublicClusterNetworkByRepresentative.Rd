@@ -115,6 +115,8 @@ buildPublicClusterNetworkByRepresentative(
     From each filtered cluster in each sample's network, a representative TCR/BCR is selected. By default, this is the sequence with the greatest clone count in each cluster. The representatives from all clusters and all samples are then used to construct a single global network. Cluster analysis is used to partition this global network into clusters. Network properties for the nodes and clusters are computed and returned as metadata. A plot of the global network graph is produced, with the nodes colored according to sample ID.
 
     Within this network, clusters containing nodes from multiple samples can be considered as the skeletons of the complete public clusters. The filtered cluster data for each sample can then be subset to keep the sample-level clusters whose representative TCR/BCRs belong to the skeletons of the public clusters. After subsetting in this manner, \code{\link{buildPublicClusterNetwork}} can be used to construct the global network of complete public clusters.
+
+    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("public_clusters")}.
 }
 \value{
     A list of network objects as returned by \code{\link{buildRepSeqNetwork}}. The data frame \code{cluster_data} includes the following variables that represent properties of the clusters in the global network of representative TCR/BCRs:
@@ -182,7 +184,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 \code{\link{buildPublicClusterNetwork}}
 }
 \examples{
-\dontrun{
+
 ## Generate some toy data for demonstration
 
 # Use temp dir
@@ -259,6 +261,11 @@ buildPublicClusterNetworkByRepresentative(
   file_list = files_filtered_samples_cluster,
   output_dir = dir_out,
   size_nodes_by = 1)
-}
+
+
+# clean up temp directory
+unlink(list.dirs(data_dir, full.names = TRUE),
+       recursive = TRUE)
+
 
 }

@@ -53,10 +53,9 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
+
 toy_data <- simulateToyData()
 
-# Generate network
 net <-
   generateNetworkObjects(
     toy_data,
@@ -66,13 +65,15 @@ net <-
 # Add default set of node properties
 data_w_default_stats <-
   addNodeNetworkStats(
-    net$node_data, net$igraph
+    net$node_data,
+    net$igraph
   )
 
 # Modify default set of node properties
 data_w_custom_stats1 <-
   addNodeNetworkStats(
-    net$node_data, net$igraph,
+    net$node_data,
+    net$igraph,
     stats_to_include =
       chooseNodeStats(
         closeness = TRUE,
@@ -83,7 +84,8 @@ data_w_custom_stats1 <-
 # Add only the spepcified node properties
 data_w_custom_stats2 <-
   addNodeNetworkStats(
-    net$node_data, net$igraph,
+    net$node_data,
+    net$igraph,
     stats_to_include =
       exclusiveNodeStats(
         degree = TRUE,
@@ -94,9 +96,9 @@ data_w_custom_stats2 <-
 # Add all node-level network properties
 data_w_all_stats <-
   addNodeNetworkStats(
-    net$node_data, net$igraph,
+    net$node_data,
+    net$igraph,
     stats_to_include = "all"
   )
 
-}
 }

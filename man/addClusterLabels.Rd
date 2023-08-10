@@ -60,10 +60,8 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
 toy_data <- simulateToyData()
 
-# Generate network
 network <- buildRepSeqNetwork(
   toy_data,
   seq_col = "CloneSeq",
@@ -84,5 +82,4 @@ addClusterLabels(
   top_n_clusters = 2,
   criterion = "node_count" # (the default)
 )
-}
 }

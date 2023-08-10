@@ -187,6 +187,14 @@ findAssociatedClones(
   assoc_seqs = associated_seqs$ReceptorSeq,
   min_seq_length = NULL, drop_matches = NULL,
   output_dir = dir_nbds)
+
+
+
+# clean up temp directory
+unlink(list.dirs(data_dir, full.names = TRUE),
+       recursive = TRUE)
+
+
 }
 }
 

@@ -53,14 +53,21 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
-# Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
-# Generate network for data
-net <- generateNetworkObjects(toy_data, "CloneSeq")
+net <-
+  generateNetworkObjects(
+    toy_data,
+    "CloneSeq"
+  )
 
-# Save network objects
-saveNetwork(net, output_dir = tempdir())
-}
+saveNetwork(
+  net,
+  output_dir = tempdir()
+)
+
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
+
 }

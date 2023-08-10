@@ -105,15 +105,27 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 }
 
 \examples{
-\dontrun{
-# Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
-# Generate network for data
-net <- generateNetworkObjects(toy_data, "CloneSeq")
+net <-
+  generateNetworkObjects(
+    toy_data,
+    "CloneSeq"
+  )
 
-# Plot network graph
-net_plot <- generateNetworkGraphPlots(
-  net$igraph, net$node_data, color_nodes_by = c("SampleID", "CloneCount"))
-}
+# Create two plots:
+# one with nodes colored by sample,
+# the other by clone count
+net_plot <-
+  generateNetworkGraphPlots(
+    net$igraph,
+    net$node_data,
+    color_nodes_by =
+      c("SampleID", "CloneCount"),
+    color_scheme =
+      c("Set 2", "mako-1"),
+    color_title =
+      c("", "Clone Count"),
+    size_nodes_by = 1.5
+  )
 }

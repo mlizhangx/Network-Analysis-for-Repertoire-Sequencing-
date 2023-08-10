@@ -40,7 +40,7 @@ plotNetworkGraph(
       A vector whose length matches the number of nodes in the network. The values are used to encode the color of each node. An argument value of \code{NULL} (the default) leaves the nodes uncolored. Passed to the color aesthetic mapping of \code{\link[ggraph]{geom_node_point}}.
 }
   \item{color_scheme}{
-    A character string specifying the color scale used to color the nodes. \code{"default"} uses default \code{\link[ggplot2]{ggplot}} colors. Other options are one of the \code{\link[viridisLite]{viridis}} color scales (e.g., \code{"plasma"} or \code{"A"}) or (for discrete variables) a palette from \code{\link[grDevices]{hcl.pals}} (e.g., \code{"RdYlGn"}).
+    A character string specifying the color scale used to color the nodes. \code{"default"} uses default \code{\link[ggplot2]{ggplot}} colors. Other options are one of the \code{\link[viridisLite]{viridis}} color scales (e.g., \code{"plasma"} or \code{"A"}) or (for discrete variables) a palette from \code{\link[grDevices]{hcl.pals}} (e.g., \code{"RdYlGn"}). Each of the \code{\link[viridisLite]{viridis}} color scales can include the suffix \code{"-1"} to reverse its direction (e.g., \code{"plasma-1"} or \code{"A-1"}).
 }
   \item{color_legend}{
     A logical scalar specifying whether to display the color legend in the plot. The default value of \code{"auto"} shows the color legend if \code{color_nodes_by} is a continuous variable or a discrete variable with at most 20 distinct values.
@@ -87,22 +87,27 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
-# Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
 # Generate network for data
-net <- generateNetworkObjects(toy_data, "CloneSeq")
+net <-
+  generateNetworkObjects(
+    toy_data,
+    "CloneSeq"
+  )
 
 # Plot network graph
 net_plot <- plotNetworkGraph(
   net$igraph,
-  color_nodes_by = net$node_data$SampleID,
+  color_nodes_by =
+    net$node_data$SampleID,
+  color_title = NULL,
   color_scheme = "viridis",
-  size_nodes_by = net$node_data$CloneCount,
+  size_nodes_by =
+    net$node_data$CloneCount,
+  size_title = "Clone Count",
   node_size_limits = c(0.5, 3))
 
 print(net_plot)
-}
 
 }

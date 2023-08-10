@@ -114,21 +114,20 @@ simulateToyData(
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
-# bulk data from two samples
+# Bulk data from two samples
 dat1 <- simulateToyData()
 
-# single-cell data with alpha and beta chain sequences
+# Single-cell data with alpha and beta chain sequences
 dat2 <- simulateToyData(chains = 2)
 
-# write data to file, return nothing
+# Write data to file, return nothing
 simulateToyData(sample_size = 500,
                 num_edits = 10,
                 seed_value = 1,
                 no_return = TRUE,
                 output_dir = tempdir())
 
-# example customization
+# Example customization
 dat4 <-
   simulateToyData(
     samples = 5,
@@ -144,5 +143,68 @@ dat4 <-
                 "CSANYGYTF"),
     affix_probs = matrix(1, ncol = 11, nrow = 5),
   )
-}
+
+## Simulate 30 samples with a mix of public/private sequences ##
+samples <- 30
+sample_size <- 30 # (seqs per sample)
+base_seqs <- c(
+  "CASSIEGQLSTDTQYF", "CASSEEGQLSTDTQYF", "CASSSVETQYF",
+  "CASSPEGQLSTDTQYF", "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF",
+  "CASSLTSGYNEQFF", "CASSETGYNEQFF", "CASSLTGGNEQFF", "CASSYLTGYNEQFF",
+  "CASSLTGNEQFF", "CASSLNGYNEQFF", "CASSFPWDGYGYTF", "CASTLARQGGELFF",
+  "CASTLSRQGGELFF", "CSVELLPTGPLETSYNEQFF", "CSVELLPTGPSETSYNEQFF",
+  "CVELLPTGPSETSYNEQFF", "CASLAGGRTQETQYF", "CASRLAGGRTQETQYF",
+  "CASSLAGGRTETQYF", "CASSLAGGRTQETQYF", "CASSRLAGGRTQETQYF",
+  "CASQYGGGNQPQHF", "CASSLGGGNQPQHF", "CASSNGGGNQPQHF", "CASSYGGGGNQPQHF",
+  "CASSYGGGQPQHF", "CASSYKGGNQPQHF", "CASSYTGGGNQPQHF",
+  "CAWSSQETQYF", "CASSSPETQYF", "CASSGAYEQYF", "CSVDLGKGNNEQFF")
+# Relative generation probabilities
+pgen <- cbind(
+  stats::toeplitz(0.6^(0:(sample_size - 1))),
+  matrix(1, nrow = samples, ncol = length(base_seqs) - samples))
+dat5 <-
+  simulateToyData(
+    samples = samples,
+    sample_size = sample_size,
+    prefix_length = 1,
+    prefix_chars = c("", ""),
+    prefix_probs = cbind(rep(1, samples),
+                         rep(0, samples)),
+    affixes = base_seqs,
+    affix_probs = pgen,
+    num_edits = 0
+  )
+
+## Simulate 30 samples from two groups (treatment/control) ##
+samples_c <- samples_t <- 15 # Number of samples by control/treatment group
+samples <- samples_c + samples_t
+sample_size <- 30 # (seqs per sample)
+base_seqs <- # first five are associated with treatment
+  c("CASSGAYEQYF", "CSVDLGKGNNEQFF", "CASSIEGQLSTDTQYF",
+    "CASSEEGQLSTDTQYF", "CASSPEGQLSTDTQYF",
+    "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF")
+# Relative generation probabilities by control/treatment group
+pgen_c <- matrix(rep(c(rep(1, 5), rep(30, 3)), times = samples_c),
+                 nrow = samples_c, byrow = TRUE)
+pgen_t <- matrix(rep(c(1, 1, rep(1/3, 3), rep(2, 3)), times = samples_t),
+                 nrow = samples_t, byrow = TRUE)
+pgen <- rbind(pgen_c, pgen_t)
+dat6 <-
+  simulateToyData(
+    samples = samples,
+    sample_size = sample_size,
+    prefix_length = 1,
+    prefix_chars = c("", ""),
+    prefix_probs =
+      cbind(rep(1, samples), rep(0, samples)),
+    affixes = base_seqs,
+    affix_probs = pgen,
+    num_edits = 0
+  )
+
+
+
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
 }

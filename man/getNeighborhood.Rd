@@ -47,14 +47,15 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 }
 
 \examples{
-\dontrun{
 
-# Simulate some toy data for demonstration
 toy_data <- simulateToyData(sample_size = 500)
 
 # Get neighborhood around first clone sequence
-nbd <- getNeighborhood(toy_data, seq_col = "CloneSeq",
-                       target_seq = toy_data$CloneSeq[[1]])
+nbd <-
+  getNeighborhood(
+    toy_data,
+    seq_col = "CloneSeq",
+    target_seq = toy_data$CloneSeq[[1]]
+  )
 
-}
 }

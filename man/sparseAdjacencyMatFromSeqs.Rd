@@ -36,7 +36,7 @@ To construct the graph of the immune repertoire network, each receptor sequence 
 \value{
 A sparse matrix of class \code{dgCMatrix} (see \code{\link[Matrix]{dgCMatrix-class}}).
 
-If \code{drop_isolated_nodes = TRUE}, the row and column names of the matrix indicate which receptor sequences in the \code{seqs} vector correspond to each row and column of the matrix. The row and column names can be accessed using \code{dimnames()}. This returns a list containing two character vectors, one for the row names and one for the column names. The name of the \eqn{i}th matrix row is the index of the \code{seqs} vector corresponding to the \eqn{i}th row and \eqn{i}th column of the matrix. The  name of the \eqn{j}th matrix column is the receptor sequence corresponding to the \eqn{j}th row and \eqn{j}th column of the matrix.
+If \code{drop_isolated_nodes = TRUE}, the row and column names of the matrix indicate which receptor sequences in the \code{seqs} vector correspond to each row and column of the matrix. The row and column names can be accessed using \code{\link{dimnames}}. This returns a list containing two character vectors, one for the row names and one for the column names. The name of the \eqn{i}th matrix row is the index of the \code{seqs} vector corresponding to the \eqn{i}th row and \eqn{i}th column of the matrix. The  name of the \eqn{j}th matrix column is the receptor sequence corresponding to the \eqn{j}th row and \eqn{j}th column of the matrix.
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
@@ -48,6 +48,41 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 }
 \examples{
 sparseAdjacencyMatFromSeqs(
-    c("fee", "fie", "foe", "fum", "foo")
+  c("fee", "fie", "foe", "fum", "foo")
+)
+
+# No edge connections exist based on a Hamming distance of 1
+# (returns a 0x0 sparse matrix)
+sparseAdjacencyMatFromSeqs(
+  c("foo", "foobar", "fubar", "bar"),
+)
+
+# Same as the above example, but keeping all nodes
+# (returns a 4x4 sparse matrix)
+sparseAdjacencyMatFromSeqs(
+  c("foo", "foobar", "fubar", "bar"),
+  drop_isolated_nodes = FALSE
+)
+
+# Relaxing the edge criteria using a Hamming distance of 2
+# (still results in no edge connections)
+sparseAdjacencyMatFromSeqs(
+  c("foo", "foobar", "fubar", "bar"),
+  max_dist = 2
+)
+
+# Using a Levenshtein distance of 2, however,
+# does result in edge connections
+sparseAdjacencyMatFromSeqs(
+  c("foo", "foobar", "fubar", "bar"),
+  dist_type = "levenshtein",
+  max_dist = 2
+)
+
+# Using a Hamming distance of 3
+# also results in (different) edge connections
+sparseAdjacencyMatFromSeqs(
+  c("foo", "foobar", "fubar", "bar"),
+  max_dist = 3
 )
 }

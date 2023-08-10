@@ -37,16 +37,14 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
 toy_data <- simulateToyData()
 
-# Generate network for data
 net <-
   generateNetworkObjects(
-    toy_data, "CloneSeq"
+    toy_data,
+    "CloneSeq"
   )
 
-# Plot network graph
 net$plots <-
   generateNetworkGraphPlots(
     net$igraph,
@@ -55,11 +53,14 @@ net$plots <-
       c("SampleID", "CloneCount")
   )
 
-# Save plots
 saveNetworkPlots(
   net$plots,
   outfile =
     file.path(tempdir(), "network.pdf")
 )
-}
+
+
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
 }

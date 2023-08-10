@@ -91,34 +91,35 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
-## Generate some toy data for demonstration
-
-# Use temp dir
+# Create data for demonstration
 data_dir <- tempdir()
-
-# Directory to store input files
 dir_samples <- file.path(data_dir, "samples")
 dir.create(dir_samples, showWarnings = FALSE)
 simulateToyData(sample_size = 5,
                 output_dir = dir_samples,
                 no_return = TRUE)
 
-
-# Load data frames and combine
-data <- loadDataFromFileList(
-  file_list = list.files(dir_samples, full.names = TRUE),
+# Load and combine data
+all_samples <- loadDataFromFileList(
+  file_list =
+    list.files(dir_samples, full.names = TRUE),
   input_type = "rds")
 
 
-## Same as above, but filter out seqs shorter than 3 characters,
-## drop the count/freq/sampleID columns & add new sample ID column
-data2 <- combineSamples(
-  file_list = list.files(dir_samples, full.names = TRUE),
+# Same as above, but filter out seqs shorter than 3 characters,
+# drop the count/freq/sampleID columns & add new sample ID column
+all_samples <- combineSamples(
+  file_list =
+    list.files(dir_samples, full.names = TRUE),
   input_type = "rds",
   seq_col = "CloneSeq",
   min_seq_length = 3,
   subset_cols = "CloneSeq",
   sample_ids = c("id01", "id02"))
-}
+
+
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
+
 }

@@ -144,9 +144,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
 
-# Simulate some toy data for demonstration
 toy_data <- simulateToyData()
 
 network <- buildRepSeqNetwork(
@@ -155,6 +153,6 @@ network <- buildRepSeqNetwork(
   color_nodes_by = "transitivity", color_scheme = "plasma-1",
   size_nodes_by = "degree", node_size_limits = c(0.5, 1.5),
   output_dir = NULL)
-}
+
 
 }

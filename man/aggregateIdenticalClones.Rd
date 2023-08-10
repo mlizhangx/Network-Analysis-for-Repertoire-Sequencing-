@@ -56,8 +56,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-# Create some data
-data <- data.frame(
+my_data <- data.frame(
   clone_seq = c("ATCG", rep("ACAC", 2), rep("GGGG", 4)),
   clone_count = rep(1, 7),
   clone_freq = rep(1/7, 7),
@@ -65,34 +64,41 @@ data <- data.frame(
   subject_id = c(rep(1, 5), rep(2, 2))
 )
 
-# default usage
 data_agg <-
   aggregateIdenticalClones(
-    data, "clone_seq",
-    "clone_count", "clone_freq"
+    my_data,
+    "clone_seq",
+    "clone_count",
+    "clone_freq",
   )
 
 # group clones by time point
 data_agg_time <-
   aggregateIdenticalClones(
-    data, "clone_seq",
-    "clone_count", "clone_freq",
+    my_data,
+    "clone_seq",
+    "clone_count",
+    "clone_freq",
     grouping_cols = "time_point"
   )
 
 # group clones by subject ID
 data_agg_subject <-
   aggregateIdenticalClones(
-    data, "clone_seq",
-    "clone_count", "clone_freq",
+    my_data,
+    "clone_seq",
+    "clone_count",
+    "clone_freq",
     grouping_cols = "subject_id"
   )
 
 # group clones by time point and subject ID
 data_agg_time_subject <-
   aggregateIdenticalClones(
-    data, "clone_seq",
-    "clone_count", "clone_freq",
+    my_data,
+    "clone_seq",
+    "clone_count",
+    "clone_freq",
     grouping_cols =
       c("subject_id", "time_point")
   )

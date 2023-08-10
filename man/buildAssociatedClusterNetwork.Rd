@@ -96,7 +96,6 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 \code{\link{findAssociatedClones}}
 }
 \examples{
-\dontrun{
 ## Generate some toy data for demonstration ##
 # Use temp dir
 data_dir <- tempdir()
@@ -184,24 +183,10 @@ all_clusters <- buildAssociatedClusterNetwork(
   size_nodes_by = 1.5,
   output_dir = file.path(data_dir, "assoc_clusters"))
 
-# Modify plot to add labels to the clusters
-all_clusters$plots[[1]] <-
-  addClusterLabels(
-    plot = all_clusters$plots[[1]],
-    net = all_clusters,
-    size = 10
-  )
 
-# View modified plot
-all_clusters$plots[[1]]
+# clean up temp directory
+unlink(list.dirs(data_dir, full.names = TRUE),
+       recursive = TRUE)
 
-# focus on the first cluster
-buildRepSeqNetwork(
-  data = all_clusters$node_data[all_clusters$node_data$cluster_id == 1, ],
-  seq_col = "CloneSeq",
-  color_nodes_by = c("CloneSeq", "SampleID"),
-  color_scheme = c("plasma", "turbo"),
-  size_nodes_by = 3,
-  output_dir = NULL, output_name = "Cluster 1")
-}
+
 }
