@@ -4,7 +4,10 @@
 Generate Toy AIRR-Seq Data
 }
 \description{
-Generates toy data that can be used to test or demonstrate the behavior of functions in the \code{NAIR} package.  Created as a lightweight tool for use in tests, examples and vignettes. This function is not intended to simulate realistic data.
+Generates toy data that can be used to test or demonstrate the behavior of
+functions in the \code{NAIR} package.  Created as a lightweight tool for use in
+tests, examples and vignettes. This function is not intended to simulate realistic
+data.
 }
 \usage{
 simulateToyData(
@@ -45,59 +48,94 @@ simulateToyData(
     The number of observations to generate per sample.
 }
   \item{prefix_length}{
-    The length of the random prefix generated for each observed sequence. Specifically, the number of elements of \code{prefix_chars} that are sampled with replacement and concatenated to form each prefix.
+    The length of the random prefix generated for each observed sequence.
+    Specifically, the number of elements of \code{prefix_chars} that are sampled
+    with replacement and concatenated to form each prefix.
 }
   \item{prefix_chars}{
-    A character vector containing characters or strings from which to sample when generating the prefix for each observed sequence.
+    A character vector containing characters or strings from which to sample when
+    generating the prefix for each observed sequence.
 }
   \item{prefix_probs}{
-    A numeric matrix whose column dimension matches the length of \code{prefix_chars} and with row dimension matching the value of \code{samples}. The \eqn{i}th row specifies the relative probability weights assigned to each element of \code{prefix_chars} when sampling to form the prefix for each sequence in the \eqn{i}th sample.
+    A numeric matrix whose column dimension matches the length of \code{prefix_chars}
+    and with row dimension matching the value of \code{samples}. The \eqn{i}th row
+    specifies the relative probability weights assigned to each element of
+    \code{prefix_chars} when sampling to form the prefix for each sequence in the
+    \eqn{i}th sample.
 }
   \item{affixes}{
-    A character vector containing characters or strings from which to sample when generating the suffix for each observed sequence.
+    A character vector containing characters or strings from which to sample when
+    generating the suffix for each observed sequence.
 }
   \item{affix_probs}{
-    A numeric matrix whose column dimension matches the length of \code{affixes} and with row dimension matching the value of \code{samples}. The \eqn{i}th row specifies the relative probability weights assigned to each element of \code{affixes} when sampling to form the suffix for each sequence in the \eqn{i}th sample.
+    A numeric matrix whose column dimension matches the length of \code{affixes}
+    and with row dimension matching the value of \code{samples}. The \eqn{i}th
+    row specifies the relative probability weights assigned to each element of
+    \code{affixes} when sampling to form the suffix for each sequence in the
+    \eqn{i}th sample.
 }
   \item{num_edits}{
-    A nonnegative integer specifying the number of random edit operations to perform on each observed sequence after its initial generation.
+    A nonnegative integer specifying the number of random edit operations to
+    perform on each observed sequence after its initial generation.
 }
   \item{edit_pos_probs}{
-    A function that accepts a nonnegative integer (the character length of a sequence) as its argument and returns a vector of this length containing probability weights. Each time an edit operation is performed on a sequence, the character position at which to perform the operation is randomly determined according to the probabilities given by this function.
+    A function that accepts a nonnegative integer (the character length of a
+    sequence) as its argument and returns a vector of this length containing
+    probability weights. Each time an edit operation is performed on a sequence,
+    the character position at which to perform the operation is randomly
+    determined according to the probabilities given by this function.
 }
   \item{edit_ops}{
-    A character vector specifying the possible operations that can be performed for each edit. The default value includes all valid operations (insertion, deletion, transmutation).
+    A character vector specifying the possible operations that can be performed
+    for each edit. The default value includes all valid operations (insertion,
+    deletion, transmutation).
 }
   \item{edit_probs}{
-    A numeric vector of the same length as \code{edit_ops}, specifying the relative probability weights assigned to each edit operation.
+    A numeric vector of the same length as \code{edit_ops}, specifying the relative
+    probability weights assigned to each edit operation.
 }
   \item{new_chars}{
-    A character vector containing characters or strings from which to sample when performing an insertion edit operation.
+    A character vector containing characters or strings from which to sample when
+    performing an insertion edit operation.
 }
   \item{new_probs}{
-    A numeric matrix whose column dimension matches the length of \code{new_chars} and with row dimension matching the value of \code{samples}. The \eqn{i}th row specifies, for the \eqn{i}th sample, the relative probability weights assigned to each element of \code{new_chars} when performing a transmutation or insertion as a random edit operation.
+    A numeric matrix whose column dimension matches the length of \code{new_chars}
+    and with row dimension matching the value of \code{samples}. The \eqn{i}th row
+    specifies, for the \eqn{i}th sample, the relative probability weights assigned
+    to each element of \code{new_chars} when performing a transmutation or insertion
+    as a random edit operation.
 }
   \item{output_dir}{
-    An optional character string specifying a file directory to save the generated data. One file will be generated per sample.
+    An optional character string specifying a file directory to save the generated
+    data. One file will be generated per sample.
 }
   \item{no_return}{
-    A logical flag that can be used to prevent the function from returning the generated data. If \code{TRUE}, the function will instead return \code{TRUE} once all processes are complete.
+    A logical flag that can be used to prevent the function from returning the
+    generated data. If \code{TRUE}, the function will instead return \code{TRUE}
+    once all processes are complete.
 }
   \item{seed_value}{
     Passed to \code{set_seed} at the start of function execution.
 }
 }
 \details{
-    Each observed sequence is obtained by separately generating a prefix and suffix according to the specified settings, then joining the two and performing sequential rounds of edit operations randomized according to the user's specifications.
+    Each observed sequence is obtained by separately generating a prefix and
+    suffix according to the specified settings, then joining the two and performing
+    sequential rounds of edit operations randomized according to the user's
+    specifications.
 
-    Count data is generated for each observation; note that this count data is generated independently from the observed sequences and has no relationship to them.
+    Count data is generated for each observation; note that this count data is
+    generated independently from the observed sequences and has no relationship
+    to them.
 }
 \value{
-    If \code{no_return = FALSE} (the default), A data frame whose contents depend on the value of the \code{chains} argument.
+    If \code{no_return = FALSE} (the default), A data frame whose contents depend
+    on the value of the \code{chains} argument.
 
     For \code{chains = 1}, the data frame contains the following variables:
     \item{CloneSeq}{The "receptor sequence" for each observation.}
-    \item{CloneFrequency}{The "clone frequency" for each observation (clone count as a proportion of the aggregate clone count within each sample).}
+    \item{CloneFrequency}{The "clone frequency" for each observation (clone count
+    as a proportion of the aggregate clone count within each sample).}
     \item{CloneCount}{The "clone count" for each observation.}
     \item{SampleID}{The sample ID for each observation.}
 

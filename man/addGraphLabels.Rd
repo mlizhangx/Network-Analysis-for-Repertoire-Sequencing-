@@ -40,8 +40,7 @@ addGraphLabels(
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
-NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology},
-vol. 14.
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
 \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}

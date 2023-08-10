@@ -4,9 +4,12 @@
     Build Global Network of Public TCR/BCR Clusters
 }
 \description{
-    Part of the workflow \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}. Intended for use following \code{\link{findPublicClusters}}.
+Part of the workflow
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}.
+Intended for use following \code{\link{findPublicClusters}}.
 
-    Given node-level metadata for each sample's filtered clusters, combines the data into a global network and performs network analysis and cluster analysis.
+Given node-level metadata for each sample's filtered clusters, combines the
+data into a global network and performs network analysis and cluster analysis.
 }
 \usage{
 buildPublicClusterNetwork(
@@ -39,22 +42,29 @@ buildPublicClusterNetwork(
 }
 \arguments{
   \item{file_list}{
-  A vector of file paths where each file contains the node-level metadata for one sample's filtered clusters. Passed to \code{\link{loadDataFromFileList}}.
+  A vector of file paths where each file contains the node-level metadata for
+  one sample's filtered clusters. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{input_type}{
-  A character string specifying the file format of the input files. Options are \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
+  A character string specifying the file format of the input files. Options are
+  \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{data_symbols}{
-  Used when \code{input_type = "rda"}. Specifies the name of the data frame within each Rdata file. Passed to \code{\link{loadDataFromFileList}}.
+  Used when \code{input_type = "rda"}. Specifies the name of the data frame within
+  each Rdata file. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{header}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{sep}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{seq_col}{
-    Specifies the column in the node-level metadata that contains the TCR/BCR sequences. Accepts either the column name or column index.
+    Specifies the column in the node-level metadata that contains the TCR/BCR
+    sequences. Accepts either the column name or column index.
 }
   \item{drop_isolated_nodes}{
   Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
@@ -84,21 +94,40 @@ buildPublicClusterNetwork(
   Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
 }
   \item{\dots}{
-  Other arguments to \code{\link{buildRepSeqNetwork}} when constructing the global network.
+  Other arguments to \code{\link{buildRepSeqNetwork}} when constructing the
+  global network.
 }
 }
 \details{
-    The node-level metadata for the filtered clusters from all samples is combined in order to construct a single global network. Cluster analysis is used to partition the global network into clusters, which are considered as the public TCR/BCR clusters. Network properties for the nodes and clusters are computed and returned as metadata. A plot of the global network graph is produced, with the nodes colored according to sample ID.
+The node-level metadata for the filtered clusters from all samples is combined
+in order to construct a single global network. Cluster analysis is used to
+partition the global network into clusters, which are considered as the public
+TCR/BCR clusters. Network properties for the nodes and clusters are computed
+and returned as metadata. A plot of the global network graph is produced, with
+the nodes colored according to sample ID.
 
-    The computed node-level network properties are renamed to reflect their correspondence to the global network. This is done to distinguish them from the network properties that correspond to the sample-level networks. The names are \code{ClusterIDPublic}, \code{PublicNetworkDegree}, \code{PublicTransitivity}, \code{PublicCloseness}, \code{PublicCentralityByCloseness}, \code{PublicEigenCentrality}, \code{PublicCentralityByEigen}, \code{PublicBetweenness}, \code{PublicCentralityByBetweenness}, \code{PublicAuthorityScore}, \code{PublicCoreness}, \code{PublicPageRank}.
+The computed node-level network properties are renamed to reflect their
+correspondence to the global network. This is done to distinguish them from
+the network properties that correspond to the sample-level networks. The names
+are \code{ClusterIDPublic}, \code{PublicNetworkDegree},
+\code{PublicTransitivity}, \code{PublicCloseness},
+\code{PublicCentralityByCloseness}, \code{PublicEigenCentrality},
+\code{PublicCentralityByEigen}, \code{PublicBetweenness},
+\code{PublicCentralityByBetweenness}, \code{PublicAuthorityScore},
+\code{PublicCoreness}, \code{PublicPageRank}.
 
-    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("public_clusters")}.
+See the
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}
+package vignette for more details. The vignette can be accessed offline using
+\code{vignette("public_clusters")}.
 }
 \value{
     A list of network objects as returned by \code{\link{buildRepSeqNetwork}}.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
+\href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 

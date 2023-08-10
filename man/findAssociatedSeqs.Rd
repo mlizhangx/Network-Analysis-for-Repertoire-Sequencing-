@@ -5,11 +5,18 @@
     Identify TCR/BCR Sequences Associated With a Binary Variable
 }
 \description{
-    Part of the workflow \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}.
+Part of the workflow
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}.
 
-    Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data and a binary variable of interest such as a disease condition, treatment or clinical outcome, identify receptor sequences that exhibit a statistically significant difference in frequency between the two levels of the binary variable.
+Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing
+(AIRR-Seq) data and a binary variable of interest such as a disease condition,
+treatment or clinical outcome, identify receptor sequences that exhibit a
+statistically significant difference in frequency between the two levels of the
+binary variable.
 
-    \code{findAssociatedSeqs} is designed for use when each sample is stored in a separate file. \code{findAssociatedSeqs2} is designed for use with a single data frame containing all samples.
+\code{findAssociatedSeqs} is designed for use when each sample is stored in a
+separate file. \code{findAssociatedSeqs2} is designed for use with a single data
+frame containing all samples.
 }
 \usage{
 findAssociatedSeqs(
@@ -57,49 +64,76 @@ findAssociatedSeqs2(
 }
 \arguments{
   \item{file_list}{
-  A vector of file paths where each file contains the data for a sample, with observations indexed by row. Passed to \code{\link{loadDataFromFileList}}.
+  A vector of file paths where each file contains the data for a sample, with
+  observations indexed by row. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{input_type}{
-  A character string specifying the file format of the sample data files. Options are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
+  A character string specifying the file format of the sample data files.
+  Options are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"},
+  \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{data_symbols}{
-  Used when \code{input_type = "rda"}. Specifies the name of each sample's data frame within its respective Rdata file.  Passed to \code{\link{loadDataFromFileList}}.
+  Used when \code{input_type = "rda"}. Specifies the name of each sample's data
+  frame within its respective Rdata file.  Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{header}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{sep}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{sample_ids}{
   Deprecated. Does nothing.
 }
   \item{subject_ids}{
-  A character or numeric vector of subject IDs, whose length matches that of \code{file_list}. Only relevant when the binary variable of interest is subject-specific and multiple samples belong to the same subject.
+  A character or numeric vector of subject IDs, whose length matches that of
+  \code{file_list}. Only relevant when the binary variable of interest is
+  subject-specific and multiple samples belong to the same subject.
 }
   \item{group_ids}{
-  A character or numeric vector of group IDs containing exactly two unique values and with length matching that of \code{file_list}. The two groups correspond to the two values of the binary variable of interest.
+  A character or numeric vector of group IDs containing exactly two unique values
+  and with length matching that of \code{file_list}. The two groups correspond to
+  the two values of the binary variable of interest.
 }
   \item{groups}{
   Deprecated. Does nothing.
 }
   \item{seq_col}{
-    Specifies the column of each sample's data frame containing the TCR/BCR sequences. Accepts either the column name or column index.
+    Specifies the column of each sample's data frame containing the TCR/BCR sequences.
+    Accepts either the column name or column index.
 }
   \item{freq_col}{
-    Optional. Specifies the column of each sample's data frame containing the clone frequency (i.e., clone count divided by the sum of the clone counts across all clones in the sample). Accepts either the column name or column index. If this argument is specified, the maximum clone frequency (across all samples) for each associated sequence will be included in the content of the \code{label} variable of the returned data frame.
+    Optional. Specifies the column of each sample's data frame containing the clone
+    frequency (i.e., clone count divided by the sum of the clone counts across all
+    clones in the sample). Accepts either the column name or column index. If this
+    argument is specified, the maximum clone frequency (across all samples) for
+    each associated sequence will be included in the content of the \code{label}
+    variable of the returned data frame.
 }
   \item{min_seq_length}{
-    Controls the minimum TCR/BCR sequence length considered when searching for associated sequences. Passed to \code{\link{filterInputData}}.
+    Controls the minimum TCR/BCR sequence length considered when searching for
+    associated sequences. Passed to \code{\link{filterInputData}}.
 }
   \item{drop_matches}{
-    Passed to \code{\link{filterInputData}}. Accepts a regular expression (see \code{\link[base]{regex}}). Checks TCR/BCR sequences for a pattern match using \code{\link{grep}}. Those returning a match are excluded from consideration as associated sequences. It is recommended to filter out sequences containing special characters that are invalid for use in file names. By default, sequences containing either of the characters \code{*} or \code{_} are dropped.
+    Passed to \code{\link{filterInputData}}. Accepts a regular expression
+    (see \code{\link[base]{regex}}). Checks TCR/BCR sequences for a pattern
+    match using \code{\link{grep}}. Those returning a match are excluded from
+    consideration as associated sequences. It is recommended to filter out
+    sequences containing special characters that are invalid for use in file
+    names. By default, sequences containing either of the characters \code{*}
+    or \code{_} are dropped.
 }
   \item{min_sample_membership}{
-    Controls the minimum number of samples in which a TCR/BCR sequence must be present in order to be considered when searching for associated sequences. Setting this value to \code{NULL} bypasses the check.
+    Controls the minimum number of samples in which a TCR/BCR sequence must be
+    present in order to be considered when searching for associated sequences.
+    Setting this value to \code{NULL} bypasses the check.
 }
   \item{pval_cutoff}{
-    Controls the P-value cutoff below which an association is detected by Fisher's exact test (see details).
+    Controls the P-value cutoff below which an association is detected by Fisher's
+    exact test (see details).
 }
   \item{outfile}{
     A file path for saving the output (using \code{write.csv}).
@@ -108,38 +142,88 @@ findAssociatedSeqs2(
     A data frame containing the combined AIRR-seq data for all samples.
 }
 \item{sample_col}{
-    The column of \code{data} containing the sample IDs. Accepts the column name or column index.
+    The column of \code{data} containing the sample IDs. Accepts the column name
+    or column index.
 }
 \item{subject_col}{
-    Optional. The column of \code{data} containing the subject IDs. Accepts the column name or column index. Only relevant when the binary variable of interest is subject-specific and multiple samples belong to the same subject.
+    Optional. The column of \code{data} containing the subject IDs. Accepts the
+    column name or column index. Only relevant when the binary variable of interest
+    is subject-specific and multiple samples belong to the same subject.
 }
 \item{group_col}{
-    The column of \code{data} containing the group IDs. Accepts the column name or column index. The groups correspond to the two values of the binary variable of interest. Thus there should be exactly two unique values in this column.
+    The column of \code{data} containing the group IDs. Accepts the column name
+    or column index. The groups correspond to the two values of the binary variable
+    of interest. Thus there should be exactly two unique values in this column.
 }
 }
 \details{
-    The TCR/BCR sequences from all samples are first filtered according to minimum sequence length and sequence content based on the specified values in \code{min_seq_length} and \code{drop_matches}, respectively. The sequences are further filtered based on sample membership, removing sequences appearing in fewer than \code{min_sample_membership} samples.
+The TCR/BCR sequences from all samples are first filtered according to minimum
+sequence length and sequence content based on the specified values in
+\code{min_seq_length} and \code{drop_matches}, respectively. The sequences
+are further filtered based on sample membership, removing sequences appearing
+in fewer than \code{min_sample_membership} samples.
 
-    For each remaining TCR/BCR sequence, a P-value is computed for Fisher's exact test of independence between the binary variable of interest and the presence of the sequence within a repertoire. The samples/subjects are divided into two groups based on the levels of the binary variable. If subject IDs are provided, then the test is based on the number of subjects in each group for whom the sequence appears in one of their samples. Without subject IDs, the test is based on the number of samples possessing the sequence in each group.
+For each remaining TCR/BCR sequence, a P-value is computed for Fisher's exact
+test of independence between the binary variable of interest and the presence
+of the sequence within a repertoire. The samples/subjects are divided into two
+groups based on the levels of the binary variable. If subject IDs are provided,
+then the test is based on the number of subjects in each group for whom the
+sequence appears in one of their samples. Without subject IDs, the test is
+based on the number of samples possessing the sequence in each group.
 
-  Fisher's exact test is performed using \code{\link[stats]{fisher.test}}. TCR/BCR sequences with a \eqn{P}-value below \code{pval_cutoff} are sorted by \eqn{P}-value and returned along with some additional information.
+Fisher's exact test is performed using \code{\link[stats]{fisher.test}}. TCR/BCR
+sequences with a \eqn{P}-value below \code{pval_cutoff} are sorted by \eqn{P}-value
+and returned along with some additional information.
 
-    The returned ouput is intended for use with the \code{\link{findAssociatedClones}} function. See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("associated_clusters")}.
+The returned ouput is intended for use with the \code{\link{findAssociatedClones}}
+function. See the
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}
+package vignette for more details. The vignette can be accessed offline using
+\code{vignette("associated_clusters")}.
 }
 \value{
-    A data frame containing the TCR/BCR sequences found to be associated with the binary variable using Fisher's exact test (see details). Each row corresponds to a unique TCR/BCR sequence and includes the following variables:
-    \item{ReceptorSeq}{The unique receptor sequence}
-    \item{fisher_pvalue}{The P-value on Fisher's exact test for independence between the receptor sequence and the binary variable of interest}
-    \item{shared_by_n_samples}{The number of samples in which the sequence was observed}
-    \item{samples_g0}{Of the samples in which the sequence was observed, the number of samples belonging to the first group}
-    \item{samples_g1}{Of the samples in which the sequence was observed, the number of samples belonging to the second group}
-    \item{shared_by_n_subjects}{The number of subjects in which the sequence was observed (only present if subject IDs are specified)}
-    \item{subjects_g0}{Of the subjects in which the sequence was observed, the number of subjects belonging to the first group (only present if subject IDs are specified)}
-    \item{subjects_g1}{Of the subjects in which the sequence was observed, the number of subjects belonging to the second group (only present if subject IDs are specified)}
-    \item{label}{A character string summarizing the above information. Also includes the maximum in-sample clone frequency across all samples, if available}
+    A data frame containing the TCR/BCR sequences found to be associated with
+    the binary variable using Fisher's exact test (see details). Each row corresponds
+    to a unique TCR/BCR sequence and includes the following variables:
+    \item{ReceptorSeq}{
+    The unique receptor sequence.
+    }
+    \item{fisher_pvalue}{
+    The P-value on Fisher's exact test for independence between the receptor
+    sequence and the binary variable of interest.
+    }
+    \item{shared_by_n_samples}{
+    The number of samples in which the sequence was observed.
+    }
+    \item{samples_g0}{
+    Of the samples in which the sequence was observed, the number of samples
+    belonging to the first group.
+    }
+    \item{samples_g1}{
+    Of the samples in which the sequence was observed, the number of samples
+    belonging to the second group.
+    }
+    \item{shared_by_n_subjects}{
+    The number of subjects in which the sequence was observed (only present if
+    subject IDs are specified).
+    }
+    \item{subjects_g0}{
+    Of the subjects in which the sequence was observed, the number of subjects
+    belonging to the first group (only present if subject IDs are specified).
+    }
+    \item{subjects_g1}{
+    Of the subjects in which the sequence was observed, the number of subjects
+    belonging to the second group (only present if subject IDs are specified).
+    }
+    \item{label}{
+    A character string summarizing the above information. Also includes the
+    maximum in-sample clone frequency across all samples, if available.
+    }
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
+\href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 

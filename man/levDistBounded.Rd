@@ -4,7 +4,8 @@
 Bounded Computation of Levenshtein Distance
 }
 \description{
-Computes the Levenshtein distance between two strings subject to a specified upper bound.
+Computes the Levenshtein distance between two strings subject to a specified
+upper bound.
 }
 \usage{
 levDistBounded(a, b, k)
@@ -21,17 +22,32 @@ The upper bound on the Levenshtein distance between \code{a} and \code{b}.
 }
 }
 \details{
-The Levenshtein distance (sometimes referred to as edit distance) between two character strings measures the minimum number of single-character edits (insertions, deletions and transformations) needed to transform one string into the other.
+The Levenshtein distance (sometimes referred to as edit distance) between two
+character strings measures the minimum number of single-character edits
+(insertions, deletions and transformations) needed to transform one string into
+the other.
 
-Compared to the Hamming distance (see \code{\link{hamDistBounded}}), the Levenshtein distance is particularly useful for comparing sequences of different lengths, as it can account for insertions and deletions, whereas the Hamming distance only accounts for single-character transformations. However, the computational burden for the Levenshtein distance can be significantly greater than for the Hamming distance.
+Compared to the Hamming distance (see \code{\link{hamDistBounded}}), the
+Levenshtein distance is particularly useful for comparing sequences of different
+lengths, as it can account for insertions and deletions, whereas the Hamming
+distance only accounts for single-character transformations. However, the
+computational burden for the Levenshtein distance can be significantly greater
+than for the Hamming distance.
 
-Computation is aborted early if the Levenshtein distance is determined to exceed the specified upper bound. This functionality is designed for cases when distinguishing between values above the upper bound is not meaningful, taking advantage of this fact to reduce the computational burden.
+Computation is aborted early if the Levenshtein distance is determined to exceed
+the specified upper bound. This functionality is designed for cases when
+distinguishing between values above the upper bound is not meaningful, taking
+advantage of this fact to reduce the computational burden.
 }
 \value{
-An integer. If the Levenshtein distance exceeds the specified upper bound \code{k}, then a value of \code{-1} is returned. Otherwise, returns the Levenshtein distance between \code{a} and \code{b}.
+An integer. If the Levenshtein distance exceeds the specified upper bound
+\code{k}, then a value of \code{-1} is returned. Otherwise, returns the
+Levenshtein distance between \code{a} and \code{b}.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
+\href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 }

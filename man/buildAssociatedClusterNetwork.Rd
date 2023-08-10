@@ -4,9 +4,13 @@
     Build Global Network of Associated TCR/BCR Clusters
 }
 \description{
-    Part of the workflow \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}. Intended for use following \code{\link{findAssociatedClones}}.
+Part of the workflow
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}.
+Intended for use following \code{\link{findAssociatedClones}}.
 
-    Given data containing a neighborhood of similar clones around each associated sequence, combines the data into a global network and performs network analysis and cluster analysis.
+Given data containing a neighborhood of similar clones around each associated sequence,
+combines the data into a global network and performs network analysis and cluster
+analysis.
 }
 \usage{
 buildAssociatedClusterNetwork(
@@ -29,22 +33,30 @@ buildAssociatedClusterNetwork(
 }
 \arguments{
   \item{file_list}{
-  A vector of file paths where each file contains the neighborhood data for an associated sequence. Passed to \code{\link{loadDataFromFileList}}.
+  A vector of file paths where each file contains the neighborhood data for an
+  associated sequence. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{input_type}{
-  A character string specifying the file format of the neighborhood data files. Options are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
+  A character string specifying the file format of the neighborhood data files.
+  Options are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"},
+  \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{data_symbols}{
-  Used when \code{input_type = "rda"}. Specifies the name of each neighborhood's data frame within its respective Rdata file.  Passed to \code{\link{loadDataFromFileList}}.
+  Used when \code{input_type = "rda"}. Specifies the name of each neighborhood's
+  data frame within its respective Rdata file.  Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{header}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{sep}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{seq_col}{
-    Specifies the column of each neighborhood's data frame containing the TCR/BCR sequences. Accepts either the column name or column index.
+    Specifies the column of each neighborhood's data frame containing the TCR/BCR sequences.
+    Accepts either the column name or column index.
 }
   \item{min_seq_length}{
   Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
@@ -75,14 +87,27 @@ buildAssociatedClusterNetwork(
 }
 }
 \details{
-    Each associated sequence's neighborhood contains clones (from all samples) with TCR/BCR sequences similar to the associated sequence. The neighborhoods are assumed to have been previously identified using \code{\link{findAssociatedClones}}.
+Each associated sequence's neighborhood contains clones (from all samples)
+with TCR/BCR sequences similar to the associated sequence. The neighborhoods
+are assumed to have been previously identified using
+\code{\link{findAssociatedClones}}.
 
-    The neighborhood data for all associated sequences are used to construct a single global network. Cluster analysis is used to partition the global network into clusters, which are considered as the associated TCR/BCR clusters. Network properties for the nodes and clusters are computed and returned as metadata. A plot of the global network graph is produced, with the nodes colored according to the binary variable of interest.
+The neighborhood data for all associated sequences are used to construct a
+single global network. Cluster analysis is used to partition the global network
+into clusters, which are considered as the associated TCR/BCR clusters. Network
+properties for the nodes and clusters are computed and returned as metadata.
+A plot of the global network graph is produced, with the nodes colored according
+to the binary variable of interest.
 
-    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("associated_clusters")}.
+See the
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}
+package vignette for more details. The vignette can be accessed offline using
+\code{vignette("associated_clusters")}.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
+\href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 

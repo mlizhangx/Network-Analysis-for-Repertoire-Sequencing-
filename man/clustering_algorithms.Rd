@@ -16,7 +16,9 @@
 Clustering algorithm functions available for use within the \code{NAIR} package.
 }
 \details{
-The available functions that can be used as arguments to the \code{cluster_fun} argument of package functions such as \code{\link{buildRepSeqNetwork}} and \code{\link{addClusterMembership}} are listed below:
+The available functions that can be used as arguments to the \code{cluster_fun}
+argument of package functions such as \code{\link{buildRepSeqNetwork}} and
+\code{\link{addClusterMembership}} are listed below:
 
 \code{\link[igraph]{cluster_edge_betweenness}}
 
@@ -40,10 +42,13 @@ The available functions that can be used as arguments to the \code{cluster_fun} 
 
 \code{\link[igraph]{cluster_walktrap}}
 
-These functions have been imported from the \code{\link[igraph]{igraph}} package. Click on one of the functions to see its original documentation.
+These functions have been imported from the \code{\link[igraph]{igraph}} package.
+Click on one of the functions to see its original documentation.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
+\href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 }

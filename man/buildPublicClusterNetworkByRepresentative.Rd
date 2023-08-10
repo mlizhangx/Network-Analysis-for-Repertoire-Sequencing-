@@ -4,9 +4,15 @@
     Build Global Network of Public TCR/BCR Clusters Using Representative Clones
 }
 \description{
-    Alternative step in the workflow \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}. Intended for use following \code{\link{findPublicClusters}} in cases where \code{\link{buildPublicClusterNetwork}} cannot be practically used due to the size of the full global network.
+Alternative step in the workflow
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}.
+Intended for use following \code{\link{findPublicClusters}} in cases where
+\code{\link{buildPublicClusterNetwork}} cannot be practically used due to the
+size of the full global network.
 
-    Given cluster-level metadata for each sample's filtered clusters, selects a representative TCR/BCR from each cluster, combines the representatives into a global network and performs network analysis and cluster analysis.
+Given cluster-level metadata for each sample's filtered clusters, selects a
+representative TCR/BCR from each cluster, combines the representatives into a
+global network and performs network analysis and cluster analysis.
 }
 \usage{
 buildPublicClusterNetworkByRepresentative(
@@ -45,25 +51,35 @@ buildPublicClusterNetworkByRepresentative(
 }
 \arguments{
   \item{file_list}{
-  A vector of file paths where each file contains the cluster-level metadata for one sample's filtered clusters. Passed to \code{\link{loadDataFromFileList}}.
+  A vector of file paths where each file contains the cluster-level metadata for
+  one sample's filtered clusters. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{input_type}{
-  A character string specifying the file format of the input files. Options are \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
+  A character string specifying the file format of the input files. Options are
+  \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{data_symbols}{
-  Used when \code{input_type = "rda"}. Specifies the name of the data frame within each Rdata file. Passed to \code{\link{loadDataFromFileList}}.
+  Used when \code{input_type = "rda"}. Specifies the name of the data frame
+  within each Rdata file. Passed to \code{\link{loadDataFromFileList}}.
 }
   \item{header}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{sep}{
-  Used for certain values of \code{input_type}. Passed to \code{\link{loadDataFromFileList}}.
+  Used for certain values of \code{input_type}. Passed to
+  \code{\link{loadDataFromFileList}}.
 }
   \item{seq_col}{
-    Specifies the column in the cluster-level metadata that contains the representative TCR/BCR sequence for each cluster. Accepts either the column name or column index. By default, uses the sequence with the maximum clone count in each cluster.
+    Specifies the column in the cluster-level metadata that contains the
+    representative TCR/BCR sequence for each cluster. Accepts either the column
+    name or column index. By default, uses the sequence with the maximum clone
+    count in each cluster.
 }
   \item{count_col}{
-    Specifies the column in the cluster-level metadata that contains the aggregate clone count for each cluster. Accepts either the column name or column index.
+    Specifies the column in the cluster-level metadata that contains the aggregate
+    clone count for each cluster. Accepts either the column name or column index.
 }
   \item{dist_type}{
     Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
@@ -72,28 +88,35 @@ buildPublicClusterNetworkByRepresentative(
     Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
 }
   \item{cluster_fun}{
-    Passed to \code{\link{buildRepSeqNetwork}} when performing cluster analysis on the global network.
+    Passed to \code{\link{buildRepSeqNetwork}} when performing cluster analysis on
+    the global network.
 }
   \item{plots}{
     Logical. Should plots of the global network graph be produced?
 }
   \item{print_plots}{
-    Logical. If plots of the global network graph are produced, should they be printed to the R plotting window?
+    Logical. If plots of the global network graph are produced, should they be
+    printed to the R plotting window?
 }
   \item{plot_title}{
-    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the global network graph.
+    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the
+    global network graph.
 }
   \item{plot_subtitle}{
-    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the global network graph.
+    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the
+    global network graph.
 }
   \item{color_nodes_by}{
-    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the global network graph.
+    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the
+    global network graph.
 }
   \item{color_scheme}{
-    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the global network graph.
+    Passed to \code{\link{generateNetworkGraphPlots}} when producing plots of the
+    global network graph.
 }
   \item{\dots}{
-    Other arguments to \code{\link{generateNetworkGraphPlots}} when producing plots of the global network graph.
+    Other arguments to \code{\link{generateNetworkGraphPlots}} when producing plots
+    of the global network graph.
 }
   \item{output_dir}{
     Passed to \code{saveNetwork} after constructing the global network.
@@ -105,72 +128,148 @@ buildPublicClusterNetworkByRepresentative(
     Passed to \code{saveNetwork} after constructing the global network.
 }
   \item{pdf_width}{
-    Passed to \code{saveNetwork} after constructing the global network. Only applicable if \code{plots = TRUE}.
+    Passed to \code{saveNetwork} after constructing the global network.
+    Only applicable if \code{plots = TRUE}.
 }
   \item{pdf_height}{
-    Passed to \code{saveNetwork} after constructing the global network. Only applicable if \code{plots = TRUE}.
+    Passed to \code{saveNetwork} after constructing the global network.
+    Only applicable if \code{plots = TRUE}.
 }
 }
 \details{
-    From each filtered cluster in each sample's network, a representative TCR/BCR is selected. By default, this is the sequence with the greatest clone count in each cluster. The representatives from all clusters and all samples are then used to construct a single global network. Cluster analysis is used to partition this global network into clusters. Network properties for the nodes and clusters are computed and returned as metadata. A plot of the global network graph is produced, with the nodes colored according to sample ID.
+From each filtered cluster in each sample's network, a representative TCR/BCR
+is selected. By default, this is the sequence with the greatest clone count in
+each cluster. The representatives from all clusters and all samples are then
+used to construct a single global network. Cluster analysis is used to partition
+this global network into clusters. Network properties for the nodes and clusters
+are computed and returned as metadata. A plot of the global network graph is
+produced, with the nodes colored according to sample ID.
 
-    Within this network, clusters containing nodes from multiple samples can be considered as the skeletons of the complete public clusters. The filtered cluster data for each sample can then be subset to keep the sample-level clusters whose representative TCR/BCRs belong to the skeletons of the public clusters. After subsetting in this manner, \code{\link{buildPublicClusterNetwork}} can be used to construct the global network of complete public clusters.
+Within this network, clusters containing nodes from multiple samples can be
+considered as the skeletons of the complete public clusters. The filtered cluster
+data for each sample can then be subset to keep the sample-level clusters whose
+representative TCR/BCRs belong to the skeletons of the public clusters. After
+subsetting in this manner, \code{\link{buildPublicClusterNetwork}} can be used
+to construct the global network of complete public clusters.
 
-    See the \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters} package vignette for more details. The vignette can be accessed offline using \code{vignette("public_clusters")}.
+See the
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}
+package vignette for more details. The vignette can be accessed offline using
+\code{vignette("public_clusters")}.
 }
 \value{
-    A list of network objects as returned by \code{\link{buildRepSeqNetwork}}. The data frame \code{cluster_data} includes the following variables that represent properties of the clusters in the global network of representative TCR/BCRs:
+    A list of network objects as returned by \code{\link{buildRepSeqNetwork}}.
+    The data frame \code{cluster_data} includes the following variables that
+    represent properties of the clusters in the global network of representative
+    TCR/BCRs:
 \item{TotalSampleLevelNodes}{
-    For each representative TCR/BCR in the global cluster, we record the number of nodes in the sample-level cluster for which it is the representative TCR/BCR. We then sum these node counts across all the representative TCR/BCRs in the global cluster.}
+    For each representative TCR/BCR in the global cluster, we record the number
+    of nodes in the sample-level cluster for which it is the representative TCR/BCR.
+    We then sum these node counts across all the representative TCR/BCRs in the
+    global cluster.}
 \item{TotalCloneCount}{
-    For each representative TCR/BCR in the global cluster, we record the  aggregate clone count from all nodes in the sample-level cluster for which it is the representative TCR/BCR. We then sum these aggregate clone counts across all the representative TCR/BCRs in the global cluster.}
+    For each representative TCR/BCR in the global cluster, we record the
+    aggregate clone count from all nodes in the sample-level cluster for which
+    it is the representative TCR/BCR. We then sum these aggregate clone counts
+    across all the representative TCR/BCRs in the global cluster.}
 \item{MeanOfMeanSeqLength}{
-    For each representative TCR/BCR in the global cluster, we record the mean sequence length over all clones (nodes) in the sample-level cluster for which it is the representative TCR/BCR. We then average these mean sequence lengths over all the representative TCR/BCRs in the global cluster.}
+    For each representative TCR/BCR in the global cluster, we record the mean
+    sequence length over all clones (nodes) in the sample-level cluster for which
+    it is the representative TCR/BCR. We then average these mean sequence lengths
+    over all the representative TCR/BCRs in the global cluster.}
 \item{MeanDegreeInPublicNet}{
-    For each representative TCR/BCR in the global cluster, we record the mean network degree over all nodes in the sample-level cluster for which it is the representative TCR/BCR. We then average these mean degree values over all the representative TCR/BCRs in the global cluster.}
+    For each representative TCR/BCR in the global cluster, we record the mean
+    network degree over all nodes in the sample-level cluster for which it is the
+    representative TCR/BCR. We then average these mean degree values over all the
+    representative TCR/BCRs in the global cluster.}
 \item{MaxDegreeInPublicNet}{
-    For each representative TCR/BCR in the global cluster, we record the maximum network degree across all nodes in the sample-level cluster for which it is the representative TCR/BCR. We then take the maximum of these maximum degree values over all the representative TCR/BCRs in the global cluster.}
+    For each representative TCR/BCR in the global cluster, we record the maximum
+    network degree across all nodes in the sample-level cluster for which it is
+    the representative TCR/BCR. We then take the maximum of these maximum degree
+    values over all the representative TCR/BCRs in the global cluster.}
 \item{SeqWithMaxDegree}{
-    For each representative TCR/BCR in the global cluster, we record the maximum network degree across all nodes in the sample-level cluster for which it is the representative TCR/BCR. We then identify the representative TCR/BCR with the maximum value of these maximum degrees over all the representative TCR/BCRs in the global cluster. The TCR/BCR sequence of the identified representative TCR/BCR is recorded in this variable.}
+    For each representative TCR/BCR in the global cluster, we record the maximum
+    network degree across all nodes in the sample-level cluster for which it is
+    the representative TCR/BCR. We then identify the representative TCR/BCR with
+    the maximum value of these maximum degrees over all the representative TCR/BCRs
+    in the global cluster. The TCR/BCR sequence of the identified representative
+    TCR/BCR is recorded in this variable.}
 \item{MaxCloneCount}{
-    For each representative TCR/BCR in the global cluster, we record the maximum clone count across all clones (nodes) in the sample-level cluster for which it is the representative TCR/BCR. We then take the maximum of these maximum clone counts over all the representative TCR/BCRs in the global cluster.}
+    For each representative TCR/BCR in the global cluster, we record the maximum
+    clone count across all clones (nodes) in the sample-level cluster for which
+    it is the representative TCR/BCR. We then take the maximum of these maximum
+    clone counts over all the representative TCR/BCRs in the global cluster.}
 \item{SampleWithMaxCloneCount}{
-    For each representative TCR/BCR in the global cluster, we record the maximum clone count across all clones (nodes) in the sample-level cluster for which it is the representative TCR/BCR. We then identify the representative TCR/BCR with the maximum value of these maximum clone counts over all the representative TCR/BCRs in the global cluster. The sample to which the identified representative TCR/BCR belongs is recorded in this variable.}
+    For each representative TCR/BCR in the global cluster, we record the maximum
+    clone count across all clones (nodes) in the sample-level cluster for which
+    it is the representative TCR/BCR. We then identify the representative TCR/BCR
+    with the maximum value of these maximum clone counts over all the representative
+    TCR/BCRs in the global cluster. The sample to which the identified representative
+    TCR/BCR belongs is recorded in this variable.}
 \item{SeqWithMaxCloneCount}{
-    For each representative TCR/BCR in the global cluster, we record the maximum clone count across all clones (nodes) in the sample-level cluster for which it is the representative TCR/BCR. We then identify the representative TCR/BCR with the maximum value of these maximum clone counts over all the representative TCR/BCRs in the global cluster. The TCR/BCR sequence of the identified representative TCR/BCR is recorded in this variable.}
+    For each representative TCR/BCR in the global cluster, we record the maximum
+    clone count across all clones (nodes) in the sample-level cluster for which it
+    is the representative TCR/BCR. We then identify the representative TCR/BCR with
+    the maximum value of these maximum clone counts over all the representative
+    TCR/BCRs in the global cluster. The TCR/BCR sequence of the identified
+    representative TCR/BCR is recorded in this variable.}
 \item{MaxAggCloneCount}{
-    For each representative TCR/BCR in the global cluster, we record the  aggregate clone count across all clones (nodes) in the sample-level cluster for which it is the representative TCR/BCR. We then take the maximum of these aggregate clone counts over all the representative TCR/BCRs in the global cluster.}
+    For each representative TCR/BCR in the global cluster, we record the
+    aggregate clone count across all clones (nodes) in the sample-level cluster
+    for which it is the representative TCR/BCR. We then take the maximum of these
+    aggregate clone counts over all the representative TCR/BCRs in the global
+    cluster.}
 \item{SampleWithMaxAggCloneCount}{
-    For each representative TCR/BCR in the global cluster, we record the  aggregate clone count across all clones (nodes) in the sample-level cluster for which it is the representative TCR/BCR. We then identify the representative TCR/BCR with the maximum value of these aggregate clone counts over all the representative TCR/BCRs in the global cluster. The sample to which the identified representative TCR/BCR belongs is recorded in this variable.}
+    For each representative TCR/BCR in the global cluster, we record the
+    aggregate clone count across all clones (nodes) in the sample-level cluster
+    for which it is the representative TCR/BCR. We then identify the representative
+    TCR/BCR with the maximum value of these aggregate clone counts over all the
+    representative TCR/BCRs in the global cluster. The sample to which the
+    identified representative TCR/BCR belongs is recorded in this variable.}
 \item{SeqWithMaxAggCloneCount}{
-    For each representative TCR/BCR in the global cluster, we record the  aggregate clone count across all clones (nodes) in the sample-level cluster for which it is the representative TCR/BCR. We then identify the representative TCR/BCR with the maximum value of these aggregate clone counts over all the representative TCR/BCRs in the global cluster. The TCR/BCR sequence of the identified representative TCR/BCR is recorded in this variable.}
+    For each representative TCR/BCR in the global cluster, we record the
+    aggregate clone count across all clones (nodes) in the sample-level cluster
+    for which it is the representative TCR/BCR. We then identify the representative
+    TCR/BCR with the maximum value of these aggregate clone counts over all the
+    representative TCR/BCRs in the global cluster. The TCR/BCR sequence of the
+    identified representative TCR/BCR is recorded in this variable.}
 \item{DiameterLength}{
-    See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+    See \code{\link{getClusterStats}}.
+    Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 \item{Assortativity}{
-    See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+    See \code{\link{getClusterStats}}.
+    Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 \item{GlobalTransitivity}{
-    See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+    See \code{\link{getClusterStats}}.
+    Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 \item{EdgeDensity}{
-    See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+    See \code{\link{getClusterStats}}.
+    Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 \item{DegreeCentralityIndex}{
-    See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+    See \code{\link{getClusterStats}}.
+    Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 \item{ClosenessCentralityIndex}{
-  See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+  See \code{\link{getClusterStats}}.
+  Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 \item{EigenCentralityIndex}{
-    See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+    See \code{\link{getClusterStats}}.
+    Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 \item{EigenCentralityEigenvalue}{
-    See \code{\link{getClusterStats}}. Based on edge connections between representative TCR/BCRs in the global cluster.
+    See \code{\link{getClusterStats}}.
+    Based on edge connections between representative TCR/BCRs in the global cluster.
 }
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
+\href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
