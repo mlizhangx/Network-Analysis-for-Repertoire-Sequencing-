@@ -184,7 +184,11 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 \code{\link{buildPublicClusterNetwork}}
 }
 \examples{
+<<<<<<< HEAD
 \dontrun{
+=======
+}
+>>>>>>> 34769b38f562b3b5469991e3860e0ac1dc8fb0b1
 ## Generate some toy data for demonstration
 
 # Use temp dir
