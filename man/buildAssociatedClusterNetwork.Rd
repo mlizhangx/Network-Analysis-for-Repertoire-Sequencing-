@@ -178,7 +178,8 @@ findAssociatedClones(
   assoc_seqs = associated_seqs$ReceptorSeq,
   min_seq_length = NULL,
   drop_matches = NULL,
-  output_dir = tempdir())
+  output_dir = tempdir()
+)
 
 ## Step 3: Global Network of Associated Clusters ##
 associated_clusters <-
