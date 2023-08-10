@@ -91,6 +91,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+\dontrun{
 # Create data for demonstration
 data_dir <- tempdir()
 dir_samples <- file.path(data_dir, "samples")
@@ -121,5 +122,5 @@ all_samples <- combineSamples(
 # clean up temp directory
 unlink(list.dirs(tempdir(), full.names = TRUE),
        recursive = TRUE)
-
+}
 }

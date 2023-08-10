@@ -96,6 +96,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
 \code{\link{findAssociatedClones}}
 }
 \examples{
+\dontrun{
 ## Generate some toy data for demonstration ##
 # Use temp dir
 data_dir <- tempdir()
@@ -188,5 +189,5 @@ all_clusters <- buildAssociatedClusterNetwork(
 unlink(list.dirs(data_dir, full.names = TRUE),
        recursive = TRUE)
 
-
+}
 }
