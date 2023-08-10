@@ -206,8 +206,7 @@ dat5 <-
     sample_size = sample_size,
     prefix_length = 1,
     prefix_chars = c("", ""),
-    prefix_probs = cbind(rep(1, samples),
-                         rep(0, samples)),
+    prefix_probs = cbind(rep(1, samples), rep(0, samples)),
     affixes = base_seqs,
     affix_probs = pgen,
     num_edits = 0
