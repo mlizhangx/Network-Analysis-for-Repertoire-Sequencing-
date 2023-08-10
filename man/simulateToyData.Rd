@@ -114,7 +114,6 @@ simulateToyData(
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
 # Bulk data from two samples
 dat1 <- simulateToyData()
 
@@ -204,9 +203,8 @@ dat6 <-
   )
 
 
-
 # clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE),
-       recursive = TRUE)
-}
+file.remove(
+  file.path(tempdir(), paste0("Sample", 1:2, ".rds"))
+)
 }
