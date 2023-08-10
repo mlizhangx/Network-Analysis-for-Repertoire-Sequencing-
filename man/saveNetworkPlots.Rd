@@ -37,6 +37,7 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+\dontrun{
 toy_data <- simulateToyData()
 
 net <-
@@ -63,4 +64,5 @@ saveNetworkPlots(
 # clean up temp directory
 unlink(list.dirs(tempdir(), full.names = TRUE),
        recursive = TRUE)
+}
 }
