@@ -66,4 +66,6 @@ saveNetwork(
   output_dir = tempdir()
 )
 
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE), recursive = TRUE)
 }
