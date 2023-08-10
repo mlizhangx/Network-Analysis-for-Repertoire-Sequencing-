@@ -61,8 +61,9 @@ saveNetworkPlots(
 )
 
 
-# clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE),
-       recursive = TRUE)
+# clean up temporary directory
+file.remove(
+  file.path(tempdir(), "network.pdf")
+)
 }
 }
