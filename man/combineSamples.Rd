@@ -91,36 +91,35 @@ Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-\dontrun{
-# Create data for demonstration
-data_dir <- tempdir()
-dir_samples <- file.path(data_dir, "samples")
-dir.create(dir_samples, showWarnings = FALSE)
 simulateToyData(sample_size = 5,
-                output_dir = dir_samples,
+                output_dir = tempdir(),
                 no_return = TRUE)
 
 # Load and combine data
-all_samples <- loadDataFromFileList(
-  file_list =
-    list.files(dir_samples, full.names = TRUE),
-  input_type = "rds")
+all_samples <-
+  loadDataFromFileList(
+    file_list =
+      file.path(tempdir(), paste0("Sample", 1:2, ".rds")),
+    input_type = "rds",
+  )
 
-
-# Same as above, but filter out seqs shorter than 3 characters,
-# drop the count/freq/sampleID columns & add new sample ID column
-all_samples <- combineSamples(
-  file_list =
-    list.files(dir_samples, full.names = TRUE),
-  input_type = "rds",
-  seq_col = "CloneSeq",
-  min_seq_length = 3,
-  subset_cols = "CloneSeq",
-  sample_ids = c("id01", "id02"))
+# Same as above, but also apply some filters,
+# keep only the CloneSeq column and add SampleID column
+all_samples <-
+  combineSamples(
+    file_list =
+      file.path(tempdir(), paste0("Sample", 1:2, ".rds")),
+    input_type = "rds",
+    seq_col = "CloneSeq",
+    min_seq_length = 13,
+    drop_matches = "GGG",
+    subset_cols = "CloneSeq",
+    sample_ids = c("id01", "id02")
+  )
 
 
 # clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE),
-       recursive = TRUE)
-}
+file.remove(
+  file.path(tempdir(), paste0("Sample", 1:2, ".rds"))
+)
 }
