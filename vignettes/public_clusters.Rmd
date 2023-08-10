@@ -45,16 +45,13 @@ We simulate a total of 30 samples, each containing 30 observations.
 Some sequences are simulated with a tendency to appear in relatively few samples, while others are simulated with a tendency to appear in many samples. 
 
 ```{r }
-# Use temp dir
+library(NAIR)
 data_dir <- tempdir()
-
-# Directory to store input files
 dir_input_samples <- file.path(data_dir, "input_samples")
 dir.create(dir_input_samples, showWarnings = FALSE)
 
 samples <- 30
 sample_size <- 30 # (seqs per sample)          
-
 base_seqs <- c(
   "CASSIEGQLSTDTQYF", "CASSEEGQLSTDTQYF", "CASSSVETQYF",
   "CASSPEGQLSTDTQYF", "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF",
@@ -72,14 +69,18 @@ pgen <- cbind(
   stats::toeplitz(0.6^(0:(sample_size - 1))),
   matrix(1, nrow = samples, ncol = length(base_seqs) - samples))
 
-# Simulate the data
-library(NAIR)
-foo <- simulateToyData(    
-  samples = samples, sample_size = sample_size,
-  prefix_length = 1, prefix_chars = c("", ""),
+simulateToyData(    
+  samples = samples, 
+  sample_size = sample_size,
+  prefix_length = 1, 
+  prefix_chars = c("", ""),
   prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = base_seqs, affix_probs = pgen, num_edits = 0,
-  output_dir = dir_input_samples, no_return = FALSE)
+  affixes = base_seqs, 
+  affix_probs = pgen, 
+  num_edits = 0,
+  output_dir = dir_input_samples, 
+  no_return = TRUE
+)
 ```
 
 Each sample is saved in a separate file using the .rds file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. The file path of their directory is saved to the R environment variable `dir_input_samples` for later reference.
@@ -601,3 +602,10 @@ buildRepSeqNetwork(
   output_dir = NULL, output_name = "Cluster 6")
 ```
 
+
+
+```{r include=FALSE}
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
+```

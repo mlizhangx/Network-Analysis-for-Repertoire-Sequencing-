@@ -45,10 +45,8 @@ In each of the two groups, we simulate 15 samples, each containing 30 observatio
 
 
 ```{r }
-# Use temp dir
+library(NAIR)
 data_dir <- tempdir()
-
-# Directory to store input files
 dir_input_samples <- file.path(data_dir, "input_samples")
 dir.create(dir_input_samples, showWarnings = FALSE)
 
@@ -71,14 +69,18 @@ pgen_t <- matrix(rep(c(1, 1, rep(1/3, 3), rep(2, 3)), times = samples_t),
                  nrow = samples_t, byrow = TRUE)
 pgen <- rbind(pgen_c, pgen_t)
 
-# Simulate the data
-library(NAIR)
 simulateToyData(    
-  samples = samples, sample_size = sample_size,
-  prefix_length = 1, prefix_chars = c("", ""),
+  samples = samples, 
+  sample_size = sample_size,
+  prefix_length = 1, 
+  prefix_chars = c("", ""),
   prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = base_seqs, affix_probs = pgen, num_edits = 0,
-  output_dir = dir_input_samples, no_return = TRUE)
+  affixes = base_seqs, 
+  affix_probs = pgen, 
+  num_edits = 0,
+  output_dir = dir_input_samples, 
+  no_return = TRUE
+)
 ```
 
 Each sample is saved in a separate file using the .rds file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. The file path of their directory is saved to the R environment variable `dir_input_samples` for later reference.
@@ -712,3 +714,12 @@ atchley_results <- kmeansAtchley(
 ```
 
 The heatmaps are saved as pdfs. Data containing the numerically-encoded TCR values, their cluster membership, and each sample's fraction of TCRs in each cluster will be returned if `return_output = TRUE`.
+
+
+
+```{r include=FALSE}
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
+```
+

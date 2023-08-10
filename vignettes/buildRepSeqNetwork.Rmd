@@ -587,3 +587,11 @@ The following tasks performed by `buildRepSeqNetwork()` are not performed by `ge
 * [Saving output](#downstream_save_output)
 
 Each of the omitted tasks can be performed as its own step using functions in the `NAIR` package. Click on a particular task for details on how it can be accomplished.
+
+
+
+```{r include=FALSE}
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
+```

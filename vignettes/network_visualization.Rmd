@@ -421,3 +421,13 @@ This can be conveniently accomplished by passing the list of plots to `saveNetwo
 saveNetworkPlots(output$plots, outfile = file.path(dir_out, "plots.pdf"))
 ```
 
+
+
+
+
+
+```{r include=FALSE}
+# clean up temp directory
+unlink(list.dirs(tempdir(), full.names = TRUE),
+       recursive = TRUE)
+```
