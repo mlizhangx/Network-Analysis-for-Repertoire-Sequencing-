@@ -69,6 +69,12 @@ saveNetwork(
 
 # clean up temp files
 file.remove(
-  file.path(tempdir(), "MyRepSeqNetwork_NodeMetadata.csv")
+  file.path(
+    tempdir(),
+    c("MyRepSeqNetwork_NodeMetadata.csv",
+      "MyRepSeqNetwork_EdgeList.txt",
+      "MyRepSeqNetwork_AdjacencyMatrix.mtx"
+    )
+  )
 )
 }
