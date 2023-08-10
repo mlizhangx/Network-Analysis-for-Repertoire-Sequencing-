@@ -151,7 +151,7 @@ Given node-level metadata for each sample's filtered clusters, combines the data
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The node-level metadata for the filtered clusters from all samples is combined in order to construct a single global network. Cluster analysis is used to partition the global network into clusters, which are considered as the public TCR/BCR clusters. Network properties for the nodes and clusters are computed and returned as metadata. A plot of the global network graph is produced, with the nodes colored according to sample ID.</p>
 <p>The computed node-level network properties are renamed to reflect their correspondence to the global network. This is done to distinguish them from the network properties that correspond to the sample-level networks. The names are <code>ClusterIDPublic</code>, <code>PublicNetworkDegree</code>, <code>PublicTransitivity</code>, <code>PublicCloseness</code>, <code>PublicCentralityByCloseness</code>, <code>PublicEigenCentrality</code>, <code>PublicCentralityByEigen</code>, <code>PublicBetweenness</code>, <code>PublicCentralityByBetweenness</code>, <code>PublicAuthorityScore</code>, <code>PublicCoreness</code>, <code>PublicPageRank</code>.</p>
-<p>See the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a> package vignette for more details. The vignette can be accessed offline from using <code><a href="../articles/public_clusters.html">vignette("public_clusters")</a></code>.</p>
+<p>See the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a> package vignette for more details. The vignette can be accessed offline using <code><a href="../articles/public_clusters.html">vignette("public_clusters")</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -175,6 +175,98 @@ Given node-level metadata for each sample's filtered clusters, combines the data
 <p><code><a href="buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co">## Generate some toy data for demonstration</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Use temp dir</span></span></span>
+<span class="r-in"><span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Directory to store input files</span></span></span>
+<span class="r-in"><span><span class="va">dir_input_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"input_samples"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fl">30</span></span></span>
+<span class="r-in"><span><span class="va">sample_size</span> <span class="op">&lt;-</span> <span class="fl">30</span> <span class="co"># (seqs per sample)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">base_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"CASSIEGQLSTDTQYF"</span>, <span class="st">"CASSEEGQLSTDTQYF"</span>, <span class="st">"CASSSVETQYF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CASSPEGQLSTDTQYF"</span>, <span class="st">"RASSLAGNTEAFF"</span>, <span class="st">"CASSHRGTDTQYF"</span>, <span class="st">"CASDAGVFQPQHF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CASSLTSGYNEQFF"</span>, <span class="st">"CASSETGYNEQFF"</span>, <span class="st">"CASSLTGGNEQFF"</span>, <span class="st">"CASSYLTGYNEQFF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CASSLTGNEQFF"</span>, <span class="st">"CASSLNGYNEQFF"</span>, <span class="st">"CASSFPWDGYGYTF"</span>, <span class="st">"CASTLARQGGELFF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CASTLSRQGGELFF"</span>, <span class="st">"CSVELLPTGPLETSYNEQFF"</span>, <span class="st">"CSVELLPTGPSETSYNEQFF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CVELLPTGPSETSYNEQFF"</span>, <span class="st">"CASLAGGRTQETQYF"</span>, <span class="st">"CASRLAGGRTQETQYF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CASSLAGGRTETQYF"</span>, <span class="st">"CASSLAGGRTQETQYF"</span>, <span class="st">"CASSRLAGGRTQETQYF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CASQYGGGNQPQHF"</span>, <span class="st">"CASSLGGGNQPQHF"</span>, <span class="st">"CASSNGGGNQPQHF"</span>, <span class="st">"CASSYGGGGNQPQHF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CASSYGGGQPQHF"</span>, <span class="st">"CASSYKGGNQPQHF"</span>, <span class="st">"CASSYTGGGNQPQHF"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"CAWSSQETQYF"</span>, <span class="st">"CASSSPETQYF"</span>, <span class="st">"CASSGAYEQYF"</span>, <span class="st">"CSVDLGKGNNEQFF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># relative generation probabilities</span></span></span>
+<span class="r-in"><span><span class="va">pgen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/toeplitz.html" class="external-link">toeplitz</a></span><span class="op">(</span><span class="fl">0.6</span><span class="op">^</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="op">(</span><span class="va">sample_size</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, nrow <span class="op">=</span> <span class="va">samples</span>, ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">base_seqs</span><span class="op">)</span> <span class="op">-</span> <span class="va">samples</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Simulate the data</span></span></span>
+<span class="r-in"><span><span class="va">foo</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  samples <span class="op">=</span> <span class="va">samples</span>, sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span></span>
+<span class="r-in"><span>  prefix_length <span class="op">=</span> <span class="fl">1</span>, prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">samples</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>, affix_probs <span class="op">=</span> <span class="va">pgen</span>, num_edits <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="va">dir_input_samples</span>, no_return <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># View first few rows of data for sample 1</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="st">"Sample1.rds"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## 1. Find Public Clusters in Each Sample</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># input files for step 1 (one per sample)</span></span></span>
+<span class="r-in"><span><span class="va">input_files</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>,</span></span>
+<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># directory to save filtered sample data</span></span></span>
+<span class="r-in"><span><span class="va">dir_filtered_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"filtered_samples"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Filter Clusters Within Each Sample</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="findPublicClusters.html">findPublicClusters</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">input_files</span>, input_type <span class="op">=</span> <span class="st">"rds"</span>,</span></span>
+<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, count_col <span class="op">=</span> <span class="st">"CloneCount"</span>,</span></span>
+<span class="r-in"><span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  top_n_clusters <span class="op">=</span> <span class="fl">3</span>, min_node_count <span class="op">=</span> <span class="fl">5</span>, min_clone_count <span class="op">=</span> <span class="fl">15000</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="va">dir_filtered_samples</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## 2. Build Global Network of Public Clusters</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Directory of filtered node data</span></span></span>
+<span class="r-in"><span><span class="va">dir_filtered_samples_node</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_filtered_samples</span>, <span class="st">"node_meta_data"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Vector of file paths for filtered node data</span></span></span>
+<span class="r-in"><span><span class="va">files_filtered_samples_node</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_filtered_samples_node</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">dir_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"public_clusters"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Collect clones from all public clusters and perform network analysis</span></span></span>
+<span class="r-in"><span><span class="va">public_clusters</span> <span class="op">&lt;-</span> <span class="fu">buildPublicClusterNetwork</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">files_filtered_samples_node</span>,</span></span>
+<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, count_col <span class="op">=</span> <span class="st">"CloneCount"</span>,</span></span>
+<span class="r-in"><span>  size_nodes_by <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="va">dir_out</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># clean up temp directory</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.dirs</a></span><span class="op">(</span><span class="va">data_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

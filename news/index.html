@@ -284,6 +284,396 @@
 <code>Downstream Analysis</code> vignette title renamed to <code>Utility Functions</code>. A revision to this vignette is planned prior to version 1.0.</li>
 <li>CXX_STD = CXX11 flag removed from src/Makevars and src/Makevars.win</li>
 </ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9036" id="changes-in-nair-version-009036">Changes in NAIR version 0.0.9036<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009036"></a></h2>
+<ul><li>
+<code>buildRepSeqNetwork</code> no longer returns an error with <code>dist_cutoff = 0</code> (fixed a bug involving the argument checks added in version 0.0.9035).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9034" id="changes-in-nair-version-009034">Changes in NAIR version 0.0.9034<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009034"></a></h2>
+<ul><li>Rdocumentation files
+<ul><li>All examples now use <code>simulateToyData</code> to generate data</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9033" id="changes-in-nair-version-009033">Changes in NAIR version 0.0.9033<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009033"></a></h2>
+<ul><li>Rdocumentation files
+<ul><li>Added documentation for <code>simulateToyData</code>
+</li>
+<li>All examples now use <code>simulateToyData</code> to generate data</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9032" id="changes-in-nair-version-009032">Changes in NAIR version 0.0.9032<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009032"></a></h2>
+<ul><li>Rdocumentation files
+<ul><li>Fixed instances where tildes were erroneously used in place of the <code>\code{}</code> environment</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9031" id="changes-in-nair-version-009031-2202023">Changes in NAIR version 0.0.9031 (2/20/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009031-2202023"></a></h2>
+<ul><li>Added documentation for the following functions:
+<ul><li><code>addGraphLabels</code></li>
+<li><code>addClusterLabels</code></li>
+</ul></li>
+<li>Added the following content to the package vignettes:
+<ul><li>New vignette <code>Dual-Chain Network Analysis</code> for dual-chain network analysis on single-cell data</li>
+<li>
+<code>buildRepSeqNetwork</code> vignette:
+<ul><li>
+<code>cluster_fun</code> argument (clustering algorithm)</li>
+</ul></li>
+<li>
+<code>Network Visualization</code> vignette:
+<ul><li>
+<code>addClusterLabels</code> function</li>
+</ul></li>
+<li>
+<code>Downstream Analysis</code> vignette:
+<ul><li>
+<code>addClusterLabels</code> function</li>
+</ul></li>
+<li>
+<code>Finding Associated Clones</code> vignette:
+<ul><li>
+<code>addClusterLabels</code> function used to label the clusters</li>
+</ul></li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9030" id="changes-in-nair-version-009030-1292023">Changes in NAIR version 0.0.9030 (1/29/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009030-1292023"></a></h2>
+<ul><li>Added function <code>addGraphLabels</code> for adding text labels to the nodes of a graph plot</li>
+<li>Added function <code>addClusterLabels</code> for adding labels to certain clusters in a graph plot</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9029" id="changes-in-nair-version-009029-1162023">Changes in NAIR version 0.0.9029 (1/16/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009029-1162023"></a></h2>
+<ul><li>The algorithm used to identify clusters in <code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code> can now be controlled via a new argument <code>fun</code>.</li>
+<li>The following functions have a new argument <code>cluster_fun</code> that is passed to the <code>fun</code> argument of <code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code>:
+<ul><li><code><a href="../reference/addNodeNetworkStats.html">addNodeNetworkStats()</a></code></li>
+<li><code><a href="../reference/getClusterStats.html">getClusterStats()</a></code></li>
+<li><code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code></li>
+<li><code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code></li>
+<li><code><a href="../reference/findPublicClusters.html">findPublicClusters()</a></code></li>
+<li><code><a href="../reference/buildPublicClusterNetwork.html">buildPublicClusterNetwork()</a></code></li>
+<li><code><a href="../reference/buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative()</a></code></li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9028" id="changes-in-nair-version-009028-192023">Changes in NAIR version 0.0.9028 (1/9/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009028-192023"></a></h2>
+<ul><li>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> and <code><a href="../reference/generateNetworkObjects.html">generateNetworkObjects()</a></code> now return <code>NULL</code> with a warning when the constructed network contains no edges.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9027" id="changes-in-nair-version-009027-182023">Changes in NAIR version 0.0.9027 (1/8/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009027-182023"></a></h2>
+<ul><li>
+<code><a href="../reference/getClusterStats.html">getClusterStats()</a></code> now computes sequence-based statistics (e.g., sequence with max count) for dual-chain networks, including a separate set of such statistics for each chain.</li>
+<li>The name of some variables in the output of <code><a href="../reference/getClusterStats.html">getClusterStats()</a></code> have been changed to reflect broader applicability to single-cell data:
+<ul><li>
+<code>max_clone_count</code> changed to <code>max_count</code>
+</li>
+<li>
+<code>agg_clone_count</code> changed to <code>agg_count</code>
+</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9026" id="changes-in-nair-version-009026-12272022">Changes in NAIR version 0.0.9026 (12/27/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009026-12272022"></a></h2>
+<ul><li>Added an argument <code>verbose</code> to <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> that can be optionally set to <code>TRUE</code> in order to print additional console output reporting the number of clones in each neighborhood, both by sample and in total.</li>
+<li>Discovered and fixed the following bugs that were present from 0.0.9018 onward:
+<ul><li>Fixed a bug whereby <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> was not correctly computing the counts used for Fisher’s exact test</li>
+<li>Fixed a bug in <code>findPublicClones()</code> involving identification of the top n clusters by node count in each sample: when more than one cluster possessed the nth highest node count, all of these clusters were included in the top n clusters, resulting in more than n clusters identified by this criterion. This has been reverted to the behavior that existed prior to version 0.0.9018, whereby the first n clusters are selected after sorting data rows by descending node count using the <code>order</code> function.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9025" id="changes-in-nair-version-009025-12192022">Changes in NAIR version 0.0.9025 (12/19/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009025-12192022"></a></h2>
+<ul><li>Fixed a bug in <code><a href="../reference/filterInputData.html">filterInputData()</a></code> that was preventing filtering by minimum sequence length</li>
+<li>Removed <code>BiocManager</code> from <code>Suggests</code> field of DESCRIPTION, since it is no longer used to access demonstration data when building vignettes.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9024" id="changes-in-nair-version-009024-12122022">Changes in NAIR version 0.0.9024 (12/12/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009024-12122022"></a></h2>
+<ul><li>Converted all package vignettes to use data created with <code><a href="../reference/simulateToyData.html">simulateToyData()</a></code>
+</li>
+<li>Additional detail added to vignettes for associated clones and public clones workflows</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9023" id="changes-in-nair-version-009023-11262022">Changes in NAIR version 0.0.9023 (11/26/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009023-11262022"></a></h2>
+<ul><li>Added user-level function <code>simulateToyData</code> for generating example (toy) data, primarily for use in vignettes, examples and tests.</li>
+<li>Converted README to use <code>simulateToyData</code>
+</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9022" id="changes-in-nair-version-009022-11252022">Changes in NAIR version 0.0.9022 (11/25/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009022-11252022"></a></h2>
+<ul><li>Numerous utility functions that were previously internal have been renamed and exported to be available to the user. These include <code><a href="../reference/generateNetworkObjects.html">generateNetworkObjects()</a></code>, <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code>, <code><a href="../reference/filterInputData.html">filterInputData()</a></code>, <code><a href="../reference/getNeighborhood.html">getNeighborhood()</a></code>, <code><a href="../reference/combineSamples.html">loadDataFromFileList()</a></code>, <code><a href="../reference/combineSamples.html">combineSamples()</a></code>, <code><a href="../reference/saveNetwork.html">saveNetwork()</a></code>, and <code><a href="../reference/saveNetworkPlots.html">saveNetworkPlots()</a></code>.</li>
+<li>Remaining documentation added for all user-level functions.</li>
+<li>The package vignette content has now been split across multiple vignettes, with the package vignette serving as an overview and hub linking to the other vignettes.</li>
+<li>Removed some previously user-facing utility functions from the package’s exported namespace that were redundant or unnecessary to expose to the user, including <code>levAdjacencyMatSparse</code>, <code>hamAdjacencyMatSparse</code>, <code>generateNetworkFromSeqs</code>, <code>getSimilarClones</code> and <code>filterClonesBySequenceLength</code>.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9021" id="changes-in-nair-version-009021-11212022">Changes in NAIR version 0.0.9021 (11/21/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009021-11212022"></a></h2>
+<ul><li>Minor bug fixes to a few functions in <code>utils.R</code> that caused errors or warnings in rare cases</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9020" id="changes-in-nair-version-009020-11202022">Changes in NAIR version 0.0.9020 (11/20/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009020-11202022"></a></h2>
+<ul><li>Internal function <code>.saveNetwork</code> changed to user-facing function <code>saveNetwork</code>, for use in saving output during downstream analysis</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9019" id="changes-in-nair-version-009019-11202022">Changes in NAIR version 0.0.9019 (11/20/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009019-11202022"></a></h2>
+<ul><li>Bug fixes to associated clones functions</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9018" id="changes-in-nair-version-009018-11202022">Changes in NAIR version 0.0.9018 (11/20/2022)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009018-11202022"></a></h2>
+<ul><li>Changes to <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> (many of these changes carry over to other functions):
+<ul><li>Changed arguments and functionality for saving output. A new <code>output_type</code> argument can be used to save the output list to a rds or rda file, rather than the default behavior of saving each item in an individual, uncompressed file. Rather than specifying the filename of each item individually, the <code>output_name</code> argument accepts a character string to be used as a common prefix for any files saved. All items are now saved, and the <code>save_all</code> argument has been removed.</li>
+<li>Changed name of argument <code>other_cols</code> to <code>subset_cols</code> to more accurately reflect its current role (for keeping only certain input columns rather than all)</li>
+<li>Changed name of argument <code>drop_chars</code> to <code>drop_matches</code> to better imply that it takes regular expressions and character strings</li>
+<li>Changed names of arguments <code>plot_width</code> and <code>plot_height</code> to <code>pdf_width</code> and <code>pdf_height</code> to more clearly indicate that they affect the dimensions of the saved pdf file, but not those of the plot at the <code>R</code> object level (<code>ggplot</code>) or as it appears in the R plotting window.</li>
+<li>Added logical argument <code>plots</code> which can be used to prevent plots from being generated.</li>
+<li>Many of the plotting arguments are now passed to <code>generateNetworkGraphPlots</code> via elipses (<code>...</code>)</li>
+<li>The returned value is now always a list and always contains the igraph, adjacency matrix and plots in addition to the node data. The <code>return_all</code> argument has been removed.</li>
+<li>When computing cluster-level properties (<code>cluster_stats = TRUE</code>), the corresponding data frame in the output list is now named <code>cluster_data</code> (previously was <code>cluster_stats</code>)</li>
+<li>Now invisibly returns its output, such that it can be assigned but will not be printed when the function is called without assigning its output.</li>
+<li>Now invisibly returns <code>NULL</code> with a warning when fewer than 2 sequences exist after filtering; previously it returned an error.</li>
+</ul></li>
+<li>
+<code>buildRepSeqNetwork</code> now supports a dual-chain approach to analyzing single-cell RepSeq data: two cells (nodes) are considered adjacent if and only if they possess similar receptor sequences in <em>both</em> of two chains (e.g., alpha chain and beta chain). This is done by supplying a vector with two column references to <code>seq_col</code> instead of a single column reference, where the two columns each contain the receptor sequence from a different chain (e.g., CDR3 sequences from alpha and beta chains) and each row corresponds to a unique cell. This functionality can more generally be used to perform network analysis where similarity is based on any two types of sequences instead of one.</li>
+<li>The functions for the public clusters workflow have been redesigned. Where previously the workflow was handled by a single function, <code>findPublicClusters</code>, it is now split across multiple functions in a manner that reduces memory usage and increases the flexibility of the workflow.
+<ul><li>
+<code>findPublicClusters</code> now performs network analysis on each sample individually to search for public clusters</li>
+<li>
+<code>buildPublicClusterNetwork</code> combines the public clusters across samples and performs network analysis</li>
+<li>
+<code>buildPublicClusterNetworkByRepresentative</code> can be used to perform network analysis on the combined public clusters using only a single representative clone from each cluster</li>
+<li>The optional step for K-means clustering based on numeric encoding of TCR sequences is now performed directly using the <code>kmeansAtchley</code> function</li>
+</ul></li>
+<li>The functions for the associated clusters workflow have been redesigned in a manner similar to those for the public cluster workflow, and now use the same input format as the public cluster functions (one file per sample instead of a single data frame containing all samples):
+<ul><li>
+<code>findAssociatedSeqs</code> searches across samples for associated clone sequences based on sample membership and Fisher’s exact test P-value</li>
+<li>
+<code>findAssociatedClones</code> searches across samples for clones within a neighborhood of each associated clone sequence</li>
+<li>
+<code>buildAssociatedClusterNetwork</code> combines the neighborhoods and performs network analysis and clustering</li>
+<li>Building networks for individual associated clusters/neighborhoods is now done directly using the <code>buildRepSeqNetwork</code> function on the desired subset of the output from <code>buildAssociatedClusterNetwork</code>
+</li>
+<li>K-means clustering on numerically encoded TCR sequences is now done directly using the <code>kmeansAtchley</code> function</li>
+</ul></li>
+<li>A new function <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> has been added, which is capable of generating multiple plots with argument usage similar to that used in <code>buildRepSeqNetwork</code> (e.g., multiple color-code variables can be supplied, in which case color scheme and color legend title arguments will meaningfully accept either a scalar or vector valued argument)</li>
+<li>Changes to <code><a href="../reference/plotNetworkGraph.html">plotNetworkGraph()</a></code>:
+<ul><li>Some arguments were renamed and reordered to conform with the arguments of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+</li>
+<li>Now accepts the argument <code>show_color_legend = "auto"</code>, which will show the color legend if <code>color_nodes_by</code> is a continuous variable or a discrete variable with at most 20 distinct values.</li>
+</ul></li>
+<li>
+<code><a href="../reference/getClusterStats.html">getClusterStats()</a></code> can now be used with <code>seq_col = NULL</code>, as the sequence variable is only used for a small number of statistics; similar to when <code>count_col = NULL</code>, the dependent statistics will be <code>NA</code> in the returned data frame, but other cluster properties will still be computed.</li>
+<li>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> and other high-level functions that generate a network from sequences now coerce the list of sequences to a character vector if it is not already in this format (e.g., factors).</li>
+<li>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> and other top-level functions now skip automatic plot generation when more than 1 million nodes are present in the network. This is done to avoid a potential error when calling <code>ggplot</code> that occurs when the combined nodes and edges exceed its limitations. After the network is generated and returned, the user can still attempt to manually generate the plot using <code><a href="../reference/plotNetworkGraph.html">plotNetworkGraph()</a></code>; in this manner, the potential error will not interfere with completion of building the network.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9017" id="changes-in-nair-version-009017">Changes in NAIR version 0.0.9017<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009017"></a></h2>
+<ul><li>
+<code>buildDualChainNetwork()</code> function added</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9016" id="changes-in-nair-version-009016">Changes in NAIR version 0.0.9016<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009016"></a></h2>
+<ul><li>Package vignette added, which includes an introduction to the package and a tutorial of the <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> function</li>
+<li>Package readme file updated</li>
+<li>
+<code><a href="../reference/findPublicClusters.html">findPublicClusters()</a></code> now supports <code>.rds</code> and <code>.rda</code> file types; the <code>csv_files</code> argument has been replaced with an argument named <code>file_type</code>.</li>
+<li>Identified and fixed an error related to <code>filterClonesBySequenceLength()</code> that occurs when the input data only has a single column; this was affecting higher-level functions including <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+</li>
+<li>Identified and fixed an error in <code>getAssociatedClusters()</code> that occurred when <code>neighborhood_plots = FALSE</code> and <code>return_all = TRUE</code> (the function tried to include output related to the neighborhood plots when none existed).</li>
+<li>
+<code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> now returns an informative error when no sequences pass the filter for minimum sample membership.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9015" id="changes-in-nair-version-009015">Changes in NAIR version 0.0.9015<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009015"></a></h2>
+<ul><li>Fixed minor bugs related to changes in 0.0.9014</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9014" id="changes-in-nair-version-009014">Changes in NAIR version 0.0.9014<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009014"></a></h2>
+<ul><li>The following argument names have been changed in functions in which they appear:
+<ul><li>
+<code>clone_col</code> to <code>seq_col</code>
+</li>
+<li>
+<code>clones</code> to <code>seqs</code>, (except for <code>embedClonesByAtchleyFactor()</code>, for which it was changed to <code>cdr3_AA</code>)</li>
+<li>
+<code>edge_dist</code> to <code>dist_cutoff</code>
+</li>
+</ul></li>
+<li>The following functions have been renamed:
+<ul><li>
+<code>generateNetworkFromClones</code> to <code>generateNetworkFromSeqs</code>
+</li>
+<li>
+<code>sparseAdjacencyMatFromClones</code> to <code>sparseAdjacencyMatFromSeqs</code>
+</li>
+<li>
+<code>adjacencyMatAtchleyFromClones</code> to <code>adjacencyMatAtchleyFromSeqs</code>
+</li>
+<li>
+<code>embedClonesByAtchleyFactor</code> to <code>embedTCRSeqsByAtchleyFactor</code>
+</li>
+</ul></li>
+<li>
+<code>getSimilarClones()</code>: changed default value to of <code>drop_chars</code> argument to <code>NULL</code>
+</li>
+<li>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> had its usage revised, primarily regarding the arguments related to the input data:
+<ul><li>The <code>nucleo_col</code>, <code>amino_col</code> and <code>clone_seq_type</code> arguments have been replaced by a single <code>seq_col</code> argument; the function no longer requires both nucleotide and amino acid sequences in the data, and no longer distinguishes between the two</li>
+<li>The <code>count_col</code> is now optional
+<ul><li>By default, graph plots now use fixed node sizes</li>
+</ul></li>
+<li>Other column arguments (<code>freq_col</code>, <code>vgene_col</code>, <code>cdr3_length</code>, etc.) have been removed; these columns were not used for anything specific in the pipeline, so it is not necessary for them to each have their own dedicated argument.</li>
+<li>By default, all columns of the input data are now carried over to the output. If only some columns are desired, they can be specified using the <code>other_cols</code> argument.</li>
+<li>Input columns are no longer renamed in the output data.</li>
+<li>The option to aggregate counts/frequencies for identical clones has been removed; this can be done as a data preprocessing step, either manually or using the <code><a href="../reference/aggregateIdenticalClones.html">aggregateIdenticalClones()</a></code> function.</li>
+<li>An argument <code>print_plots</code> has been added to allow the option not to print the plot(s) in <code>R</code>. The default is <code>TRUE</code>, which corresponds to the previous behavior (all plots are printed).</li>
+</ul></li>
+<li>
+<code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>, <code>getAssociatedClusters()</code> and <code><a href="../reference/findPublicClusters.html">findPublicClusters()</a></code> have had their arguments revised according to the changes to <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</li>
+<li>R documentation files added for the following functions:
+<ul><li><code>plotNetworkGraph</code></li>
+<li><code>sparseAdjacencyMatFromSeqs</code></li>
+<li><code>adjacencyMatAtchleyFromSeqs</code></li>
+<li><code>embedTCRSeqsByAtchleyFactor</code></li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9013" id="changes-in-nair-version-009013">Changes in NAIR version 0.0.9013<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009013"></a></h2>
+<ul><li>R Documentation files added for package functions:
+<ul><li><code>aggregateIdenticalClones</code></li>
+<li><code>filterClonesBySequenceLength</code></li>
+<li><code>getSimilarClones</code></li>
+<li><code>generateNetworkFromClones</code></li>
+<li><code>generateNetworkFromAdjacencyMat</code></li>
+<li><code>addNodeNetworkStats</code></li>
+<li><code>node_stat_settings</code></li>
+<li><code>addClusterMembership</code></li>
+<li><code>getClusterStats</code></li>
+</ul></li>
+<li>Implemented on-install testing of package functions using package <code>testthat</code>
+</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9012" id="changes-in-nair-version-009012">Changes in NAIR version 0.0.9012<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009012"></a></h2>
+<ul><li>Package name changed to NAIR (Network Analysis for Immune Repertoire)</li>
+<li>Added <code><a href="../reference/findPublicClusters.html">findPublicClusters()</a></code>
+</li>
+<li>
+<code>buildClustersAroundSelectedClones()</code> renamed to <code>getAssociatedClusters()</code>
+</li>
+<li>
+<code>getPotentialAssociatedClones()</code> renamed to <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>
+</li>
+<li>
+<code>generateAtchleyCorrHeatmap()</code> renamed to <code><a href="../reference/kmeansAtchley.html">kmeansAtchley()</a></code>
+</li>
+<li>
+<code>levAdjacencyMatSparse()</code> and <code>hamAdjacencyMatSparse()</code> have a new argument <code>drop_isolated_nodes</code> that can be set to <code>FALSE</code> to keep isolated nodes. This argument has been added to higher-level functions that dispatch calls to these routines.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9011" id="changes-in-nair-version-009011">Changes in NAIR version 0.0.9011<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009011"></a></h2>
+<ul><li>Separate function <code>embedClonesByAtchleyFactor()</code> created to perform embedding of TCR CDR3 amino acid sequences in Euclidean 30-space based on Atchley factor representation; this was previously done within the function <code>adjacencyMatAtchleyFromClones()</code>, but has now been placed in its own function for more general use</li>
+<li>New function <code>analyzeDiseaseAssociatedClusters()</code> created, which is used to perform a combined network analysis on the disease-associated clusters generated by <code>generateDiseaseAssociatedClusters()</code>
+</li>
+<li>New function <code>generateAtchleyCorrHeatmap()</code> created</li>
+<li>
+<code>graphics</code>, <code>reshape2</code>, <code>gplots</code>, <code>viridisLite</code> and <code>RColorBrewer</code> added as package dependencies via the <code>Imports</code> directive of the <code>DESCRIPTION</code> file</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9010" id="changes-in-nair-version-009010">Changes in NAIR version 0.0.9010<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009010"></a></h2>
+<ul><li>
+<code>computeMetaForCandidateSeqs()</code> (helper for <code>findDiseaseMotifsFromMergedSamples()</code>) redesigned and renamed to <code>findDiseaseAssociatedClones()</code>; this function now takes only the merged sample data as its input data, and filters sequences by a set of criteria (number of samples shared by and minimum seq length) to obtain the list of candidates before conducting the Fisher’s exact tests; previously the list of candidates was obtained as input data to the function.</li>
+<li>
+<code>findDiseaseMotifsFromMergedSamples()</code> redesigned to use candidate sequence metadata as input (previously it computed this metadata from the merged sample data) and renamed to <code>generateDiseaseAssociatedClusters()</code>
+</li>
+<li>
+<code>generateNetworkWithStats()</code> now automatically prints the ggraph in R when called (previously the user needed to access the variable <code>graph_plot</code> contained in the returned list)</li>
+<li>Added package <code>dplyr</code> as a dependency via the <code>Imports</code> directive of the <code>DESCRIPTION</code> file</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9009" id="changes-in-nair-version-009009">Changes in NAIR version 0.0.9009<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009009"></a></h2>
+<ul><li>
+<code>buildNetwork()</code> renamed to <code>generateNetworkWithStats()</code>
+</li>
+<li>
+<code>adjacencyMatrix()</code> renamed to <code>sparseAdjacencyMatFromClones()</code>
+</li>
+<li>
+<code>genNetworkGraph()</code> renamed to <code><a href="../reference/generateNetworkFromAdjacencyMat.html">generateNetworkFromAdjacencyMat()</a></code>
+</li>
+<li>Added general-purpose helper functions:
+<ul><li><code>aggregateCountsByAminoAcidSeq</code></li>
+<li><code>filterDataBySequenceLength</code></li>
+<li><code>generateNetworkFromClones</code></li>
+<li><code>computeNodeNetworkStats</code></li>
+<li><code>addClusterMembership</code></li>
+<li><code>computeClusterNetworkStats</code></li>
+<li><code>plotNetworkGraph</code></li>
+<li><code>adjacencyMatAtchleyFromClones</code></li>
+</ul></li>
+<li>Added function <code>findDiseaseMotifsFromMergedSamples</code> and helper functions:
+<ul><li><code>computeMetaForCandidateSeqs</code></li>
+<li><code>subsetDataNearTargetMotif</code></li>
+</ul></li>
+<li>Added vignette for <code>generateNetworkWithStats()</code>
+</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9008" id="changes-in-nair-version-009008">Changes in NAIR version 0.0.9008<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009008"></a></h2>
+<ul><li>New function <code>hamDistBounded</code> for computing bounded Hamming distance in C++
+<ul><li>Supports strings of unequal length; the longer string is effectively truncated to the length of the shorter string, and the difference in length is added to the Hamming distance with the truncated version. This is equivalent to extending the shorter string to the length of the longer string by appending placeholder characters that differ from their counterparts in the longer string.</li>
+</ul></li>
+<li>New function <code>hamAdjacencyMatSparse</code> for computing Hamming adjacency matrix in C++</li>
+<li>Changes to function <code>adjacencyMatrix</code>:
+<ul><li>Now supports <code>dist_type = "hamming"</code> to use Hamming distance for determining network adjacency</li>
+<li>Original indices of input sequences that appear in the adjacency matrix are stored in the row names of the output matrix; the sequences themselves are stored in the column names (accessible via <code><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames()</a></code>)</li>
+<li>The file <code>col_ids.txt</code> created by the C++ function that computes the adjacency matrix is now deleted by <code>adjacencyMatrix()</code> after it has finished its other tasks. The information in the file is now stored in the row names of the output matrix and so the file is no longer needed.</li>
+</ul></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9007" id="changes-in-nair-version-009007">Changes in NAIR version 0.0.9007<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009007"></a></h2>
+<ul><li>
+<code>.genNetworkGraph()</code> internal helper for <code>buildNetwork()</code> renamed into a public version <code>genNetworkGraph()</code> for use by other package functions and by users; moved to a new file <code>utils.R</code> that will be used to house shared helper functions used by multiple package functions.</li>
+<li>Added <code>inst/python/Atchley_factors.csv</code>, which stores the Atchley factor amino acid embedding used by <code>BriseisEncoder.py</code>
+</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9006" id="changes-in-nair-version-009006">Changes in NAIR version 0.0.9006<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009006"></a></h2>
+<ul><li>Python module <code>tensorflow</code> added to <code><a href="../reference/installPythonModules.html">installPythonModules()</a></code> and Config/reticulate field of the DESCRIPTION file. <code>tensorflow</code> is required by the Python module <code>keras</code>.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9005" id="changes-in-nair-version-009005">Changes in NAIR version 0.0.9005<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009005"></a></h2>
+<ul><li>file <code>zzz.R</code> created with .onUnload() directive to unload package dll via call to <code><a href="https://rdrr.io/r/base/library.dynam.html" class="external-link">library.dynam.unload()</a></code> when the package is unloaded</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9004" id="changes-in-nair-version-009004">Changes in NAIR version 0.0.9004<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009004"></a></h2>
+<ul><li>Reintroduced reticulate package dependency as well as R .onLoad() directives and R functions related to python integration, dependency management and module installation</li>
+<li>Added Python source code for BriseisEncoder and h5 trained encoder file</li>
+<li>Removed $(SHLIB_OPENMP_CXXFLAGS) from PKG_CXXFLAGS and PKG_LIBS in Makevars as OpenMP is not supported for MacOS (still enabled in Makevars.win). Added comments with instructions for Linux users to enable OpenMP if desired, and added a corresponding note to the main Readme file’s installation section for Linux users.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9003" id="changes-in-nair-version-009003">Changes in NAIR version 0.0.9003<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009003"></a></h2>
+<ul><li>Removed Python source code (previously used to compute adjacency matrix)</li>
+<li>Removed reticulate package dependency (previously used to manage python dependencies)</li>
+<li>Removed R functions involved in Python management and calling Python scripts</li>
+<li>Changed internal helper R function .createAdjacencyMatrix() to public function adjacencyMatrix() and switched its calls to Python scripts for building the matrix into a call to the corresponding new C++ version added in 0.0.9002 (currently only Levenshtein distance is implemented; Hamming distance will be implemented in a future update)</li>
+<li>Changed buildNetwork() function to use adjacencyMatrix() instead of the previous function .createAdjacencyMatrix()</li>
+<li>Removed levAdjacencyMatDense in favor of always using levAdjacencyMatSparse</li>
+<li>Enabled ARMA_64BIT_WORD to accommodate larger matrices when using the C++ function levAdjacencyMatSparse; specifically, #define ARMA_64BIT_WORD=1 was added to the beginning of each .cpp source file, and -DARMA_64BIT_WORD=1 was added to the PKG_CXXFLAGS definition in Makevars and Makevars.win</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9002" id="changes-in-nair-version-009002">Changes in NAIR version 0.0.9002<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009002"></a></h2>
+<ul><li>Added internal support for Rcpp</li>
+<li>Added C++ routine for bounded Levenshtein distance (levDistBounded)</li>
+<li>Added C++ routine for dense Levenshtein adjacency matrix (levAdjacencyMatDense)</li>
+<li>Added C++ routine for sparse Levenshtein adjacency matrix (levAdjacencyMatSparse)</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9001" id="changes-in-nair-version-009001">Changes in NAIR version 0.0.9001<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009001"></a></h2>
+<ul><li>Initial (development) version</li>
+</ul></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

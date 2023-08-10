@@ -137,10 +137,9 @@ fixed within each group. In order to simulate the treatment effect, the
 generation probabilities of certain sequences differ substantially
 between the two groups.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Use temp dir</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Welcome to the NAIR package. Get started using `vignette("NAIR", package = "NAIR")` or by visiting https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/</span></span>
 <span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Directory to store input files</span></span>
 <span><span class="va">dir_input_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"input_samples"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -163,15 +162,18 @@ between the two groups.</p>
 <span>                 nrow <span class="op">=</span> <span class="va">samples_t</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">pgen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">pgen_c</span>, <span class="va">pgen_t</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Simulate the data</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Welcome to the NAIR package. Get started using `vignette("NAIR", package = "NAIR")` or by visiting https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/</span></span>
 <span><span class="fu"><a href="../reference/simulateToyData.html">simulateToyData</a></span><span class="op">(</span>    </span>
-<span>  samples <span class="op">=</span> <span class="va">samples</span>, sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span>
-<span>  prefix_length <span class="op">=</span> <span class="fl">1</span>, prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span>
+<span>  samples <span class="op">=</span> <span class="va">samples</span>, </span>
+<span>  sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span>
+<span>  prefix_length <span class="op">=</span> <span class="fl">1</span>, </span>
+<span>  prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span>
 <span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">samples</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>, affix_probs <span class="op">=</span> <span class="va">pgen</span>, num_edits <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="va">dir_input_samples</span>, no_return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>, </span>
+<span>  affix_probs <span class="op">=</span> <span class="va">pgen</span>, </span>
+<span>  num_edits <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="va">dir_input_samples</span>, </span>
+<span>  no_return <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Each sample is saved in a separate file using the .rds file format.
 The files are named “<code>Sample1.rds</code>”,
@@ -286,14 +288,16 @@ to the <code>file_list</code> argument of
 <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
-<span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>,</span>
+<span>                         <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpLsoNtf/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpLsoNtf/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmpLsoNtf/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmpLsoNtf/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmpLsoNtf/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmpLsoNtf/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpGMzMrH/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpGMzMrH/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmpGMzMrH/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmpGMzMrH/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmpGMzMrH/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmpGMzMrH/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
@@ -363,7 +367,8 @@ are assigned to one group and the last 15 samples to the other.</p>
 <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is created below:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># group label assignments for the samples</span></span>
-<span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">samples_c</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">samples_t</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">samples_c</span><span class="op">)</span>, </span>
+<span>                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">samples_t</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">group_labels</span></span>
 <span><span class="co">#&gt;  [1] "reference"  "reference"  "reference"  "reference"  "reference" </span></span>
 <span><span class="co">#&gt;  [6] "reference"  "reference"  "reference"  "reference"  "reference" </span></span>
@@ -441,14 +446,16 @@ prevent the output from being saved.</p>
 <p>We execute <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> using the <a href="#input_settings">inputs we prepared earlier</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># search across samples for associated sequences using Fisher's exact test</span></span>
-<span><span class="va">associated_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span></span>
-<span>  file_list <span class="op">=</span> <span class="va">input_files</span>, input_type <span class="op">=</span> <span class="st">"rds"</span>, </span>
-<span>  group_ids <span class="op">=</span> <span class="va">group_labels</span>, </span>
-<span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
-<span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, drop_matches <span class="op">=</span> <span class="cn">NULL</span>, </span>
-<span>  min_sample_membership <span class="op">=</span> <span class="cn">NULL</span>, </span>
-<span>  pval_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  outfile <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">associated_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span>file_list <span class="op">=</span> <span class="va">input_files</span>, </span>
+<span>                                      input_type <span class="op">=</span> <span class="st">"rds"</span>, </span>
+<span>                                      group_ids <span class="op">=</span> <span class="va">group_labels</span>, </span>
+<span>                                      seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                                      min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                                      drop_matches <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                                      min_sample_membership <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                                      pval_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span>
+<span>                                      outfile <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Data contains 30 samples, 15 of which belong to group reference and 15 of which belong to group comparison.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; Loading and compiling data from all samples:</span></span>
 <span><span class="co">#&gt; Loading sample 1: Input data contains 30 rows.</span></span>
@@ -782,13 +789,15 @@ Rdata file is loaded.</p>
 step</a>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Identify clones in a neighborhood around each associated sequence</span></span>
-<span><span class="fu"><a href="../reference/findAssociatedClones.html">findAssociatedClones</a></span><span class="op">(</span></span>
-<span>  file_list <span class="op">=</span> <span class="va">input_files</span>, input_type <span class="op">=</span> <span class="st">"rds"</span>, </span>
-<span>  group_ids <span class="op">=</span> <span class="va">group_labels</span>, </span>
-<span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
-<span>  assoc_seqs <span class="op">=</span> <span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>,</span>
-<span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="va">dir_nbds</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/findAssociatedClones.html">findAssociatedClones</a></span><span class="op">(</span>file_list <span class="op">=</span> <span class="va">input_files</span>, </span>
+<span>                     input_type <span class="op">=</span> <span class="st">"rds"</span>, </span>
+<span>                     group_ids <span class="op">=</span> <span class="va">group_labels</span>, </span>
+<span>                     seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                     assoc_seqs <span class="op">=</span> <span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>,</span>
+<span>                     min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                     drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                     output_dir <span class="op">=</span> <span class="va">dir_nbds</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;&lt;&lt; Beginning search for associated clones &gt;&gt;&gt;</span></span>
 <span><span class="co">#&gt; Processing sample 1 of 30 (Sample1):</span></span>
 <span><span class="co">#&gt; Input data contains 30 rows.</span></span>
@@ -886,7 +895,7 @@ step</a>:</p>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpLsoNtf/assoc_seq_nbds</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpGMzMrH/assoc_seq_nbds</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findassociatedclones">
@@ -1161,11 +1170,13 @@ vignette</a> for further details on how the output files are named.</p>
 <code>file_list</code> argument:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combine neighborhoods and perform network analysis</span></span>
-<span><span class="va">all_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork</a></span><span class="op">(</span></span>
-<span>  file_list <span class="op">=</span> <span class="va">nbd_files</span>, </span>
-<span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span>
-<span>  size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">all_clusters</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork</a></span><span class="op">(</span></span>
+<span>    file_list <span class="op">=</span> <span class="va">nbd_files</span>, </span>
+<span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span>
+<span>    size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>    output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;&lt;&lt; Building network of associated clones &gt;&gt;&gt;</span></span>
 <span><span class="co">#&gt; Input data contains 202 rows.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -1176,16 +1187,16 @@ vignette</a> for further details on how the output files are named.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpLsoNtf/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpGMzMrH/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpLsoNtf/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpGMzMrH/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpLsoNtf/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpGMzMrH/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpLsoNtf/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpGMzMrH/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpLsoNtf/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmpGMzMrH/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>In the graph plot of the global network, where the nodes are colored
 according to the binary variable of interest, we see that the treatment
 group shows high representation in the clusters, affirming the
@@ -1292,12 +1303,11 @@ which they belong.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># global network plot, nodes colored by associated sequence</span></span>
 <span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">AssocSeq</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></span><span class="op">(</span></span>
-<span>    igraph <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">igraph</span>,</span>
-<span>    data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
-<span>    color_nodes_by <span class="op">=</span> <span class="st">"AssocSeq"</span>,</span>
-<span>    color_title <span class="op">=</span> <span class="st">"Neighborhood Sequence"</span>,</span>
-<span>    size_nodes_by <span class="op">=</span> <span class="fl">1.5</span></span>
+<span>  <span class="fu"><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></span><span class="op">(</span>igraph <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">igraph</span>,</span>
+<span>                            data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
+<span>                            color_nodes_by <span class="op">=</span> <span class="st">"AssocSeq"</span>,</span>
+<span>                            color_title <span class="op">=</span> <span class="st">"Neighborhood Sequence"</span>,</span>
+<span>                            size_nodes_by <span class="op">=</span> <span class="fl">1.5</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by AssocSeq...</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;"></p>
@@ -1321,10 +1331,9 @@ IDs:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Modify plot to add labels to the clusters</span></span>
 <span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/addClusterLabels.html">addClusterLabels</a></span><span class="op">(</span></span>
-<span>    plot <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>    net <span class="op">=</span> <span class="va">all_clusters</span>,</span>
-<span>    size <span class="op">=</span> <span class="fl">10</span></span>
+<span>  <span class="fu"><a href="../reference/addClusterLabels.html">addClusterLabels</a></span><span class="op">(</span>plot <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>                   net <span class="op">=</span> <span class="va">all_clusters</span>,</span>
+<span>                   size <span class="op">=</span> <span class="fl">10</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View modified plot</span></span>
@@ -1359,7 +1368,8 @@ opposed to relatively few samples.</p>
 <span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneSeq"</span>, <span class="st">"SampleID"</span><span class="op">)</span>, </span>
 <span>  color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plasma"</span>, <span class="st">"turbo"</span><span class="op">)</span>,</span>
 <span>  size_nodes_by <span class="op">=</span> <span class="fl">3</span>, </span>
-<span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>, output_name <span class="op">=</span> <span class="st">"Cluster 1"</span><span class="op">)</span></span>
+<span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>, output_name <span class="op">=</span> <span class="st">"Cluster 1"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 83 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 83 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -1412,15 +1422,15 @@ specified by the <code>group_ids</code> argument. This aids in the
 detection of differences and similarities within and between groups.</p>
 <p>All of these steps are performed by <code><a href="../reference/kmeansAtchley.html">kmeansAtchley()</a></code>.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">atchley_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/kmeansAtchley.html">kmeansAtchley</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
-<span>  amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
-<span>  sample_col <span class="op">=</span> <span class="st">"SampleID"</span>, </span>
-<span>  group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span>
-<span>  k <span class="op">=</span> <span class="fl">5</span>, </span>
-<span>  output_dir <span class="op">=</span> </span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span>, </span>
-<span>  return_output <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">atchley_results</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/kmeansAtchley.html">kmeansAtchley</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
+<span>                amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                sample_col <span class="op">=</span> <span class="st">"SampleID"</span>, </span>
+<span>                group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span>
+<span>                k <span class="op">=</span> <span class="fl">5</span>, </span>
+<span>                output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span>, </span>
+<span>                return_output <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <p>The heatmaps are saved as pdfs. Data containing the
 numerically-encoded TCR values, their cluster membership, and each
 sample’s fraction of TCRs in each cluster will be returned if

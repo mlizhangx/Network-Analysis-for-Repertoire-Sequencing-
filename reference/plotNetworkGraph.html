@@ -100,7 +100,7 @@ For manual generation of plots, the generateNetworkGraphPlots function is recomm
 <dd><p>A vector whose length matches the number of nodes in the network. The values are used to encode the color of each node. An argument value of <code>NULL</code> (the default) leaves the nodes uncolored. Passed to the color aesthetic mapping of <code><a href="https://ggraph.data-imaginist.com/reference/geom_node_point.html" class="external-link">geom_node_point</a></code>.</p></dd>
 
   <dt>color_scheme</dt>
-<dd><p>A character string specifying the color scale used to color the nodes. <code>"default"</code> uses default <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> colors. Other options are one of the <code><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></code> color scales (e.g., <code>"plasma"</code> or <code>"A"</code>) or (for discrete variables) a palette from <code><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.pals</a></code> (e.g., <code>"RdYlGn"</code>).</p></dd>
+<dd><p>A character string specifying the color scale used to color the nodes. <code>"default"</code> uses default <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> colors. Other options are one of the <code><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></code> color scales (e.g., <code>"plasma"</code> or <code>"A"</code>) or (for discrete variables) a palette from <code><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.pals</a></code> (e.g., <code>"RdYlGn"</code>). Each of the <code><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></code> color scales can include the suffix <code>"-1"</code> to reverse its direction (e.g., <code>"plasma-1"</code> or <code>"A-1"</code>).</p></dd>
 
   <dt>color_legend</dt>
 <dd><p>A logical scalar specifying whether to display the color legend in the plot. The default value of <code>"auto"</code> shows the color legend if <code>color_nodes_by</code> is a continuous variable or a discrete variable with at most 20 distinct values.</p></dd>
@@ -153,23 +153,31 @@ For manual generation of plots, the generateNetworkGraphPlots function is recomm
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co"># Simulate some toy data for demonstration</span></span></span>
-<span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Generate network for data</span></span></span>
-<span class="r-in"><span><span class="va">net</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateNetworkObjects.html">generateNetworkObjects</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">net</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="generateNetworkObjects.html">generateNetworkObjects</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">toy_data</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"CloneSeq"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 122 nodes (after removing isolated nodes).</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot network graph</span></span></span>
 <span class="r-in"><span><span class="va">net_plot</span> <span class="op">&lt;-</span> <span class="fu">plotNetworkGraph</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">net</span><span class="op">$</span><span class="va">igraph</span>,</span></span>
-<span class="r-in"><span>  color_nodes_by <span class="op">=</span> <span class="va">net</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">SampleID</span>,</span></span>
+<span class="r-in"><span>  color_nodes_by <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">SampleID</span>,</span></span>
+<span class="r-in"><span>  color_title <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>  color_scheme <span class="op">=</span> <span class="st">"viridis"</span>,</span></span>
-<span class="r-in"><span>  size_nodes_by <span class="op">=</span> <span class="va">net</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">CloneCount</span>,</span></span>
+<span class="r-in"><span>  size_nodes_by <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="va">net</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">CloneCount</span>,</span></span>
+<span class="r-in"><span>  size_title <span class="op">=</span> <span class="st">"Clone Count"</span>,</span></span>
 <span class="r-in"><span>  node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">net_plot</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-plt img"><img src="plotNetworkGraph-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

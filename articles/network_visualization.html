@@ -139,8 +139,12 @@ color the nodes based on the <code>CloneCount</code> column of the input
 data by setting <code>color_nodes_by = "CloneCount"</code> as seen
 below.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                   color_nodes_by <span class="op">=</span> <span class="st">"CloneCount"</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, </span>
+<span>                   seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                   node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                   color_nodes_by <span class="op">=</span> <span class="st">"CloneCount"</span>, </span>
+<span>                   output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -204,9 +208,13 @@ scheme from the <code>viridisLite</code> package, with the direction of
 the color scale reversed:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using the "plasma" color scheme with reversed color gradient</span></span>
-<span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, </span>
+<span>                   seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                   node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, </span>
-<span>                   color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span>                   color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>, </span>
+<span>                   output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -241,9 +249,14 @@ obscuring edges in larger networks.</p>
 value to the <code>size_nodes_by</code> argument. Below, we set the node
 size to 1.5, which is three times as large as the default node size:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
-<span>                   size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, </span>
+<span>                   seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                   node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, </span>
+<span>                   color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
+<span>                   size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>, </span>
+<span>                   output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -266,10 +279,15 @@ of length two, where the first entry is the minimum node size and the
 second entry is the maximum node size.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Size nodes dynamically by network degree; use custom size range</span></span>
-<span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
+<span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, </span>
+<span>                   seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                   node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, </span>
+<span>                   color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
 <span>                   size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, </span>
-<span>                   node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span>                   node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>, </span>
+<span>                   output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -341,12 +359,18 @@ correct variable name must be provided to the
 <code>cluster_id_col</code> argument.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate network, but don't print the graph plot yet</span></span>
-<span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
-<span>  <span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
-<span>  node_stats <span class="op">=</span> <span class="cn">TRUE</span>, cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
-<span>  size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>, </span>
-<span>  print_plots <span class="op">=</span> <span class="cn">FALSE</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">network</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, </span>
+<span>                     seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                     node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                     cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                     color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, </span>
+<span>                     color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
+<span>                     size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, </span>
+<span>                     node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>, </span>
+<span>                     print_plots <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                     output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -381,10 +405,17 @@ respectively. Either element can be omitted from the plot by supplying a
 <code>NULL</code> value to the corresponding argument, as shown
 below.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
-<span>                   size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
-<span>                   plot_title <span class="op">=</span> <span class="cn">NULL</span>, plot_subtitle <span class="op">=</span> <span class="cn">NULL</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, </span>
+<span>                   seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                   node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                   color_nodes_by <span class="op">=</span> <span class="st">"transitivity"</span>, </span>
+<span>                   color_scheme <span class="op">=</span> <span class="st">"plasma-1"</span>,</span>
+<span>                   size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>, </span>
+<span>                   node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
+<span>                   plot_title <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                   plot_subtitle <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>                   output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -455,12 +486,16 @@ the corresponding plot. If, instead, a single value is provided to the
 <code>color_scheme</code> argument, the specified color palette will be
 applied to all of the plots.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
-<span>  <span class="va">toy_data</span>, seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transitivity"</span>, <span class="st">"CloneCount"</span><span class="op">)</span>,</span>
-<span>  color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plasma-1"</span>, <span class="st">"default"</span><span class="op">)</span>,</span>
-<span>  size_nodes_by <span class="op">=</span> <span class="st">"CloneCount"</span>, node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
-<span>  output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">network</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, </span>
+<span>                     seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
+<span>                     node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                     color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transitivity"</span>, <span class="st">"CloneCount"</span><span class="op">)</span>,</span>
+<span>                     color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plasma-1"</span>, <span class="st">"default"</span><span class="op">)</span>,</span>
+<span>                     size_nodes_by <span class="op">=</span> <span class="st">"CloneCount"</span>, </span>
+<span>                     node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
+<span>                     output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -500,8 +535,10 @@ previously created by <code><a href="../reference/buildRepSeqNetwork.html">build
 <p>For example, suppose we call <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> in
 order to construct the network for our simulated data:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>                             output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, </span>
+<span>                             node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                             output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -549,8 +586,7 @@ variable and change the color scale.</p>
 <span><span class="co">#&gt; Loading required package: ggplot2</span></span>
 <span></span>
 <span><span class="co"># modify plot</span></span>
-<span><span class="va">modified_plot</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">degree</span> <span class="op">+</span> </span>
+<span><span class="va">modified_plot</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">degree</span> <span class="op">+</span> </span>
 <span>  <span class="co"># remove title and subtitle</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="cn">NULL</span>, subtitle <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="co"># adjust node size and node color variable</span></span>
@@ -607,11 +643,12 @@ are colored using the <code>CloneCount</code> variable. We then modify
 the plot to use a custom color gradient.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># generate plot with nodes colored by clone count</span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
-<span>  <span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, </span>
-<span>  color_nodes_by <span class="op">=</span> <span class="st">"CloneCount"</span>, </span>
-<span>  size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
-<span>  print_plots <span class="op">=</span> <span class="cn">FALSE</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, </span>
+<span>                             color_nodes_by <span class="op">=</span> <span class="st">"CloneCount"</span>, </span>
+<span>                             size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>                             print_plots <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                             output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -619,8 +656,7 @@ the plot to use a custom color gradient.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by CloneCount... Done.</span></span>
 <span></span>
 <span><span class="co"># modify plot to use custom color gradient; replace original plot</span></span>
-<span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">CloneCount</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">CloneCount</span> <span class="op">+</span></span>
+<span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">CloneCount</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">CloneCount</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"pink"</span>, high <span class="op">=</span> <span class="st">"purple4"</span><span class="op">)</span>  </span>
 <span></span>
 <span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">CloneCount</span></span></code></pre></div>
@@ -640,11 +676,12 @@ to generate a plot where the nodes are colored using the
 color palette.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># generate plot with nodes colored by sample ID</span></span>
-<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
-<span>  <span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, </span>
-<span>  color_nodes_by <span class="op">=</span> <span class="st">"SampleID"</span>, </span>
-<span>  size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
-<span>  print_plots <span class="op">=</span> <span class="cn">FALSE</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>, </span>
+<span>                             color_nodes_by <span class="op">=</span> <span class="st">"SampleID"</span>, </span>
+<span>                             size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>                             print_plots <span class="op">=</span> <span class="cn">FALSE</span>, </span>
+<span>                             output_dir <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 200 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
@@ -652,8 +689,7 @@ color palette.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID... Done.</span></span>
 <span></span>
 <span><span class="co"># modify plot to use custom color palette</span></span>
-<span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"deepskyblue"</span>, <span class="st">"red2"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">output</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"deepskyblue"</span>, <span class="st">"red2"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-16-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
@@ -688,11 +724,13 @@ to the <code>color_nodes_by</code> argument.</p>
 default, the plots will also be printed to the plots pane in R.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate new plots using previous output of buildRepSeqNetwork</span></span>
-<span><span class="va">new_plots</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></span><span class="op">(</span></span>
-<span>  igraph <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">igraph</span>, data <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">node_data</span>,</span>
-<span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneCount"</span>, <span class="st">"CloneSeq"</span><span class="op">)</span>, </span>
-<span>  color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"turbo"</span><span class="op">)</span>,</span>
-<span>  size_nodes_by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">new_plots</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></span><span class="op">(</span>igraph <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">igraph</span>, </span>
+<span>                            data <span class="op">=</span> <span class="va">output</span><span class="op">$</span><span class="va">node_data</span>,</span>
+<span>                            color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneCount"</span>, <span class="st">"CloneSeq"</span><span class="op">)</span>, </span>
+<span>                            color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"turbo"</span><span class="op">)</span>,</span>
+<span>                            size_nodes_by <span class="op">=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by CloneCount...</span></span></code></pre></div>
 <p><img src="network_visualization_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span>
@@ -727,9 +765,11 @@ save the plots to a pdf file.</p>
 file using the <code>outfile</code> argument. All of the plots in the
 list will be saved to a single pdf.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/saveNetworkPlots.html">saveNetworkPlots</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span>, outfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_out</span>, <span class="st">"plots.pdf"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/saveNetworkPlots.html">saveNetworkPlots</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">plots</span>, </span>
+<span>                 outfile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_out</span>, <span class="st">"plots.pdf"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpJjSA7D/plots.pdf</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpT0krPS/plots.pdf</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -175,6 +175,7 @@ Given cluster-level metadata for each sample's filtered clusters, selects a repr
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>From each filtered cluster in each sample's network, a representative TCR/BCR is selected. By default, this is the sequence with the greatest clone count in each cluster. The representatives from all clusters and all samples are then used to construct a single global network. Cluster analysis is used to partition this global network into clusters. Network properties for the nodes and clusters are computed and returned as metadata. A plot of the global network graph is produced, with the nodes colored according to sample ID.</p>
 <p>Within this network, clusters containing nodes from multiple samples can be considered as the skeletons of the complete public clusters. The filtered cluster data for each sample can then be subset to keep the sample-level clusters whose representative TCR/BCRs belong to the skeletons of the public clusters. After subsetting in this manner, <code><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork</a></code> can be used to construct the global network of complete public clusters.</p>
+<p>See the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a> package vignette for more details. The vignette can be accessed offline using <code><a href="../articles/public_clusters.html">vignette("public_clusters")</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -337,8 +338,13 @@ Given cluster-level metadata for each sample's filtered clusters, selects a repr
 <span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">files_filtered_samples_cluster</span>,</span></span>
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="va">dir_out</span>,</span></span>
 <span class="r-in"><span>  size_nodes_by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># clean up temp directory</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.dirs</a></span><span class="op">(</span><span class="va">data_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>       recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

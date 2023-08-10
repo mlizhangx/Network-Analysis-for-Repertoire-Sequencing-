@@ -126,8 +126,7 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create some data</span></span></span>
-<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  clone_seq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ATCG"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"ACAC"</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"GGGG"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  clone_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">7</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  clone_freq <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">7</span>, <span class="fl">7</span><span class="op">)</span>,</span></span>
@@ -135,19 +134,22 @@
 <span class="r-in"><span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># default usage</span></span></span>
 <span class="r-in"><span><span class="va">data_agg</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">data</span>, <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>, <span class="st">"clone_freq"</span></span></span>
+<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating reads (rows) by unique clone sequence... Done. 3 unique clone sequences found.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># group clones by time point</span></span></span>
 <span class="r-in"><span><span class="va">data_agg_time</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">data</span>, <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>, <span class="st">"clone_freq"</span>,</span></span>
+<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
 <span class="r-in"><span>    grouping_cols <span class="op">=</span> <span class="st">"time_point"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating reads (rows) by unique clone sequence... Done. 5 unique clone sequences found.</span>
@@ -155,8 +157,10 @@
 <span class="r-in"><span><span class="co"># group clones by subject ID</span></span></span>
 <span class="r-in"><span><span class="va">data_agg_subject</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">data</span>, <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>, <span class="st">"clone_freq"</span>,</span></span>
+<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
 <span class="r-in"><span>    grouping_cols <span class="op">=</span> <span class="st">"subject_id"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating reads (rows) by unique clone sequence... Done. 4 unique clone sequences found.</span>
@@ -164,8 +168,10 @@
 <span class="r-in"><span><span class="co"># group clones by time point and subject ID</span></span></span>
 <span class="r-in"><span><span class="va">data_agg_time_subject</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">data</span>, <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>, <span class="st">"clone_freq"</span>,</span></span>
+<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
 <span class="r-in"><span>    grouping_cols <span class="op">=</span></span></span>
 <span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"subject_id"</span>, <span class="st">"time_point"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>

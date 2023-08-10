@@ -99,7 +99,7 @@
 <p>A sparse matrix of class <code>dgCMatrix</code> (see <code><a href="https://rdrr.io/pkg/Matrix/man/dgCMatrix-class.html" class="external-link">dgCMatrix-class</a></code>).</p>
 
 
-<p>If <code>drop_isolated_nodes = TRUE</code>, the row and column names of the matrix indicate which receptor sequences in the <code>seqs</code> vector correspond to each row and column of the matrix. The row and column names can be accessed using <code><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames()</a></code>. This returns a list containing two character vectors, one for the row names and one for the column names. The name of the \(i\)th matrix row is the index of the <code>seqs</code> vector corresponding to the \(i\)th row and \(i\)th column of the matrix. The  name of the \(j\)th matrix column is the receptor sequence corresponding to the \(j\)th row and \(j\)th column of the matrix.</p>
+<p>If <code>drop_isolated_nodes = TRUE</code>, the row and column names of the matrix indicate which receptor sequences in the <code>seqs</code> vector correspond to each row and column of the matrix. The row and column names can be accessed using <code><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></code>. This returns a list containing two character vectors, one for the row names and one for the column names. The name of the \(i\)th matrix row is the index of the <code>seqs</code> vector corresponding to the \(i\)th row and \(i\)th column of the matrix. The  name of the \(j\)th matrix column is the receptor sequence corresponding to the \(j\)th row and \(j\)th column of the matrix.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -114,7 +114,7 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">sparseAdjacencyMatFromSeqs</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fee"</span>, <span class="st">"fie"</span>, <span class="st">"foe"</span>, <span class="st">"fum"</span>, <span class="st">"foo"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fee"</span>, <span class="st">"fie"</span>, <span class="st">"foe"</span>, <span class="st">"fum"</span>, <span class="st">"foo"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 4 nodes (after removing isolated nodes).</span>
@@ -124,6 +124,71 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   1   1   1   .</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3   1   1   1   1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5   .   .   1   1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># No edge connections exist based on a Hamming distance of 1</span></span></span>
+<span class="r-in"><span><span class="co"># (returns a 0x0 sparse matrix)</span></span></span>
+<span class="r-in"><span><span class="fu">sparseAdjacencyMatFromSeqs</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"foo"</span>, <span class="st">"foobar"</span>, <span class="st">"fubar"</span>, <span class="st">"bar"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No edges exist using the specified distance cutoff</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0 x 0 sparse Matrix of class "dgCMatrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Same as the above example, but keeping all nodes</span></span></span>
+<span class="r-in"><span><span class="co"># (returns a 4x4 sparse matrix)</span></span></span>
+<span class="r-in"><span><span class="fu">sparseAdjacencyMatFromSeqs</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"foo"</span>, <span class="st">"foobar"</span>, <span class="st">"fubar"</span>, <span class="st">"bar"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  drop_isolated_nodes <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 4 nodes.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 x 4 sparse Matrix of class "dgCMatrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1 . . .</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] . 1 . .</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] . . 1 .</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] . . . 1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Relaxing the edge criteria using a Hamming distance of 2</span></span></span>
+<span class="r-in"><span><span class="co"># (still results in no edge connections)</span></span></span>
+<span class="r-in"><span><span class="fu">sparseAdjacencyMatFromSeqs</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"foo"</span>, <span class="st">"foobar"</span>, <span class="st">"fubar"</span>, <span class="st">"bar"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  max_dist <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 2... Done.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No edges exist using the specified distance cutoff</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 0 x 0 sparse Matrix of class "dgCMatrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 matrix&gt;</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Using a Levenshtein distance of 2, however,</span></span></span>
+<span class="r-in"><span><span class="co"># does result in edge connections</span></span></span>
+<span class="r-in"><span><span class="fu">sparseAdjacencyMatFromSeqs</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"foo"</span>, <span class="st">"foobar"</span>, <span class="st">"fubar"</span>, <span class="st">"bar"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  dist_type <span class="op">=</span> <span class="st">"levenshtein"</span>,</span></span>
+<span class="r-in"><span>  max_dist <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max levenshtein distance of 2... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 3 nodes (after removing isolated nodes).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 x 3 sparse Matrix of class "dgCMatrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   foobar fubar bar</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1     1   .</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      1     1   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      .     1   1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Using a Hamming distance of 3</span></span></span>
+<span class="r-in"><span><span class="co"># also results in (different) edge connections</span></span></span>
+<span class="r-in"><span><span class="fu">sparseAdjacencyMatFromSeqs</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"foo"</span>, <span class="st">"foobar"</span>, <span class="st">"fubar"</span>, <span class="st">"bar"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  max_dist <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 3... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 3 nodes (after removing isolated nodes).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 x 3 sparse Matrix of class "dgCMatrix"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   foo foobar bar</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   1      1   1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   1      1   .</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   1      .   1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
