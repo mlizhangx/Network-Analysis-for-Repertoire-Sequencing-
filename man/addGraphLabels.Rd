@@ -19,25 +19,39 @@ addGraphLabels(
   A \code{\link[ggraph]{ggraph}} object containing the network graph plot.
 }
   \item{node_labels}{
-  A vector containing the node labels, where each entry is the label for a single node. The length should match the number of nodes in the plot.
+  A vector containing the node labels, where each entry is the label for a
+  single node. The length should match the number of nodes in the plot.
 }
   \item{size}{
-  The font size of the node labels. Passed to the \code{size} argument of \code{\link[ggraph]{geom_node_text}}.
+  The font size of the node labels. Passed to the \code{size} argument of
+  \code{\link[ggraph]{geom_node_text}}.
 }
   \item{color}{
-  The color of the node labels. Passed to the \code{size} argument of \code{\link[ggraph]{geom_node_text}}.
+  The color of the node labels. Passed to the \code{size} argument of
+  \code{\link[ggraph]{geom_node_text}}.
 }
 }
 \details{
   Labels are added using \code{\link[ggraph]{geom_node_text}}.
 }
 \value{
-  A \code{\link[ggraph]{ggraph}} object containing the original plot annotated with the node labels.
+  A \code{\link[ggraph]{ggraph}} object containing the original plot annotated
+  with the node labels.
 }
 \references{
-Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14. \href{https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full}{doi: 10.3389/fimmu.2023.1181825}
+Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology},
+vol. 14.
+\href{
+https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full
+}{
+doi: 10.3389/fimmu.2023.1181825
+}
 
-\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
+\href{
+https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html
+}{
+Webpage for the NAIR package}
 }
 \author{
     Brian Neal (\email{Brian.Neal@ucsf.edu})
