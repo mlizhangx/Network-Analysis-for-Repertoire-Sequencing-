@@ -158,100 +158,268 @@ Given data containing a neighborhood of similar clones around each associated se
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co">## Generate some toy data for demonstration ##</span></span></span>
-<span class="r-in"><span><span class="co"># Use temp dir</span></span></span>
-<span class="r-in"><span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Directory to store input files</span></span></span>
-<span class="r-in"><span><span class="va">dir_input_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"input_samples"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Number of samples by control/treatment group</span></span></span>
-<span class="r-in"><span><span class="va">samples_c</span> <span class="op">&lt;-</span> <span class="va">samples_t</span> <span class="op">&lt;-</span> <span class="fl">15</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Simulate 30 samples from two groups (treatment/control) ##</span></span></span>
+<span class="r-in"><span><span class="va">samples_c</span> <span class="op">&lt;-</span> <span class="va">samples_t</span> <span class="op">&lt;-</span> <span class="fl">15</span> <span class="co"># Number of samples by control/treatment group</span></span></span>
 <span class="r-in"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">samples_c</span> <span class="op">+</span> <span class="va">samples_t</span></span></span>
 <span class="r-in"><span><span class="va">sample_size</span> <span class="op">&lt;-</span> <span class="fl">30</span> <span class="co"># (seqs per sample)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># sequences (first five are chosen to be associated with treatment)</span></span></span>
-<span class="r-in"><span><span class="va">base_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CASSGAYEQYF"</span>, <span class="st">"CSVDLGKGNNEQFF"</span>,</span></span>
-<span class="r-in"><span>               <span class="st">"CASSIEGQLSTDTQYF"</span>,</span></span>
-<span class="r-in"><span>               <span class="st">"CASSEEGQLSTDTQYF"</span>,</span></span>
-<span class="r-in"><span>               <span class="st">"CASSPEGQLSTDTQYF"</span>,</span></span>
-<span class="r-in"><span>               <span class="st">"RASSLAGNTEAFF"</span>, <span class="st">"CASSHRGTDTQYF"</span>, <span class="st">"CASDAGVFQPQHF"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># relative generation probabilities by control/treatment group</span></span></span>
+<span class="r-in"><span><span class="va">base_seqs</span> <span class="op">&lt;-</span> <span class="co"># first five are associated with treatment</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CASSGAYEQYF"</span>, <span class="st">"CSVDLGKGNNEQFF"</span>, <span class="st">"CASSIEGQLSTDTQYF"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"CASSEEGQLSTDTQYF"</span>, <span class="st">"CASSPEGQLSTDTQYF"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"RASSLAGNTEAFF"</span>, <span class="st">"CASSHRGTDTQYF"</span>, <span class="st">"CASDAGVFQPQHF"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Relative generation probabilities by control/treatment group</span></span></span>
 <span class="r-in"><span><span class="va">pgen_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">samples_c</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                 nrow <span class="op">=</span> <span class="va">samples_c</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pgen_t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">samples_t</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                 nrow <span class="op">=</span> <span class="va">samples_t</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pgen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">pgen_c</span>, <span class="va">pgen_t</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Simulate the data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  samples <span class="op">=</span> <span class="va">samples</span>, sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span></span>
-<span class="r-in"><span>  prefix_length <span class="op">=</span> <span class="fl">1</span>, prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  samples <span class="op">=</span> <span class="va">samples</span>,</span></span>
+<span class="r-in"><span>  sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span></span>
+<span class="r-in"><span>  prefix_length <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">samples</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>, affix_probs <span class="op">=</span> <span class="va">pgen</span>, num_edits <span class="op">=</span> <span class="fl">0</span>,</span></span>
-<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="va">dir_input_samples</span>, no_return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># View first few rows of data for sample 1</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="st">"Sample1.rds"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>,</span></span>
+<span class="r-in"><span>  affix_probs <span class="op">=</span> <span class="va">pgen</span>,</span></span>
+<span class="r-in"><span>  num_edits <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  no_return <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Step 1: Find Associated Sequences ##</span></span></span>
-<span class="r-in"><span><span class="co"># input files (one per sample)</span></span></span>
-<span class="r-in"><span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># group labels for the samples</span></span></span>
-<span class="r-in"><span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">samples_c</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">samples_t</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># search for associated sequences using Fisher's exact test</span></span></span>
-<span class="r-in"><span><span class="va">associated_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">input_files</span>, input_type <span class="op">=</span> <span class="st">"rds"</span>,</span></span>
-<span class="r-in"><span>  group_ids <span class="op">=</span> <span class="va">group_labels</span>,</span></span>
-<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
-<span class="r-in"><span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>  min_sample_membership <span class="op">=</span> <span class="fl">0</span>,</span></span>
-<span class="r-in"><span>  pval_cutoff <span class="op">=</span> <span class="fl">0.1</span>, outfile <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># view first few rows of output</span></span></span>
+<span class="r-in"><span><span class="va">sample_files</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">samples_c</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">samples_t</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">associated_seqs</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    file_list <span class="op">=</span> <span class="va">sample_files</span>,</span></span>
+<span class="r-in"><span>    input_type <span class="op">=</span> <span class="st">"rds"</span>,</span></span>
+<span class="r-in"><span>    group_ids <span class="op">=</span> <span class="va">group_labels</span>,</span></span>
+<span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>    min_seq_length <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    min_sample_membership <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    pval_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span></span>
+<span class="r-in"><span>    outfile <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Data contains 30 samples, 15 of which belong to group reference and 15 of which belong to group comparison.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Loading and compiling data from all samples:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 1: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 2: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 3: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 4: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 5: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 6: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 7: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 8: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 9: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 10: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 11: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 12: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 13: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 14: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 15: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 16: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 17: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 18: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 19: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 20: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 21: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 22: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 23: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 24: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 25: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 26: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 27: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 28: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 29: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 30: Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All samples loaded.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Extracting list of unique sequences... Done.  8 unique sequences present.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing sample membership (this may take a while)... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Filtering by Fisher's exact test P-value... Done. 4 sequences remain.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> All done. Sorting results by Fisher's exact test P-value and returning.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        ReceptorSeq fisher_pvalue shared_by_n_samples samples_g0 samples_g1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   CSVDLGKGNNEQFF  1.052106e-05                  18          3         15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      CASSGAYEQYF  1.157316e-04                  17          3         14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 CASSEEGQLSTDTQYF  5.197401e-03                  10          1          9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 CASSIEGQLSTDTQYF  6.559548e-02                  16          5         11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                  label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Sequence present in 18 samples (3 in group reference, 15 in group comparison)\nFisher's exact test P-value: 1.05e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Sequence present in 17 samples (3 in group reference, 14 in group comparison)\nFisher's exact test P-value: 0.000116</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4    Sequence present in 10 samples (1 in group reference, 9 in group comparison)\nFisher's exact test P-value: 0.0052</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   Sequence present in 16 samples (5 in group reference, 11 in group comparison)\nFisher's exact test P-value: 0.0656</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Step 2: Find Associated Clones ##</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># output directory for current step</span></span></span>
-<span class="r-in"><span><span class="va">dir_nbds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_seq_nbds"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Identify clones in a neighborhood around each associated sequence</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="findAssociatedClones.html">findAssociatedClones</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">input_files</span>, input_type <span class="op">=</span> <span class="st">"rds"</span>,</span></span>
+<span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">sample_files</span>,</span></span>
+<span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"rds"</span>,</span></span>
 <span class="r-in"><span>  group_ids <span class="op">=</span> <span class="va">group_labels</span>,</span></span>
 <span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
 <span class="r-in"><span>  assoc_seqs <span class="op">=</span> <span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>,</span></span>
-<span class="r-in"><span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="va">dir_nbds</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;&lt;&lt; Beginning search for associated clones &gt;&gt;&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 1 of 30 (Sample1):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 2 of 30 (Sample2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 3 of 30 (Sample3):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 4 of 30 (Sample4):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 5 of 30 (Sample5):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 6 of 30 (Sample6):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 7 of 30 (Sample7):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 8 of 30 (Sample8):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 9 of 30 (Sample9):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 10 of 30 (Sample10):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 11 of 30 (Sample11):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 12 of 30 (Sample12):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 13 of 30 (Sample13):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 14 of 30 (Sample14):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 15 of 30 (Sample15):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 16 of 30 (Sample16):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 17 of 30 (Sample17):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 18 of 30 (Sample18):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 19 of 30 (Sample19):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 20 of 30 (Sample20):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 21 of 30 (Sample21):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 22 of 30 (Sample22):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 23 of 30 (Sample23):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 24 of 30 (Sample24):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 25 of 30 (Sample25):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 26 of 30 (Sample26):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 27 of 30 (Sample27):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 28 of 30 (Sample28):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 29 of 30 (Sample29):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 30 of 30 (Sample30):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Done processing samples. Compiling results:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 1 (CSVDLGKGNNEQFF)... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 2 (CASSGAYEQYF)... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Step 3: Global Network of Associated Clusters ##</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Files created during previous step</span></span></span>
-<span class="r-in"><span><span class="va">nbd_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_nbds</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">nbd_files</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Combine neighborhoods and perform network analysis</span></span></span>
-<span class="r-in"><span><span class="va">all_clusters</span> <span class="op">&lt;-</span> <span class="fu">buildAssociatedClusterNetwork</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">nbd_files</span>,</span></span>
-<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
-<span class="r-in"><span>  size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span></span>
-<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">associated_clusters</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>  <span class="fu">buildAssociatedClusterNetwork</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    file_list <span class="op">=</span></span></span>
+<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>, <span class="st">".csv"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>    size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span></span>
+<span class="r-in"><span>    output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;&lt;&lt; Building network of associated clones &gt;&gt;&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 202 rows.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 202 nodes.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 3 clusters in the network... Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by GroupID...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Done.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Node-level meta-data saved to file:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_NodeMetadata.csv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Cluster-level meta-data saved to file:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_ClusterMetadata.csv</span>
+<span class="r-plt img"><img src="buildAssociatedClusterNetwork-1.png" alt="" width="700" height="433"></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Network graph plots saved to file:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork.pdf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Network igraph saved in edgelist format to file:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_EdgeList.txt</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Adjacency matrix saved to file:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># clean up temp directory</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.dirs</a></span><span class="op">(</span><span class="va">data_dir</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>       recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>, <span class="st">".csv"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_NodeMetadata.csv"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_ClusterMetadata.csv"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork.pdf"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_EdgeList.txt"</span>,</span></span>
+<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_AdjacencyMatrix.mtx"</span></span></span>
+<span class="r-in"><span>              <span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               full.names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
