@@ -361,7 +361,7 @@ Given data containing a neighborhood of similar clones around each associated se
 <span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpGya5AF</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Step 3: Global Network of Associated Clusters ##</span></span></span>
 <span class="r-in"><span><span class="va">associated_clusters</span> <span class="op">&lt;-</span></span></span>
@@ -382,44 +382,34 @@ Given data containing a neighborhood of similar clones around each associated se
 <span class="r-out co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by GroupID...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Done.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Node-level meta-data saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_NodeMetadata.csv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpGya5AF/AssociatedClusterNetwork_NodeMetadata.csv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Cluster-level meta-data saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_ClusterMetadata.csv</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpGya5AF/AssociatedClusterNetwork_ClusterMetadata.csv</span>
 <span class="r-plt img"><img src="buildAssociatedClusterNetwork-1.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Network graph plots saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork.pdf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpGya5AF/AssociatedClusterNetwork.pdf</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Network igraph saved in edgelist format to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_EdgeList.txt</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpGya5AF/AssociatedClusterNetwork_EdgeList.txt</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Adjacency matrix saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/Rtmp9a0slm/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpGya5AF/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># clean up temp directory</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>, <span class="st">".csv"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_NodeMetadata.csv"</span>,</span></span>
-<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_ClusterMetadata.csv"</span>,</span></span>
-<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork.pdf"</span>,</span></span>
-<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_EdgeList.txt"</span>,</span></span>
-<span class="r-in"><span>                <span class="st">"AssociatedClusterNetwork_AdjacencyMatrix.mtx"</span></span></span>
-<span class="r-in"><span>              <span class="op">)</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span>,</span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>               full.names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>, <span class="st">".csv"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_NodeMetadata.csv"</span>,</span></span>
+<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_ClusterMetadata.csv"</span>,</span></span>
+<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork.pdf"</span>,</span></span>
+<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_EdgeList.txt"</span>,</span></span>
+<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_AdjacencyMatrix.mtx"</span></span></span>
+<span class="r-in"><span>            <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [16] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [31] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [46] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [61] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [91] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-in"><span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
