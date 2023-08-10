@@ -209,19 +209,9 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 }
 \examples{
 
-\dontrun{
-## Generate some toy data for demonstration
-
-# Use temp dir
-data_dir <- tempdir()
-
-# Directory to store input files
-dir_input_samples <- file.path(data_dir, "input_samples")
-dir.create(dir_input_samples, showWarnings = FALSE)
-
+## Simulate 30 samples with a mix of public/private sequences ##
 samples <- 30
 sample_size <- 30 # (seqs per sample)
-
 base_seqs <- c(
   "CASSIEGQLSTDTQYF", "CASSEEGQLSTDTQYF", "CASSSVETQYF",
   "CASSPEGQLSTDTQYF", "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF",
@@ -233,47 +223,73 @@ base_seqs <- c(
   "CASQYGGGNQPQHF", "CASSLGGGNQPQHF", "CASSNGGGNQPQHF", "CASSYGGGGNQPQHF",
   "CASSYGGGQPQHF", "CASSYKGGNQPQHF", "CASSYTGGGNQPQHF",
   "CAWSSQETQYF", "CASSSPETQYF", "CASSGAYEQYF", "CSVDLGKGNNEQFF")
-
-# relative generation probabilities
+# Relative generation probabilities
 pgen <- cbind(
   stats::toeplitz(0.6^(0:(sample_size - 1))),
-  matrix(1, nrow = samples, ncol = length(base_seqs) - samples))
-
-# Simulate the data
-foo <- simulateToyData(
-  samples = samples, sample_size = sample_size,
-  prefix_length = 1, prefix_chars = c("", ""),
+  matrix(1, nrow = samples, ncol = length(base_seqs) - samples)
+)
+simulateToyData(
+  samples = samples,
+  sample_size = sample_size,
+  prefix_length = 1,
+  prefix_chars = c("", ""),
   prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = base_seqs, affix_probs = pgen, num_edits = 0,
-  output_dir = dir_input_samples, no_return = FALSE)
-
-# View first few rows of data for sample 1
-head(readRDS(file.path(dir_input_samples, "Sample1.rds")))
+  affixes = base_seqs,
+  affix_probs = pgen,
+  num_edits = 0,
+  output_dir = tempdir(),
+  no_return = TRUE
+)
 
 
 ## 1. Find Public Clusters in Each Sample
-
-# input files for step 1 (one per sample)
-input_files <-
-  file.path(dir_input_samples,
-            paste0("Sample", 1:samples, ".rds"))
-head(input_files)
-
-# directory to save filtered sample data
-dir_filtered_samples <- file.path(data_dir, "filtered_samples")
-
-# Filter Clusters Within Each Sample
+sample_files <-
+  file.path(tempdir(),
+            paste0("Sample", 1:samples, ".rds")
+  )
 findPublicClusters(
-  file_list = input_files, input_type = "rds",
-  seq_col = "CloneSeq", count_col = "CloneCount",
-  min_seq_length = NULL, drop_matches = NULL,
-  top_n_clusters = 3, min_node_count = 5, min_clone_count = 15000,
-  output_dir = dir_filtered_samples)
+  file_list = sample_files,
+  input_type = "rds",
+  seq_col = "CloneSeq",
+  count_col = "CloneCount",
+  min_seq_length = NULL,
+  drop_matches = NULL,
+  top_n_clusters = 3,
+  min_node_count = 5,
+  min_clone_count = 15000,
+  output_dir = tempdir()
+)
+
+## 2. Build Global Network of Public Clusters
+public_clusters <-
+  buildPublicClusterNetwork(
+    file_list =
+      list.files(
+        file.path(tempdir(), "node_meta_data"),
+        full.names = TRUE
+      ),
+    seq_col = "CloneSeq",
+    count_col = "CloneCount",
+    size_nodes_by = 1,
+    output_dir = tempdir()
+  )
 
 
-# clean up temp directory
-unlink(list.dirs(data_dir, full.names = TRUE),
-       recursive = TRUE)
-}
+# Clean up temporary files
+file.remove(
+  file.path(tempdir(),
+            c(paste0("Sample", 1:samples, ".rds"),
+              "PublicClusterNetwork_NodeMetadata.csv",
+              "PublicClusterNetwork_ClusterMetadata.csv",
+              "PublicClusterNetwork.pdf",
+              "PublicClusterNetwork_EdgeList.txt",
+              "PublicClusterNetwork_AdjacencyMatrix.mtx"
+            )
+  )
+)
+unlink(
+  file.path(tempdir(), c("node_meta_data", "cluster_meta_data")),
+  recursive = TRUE
+)
 
 }
