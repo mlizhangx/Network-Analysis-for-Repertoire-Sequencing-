@@ -198,13 +198,11 @@ findAssociatedClones <- function(
   group_ids <- as.character(group_ids)
   if (!is.null(subject_ids)) { subject_ids <- as.character(subject_ids) }
 
-
   cat(paste0("<<< Beginning search for associated clones >>>\n"))
 
-  tmpdir <- tempdir()
-  tmpdirs <- file.path(tmpdir, assoc_seqs); .createDirectories(tmpdirs)
+  tmpdirs <- file.path(tempdir(), assoc_seqs)
+  .createDirectories(tmpdirs)
 
-  # iterate over samples
   for (i in 1:length(file_list)) {
     cat(paste0("Processing sample ", i, " of ", length(file_list), " (", sample_ids[[i]], "):\n"))
     .findAssociatedClonesOneSample(
@@ -221,7 +219,7 @@ findAssociatedClones <- function(
     cat(" Done.\n")
   }
 
-  unlink(tmpdir)
+  file.remove(list.files(tmpdirs, full.names = TRUE))
   cat(paste0(">>> All tasks complete. Output is contained in the following directory:\n  ", output_dir, "\n"))
 }
 

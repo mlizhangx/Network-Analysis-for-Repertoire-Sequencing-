@@ -168,21 +168,15 @@ associated_clusters <-
 
 # clean up temp directory
 file.remove(
-  c(
-    file.path(tempdir(),
-              c(paste0("Sample", 1:samples, ".rds"),
-                paste0(associated_seqs$ReceptorSeq, ".csv"),
-                "AssociatedClusterNetwork_NodeMetadata.csv",
-                "AssociatedClusterNetwork_ClusterMetadata.csv",
-                "AssociatedClusterNetwork.pdf",
-                "AssociatedClusterNetwork_EdgeList.txt",
-                "AssociatedClusterNetwork_AdjacencyMatrix.mtx"
-              )
-    ),
-    list.files(file.path(tempdir(), associated_seqs$ReceptorSeq),
-               full.names = TRUE
-    )
+  file.path(tempdir(),
+            c(paste0("Sample", 1:samples, ".rds"),
+              paste0(associated_seqs$ReceptorSeq, ".csv"),
+              "AssociatedClusterNetwork_NodeMetadata.csv",
+              "AssociatedClusterNetwork_ClusterMetadata.csv",
+              "AssociatedClusterNetwork.pdf",
+              "AssociatedClusterNetwork_EdgeList.txt",
+              "AssociatedClusterNetwork_AdjacencyMatrix.mtx"
+            )
   )
 )
-
 }
