@@ -167,87 +167,89 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 \code{\link{buildAssociatedClusterNetwork}}
 }
 \examples{
-\dontrun{
-## Generate some toy data for demonstration ##
-# Use temp dir
-data_dir <- tempdir()
-
-# Directory to store input files
-dir_input_samples <- file.path(data_dir, "input_samples")
-dir.create(dir_input_samples, showWarnings = FALSE)
-
-# Number of samples by control/treatment group
-samples_c <- samples_t <- 15
+## Simulate 30 samples from two groups (treatment/control) ##
+samples_c <- samples_t <- 15 # Number of samples by control/treatment group
 samples <- samples_c + samples_t
 sample_size <- 30 # (seqs per sample)
-
-# sequences (first five are chosen to be associated with treatment)
-base_seqs <- c("CASSGAYEQYF", "CSVDLGKGNNEQFF",
-               "CASSIEGQLSTDTQYF",
-               "CASSEEGQLSTDTQYF",
-               "CASSPEGQLSTDTQYF",
-               "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF")
-
-# relative generation probabilities by control/treatment group
+base_seqs <- # first five are associated with treatment
+  c("CASSGAYEQYF", "CSVDLGKGNNEQFF", "CASSIEGQLSTDTQYF",
+    "CASSEEGQLSTDTQYF", "CASSPEGQLSTDTQYF",
+    "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF")
+# Relative generation probabilities by control/treatment group
 pgen_c <- matrix(rep(c(rep(1, 5), rep(30, 3)), times = samples_c),
                  nrow = samples_c, byrow = TRUE)
 pgen_t <- matrix(rep(c(1, 1, rep(1/3, 3), rep(2, 3)), times = samples_t),
                  nrow = samples_t, byrow = TRUE)
 pgen <- rbind(pgen_c, pgen_t)
-
-# Simulate the data
 simulateToyData(
-  samples = samples, sample_size = sample_size,
-  prefix_length = 1, prefix_chars = c("", ""),
+  samples = samples,
+  sample_size = sample_size,
+  prefix_length = 1,
+  prefix_chars = c("", ""),
   prefix_probs = cbind(rep(1, samples), rep(0, samples)),
-  affixes = base_seqs, affix_probs = pgen, num_edits = 0,
-  output_dir = dir_input_samples, no_return = TRUE)
-
-# View first few rows of data for sample 1
-head(readRDS(file.path(dir_input_samples, "Sample1.rds")))
-
+  affixes = base_seqs,
+  affix_probs = pgen,
+  num_edits = 0,
+  output_dir = tempdir(),
+  no_return = TRUE
+)
 
 ## Step 1: Find Associated Sequences ##
-# input files (one per sample)
-input_files <- file.path(dir_input_samples, paste0("Sample", 1:samples, ".rds"))
-
-# group labels for the samples
-group_labels <- c(rep("reference", samples_c), rep("comparison", samples_t))
-
-# search for associated sequences using Fisher's exact test
-associated_seqs <- findAssociatedSeqs(
-  file_list = input_files, input_type = "rds",
-  group_ids = group_labels,
-  seq_col = "CloneSeq",
-  min_seq_length = NULL, drop_matches = NULL,
-  min_sample_membership = 0,
-  pval_cutoff = 0.1, outfile = NULL)
-
-# view first few rows of output
+sample_files <-
+  file.path(tempdir(),
+            paste0("Sample", 1:samples, ".rds")
+  )
+group_labels <- c(rep("reference", samples_c),
+                  rep("comparison", samples_t))
+associated_seqs <-
+  findAssociatedSeqs(
+    file_list = sample_files,
+    input_type = "rds",
+    group_ids = group_labels,
+    seq_col = "CloneSeq",
+    min_seq_length = NULL,
+    drop_matches = NULL,
+    min_sample_membership = 0,
+    pval_cutoff = 0.1,
+    outfile = NULL
+  )
 head(associated_seqs)
 
-
 ## Step 2: Find Associated Clones ##
-
-# output directory for current step
-dir_nbds <- file.path(data_dir, "assoc_seq_nbds")
-
-# Identify clones in a neighborhood around each associated sequence
 findAssociatedClones(
-  file_list = input_files, input_type = "rds",
+  file_list = sample_files,
+  input_type = "rds",
   group_ids = group_labels,
   seq_col = "CloneSeq",
   assoc_seqs = associated_seqs$ReceptorSeq,
-  min_seq_length = NULL, drop_matches = NULL,
-  output_dir = dir_nbds)
+  min_seq_length = NULL,
+  drop_matches = NULL,
+  output_dir = tempdir()
+)
 
+## Step 3: Global Network of Associated Clusters ##
+associated_clusters <-
+  buildAssociatedClusterNetwork(
+    file_list =
+      file.path(tempdir(), paste0(associated_seqs$ReceptorSeq, ".csv")),
+    seq_col = "CloneSeq",
+    size_nodes_by = 1.5,
+    output_dir = tempdir()
+  )
 
 
 # clean up temp directory
-unlink(list.dirs(data_dir, full.names = TRUE),
-       recursive = TRUE)
-
-
-}
+file.remove(
+  file.path(tempdir(),
+            c(paste0("Sample", 1:samples, ".rds"),
+              paste0(associated_seqs$ReceptorSeq, ".csv"),
+              "AssociatedClusterNetwork_NodeMetadata.csv",
+              "AssociatedClusterNetwork_ClusterMetadata.csv",
+              "AssociatedClusterNetwork.pdf",
+              "AssociatedClusterNetwork_EdgeList.txt",
+              "AssociatedClusterNetwork_AdjacencyMatrix.mtx"
+            )
+  )
+)
 }
 
