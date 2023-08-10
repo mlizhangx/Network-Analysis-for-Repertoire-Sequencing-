@@ -101,19 +101,27 @@ combineSamples is similar to loadDataFromFileList,
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>file_list</dt>
-<dd><p>A vector of file paths where each file contains the data for a sample, with observations indexed by row.</p></dd>
+<dd><p>A vector of file paths where each file contains the data for a sample, with
+    observations indexed by row.</p></dd>
 
     <dt>input_type</dt>
-<dd><p>A character string specifying the file format of the sample data files. Options are <code>"table"</code>, <code>"txt"</code>, <code>"tsv"</code>, <code>"csv"</code>, <code>"rds"</code> and <code>"rda"</code>.</p></dd>
+<dd><p>A character string specifying the file format of the sample data files.
+    Options are <code>"table"</code>, <code>"txt"</code>, <code>"tsv"</code>, <code>"csv"</code>,
+    <code>"rds"</code> and <code>"rda"</code>.</p></dd>
 
     <dt>data_symbols</dt>
-<dd><p>Used when <code>input_type = "rda"</code>. Specifies the name of each sample's data frame within its respective Rdata file. Accepts a character vector of the same length as <code>file_list</code>. Alternatively, a single character string can be used if all data frames have the same name. See details.</p></dd>
+<dd><p>Used when <code>input_type = "rda"</code>. Specifies the name of each sample's
+    data frame within its respective Rdata file. Accepts a character vector of
+    the same length as <code>file_list</code>. Alternatively, a single character string
+    can be used if all data frames have the same name. See details.</p></dd>
 
     <dt>header</dt>
-<dd><p>Passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></code> or <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></code> for applicable values of <code>input_type</code>.</p></dd>
+<dd><p>Passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></code> or <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></code> for applicable
+    values of <code>input_type</code>.</p></dd>
 
     <dt>sep</dt>
-<dd><p>Passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></code> or <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></code> for applicable values of <code>input_type</code>.</p></dd>
+<dd><p>Passed to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></code> or <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></code> for applicable
+    values of <code>input_type</code>.</p></dd>
 
   <dt>seq_col</dt>
 <dd><p>Passed to <code><a href="filterInputData.html">filterInputData</a></code> for each sample.</p></dd>
@@ -128,20 +136,39 @@ combineSamples is similar to loadDataFromFileList,
 <dd><p>Passed to <code><a href="filterInputData.html">filterInputData</a></code> for each sample.</p></dd>
 
     <dt>sample_ids</dt>
-<dd><p>A character or numeric vector of sample IDs, whose length matches that of <code>file_list</code>.</p></dd>
+<dd><p>A character or numeric vector of sample IDs, whose length matches that of
+  <code>file_list</code>.</p></dd>
 
     <dt>subject_ids</dt>
-<dd><p>An optional character or numeric vector of subject IDs, whose length matches that of <code>file_list</code>. Used to assign a subject ID to each sample.</p></dd>
+<dd><p>An optional character or numeric vector of subject IDs, whose length matches
+  that of <code>file_list</code>. Used to assign a subject ID to each sample.</p></dd>
 
     <dt>group_ids</dt>
-<dd><p>A character or numeric vector of group IDs whose length matches that of <code>file_list</code>. Used to assign each sample to a group.</p></dd>
+<dd><p>A character or numeric vector of group IDs whose length matches that of
+  <code>file_list</code>. Used to assign each sample to a group.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Valid options for <code>input_type</code> (and the corresponding function used to load each file) include <code>"rds"</code> (<code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></code>), <code>"rda"</code> (<code><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></code>), <code>"csv"</code> (<code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></code>) and one of <code>"table"</code>, <code>"txt"</code> or <code>"tsv"</code> (all of which are loaded using <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></code>).</p>
-<p>If <code>input_type = "rda"</code>, the <code>data_symbols</code> argument specifies the name (in R) of each data frame as it is saved within its respective file. For example, given three R data frames named <code>sample1</code>, <code>sample2</code> and <code>sample3</code> in the R environment, with each data frame saved to a separate rda file using <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></code>), we would pass <code>c("sample1", "sample2", "sample3")</code> to <code>data_symbols</code>, assuming this is the order in which their file paths appear in the <code>file_list</code> argument. If each data frame is named <code>sample_data</code> within its respective rda file, we would simply specify <code>data_symbols = "sample_data"</code>.</p>
-<p>When calling <code>combineSamples</code>, for each of <code>sample_ids</code>, <code>subject_ids</code> and <code>group_ids</code> that is non-null, a corresponding variable will be added to the combined data frame; these variables are named <code>SampleID</code>, <code>SubjectID</code> and <code>GroupID</code>.</p>
+    <p>Valid options for <code>input_type</code> (and the corresponding function used to
+    load each file) include <code>"rds"</code> (<code><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></code>), <code>"rda"</code>
+    (<code><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></code>), <code>"csv"</code> (<code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></code>) and one of
+    <code>"table"</code>, <code>"txt"</code> or <code>"tsv"</code> (all of which are loaded using
+    <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></code>).</p>
+<p>If <code>input_type = "rda"</code>, the <code>data_symbols</code> argument specifies the
+    name (in R) of each data frame as it is saved within its respective file.
+    For example, given three R data frames named <code>sample1</code>, <code>sample2</code>
+    and <code>sample3</code> in the R environment, with each data frame saved to a
+    separate rda file using <code><a href="https://rdrr.io/r/base/save.html" class="external-link">save</a></code>), we would pass
+    <code>c("sample1", "sample2", "sample3")</code> to <code>data_symbols</code>, assuming
+    this is the order in which their file paths appear in the <code>file_list</code>
+    argument. If each data frame is named <code>sample_data</code> within its
+    respective rda file, we would simply specify
+    <code>data_symbols = "sample_data"</code>.</p>
+<p>When calling <code>combineSamples</code>, for each of <code>sample_ids</code>,
+    <code>subject_ids</code> and <code>group_ids</code> that is non-null, a corresponding
+    variable will be added to the combined data frame; these variables are named
+    <code>SampleID</code>, <code>SubjectID</code> and <code>GroupID</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -151,7 +178,9 @@ combineSamples is similar to loadDataFromFileList,
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. <a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full" class="external-link">doi: 10.3389/fimmu.2023.1181825</a></p>
+    <p>Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
+NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14.
+<a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full" class="external-link">doi: 10.3389/fimmu.2023.1181825</a></p>
 <p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html">Webpage for the NAIR package</a></p>
     </div>
     <div class="section level2">
