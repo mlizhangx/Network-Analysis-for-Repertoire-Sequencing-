@@ -120,6 +120,7 @@ saveNetwork <- function(
         net$plots, file.path(output_dir, paste0(output_filename, ".pdf")),
         pdf_width, pdf_height) }
   }
+  invisible(net)
 }
 
 
@@ -129,6 +130,7 @@ saveNetworkPlots <- function(plotlist, outfile = "MyRepSeqNetwork.pdf",
   for (j in 1:length(plotlist)) { print(plotlist[[j]]) }
   grDevices::dev.off()
   cat(paste0("Network graph plots saved to file:\n  ", outfile, "\n"))
+  invisible(plotlist)
 }
 
 .ensureOutputDir <- function(output_dir) {

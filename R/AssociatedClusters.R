@@ -222,6 +222,8 @@ findAssociatedClones <- function(
   unlink(tmpdirs, recursive = TRUE)
   # file.remove(list.files(tmpdirs, full.names = TRUE))
   cat(paste0(">>> All tasks complete. Output is contained in the following directory:\n  ", output_dir, "\n"))
+
+  invisible(file_list) # allows function be used as part of a pipe
 }
 
 
