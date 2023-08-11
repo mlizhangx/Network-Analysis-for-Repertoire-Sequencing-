@@ -608,5 +608,15 @@ Each of the omitted tasks can be performed as its own step using functions in th
 
 ```{r include=FALSE}
 # clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE), recursive = TRUE)
+file.remove(
+  file.path(
+    tempdir(),
+    c("MyRepSeqNetwork_NodeMetadata.csv",
+      "MyRepSeqNetwork_ClusterMetadata.csv",
+      "MyRepSeqNetwork.pdf",
+      "MyRepSeqNetwork_EdgeList.txt",
+      "MyRepSeqNetwork_AdjacencyMatrix.mtx"
+    )
+  )
+)
 ```

@@ -469,6 +469,5 @@ saveNetworkPlots(output$plots,
 
 ```{r include=FALSE}
 # clean up temp directory
-unlink(list.dirs(tempdir(), full.names = TRUE),
-       recursive = TRUE)
+file.remove(file.path(dir_out, "plots.pdf"))
 ```

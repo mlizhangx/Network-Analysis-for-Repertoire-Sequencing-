@@ -620,7 +620,7 @@ buildRepSeqNetwork(
 ```{r include=FALSE}
 # clean up temp directory
 unlink(
-  list.dirs(tempdir(), full.names = TRUE),
+  c(dir_input_samples, dir_filtered_samples, dir_out),
   recursive = TRUE
 )
 ```
