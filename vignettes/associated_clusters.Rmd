@@ -56,11 +56,13 @@ samples <- samples_c + samples_t
 sample_size <- 30 # (seqs per sample)          
 
 # sequences (first five are chosen to be associated with treatment)
-base_seqs <- c("CASSGAYEQYF", "CSVDLGKGNNEQFF", 
-               "CASSIEGQLSTDTQYF", 
-               "CASSEEGQLSTDTQYF",
-               "CASSPEGQLSTDTQYF",
-               "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF") 
+base_seqs <- 
+  c("CASSGAYEQYF", "CSVDLGKGNNEQFF", 
+    "CASSIEGQLSTDTQYF", # 3 of the associated
+    "CASSEEGQLSTDTQYF", # sequences differ by
+    "CASSPEGQLSTDTQYF", # only one amino acid
+    "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF"
+  ) 
 
 # relative generation probabilities by control/treatment group
 pgen_c <- matrix(rep(c(rep(1, 5), rep(30, 3)), times = samples_c), 
@@ -534,6 +536,13 @@ The output can be saved to a different directory by providing a file path to the
 
 The user can also specify `output_dir = NULL` in order to prevent the output from being saved.
 
+We use a new directory named "assoc_clusters" for saving the global network output, whose file path is saved to `dir_global_net`.
+
+```{r}
+dir_global_net <- file.path(data_dir, "assoc_clusters")
+```
+
+
 ### Output File Format for Step 3
 
 Each element of the output list is saved as an individual file using the [default file formats from `buildRepSeqNetwork()`](buildRepSeqNetwork.html#output_format). In particular, the node-level and cluster-level metadata are saved as csv files. 
@@ -567,7 +576,7 @@ all_clusters <-
     file_list = nbd_files, 
     seq_col = "CloneSeq",
     size_nodes_by = 1.5,
-    output_dir = file.path(data_dir, "assoc_clusters")
+    output_dir = dir_global_net
   )
 ```
 
@@ -579,7 +588,7 @@ The default files saved by `buildAssociatedClusterNetwork()` have the following 
 
 ```{r}
 # Files saved by buildAssociatedClusterNetwork
-list.files(file.path(data_dir, "assoc_clusters"))
+list.files(dir_global_net)
 ```
 
 The elements of the output list returned by `buildAssociatedClusterNetwork()` have the following names:
@@ -688,7 +697,8 @@ buildRepSeqNetwork(
   color_nodes_by = c("CloneSeq", "SampleID"), 
   color_scheme = c("plasma", "turbo"),
   size_nodes_by = 3, 
-  output_dir = NULL, output_name = "Cluster 1"
+  output_dir = NULL, 
+  output_name = "Cluster 1"
 )
 ```
 
@@ -716,7 +726,7 @@ atchley_results <-
                 sample_col = "SampleID", 
                 group_col = "GroupID",
                 k = 5, 
-                output_dir = file.path(data_dir, "assoc_clusters"), 
+                output_dir = dir_global_net, 
                 return_output = TRUE
   )
 ```
@@ -728,7 +738,7 @@ The heatmaps are saved as pdfs. Data containing the numerically-encoded TCR valu
 ```{r include=FALSE}
 # clean up temp directory
 unlink(
-  list.dirs(tempdir(), full.names = TRUE),
+  c(dir_nbds, dir_input_samples, dir_global_net),
   recursive = TRUE
 )
 ```
