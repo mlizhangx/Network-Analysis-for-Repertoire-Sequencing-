@@ -7,9 +7,12 @@ using namespace arma;
 // [[Rcpp::depends(RcppArmadillo)]]
 
 // [[Rcpp::export]]
-arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
-                                    const int& maxdist,
-                                    bool drop_deg_zero) {
+arma::sp_umat levAdjacencyMatSparse(
+    std::vector<std::string> strings,
+    const int& maxdist,
+    bool drop_deg_zero,
+    std::string temp_dir
+) {
 
   // allocate memory for data structures
   const int dim = strings.size();
@@ -44,7 +47,7 @@ arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings,
 
     // write indices of network nodes to file
     col_ids += 1;  // offset C++'s 0-index starting convention
-    col_ids.save("col_ids.txt", raw_ascii);
+    col_ids.save(temp_dir + "/col_ids.txt", raw_ascii);
 
   }
 

@@ -525,11 +525,19 @@ sparseAdjacencyMatFromSeqs <- function(
 
   # Compute adjacency matrix
   if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
-    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- .levAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
+    cat(paste0(
+      "Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."
+    ))
+    out <- .levAdjacencyMatSparse(
+      seqs, max_dist, drop_isolated_nodes, tempdir()
+    )
   } else if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
-    cat(paste0("Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."))
-    out <- .hamAdjacencyMatSparse(seqs, max_dist, drop_isolated_nodes)
+    cat(paste0(
+      "Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."
+    ))
+    out <- .hamAdjacencyMatSparse(
+      seqs, max_dist, drop_isolated_nodes, tempdir()
+    )
   } else {
     stop('invalid option for `dist_type`')
   }
@@ -542,7 +550,7 @@ sparseAdjacencyMatFromSeqs <- function(
     if (drop_isolated_nodes) {
       cat(paste("Network contains", num_nodes, "nodes (after removing isolated nodes).\n"))
       # Import record of selected column IDs and use for matrix row names
-      clone_ids <- utils::read.table("col_ids.txt")
+      clone_ids <- utils::read.table(file.path(tempdir(), "col_ids.txt"))
       dimnames(out)[[1]] <- clone_ids$V1
       dimnames(out)[[2]] <- seqs[clone_ids$V1]
       # cat(paste0("The row names of the adjacency matrix contain the original index values of the corresponding sequences; the column names contain the sequences themselves. They can be accessed using `dimnames()`\n"))
@@ -551,7 +559,9 @@ sparseAdjacencyMatFromSeqs <- function(
     }
   }
 
-  if (file.exists("col_ids.txt")) { unlink("col_ids.txt") } # cleanup
+  if (file.exists(file.path(tempdir(), "col_ids.txt"))) {
+    file.remove(file.path(tempdir(), "col_ids.txt"))
+  }
 
   return(out)
 }
