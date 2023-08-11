@@ -3,7 +3,6 @@ template:
   bootstrap: 5
 reference:
 - title: "Main Function"
-  desc: "All-in-one function for network analysis"
   contents:
   - buildRepSeqNetwork
 - title: "Searching for Associated TCR/BCR Clusters"
@@ -65,6 +64,7 @@ reference:
   - encodeTCRSeqsByAtchleyFactor
   - adjacencyMatAtchleyFromSeqs
   - kmeansAtchley
-- title: "Miscellaneous Functions"
+- title: "Other Functions and Topics"
   contents:
   - simulateToyData
+  - NAIR-package
