@@ -173,13 +173,26 @@ toy_data <- simulateToyData(
 )
 toy_data$GroupID <- rep(c("G1", "G2"), each = 500)
 
-atchley <- kmeansAtchley(
-  data = toy_data,
-  k = 3,
-  amino_col = "CloneSeq",
-  sample_col = "SampleID",
-  group_col = "GroupID",
-  output_dir = tempdir(),
-  return_output = TRUE)
+if (interactive()) {
+  atchley <- kmeansAtchley(
+    data = toy_data,
+    k = 3,
+    amino_col = "CloneSeq",
+    sample_col = "SampleID",
+    group_col = "GroupID",
+    output_dir = tempdir(),
+    return_output = TRUE
+  )
+  # clean up temp files
+  file.remove(
+    file.path(
+      tempdir(),
+      c("atchley_kmeans_TCR_fraction_per_cluster.pdf",
+        "atchley_kmeans_correlation_heatmap.pdf"
+      )
+    )
+  )
+}
+
 }
 }

@@ -109,18 +109,20 @@ cdr3 <-
     "CASSSRTSGGAGELFF"
   )
 
-# Encode sequences,
-# compute adjacency matrix
-adjacencyMatAtchleyFromSeqs(
-  cdr3,
-  max_dist = 3
-)
+if (interactive()) {
+  # Encode sequences,
+  # compute adjacency matrix
+  adjacencyMatAtchleyFromSeqs(
+    cdr3,
+    max_dist = 3
+  )
 
-# Encode sequences,
-# compute distance matrix
-adjacencyMatAtchleyFromSeqs(
-  cdr3,
-  return_type = "distance_matrix"
-)
+  # Encode sequences,
+  # compute distance matrix
+  adjacencyMatAtchleyFromSeqs(
+    cdr3,
+    return_type = "distance_matrix"
+  )
+}
 }
 }

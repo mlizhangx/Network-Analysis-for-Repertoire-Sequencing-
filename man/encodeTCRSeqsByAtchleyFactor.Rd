@@ -77,6 +77,9 @@ cdr3 <- c("CASSEAQGSGSTDTQYF",
           "CASSEKEEVGELFF",
           "CASSSRTSGGAGELFF")
 
-encodeTCRSeqsByAtchleyFactor(cdr3)
+if (interactive()) {
+  encodeTCRSeqsByAtchleyFactor(cdr3)
+}
+
 }
 }
