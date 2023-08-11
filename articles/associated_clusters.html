@@ -149,11 +149,13 @@ between the two groups.</p>
 <span><span class="va">sample_size</span> <span class="op">&lt;-</span> <span class="fl">30</span> <span class="co"># (seqs per sample)          </span></span>
 <span></span>
 <span><span class="co"># sequences (first five are chosen to be associated with treatment)</span></span>
-<span><span class="va">base_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CASSGAYEQYF"</span>, <span class="st">"CSVDLGKGNNEQFF"</span>, </span>
-<span>               <span class="st">"CASSIEGQLSTDTQYF"</span>, </span>
-<span>               <span class="st">"CASSEEGQLSTDTQYF"</span>,</span>
-<span>               <span class="st">"CASSPEGQLSTDTQYF"</span>,</span>
-<span>               <span class="st">"RASSLAGNTEAFF"</span>, <span class="st">"CASSHRGTDTQYF"</span>, <span class="st">"CASDAGVFQPQHF"</span><span class="op">)</span> </span>
+<span><span class="va">base_seqs</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CASSGAYEQYF"</span>, <span class="st">"CSVDLGKGNNEQFF"</span>, </span>
+<span>    <span class="st">"CASSIEGQLSTDTQYF"</span>, <span class="co"># 3 of the associated</span></span>
+<span>    <span class="st">"CASSEEGQLSTDTQYF"</span>, <span class="co"># sequences differ by</span></span>
+<span>    <span class="st">"CASSPEGQLSTDTQYF"</span>, <span class="co"># only one amino acid</span></span>
+<span>    <span class="st">"RASSLAGNTEAFF"</span>, <span class="st">"CASSHRGTDTQYF"</span>, <span class="st">"CASDAGVFQPQHF"</span></span>
+<span>  <span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># relative generation probabilities by control/treatment group</span></span>
 <span><span class="va">pgen_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">samples_c</span><span class="op">)</span>, </span>
@@ -292,12 +294,12 @@ to the <code>file_list</code> argument of
 <span>                         <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/Rtmp2ntq9Q/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/Rtmp2ntq9Q/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/Rtmp2ntq9Q/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/Rtmp2ntq9Q/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/Rtmp2ntq9Q/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/Rtmp2ntq9Q/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/Rtmplwebd3/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/Rtmplwebd3/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/Rtmplwebd3/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/Rtmplwebd3/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/Rtmplwebd3/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/Rtmplwebd3/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
@@ -895,7 +897,7 @@ step</a>:</p>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp2ntq9Q/assoc_seq_nbds</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/Rtmplwebd3/assoc_seq_nbds</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findassociatedclones">
@@ -1115,6 +1117,11 @@ path to the <code>output_dir</code> argument. The specified directory
 will be created if it does not already exist.</p>
 <p>The user can also specify <code>output_dir = NULL</code> in order to
 prevent the output from being saved.</p>
+<p>We use a new directory named “assoc_clusters” for saving the global
+network output, whose file path is saved to
+<code>dir_global_net</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dir_global_net</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-file-format-for-step-3">Output File Format for Step 3<a class="anchor" aria-label="anchor" href="#output-file-format-for-step-3"></a>
@@ -1168,14 +1175,14 @@ vignette</a> for further details on how the output files are named.</p>
 </h4>
 <p>We execute <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> using the <a href="#input_files3">input we prepared earlier</a> for the
 <code>file_list</code> argument:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combine neighborhoods and perform network analysis</span></span>
 <span><span class="va">all_clusters</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork</a></span><span class="op">(</span></span>
 <span>    file_list <span class="op">=</span> <span class="va">nbd_files</span>, </span>
 <span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span>
 <span>    size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span></span>
+<span>    output_dir <span class="op">=</span> <span class="va">dir_global_net</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;&lt;&lt; Building network of associated clones &gt;&gt;&gt;</span></span>
 <span><span class="co">#&gt; Input data contains 202 rows.</span></span>
@@ -1187,16 +1194,16 @@ vignette</a> for further details on how the output files are named.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp2ntq9Q/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmplwebd3/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp2ntq9Q/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
+<span><span class="co">#&gt;   /tmp/Rtmplwebd3/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp2ntq9Q/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmplwebd3/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp2ntq9Q/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmplwebd3/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/Rtmp2ntq9Q/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/Rtmplwebd3/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>In the graph plot of the global network, where the nodes are colored
 according to the binary variable of interest, we see that the treatment
 group shows high representation in the clusters, affirming the
@@ -1208,9 +1215,9 @@ association between these sequences and the treatment variable.</p>
 <p>The default files saved by
 <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> have the following
 names:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Files saved by buildAssociatedClusterNetwork</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_global_net</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "AssociatedClusterNetwork_AdjacencyMatrix.mtx"</span></span>
 <span><span class="co">#&gt; [2] "AssociatedClusterNetwork_ClusterMetadata.csv"</span></span>
 <span><span class="co">#&gt; [3] "AssociatedClusterNetwork_EdgeList.txt"       </span></span>
@@ -1219,7 +1226,7 @@ names:</p>
 <p>The elements of the output list returned by
 <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> have the following
 names:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># output returned by buildAssociatedClusterNetwork</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "igraph"           "adjacency_matrix" "node_data"        "cluster_data"    </span></span>
@@ -1236,7 +1243,7 @@ to <a href="buildRepSeqNetwork.html#base_output">the output of the
 metadata for the network nodes, where each row corresponds to a node in
 the global network graph. The following variables are present in this
 data frame:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># variables in the node-level metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "CloneSeq"                  "CloneFrequency"           </span></span>
@@ -1264,7 +1271,7 @@ Network<a class="anchor" aria-label="anchor" href="#cluster-metadata-for-global-
 metadata for the associated clusters, where each row corresponds to a
 cluster in the global network. The following variables are present in
 this data frame:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># variables in the node-level metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "cluster_id"                  "node_count"                 </span></span>
@@ -1300,7 +1307,7 @@ new plots from existing network output.</p>
 <p>Below, we generate a new plot of the global network where the nodes
 are colored according to the associated sequence of the neighborhood to
 which they belong.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># global network plot, nodes colored by associated sequence</span></span>
 <span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">AssocSeq</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></span><span class="op">(</span>igraph <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">igraph</span>,</span>
@@ -1310,7 +1317,7 @@ which they belong.</p>
 <span>                            size_nodes_by <span class="op">=</span> <span class="fl">1.5</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by AssocSeq...</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 <p>In the largest cluster, we see that the neighborhoods for two
 distinct associated sequences ended up as a single associated cluster
@@ -1328,7 +1335,7 @@ function <a href="network_visualization.html#labeling_clusters">as
 described here</a>.</p>
 <p>We label the clusters in the global network plot with their cluster
 IDs:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Modify plot to add labels to the clusters</span></span>
 <span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/addClusterLabels.html">addClusterLabels</a></span><span class="op">(</span>plot <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
@@ -1339,7 +1346,7 @@ IDs:</p>
 <span><span class="co"># View modified plot</span></span>
 <span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt; Warning: Removed 199 rows containing missing values (`geom_text()`).</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
 <h3 id="focusing-on-individual-clusters-of-interest">Focusing on Individual Clusters of Interest<a class="anchor" aria-label="anchor" href="#focusing-on-individual-clusters-of-interest"></a>
@@ -1360,7 +1367,7 @@ cluster and their relative representation.</p>
 which the corresponding clone originally appeared. This allows one to
 distinguish whether the clones in the cluster come from many samples as
 opposed to relatively few samples.</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># focus on the first cluster</span></span>
 <span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">[</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">cluster_id</span> <span class="op">==</span> <span class="fl">1</span>, <span class="op">]</span>,</span>
@@ -1368,17 +1375,18 @@ opposed to relatively few samples.</p>
 <span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneSeq"</span>, <span class="st">"SampleID"</span><span class="op">)</span>, </span>
 <span>  color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plasma"</span>, <span class="st">"turbo"</span><span class="op">)</span>,</span>
 <span>  size_nodes_by <span class="op">=</span> <span class="fl">3</span>, </span>
-<span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>, output_name <span class="op">=</span> <span class="st">"Cluster 1"</span></span>
+<span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>  output_name <span class="op">=</span> <span class="st">"Cluster 1"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Input data contains 83 rows.</span></span>
 <span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 83 rows remaining.</span></span>
 <span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
 <span><span class="co">#&gt; Network contains 83 nodes (after removing isolated nodes).</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by CloneSeq...</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID...</span></span></code></pre>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-19-2.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-20-2.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
 </div>
 <div class="section level3">
@@ -1421,14 +1429,14 @@ group to which the sample belongs, based on the group assignments
 specified by the <code>group_ids</code> argument. This aids in the
 detection of differences and similarities within and between groups.</p>
 <p>All of these steps are performed by <code><a href="../reference/kmeansAtchley.html">kmeansAtchley()</a></code>.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">atchley_results</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/kmeansAtchley.html">kmeansAtchley</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
 <span>                amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
 <span>                sample_col <span class="op">=</span> <span class="st">"SampleID"</span>, </span>
 <span>                group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span>
 <span>                k <span class="op">=</span> <span class="fl">5</span>, </span>
-<span>                output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span>, </span>
+<span>                output_dir <span class="op">=</span> <span class="va">dir_global_net</span>, </span>
 <span>                return_output <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p>The heatmaps are saved as pdfs. Data containing the
