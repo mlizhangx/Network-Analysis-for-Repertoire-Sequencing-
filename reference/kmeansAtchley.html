@@ -245,14 +245,27 @@ metric problem. <em>Proc Natl Acad Sci U.S.A.</em>  102(18):6395–400.
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">toy_data</span><span class="op">$</span><span class="va">GroupID</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G1"</span>, <span class="st">"G2"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">atchley</span> <span class="op">&lt;-</span> <span class="fu">kmeansAtchley</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  data <span class="op">=</span> <span class="va">toy_data</span>,</span></span>
-<span class="r-in"><span>  k <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
-<span class="r-in"><span>  sample_col <span class="op">=</span> <span class="st">"SampleID"</span>,</span></span>
-<span class="r-in"><span>  group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span></span>
-<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  return_output <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">atchley</span> <span class="op">&lt;-</span> <span class="fu">kmeansAtchley</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    data <span class="op">=</span> <span class="va">toy_data</span>,</span></span>
+<span class="r-in"><span>    k <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>    amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>    sample_col <span class="op">=</span> <span class="st">"SampleID"</span>,</span></span>
+<span class="r-in"><span>    group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span></span>
+<span class="r-in"><span>    output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    return_output <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="co"># clean up temp files</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"atchley_kmeans_TCR_fraction_per_cluster.pdf"</span>,</span></span>
+<span class="r-in"><span>        <span class="st">"atchley_kmeans_correlation_heatmap.pdf"</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
