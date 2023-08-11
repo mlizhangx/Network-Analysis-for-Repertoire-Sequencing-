@@ -32,6 +32,9 @@ installPythonModules(
     making individual calls to \code{\link[reticulate]{py_install}} for each of
     these modules.
 }
+\value{
+Does not return a value.
+}
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
 NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.

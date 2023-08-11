@@ -66,6 +66,9 @@ saveNetwork(
     respectively), while also printing the plots to a .pdf file.
 
 }
+\value{
+Returns its first argument invisibly.
+}
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
 NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.

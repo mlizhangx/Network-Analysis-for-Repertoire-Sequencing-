@@ -150,6 +150,9 @@ The files saved by this function are intended for use with
 package vignette for more details. The vignette can be accessed offline using
 \code{vignette("associated_clusters")}.
 }
+\value{
+Returns its first argument invisibly.
+}
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
 NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
