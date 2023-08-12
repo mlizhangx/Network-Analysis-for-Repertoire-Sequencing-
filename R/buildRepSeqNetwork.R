@@ -1,40 +1,40 @@
 
 buildRepSeqNetwork <- function(
-
-  ## Input ##
-  data, seq_col, count_col = NULL,
-  subset_cols = NULL,
-  min_seq_length = 3, drop_matches = NULL,
-
-  ## Network ##
-  dist_type = "hamming", dist_cutoff = 1,
-  drop_isolated_nodes = TRUE,
-  node_stats = FALSE, stats_to_include = chooseNodeStats(),
-  cluster_stats = FALSE,
-  cluster_fun = cluster_fast_greedy,
-
-  ## Visualization ##
-  plots = TRUE, print_plots = TRUE,
-  plot_title = "auto", plot_subtitle = "auto",
-  color_nodes_by = "auto", ...,
-
-  ## Output ##
-  output_dir = getwd(), output_type = "individual",
-  output_name = "MyRepSeqNetwork",
-  pdf_width = 12, pdf_height = 10
-
+    data,
+    seq_col,
+    count_col = NULL,
+    subset_cols = NULL,
+    min_seq_length = 3,
+    drop_matches = NULL,
+    dist_type = "hamming",
+    dist_cutoff = 1,
+    drop_isolated_nodes = TRUE,
+    node_stats = FALSE,
+    stats_to_include = chooseNodeStats(),
+    cluster_stats = FALSE,
+    cluster_fun = cluster_fast_greedy,
+    plots = TRUE,
+    print_plots = TRUE,
+    plot_title = "auto",
+    plot_subtitle = "auto",
+    color_nodes_by = "auto",
+    ...,
+    output_dir = getwd(),
+    output_type = "individual",
+    output_name = "MyRepSeqNetwork",
+    pdf_width = 12,
+    pdf_height = 10
 ) {
 
   ### CHECK INPUTS AND PREPARE DATA ###
-  # Coerce data to data frame
   data <- as.data.frame(data)
 
-  # Initial argument checks
   .checkArgs.buildRepSeqNetwork(
     data, seq_col, count_col, subset_cols, min_seq_length, drop_matches,
     dist_type, dist_cutoff, drop_isolated_nodes, node_stats, stats_to_include,
-    cluster_stats, plots, print_plots, plot_title, plot_subtitle,
-    color_nodes_by, output_type, output_name, pdf_width, pdf_height)
+    cluster_stats, cluster_fun, plots, print_plots, plot_title, plot_subtitle,
+    color_nodes_by, output_dir, output_type, output_name, pdf_width, pdf_height
+  )
 
   # Convert column references to character
   seq_col <- .convertColRef(seq_col, data)
@@ -43,15 +43,13 @@ buildRepSeqNetwork <- function(
   subset_cols <- .convertColRef(subset_cols, data)
   subset_cols <- .processSubsetCols(subset_cols, c(count_col, color_nodes_by))
 
-  # Filter data
   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
                           subset_cols, count_col)
   if (nrow(data) < 2) {
-    warning("Insufficient remaining receptor sequences; at least two needed")
+    warning("Returning NULL, since fewer than two observations remain after filtering the data. Check the values used for the `min_seq_length` and `drop_matches` arguments")
     return(NULL)
   }
 
-  # Create output directory
   .createOutputDir(output_dir)
 
   ### BUILD NETWORK ###

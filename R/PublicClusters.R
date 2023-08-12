@@ -3,180 +3,226 @@
 
 findPublicClusters <- function(
 
-  ## Input ##
-  file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
-  sample_ids = paste0("Sample", 1:length(file_list)),
-  seq_col, count_col = NULL,
-  min_seq_length = 3, drop_matches = "[*|_]",
-
-  ## Network ##
-  top_n_clusters = 20, min_node_count = 10, min_clone_count = 100,
-
-  ## Visualization ##
-  plots = FALSE, print_plots = FALSE,
-  plot_title = "auto", color_nodes_by = "cluster_id",
-
-  ## Output ##
-  output_dir = file.path(getwd(), "public_clusters"),
-  output_type = "rds",
-  output_dir_unfiltered = NULL, output_type_unfiltered = "rds",
-  ...
+    file_list,
+    input_type,
+    data_symbols = NULL,
+    header = TRUE, sep = "",
+    sample_ids = paste0("Sample", 1:length(file_list)),
+    seq_col,
+    count_col = NULL,
+    min_seq_length = 3,
+    drop_matches = "[*|_]",
+    top_n_clusters = 20,
+    min_node_count = 10,
+    min_clone_count = 100,
+    plots = FALSE,
+    print_plots = FALSE,
+    plot_title = "auto",
+    color_nodes_by = "cluster_id",
+    output_dir =
+      file.path(getwd(), "public_clusters"),
+    output_type = "rds",
+    output_dir_unfiltered = NULL,
+    output_type_unfiltered = "rds",
+    ...
 
 ) {
 
+  .checkargs.findPublicClusters(
+    file_list, input_type, data_symbols, header, sep, sample_ids, seq_col,
+    count_col, min_seq_length, drop_matches, top_n_clusters, min_node_count,
+    min_clone_count, plots, print_plots, plot_title, color_nodes_by, output_dir,
+    output_type, output_dir_unfiltered, output_type_unfiltered
+  )
+  color_nodes_by <- .colorNodesBy.findPublicClusters(color_nodes_by)
   sample_ids <- as.character(sample_ids)
-
   if (all(plots, !print_plots, is.null(output_dir_unfiltered))) {
-    warning("ignoring `plots = TRUE` since `print_plots = FALSE` and `output_dir_unfiltered` is NULL")
     plots <- FALSE
   }
-
-  stopifnot("lengths of file_list and sample_ids must match" =
-              length(file_list) == length(sample_ids))
   .ensureOutputDir(output_dir)
   cat(paste0("<<< Beginning search for public clusters >>>\n"))
   for (i in 1:length(file_list)) {
-    cat(paste0("Processing sample ", i, " of ", length(file_list), ": ", sample_ids[[i]], "\n"))
+    cat(paste0(
+      "Processing sample ", i, " of ", length(file_list), ": ", sample_ids[[i]], "\n"
+    ))
     .findPublicClustersOneSample(
       top_n_clusters, min_node_count, min_clone_count,
       file_list[[i]], sample_ids[[i]], input_type, data_symbols, header, sep,
       seq_col, count_col, min_seq_length, drop_matches, plots, print_plots,
       plot_title, color_nodes_by, output_dir, output_type,
-      output_dir_unfiltered, output_type_unfiltered, ...)
-    cat("----------------------------------------------------------------------\n")
+      output_dir_unfiltered, output_type_unfiltered, ...
+    )
+    cat(
+      "----------------------------------------------------------------------\n"
+    )
   }
-  cat(paste0("All samples complete. Filtered data is located in the following directory:\n  ", output_dir, "\n"))
+  cat(paste0(
+    "All samples complete. Filtered data is located in the following directory:\n  ", output_dir, "\n"
+  ))
   if (!is.null(output_dir_unfiltered)) {
-    cat(paste0("Unfiltered data for full sample networks is located in the following directory:\n  ", output_dir_unfiltered, "\n"))
+    cat(paste0(
+      "Unfiltered data for full sample networks is located in the following directory:\n  ", output_dir_unfiltered, "\n"
+    ))
   }
-  return(invisible(NULL))
+
+  invisible(TRUE)
+
 }
 
 
-# build network on all clones in public clusters
 buildPublicClusterNetwork <- function(
 
-  ## Input ##
-  file_list =
-    list.files(file.path(getwd(), "public_clusters", "node_meta_data")),
-  input_type = "rds", data_symbols = "ndat", header = TRUE, sep = "",
-  seq_col,
-
-  ## Network ##
-  drop_isolated_nodes = FALSE,
-  node_stats = NULL, stats_to_include = NULL, cluster_stats = NULL,
-
-
-  ## Visualization ##
-  color_nodes_by = "SampleID", color_scheme = "turbo",
-  plot_title = "Global Network of Public Clusters",
-
-  ## Output ##
-  output_dir = file.path(getwd(), "public_clusters"),
-  output_name = "PublicClusterNetwork",
-
-  ...
+    file_list =
+      list.files(file.path(getwd(), "public_clusters", "node_meta_data")),
+    input_type = "rds",
+    data_symbols = "ndat",
+    header = TRUE, sep = "",
+    seq_col,
+    drop_isolated_nodes = FALSE,
+    node_stats = NULL,
+    stats_to_include = NULL,
+    cluster_stats = NULL,
+    color_nodes_by = "SampleID",
+    color_scheme = "turbo",
+    plot_title = "Global Network of Public Clusters",
+    output_dir = file.path(getwd(), "public_clusters"),
+    output_name = "PublicClusterNetwork",
+    ...
 
 ) {
 
-  if (!is.null(node_stats)) {
-    warning("`node_stats` argument is deprecated; all node-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
-  }
-  if (!is.null(stats_to_include)) {
-    warning("`stats_to_include` argument is deprecated; all node-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
-  }
-  if (!is.null(cluster_stats)) {
-    warning("`cluster_stats` argument is deprecated; cluster-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
-  }
-
+  .checkargs.buildPublicClusterNetwork(
+    file_list, input_type, data_symbols, header, sep, seq_col,
+    drop_isolated_nodes, node_stats, stats_to_include, cluster_stats,
+    color_nodes_by, color_scheme, plot_title, output_dir, output_name
+  )
   .createOutputDir(output_dir)
-  if (!is.null(color_nodes_by)) {
-    if ("ClusterIDPublic" %in% color_nodes_by) {
-      color_nodes_by[color_nodes_by == "ClusterIDPublic"] <- "cluster_id" }
-  }
+  color_nodes_by <- .colorNodesBy.buildPublicClusterNetwork(color_nodes_by)
 
-  # Load data
-  data <- loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
-
-  # Build network
+  data <- loadDataFromFileList(
+    file_list, input_type, data_symbols, header, sep
+  )
   cat("Building network of public clusters:\n")
+
   net <- buildRepSeqNetwork(
-    data = data, seq_col = seq_col, drop_isolated_nodes = drop_isolated_nodes,
-    node_stats = TRUE, stats_to_include = "all",
+    data = data,
+    seq_col = seq_col,
+    drop_isolated_nodes = drop_isolated_nodes,
+    node_stats = TRUE,
+    stats_to_include = "all",
     cluster_stats = TRUE,
-    color_nodes_by = color_nodes_by, color_scheme = color_scheme,
-    output_dir = output_dir, output_name = output_name, ...)
+    color_nodes_by = color_nodes_by,
+    color_scheme = color_scheme,
+    output_dir = output_dir,
+    output_name = output_name,
+    ...
+  )
+
   if (is.null(net)) { return(NULL) }
 
-  names(net$node_data) <- .renamePublicNodeStats(names(net$node_data))
-  return(invisible(net))
+  names(net$node_data) <- .renamePublicNodeStats(
+    names(net$node_data)
+  )
+
+  invisible(net)
+
 }
 
 
 buildPublicClusterNetworkByRepresentative <- function(
 
-  ## Input ##
-  file_list,
-  input_type = "rds", data_symbols = "cdat", header = TRUE, sep = "",
-  seq_col = "seq_w_max_count", count_col = "agg_count",
-
-  ## Network ##
-  dist_type = "hamming", dist_cutoff = 1, cluster_fun = cluster_fast_greedy,
-
-  ## Visualization ##
-  plots = TRUE, print_plots = TRUE,
-  plot_title = "auto", plot_subtitle = "auto",
-  color_nodes_by = "SampleID", color_scheme = "turbo",
-  ...,
-
-  ## Output ##
-  output_dir = file.path(getwd(), "public_clusters"),
-  output_type = "rda", output_name = "PubClustByRepresentative",
-  pdf_width = 12, pdf_height = 10
+    file_list,
+    input_type = "rds",
+    data_symbols = "cdat",
+    header = TRUE, sep = "",
+    seq_col = "seq_w_max_count",
+    count_col = "agg_count",
+    dist_type = "hamming",
+    dist_cutoff = 1,
+    cluster_fun = cluster_fast_greedy,
+    plots = TRUE,
+    print_plots = TRUE,
+    plot_title = "auto",
+    plot_subtitle = "auto",
+    color_nodes_by = "SampleID",
+    color_scheme = "turbo",
+    ...,
+    output_dir = file.path(getwd(), "public_clusters"),
+    output_type = "rda",
+    output_name = "PubClustByRepresentative",
+    pdf_width = 12, pdf_height = 10
 
 ) {
+
+  .checkargs.buildPublicClusterNetworkByRep(
+    file_list, input_type, data_symbols, header, sep, seq_col, count_col,
+    dist_type, dist_cutoff, cluster_fun, plots, print_plots, plot_title,
+    plot_subtitle, color_nodes_by, color_scheme, output_dir, output_type,
+    output_name, pdf_width, pdf_height
+  )
+  if (!is.null(color_nodes_by)) {
+    color_nodes_by[color_nodes_by == "cluster_id"] <- "ClusterIDPublic"
+  }
   .createOutputDir(output_dir)
+  data <- loadDataFromFileList(
+    file_list, input_type, data_symbols, header, sep
+  )
+  cat(
+    "Building network of public clusters using a representative sequence from each cluster:\n"
+  )
 
-  # Load data
-  data <- loadDataFromFileList(file_list, input_type, data_symbols, header, sep)
-
-  # Build network
-  cat("Building network of public clusters using a representative sequence from each cluster:\n")
   net <- buildRepSeqNetwork(
-    data = data, seq_col = seq_col, count_col = count_col, subset_cols = NULL,
-    min_seq_length = NULL, drop_matches = NULL,
-    dist_type = dist_type, dist_cutoff = dist_cutoff,
+    data = data,
+    seq_col = seq_col,
+    count_col = count_col,
+    subset_cols = NULL,
+    min_seq_length = NULL,
+    drop_matches = NULL,
+    dist_type = dist_type,
+    dist_cutoff = dist_cutoff,
     drop_isolated_nodes = FALSE,
-    node_stats = TRUE, stats_to_include = "all", cluster_fun = cluster_fun,
-    cluster_stats = FALSE, plots = FALSE, output_dir = NULL)
+    node_stats = TRUE,
+    stats_to_include = "all",
+    cluster_fun = cluster_fun,
+    cluster_stats = FALSE,
+    plots = FALSE,
+    output_dir = NULL
+  )
+
   if (is.null(net)) { return(NULL) }
 
   ndat <- net$node_data
   ndat$RepresentativeSeq <- ndat[[seq_col]]
   names(ndat)[names(ndat) == "cluster_id"] <- "ClusterIDPublic"
+  net$node_data <- ndat
 
-  # Compute cluster stats
   cdat <- as.data.frame(table(ndat[["ClusterIDPublic"]]))
-  cat(paste0("Performing clustering on the nodes in the new network resulted in ", nrow(cdat), " clusters.\nComputing network properties of the new clusters..."))
   colnames(cdat) <- c("ClusterIDPublic", "NodeCount")
-  cdat <- .addClusterOnClusterStats(ndat, cdat, net$adjacency_matrix)
-  cat(" Done.\n"); net$node_data <- ndat; net$cluster_data <- cdat
+  cat(paste0(
+    "Performing clustering on the nodes in the new network resulted in ", nrow(cdat), " clusters.\n",
+    "Computing network properties of the new clusters..."
+  ))
+  net$cluster_data <- .addClusterOnClusterStats(
+    ndat, cdat, net$adjacency_matrix
+  )
+  cat(" Done.\n")
 
-  # Print plots
   if (plots) {
     net$plots <- .generateNetworkGraphPlotsGuarded(
-      net$igraph, net$node_data, print_plots,
+      net$igraph,
+      net$node_data,
+      print_plots,
       .makePlotTitle(plot_title, "pub_clust_rep"),
       .makePlotSubtitle(plot_subtitle, "pub_clust_rep", seq_col),
-      color_nodes_by = color_nodes_by, color_scheme = color_scheme,
-      ...)
-    if (is.null(net$plots)) { plots <- FALSE }
+      color_nodes_by = color_nodes_by,
+      color_scheme = color_scheme,
+      ...
+    )
   }
 
-  # Save & return output
   saveNetwork(net, output_dir, output_type, output_name, pdf_width, pdf_height)
   cat("All tasks complete.\n")
-  return(invisible(net))
+  invisible(net)
 }
 
 
@@ -332,13 +378,13 @@ buildPublicClusterNetworkByRepresentative <- function(
                          paste0(sample_id, ".", output_type))
   cluster_file <- file.path(output_dir, "cluster_meta_data",
                             paste0(sample_id, ".", output_type))
-  if (output_type == "rds") {
-    saveRDS(ndat, file = node_file); saveRDS(cdat, file = cluster_file)
+  if (output_type == "rda") {
+    save(ndat, file = node_file); save(cdat, file = cluster_file)
   } else if (output_type == "csv") {
     utils::write.csv(ndat, file = node_file, row.names = FALSE)
     utils::write.csv(cdat, file = cluster_file, row.names = FALSE)
   } else {
-    save(ndat, file = node_file); save(cdat, file = cluster_file)
+    saveRDS(ndat, file = node_file); saveRDS(cdat, file = cluster_file)
   }
   cat(" Done.\n")
 }
@@ -463,8 +509,72 @@ buildPublicClusterNetworkByRepresentative <- function(
 }
 
 
+.colorNodesBy.findPublicClusters <- function(arg) {
+
+  if (!is.null(arg)) {
+    arg[arg == "ClusterIDInSample"] <-
+      "cluster_id"
+    arg[arg == "SampleLevelNetworkDegree"] <-
+      "degree"
+    arg[arg == "SampleLevelTransitivity"] <-
+      "transitivity"
+    arg[arg == "SampleLevelCloseness"] <-
+      "closeness"
+    arg[arg == "SampleLevelCentralityByCloseness"] <-
+      "centrality_by_closeness"
+    arg[arg == "SampleLevelEigenCentrality"] <-
+      "eigen_centrality"
+    arg[arg == "SampleLevelCentralityByEigen"] <-
+      "centrality_by_eigen"
+    arg[arg == "SampleLevelBetweenness"] <-
+      "betweenness"
+    arg[arg == "SampleLevelCentralityByBetweenness"] <-
+      "centrality_by_betweenness"
+    arg[arg == "SampleLevelAuthorityScore"] <-
+      "authority_score"
+    arg[arg == "SampleLevelCoreness"] <-
+      "coreness"
+    arg[arg == "SampleLevelPageRank"] <-
+      "page_rank"
+  }
+
+  arg
+
+}
 
 
+.colorNodesBy.buildPublicClusterNetwork <- function(arg) {
+
+  if (!is.null(arg)) {
+    arg[arg == "ClusterIDPublic"] <-
+      "cluster_id"
+    arg[arg == "PublicNetworkDegree"] <-
+      "degree"
+    arg[arg == "PublicTransitivity"] <-
+      "transitivity"
+    arg[arg == "PublicCloseness"] <-
+      "closeness"
+    arg[arg == "PublicCentralityByCloseness"] <-
+      "centrality_by_closeness"
+    arg[arg == "PublicEigenCentrality"] <-
+      "eigen_centrality"
+    arg[arg == "PublicCentralityByEigen"] <-
+      "centrality_by_eigen"
+    arg[arg == "PublicBetweenness"] <-
+      "betweenness"
+    arg[arg == "PublicCentralityByBetweenness"] <-
+      "centrality_by_betweenness"
+    arg[arg == "PublicAuthorityScore"] <-
+      "authority_score"
+    arg[arg == "PublicCoreness"] <-
+      "coreness"
+    arg[arg == "PublicPageRank"] <-
+      "page_rank"
+  }
+
+  arg
+
+}
 
 # Original function -------------------------------------------------------
 

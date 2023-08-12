@@ -1,14 +1,3 @@
-
-# Inputs:
-#       RepSeq data for global cluster network
-# Do:
-#       embed AA seqs in Euclidean 30-space by Atchley factor
-#       perform K-means clustering on embedded values
-#       compile data frame where each column corresponds to a sample,
-#         each row corresponds to a k-means cluster,
-#         each value is the total reads in the sample for all tcr in the cluster
-#       Create heatmap for correlation matrix of the above data frame
-
 kmeansAtchley <- function(
   data,
   amino_col,

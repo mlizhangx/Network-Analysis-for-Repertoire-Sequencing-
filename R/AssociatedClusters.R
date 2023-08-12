@@ -4,55 +4,38 @@
 
 findAssociatedSeqs <- function(
 
-  ## Input ##
-  file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
-  sample_ids = NULL,
-  subject_ids = NULL,
-  group_ids,
-  groups = NULL,
-  seq_col,
-  freq_col = NULL,
-
-  ## Search Criteria ##
-  min_seq_length = 7, drop_matches = "[*|_]",
-  min_sample_membership = 5, pval_cutoff = 0.05,
-
-  ## Output ##
-  outfile = "associated_seqs.csv"
+    file_list,
+    input_type,
+    data_symbols = NULL,
+    header = TRUE, sep = "",
+    sample_ids = NULL,
+    subject_ids = NULL,
+    group_ids,
+    groups = NULL,
+    seq_col,
+    freq_col = NULL,
+    min_seq_length = 7,
+    drop_matches = "[*|_]",
+    min_sample_membership = 5,
+    pval_cutoff = 0.05,
+    outfile = "associated_seqs.csv"
 
 ) {
-  # stopifnot("lengths of file_list and sample_ids must match" =
-  #             length(file_list) == length(sample_ids))
-  if (!is.null(subject_ids)) {
-    stopifnot("file_list and subject_ids have non-matching lengths" =
-                length(file_list) == length(subject_ids))
-  }
-  stopifnot("lengths of file_list and group_ids must match" =
-              length(file_list) == length(group_ids))
-  stopifnot("file_list contains duplicate values" =
-              length(file_list) == length(unique(file_list)))
-  # stopifnot("sample_ids contains duplicate values" =
-  #             length(sample_ids) == length(unique(sample_ids)))
-  # stopifnot("groups contains duplicate values" =
-  #             length(groups) == length(unique(groups)))
-  # stopifnot("groups must be of length 2" = length(groups) == 2)
-  # stopifnot("'group_ids' contains values not in 'groups'" =
-  #             all(unique(group_ids) %in% groups))
-  # stopifnot("both groups must be nonempty" = all(groups %in% group_ids))
-  if (!is.null(groups)) {
-    warning("`groups` argument is deprecated; group labels are now determined from the unique values of the `group_ids` argument. Avoid using the `groups` argument to avoid errors in future versions of NAIR")
-  }
-  if (!is.null(sample_ids)) {
-    warning("`sample_ids` argument is deprecated; custom sample IDs are not relevant to `findAssociatedSeqs`. Avoid using the `sample_ids` argument to avoid errors in future versions of NAIR")
-  }
 
-  samples_or_subjects <- "samples"
+  .checkargs.findAssociatedSeqs(
+    file_list, input_type, data_symbols, header, sep,
+    sample_ids, subject_ids, group_ids, groups, seq_col, freq_col,
+    min_seq_length, drop_matches, min_sample_membership, pval_cutoff, outfile
+  )
+
+  group_ids <- as.character(group_ids)
+  if (!is.null(subject_ids)) { subject_ids <- as.character(subject_ids) }
+
   # Check whether observational units are samples or subjects
+  samples_or_subjects <- "samples"
   if (!is.null(subject_ids)) {
-    # If subject IDs given, check if any subjects have multiple samples
     if (any(duplicated(subject_ids))) { samples_or_subjects <- "subjects" }
   }
-  # if (!all(subject_ids == sample_ids)) { samples_or_subjects <- "subjects" }
 
   groups <- unique(group_ids)
   stopifnot("group_ids must contain exactly two unique values" =
@@ -125,6 +108,14 @@ findAssociatedSeqs2 <- function(
   ## Ouptut ##
   outfile = "associated_seqs.csv"
 ) {
+
+  data <- as.data.frame(data)
+  .checkargs.findAssociatedSeqs2(
+    data, seq_col, sample_col, subject_col, group_col,
+    groups, freq_col,
+    min_seq_length, drop_matches, min_sample_membership, pval_cutoff, outfile
+  )
+
   if (!is.null(groups)) {
     warning("`groups` argument is deprecated; group labels are now determined from the unique values of the `group_ids` argument. Avoid using the `groups` argument to avoid errors in future versions of NAIR")
   }
@@ -176,23 +167,33 @@ findAssociatedSeqs2 <- function(
 
 findAssociatedClones <- function(
 
-  ## Input ##
-  file_list, input_type, data_symbols = NULL, header = TRUE, sep = "",
+  file_list,
+  input_type,
+  data_symbols = NULL,
+  header = TRUE,
+  sep = "",
   sample_ids = paste0("Sample", 1:length(file_list)),
-  subject_ids = NULL, group_ids,
+  subject_ids = NULL,
+  group_ids,
   seq_col,
-
-  ## Search Criteria ##
-  assoc_seqs, nbd_radius = 1, dist_type = "hamming",
-  min_seq_length = 6, drop_matches = "[*|_]",
-
-  ## Output ##
+  assoc_seqs,
+  nbd_radius = 1,
+  dist_type = "hamming",
+  min_seq_length = 6,
+  drop_matches = "[*|_]",
   subset_cols = NULL,
   output_dir = file.path(getwd(), "associated_neighborhoods"),
   output_type = "csv",
   verbose = FALSE
+
 ) {
 
+  .checkargs.findAssociatedClones(
+    file_list, input_type, data_symbols, header, sep,
+    sample_ids, subject_ids, group_ids, seq_col,
+    assoc_seqs, nbd_radius, dist_type, min_seq_length, drop_matches,
+    subset_cols, output_dir, output_type, verbose
+  )
   .ensureOutputDir(output_dir)
   sample_ids <- as.character(sample_ids)
   group_ids <- as.character(group_ids)
@@ -223,7 +224,7 @@ findAssociatedClones <- function(
   # file.remove(list.files(tmpdirs, full.names = TRUE))
   cat(paste0(">>> All tasks complete. Output is contained in the following directory:\n  ", output_dir, "\n"))
 
-  invisible(file_list) # allows function be used as part of a pipe
+  invisible(TRUE)
 }
 
 
@@ -275,16 +276,29 @@ findAssociatedClones <- function(
 
 
 buildAssociatedClusterNetwork <- function(
+
     file_list,
-    input_type = "csv", data_symbols = "data", header = TRUE, sep = ",",
-    seq_col, min_seq_length = NULL, drop_matches = NULL,
-    drop_isolated_nodes = FALSE, node_stats = TRUE,
+    input_type = "csv",
+    data_symbols = "data",
+    header = TRUE, sep = ",",
+    seq_col,
+    min_seq_length = NULL,
+    drop_matches = NULL,
+    drop_isolated_nodes = FALSE,
+    node_stats = TRUE,
     stats_to_include = chooseNodeStats(cluster_id = TRUE),
     cluster_stats = TRUE,
     color_nodes_by = "GroupID",
-    output_name = "AssociatedClusterNetwork", ...
+    output_name = "AssociatedClusterNetwork",
+    ...
+
 ) {
 
+  .checkargs.buildAssociatedClusterNetwork(
+    file_list, input_type, data_symbols, header, sep,
+    seq_col, min_seq_length, drop_matches, drop_isolated_nodes,
+    node_stats, stats_to_include, cluster_stats, color_nodes_by, output_name
+  )
   # Force clustering analysis (cluster membership ID only) if not enabled
   if (typeof(stats_to_include) %in% c("list", "logical") &&
       !stats_to_include[["cluster_id"]]) {

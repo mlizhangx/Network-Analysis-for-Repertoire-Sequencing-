@@ -27,6 +27,9 @@
 loadDataFromFileList <- function(
     file_list, input_type, data_symbols = NULL, header = TRUE, sep = "")
 {
+  .checkargs.InputFiles(
+    file_list, input_type, data_symbols, header, sep
+  )
   if (input_type == "csv") {
     data <- plyr::ldply(file_list, utils::read.csv, header = header, sep = sep)
   } else if (input_type %in% c("table", "tsv", "txt")) {
@@ -59,7 +62,11 @@ combineSamples <- function(
     min_seq_length = NULL, drop_matches = NULL, subset_cols = NULL,
     sample_ids = NULL, subject_ids = NULL, group_ids = NULL
 ) {
-
+  .checkargs.CombineSamples(
+    file_list, input_type, data_symbols, header, sep,
+    seq_col, min_seq_length, drop_matches, subset_cols,
+    sample_ids, subject_ids, group_ids
+  )
   cat(">>> Loading and compiling data from all samples:\n")
 
   if (input_type %in% c("rda", "Rda", "Rdata", "rdata")) {
@@ -103,7 +110,10 @@ saveNetwork <- function(
     net, output_dir = getwd(), output_type = "individual",
     output_filename = "MyRepSeqNetwork", pdf_width = 12, pdf_height = 10)
 {
-  if (is.null(output_dir)) { return(invisible(NULL)) } # exit if no output dir
+  .checkargs.saveNetwork(
+    net, output_dir, output_type, output_filename, pdf_width, pdf_height
+  )
+  if (is.null(output_dir)) { return(invisible(FALSE)) } # exit if no output dir
   .createOutputDir(output_dir)
   if (output_type == "rds") {
     .saveNetworkRDS(net, output_dir, output_filename)
@@ -120,24 +130,29 @@ saveNetwork <- function(
         net$plots, file.path(output_dir, paste0(output_filename, ".pdf")),
         pdf_width, pdf_height) }
   }
-  invisible(net)
+  invisible(TRUE)
 }
 
 
 saveNetworkPlots <- function(plotlist, outfile = "MyRepSeqNetwork.pdf",
                              pdf_width = 12, pdf_height = 10) {
+  .checkargs.saveNetworkPlots(
+    plotlist, outfile, pdf_width, pdf_height
+  )
   grDevices::pdf(file = outfile, width = pdf_width, height = pdf_height)
   for (j in 1:length(plotlist)) { print(plotlist[[j]]) }
   grDevices::dev.off()
   cat(paste0("Network graph plots saved to file:\n  ", outfile, "\n"))
-  invisible(plotlist)
+  invisible(TRUE)
 }
+
 
 .ensureOutputDir <- function(output_dir) {
   stopifnot("output_dir is required" = !is.null(output_dir))
   if (!dir.exists(output_dir)) { .createOutputDir(output_dir) }
   stopifnot("could not create output_dir" = dir.exists(output_dir))
 }
+
 
 .createOutputDir <- function(dirname) {
   if (!is.null(dirname)) {
@@ -150,6 +165,7 @@ saveNetworkPlots <- function(plotlist, outfile = "MyRepSeqNetwork.pdf",
     }
   }
 }
+
 
 .createDirectories <- function(dirs) {
   for (i in 1:length(dirs)) {
@@ -256,6 +272,10 @@ filterInputData <- function(
     data, seq_col, min_seq_length = NULL, drop_matches = NULL,
     subset_cols = NULL, count_col = NULL) {
 
+  data <- as.data.frame(data)
+  .checkargs.filterInputData(
+    data, seq_col, min_seq_length, drop_matches, subset_cols, count_col
+  )
   cat(paste0("Input data contains ", nrow(data), " rows.\n"))
 
   # coerce sequence column(s) to character
@@ -519,11 +539,12 @@ sparseAdjacencyMatFromSeqs <- function(
     max_dist = 1, # Maximum distance threshold for edge/adjacency between two sequences
     drop_isolated_nodes = TRUE # Drop sequences/nodes with zero degree?
 ) {
-  # attempt to coerce seqs to character vector
-  if (length(seqs) == 0) stop("'seqs' has zero length")
+
+  if (length(seqs) == 0) {
+    stop("can't construct network for empty vector of receptor sequences")
+  }
+  .isValidSeqVector(seqs)
   seqs <- as.vector(seqs, mode = "character")
-  if (!is.character(seqs)) stop("'seqs' must be cocercible to a character vector")
-  if (!is.vector(seqs)) stop("'seqs' must be cocercible to a character vector")
 
   # Compute adjacency matrix
   if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
@@ -626,19 +647,16 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
 }
 
 
-# Input vector of sequences
-# return igraph network
 .generateNetworkFromSeqs <- function(
-    seqs, # character vector of receptor sequences
-    dist_type = "hamming", # supports "levenshtein", "hamming", "euclidean_on_atchley"
-    dist_cutoff = 1, # max dist threshold for edges
-    drop_isolated_nodes = TRUE, # forced to FALSE for dist_type = "euclidean_on_atchley"
-    contig_ids = seq_along(seqs), # for dist_type = "euclidean_on_atchley"
-    outfile_adjacency_matrix = NULL, # save file for adjacency matrix
-    outfile_distance_matrix = NULL, # save file for distance matrix (only for Euclidean on Atchley)
-    return_type = "network" # can use "adjacency_matrix" to return the adjacency mat
+    seqs,
+    dist_type = "hamming",
+    dist_cutoff = 1,
+    drop_isolated_nodes = TRUE,
+    contig_ids = seq_along(seqs),
+    outfile_adjacency_matrix = NULL,
+    outfile_distance_matrix = NULL,
+    return_type = "network"
 ) {
-  ### COMPUTE ADJACENCY MATRIX ###
   if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L",
                        "hamming", "Hamming", "ham", "Ham", "h", "H")) {
     adjacency_matrix <-
@@ -649,8 +667,9 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
     if (!is.null(outfile_adjacency_matrix)) {
       Matrix::writeMM(adjacency_matrix, outfile_adjacency_matrix)
     }
-    # If no nodes are connected (empty matrix), return NULL
-    if (sum(dim(adjacency_matrix)) == 0) { return(NULL) }
+    if (sum(dim(adjacency_matrix)) == 0) {
+      return(NULL)   # no nodes connected (empty matrix)
+    }
   } else if (dist_type == "euclidean_on_atchley") {
     adjacency_matrix <-
       adjacencyMatAtchleyFromSeqs(
@@ -748,6 +767,10 @@ generateNetworkObjects <- function(
     data, seq_col, dist_type = "hamming", dist_cutoff = 1,
     drop_isolated_nodes = TRUE
 ) {
+  data <- as.data.frame(data)
+  .checkargs.generateNetworkObjects(
+    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
+  )
   if (length(seq_col) == 1) {
     return(.generateSingleChainNetwork(
       data, seq_col,
@@ -773,6 +796,9 @@ addNodeNetworkStats <- function(
     cluster_fun = cluster_fast_greedy
 ) {
 
+  .checkargs.addNodeNetworkStats(
+    data, net, stats_to_include, cluster_fun
+  )
   if (!typeof(stats_to_include) %in% c("list", "logical"))  {
     if (stats_to_include == "all") {
       stats_to_include <- chooseNodeStats(all_stats = TRUE)
@@ -844,6 +870,11 @@ chooseNodeStats <- node_stat_settings <- function(
     page_rank = TRUE,
     all_stats = FALSE
 ) {
+  .checkargs.chooseNodeStats(
+    degree, cluster_id, transitivity, closeness, centrality_by_closeness,
+    eigen_centrality, centrality_by_eigen, betweenness,
+    centrality_by_betweenness, authority_score, coreness, page_rank, all_stats
+  )
   c("degree" = degree,
     "cluster_id" = cluster_id,
     "transitivity" = transitivity,
@@ -892,6 +923,7 @@ exclusiveNodeStats <- function(
 # return input data frame augmented with cluster ID
 addClusterMembership <- function(
     data, net, fun = cluster_fast_greedy) {
+  .checkargs.addClusterMembership(data, net, fun)
   cat("Computing cluster membership within the network...")
   data$cluster_id <- as.factor(as.integer(fun(net)$membership))
   cat(" Done.\n")
@@ -910,6 +942,10 @@ getClusterStats <- function(
     cluster_fun = cluster_fast_greedy
 ) {
 
+  .checkargs.getClusterStats(
+    data, adjacency_matrix, seq_col, count_col, cluster_id_col,
+    degree_col, cluster_fun
+  )
   # Compute Cluster ID and network degree if not provided
   if (is.null(cluster_id_col) | is.null(degree_col)) {
     net <- generateNetworkFromAdjacencyMat(adjacency_matrix)
@@ -1398,13 +1434,26 @@ plotNetworkGraph <- function(
 
 
 generateNetworkGraphPlots <- function(
-    igraph, data, print_plots = TRUE,
-    plot_title = NULL, plot_subtitle = NULL,
-    color_nodes_by = NULL, color_scheme = "default",
-    color_legend = "auto", color_title = "auto",
-    edge_width = 0.1, size_nodes_by = 0.5,
-    node_size_limits = NULL, size_title = "auto")
-{
+    igraph,
+    data,
+    print_plots = TRUE,
+    plot_title = NULL,
+    plot_subtitle = NULL,
+    color_nodes_by = NULL,
+    color_scheme = "default",
+    color_legend = "auto",
+    color_title = "auto",
+    edge_width = 0.1,
+    size_nodes_by = 0.5,
+    node_size_limits = NULL,
+    size_title = "auto"
+) {
+
+  .checkargs.generateNetworkGraphPlots(
+    igraph, data, print_plots, plot_title, plot_subtitle, color_nodes_by,
+    color_scheme, color_legend, color_title, edge_width, size_nodes_by,
+    node_size_limits, size_title
+  )
   # harmonize inputs
   new_inputs <- .harmonizePlottingInputs(
     color_nodes_by, color_scheme, color_title, size_nodes_by, size_title)
@@ -1468,6 +1517,10 @@ addClusterLabels <- function(plot, net,
                              criterion = "node_count",
                              size = 5, color = "black",
                              greatest_values = TRUE) {
+  .checkargs.addClusterLabels(
+    plot, net, top_n_clusters, cluster_id_col, criterion,
+    size, color, greatest_values
+  )
   dat <- net$node_data
   cdat <- net$cluster_data
 
