@@ -67,7 +67,7 @@ saveNetwork(
 
 }
 \value{
-Returns its first argument invisibly.
+Returns \code{TRUE}, invisibly, if output is saved. If output is not saved due to \code{output_dir} being \code{NULL}, then returns \code{FALSE}, invisibly.
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).

@@ -34,7 +34,7 @@ saveNetworkPlots(
 }
 }
 \value{
-Returns its first argument invisibly.
+Returns \code{TRUE}, invisibly.
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).

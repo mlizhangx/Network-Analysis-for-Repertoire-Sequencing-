@@ -86,6 +86,8 @@ findPublicClusters(
   \item{count_col}{
     Specifies the column of each sample's data frame containing the clone count
     (measure of clonal abundance). Accepts either the column name or column index.
+    If \code{NULL}, the clusters in each sample's network will be selected solely
+    based upon node count.
 }
   \item{min_seq_length}{
   Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
@@ -108,7 +110,8 @@ findPublicClusters(
 }
   \item{min_clone_count}{
     Clusters with an aggregate clone count of at least this value will be included
-    among the filtered clusters.
+    among the filtered clusters. A value of \code{NULL} ignores this criterion
+    and does not select additional clusters based on clone count.
 }
   \item{plots}{
   Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
@@ -188,7 +191,7 @@ package vignette for more details. The vignette can be accessed offline using
 
 }
 \value{
-    A list of network objects as returned by \code{\link{buildRepSeqNetwork}}.
+    Returns \code{TRUE}, invisibly.
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).

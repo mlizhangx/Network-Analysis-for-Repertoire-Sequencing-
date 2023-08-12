@@ -106,6 +106,10 @@ package vignette for more details. The vignette can be accessed offline using
 }
 \value{
     A list of network objects as returned by \code{\link{buildRepSeqNetwork}}.
+    The list is returned invisibly.
+    If the input data contains a combined total of fewer than two rows, or if the
+    global network contains no nodes, then the function returns \code{NULL},
+    invisibly, with a warning.
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).

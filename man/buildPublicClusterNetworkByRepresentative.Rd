@@ -158,7 +158,10 @@ package vignette for more details. The vignette can be accessed offline using
 \code{vignette("public_clusters")}.
 }
 \value{
-    A list of network objects as returned by \code{\link{buildRepSeqNetwork}}.
+    If the input data contains a combined total of fewer than two rows, or if the
+    global network contains no nodes, then the function returns \code{NULL},
+    invisibly, with a warning. Otherwise, invisibly returns
+    a list of network objects as returned by \code{\link{buildRepSeqNetwork}}.
     The data frame \code{cluster_data} includes the following variables that
     represent properties of the clusters in the global network of representative
     TCR/BCRs:
@@ -265,6 +268,8 @@ package vignette for more details. The vignette can be accessed offline using
     See \code{\link{getClusterStats}}.
     Based on edge connections between representative TCR/BCRs in the global cluster.
 }
+
+
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).

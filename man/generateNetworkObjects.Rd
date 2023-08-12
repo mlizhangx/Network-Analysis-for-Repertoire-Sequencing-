@@ -73,8 +73,8 @@ package vignette for more details. The vignette can be accessed offline using
 }
 \value{
     If the constructed network contains no nodes, the function will return
-    \code{NULL} with a warning. Otherwise, the function invisibly returns a list
-    containing the following items:
+    \code{NULL}, invisibly, with a warning. Otherwise, the function invisibly
+    returns a list containing the following items:
 
     \item{igraph}{
     An object of class \code{\link[igraph]{igraph}} containing the list of nodes

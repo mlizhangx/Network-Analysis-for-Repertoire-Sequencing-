@@ -149,7 +149,7 @@ buildRepSeqNetwork(
     a character vector specifying multiple variables, in which case one plot will
     be generated for each variable. The default value \code{"auto"} attempts to use
     one of several potential variables to color the nodes, depending on what is
-    available.
+    available. A value of \code{NULL} leaves the nodes uncolored.
 }
   \item{...}{
   Other arguments to \code{\link{generateNetworkGraphPlots}}.
@@ -203,8 +203,8 @@ for more details. The vignette can be accessed offline using
 }
 \value{
     If the constructed network contains no nodes, the function will return
-    \code{NULL} with a warning. Otherwise, the function invisibly returns a list
-    containing the following items:
+    \code{NULL}, invisibly, with a warning. Otherwise, the function invisibly
+    returns a list containing the following items:
 
     \item{igraph}{An object of class \code{\link[igraph]{igraph}} containing the
     list of nodes and edges for the network graph.

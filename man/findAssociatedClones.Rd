@@ -151,7 +151,7 @@ package vignette for more details. The vignette can be accessed offline using
 \code{vignette("associated_clusters")}.
 }
 \value{
-Returns its first argument invisibly.
+Returns \code{TRUE}, invisibly.
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
