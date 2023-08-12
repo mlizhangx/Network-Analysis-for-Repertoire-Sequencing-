@@ -212,7 +212,7 @@
     a character vector specifying multiple variables, in which case one plot will
     be generated for each variable. The default value <code>"auto"</code> attempts to use
     one of several potential variables to color the nodes, depending on what is
-    available.</p></dd>
+    available. A value of <code>NULL</code> leaves the nodes uncolored.</p></dd>
 
   <dt>...</dt>
 <dd><p>Other arguments to <code><a href="generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></code>.</p></dd>
@@ -269,8 +269,8 @@ for more details. The vignette can be accessed offline using
 
 <p>If the constructed network contains no nodes, the function will return</p>
 <p></p>
-<p><code>NULL</code> with a warning. Otherwise, the function invisibly returns a list
-    containing the following items:</p>
+<p><code>NULL</code>, invisibly, with a warning. Otherwise, the function invisibly
+    returns a list containing the following items:</p>
 <dl><dt>igraph</dt>
 <dd><p>An object of class <code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph</a></code> containing the
     list of nodes and edges for the network graph.</p></dd>
