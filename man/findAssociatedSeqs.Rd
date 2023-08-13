@@ -118,13 +118,13 @@ findAssociatedSeqs2(
     associated sequences. Passed to \code{\link{filterInputData}}.
 }
   \item{drop_matches}{
-    Passed to \code{\link{filterInputData}}. Accepts a regular expression
-    (see \code{\link[base]{regex}}). Checks TCR/BCR sequences for a pattern
-    match using \code{\link{grep}}. Those returning a match are excluded from
-    consideration as associated sequences. It is recommended to filter out
-    sequences containing special characters that are invalid for use in file
-    names. By default, sequences containing either of the characters \code{*}
-    or \code{_} are dropped.
+    Passed to \code{\link{filterInputData}}. Accepts a character string containing
+    a regular expression (see \code{\link[base]{regex}}). Checks TCR/BCR sequences
+    for a pattern match using \code{\link{grep}}. Those returning a match are
+    excluded from consideration as associated sequences. It is recommended to
+    filter out sequences containing special characters that are invalid for use
+    in file names. By default, sequences containing any of the characters
+    \code{*}, \code{|} or \code{_} are dropped.
 }
   \item{min_sample_membership}{
     Controls the minimum number of samples in which a TCR/BCR sequence must be

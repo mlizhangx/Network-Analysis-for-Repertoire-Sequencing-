@@ -124,9 +124,8 @@ By default, only sequences that contain at least seven characters will be consid
 
 Sequences can be filtered based on the character content they contain. **It is recommended to filter out sequences containing special characters that are invalid for use in file names.**
 
-By default, sequences containing characters `*` or `_` will be excluded from consideration. This can be changed using the `drop_matches` argument, which accommodates a character string or regular expression specifying the pattern of content to search for. The content of each sequence is checked for a match to this pattern using `grep()`. If a match is found, the sequence is excluded from consideration. Setting the value to `NULL` bypasses this check. 
+By default, sequences containing any of the characters `*`, `|` or `_` will be excluded from consideration. This can be changed using the `drop_matches` argument, which accepts a character string containing a regular expression that specifies the pattern of content to search for (see `?regex`).  The content of each sequence is checked for a match to this pattern using `grep()`. If a match is found, the sequence is excluded from consideration. Setting the value to `NULL` bypasses this check. 
 
-For details on how the pattern matching is performed, please refer to the base R documentation files for `regex()` and `grep()`.
 
 ### P-value Cutoff
 
@@ -327,10 +326,7 @@ By default, clones with sequences that contain fewer than six characters will be
 
 #### `drop_matches`
 
-Clones with sequences containing characters `*` or `_` will be removed from each sample prior to constructing the neighborhoods. This can be changed using the `drop_matches` argument, which accommodates a character string or regular expression specifying the pattern of content to search for. The content of each clone's sequence is checked for a match to this pattern using the `grep` function from base R. If a match is found, the clone is removed before constructing the neighborhoods. Setting the value to `NULL` bypasses this check. 
-
-For details on how the pattern matching is performed, please refer to the base R documentation files for `regex` and `grep`.
-
+Clones with sequences containing any of the characters `*`, `|` or `_` will be removed from each sample prior to constructing the neighborhoods. This can be changed using the `drop_matches` argument, which accepts a character string containing a regular expression that specifies the pattern of content to search for (see `?regex`). The content of each clone's sequence is checked for a match to this pattern using `grep()`. If a match is found, the clone is removed before constructing the neighborhoods. Setting the value to `NULL` bypasses this check. 
 
 
 ## Network Neighborhood Settings {.tabset}

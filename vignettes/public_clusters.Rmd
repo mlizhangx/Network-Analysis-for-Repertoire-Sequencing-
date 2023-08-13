@@ -133,9 +133,8 @@ When building the network for each sample, only clones whose receptor sequences 
 
 ### Sequence Content
 
-When building the network for each sample, all clones whose receptor sequences contain characters `*` or `_` will be omitted from the network. This can be changed using the `drop_matches` argument, which accommodates a character string or regular expression specifying the pattern of content to search for. The content of each clone's sequence is checked for a match to this pattern using `grep()`. If a match is found, the clone is omitted from the network. Setting the value to `NULL` bypasses this check. 
+When building the network for each sample, all clones whose receptor sequences contain any of the characters `*`, `|` or `_` will be omitted from the network. This can be changed using the `drop_matches` argument, which accepts a character string containing a regular expression that specifies the pattern of content to search for (see `?regex`). The content of each clone's sequence is checked for a match to this pattern using `grep()`. If a match is found, the clone is omitted from the network. Setting the value to `NULL` bypasses this check. 
 
-For details on how the pattern matching is performed, refer to the base R documentation files for `regex()` and `grep()`.
 
 ## <a name="input_settings"></a> Specify Input Data for Step 1 {.tabset}
 

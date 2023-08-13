@@ -168,9 +168,9 @@ This check can be bypassed by setting `min_seq_length = NULL`.
 
 ## `drop_matches`
 
-This parameter can be optionally used to filter out TCR/BCR sequences with content matching a certain pattern. The argument accepts a character string or regular expression specifying the pattern of content to search for. Each TCR/BCR sequence is checked for a match with the specified content pattern. Every data row whose sequence matches the pattern is dropped before constructing the network graph. 
+This parameter can be optionally used to filter out TCR/BCR sequences with content matching a certain pattern. The argument accepts a character string containing a regular expression that specifies the pattern of content to search for (see `?regex`). Each TCR/BCR sequence is checked for a match with the specified content pattern. Every data row whose sequence matches the pattern is dropped before constructing the network graph. 
 
-The receptor sequence is the value in the column specified by the [`seq_col`](#mainargs) argument. It is checked for a match with the specified content pattern using the `grep` function from base R.
+The receptor sequence is the value in the column specified by the [`seq_col`](#mainargs) argument. It is checked for a match with the specified content pattern using `grep()`.
 
 
 

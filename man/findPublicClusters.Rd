@@ -95,10 +95,11 @@ findPublicClusters(
 }
   \item{drop_matches}{
   Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
-  each sample. Accepts a regular expression (see \code{\link[base]{regex}}).
+  each sample. Accepts a character string containing a regular expression
+  (see \code{\link[base]{regex}}).
   Checks TCR/BCR sequences for a pattern match. Those returning a match are dropped.
-  By default, sequences containing either of the characters \code{*} or \code{_}
-  are dropped.
+  By default, sequences containing any of the characters \code{*}, \code{|}
+  or \code{_} are dropped.
 }
   \item{top_n_clusters}{
     The number of clusters from each sample to be automatically be included among

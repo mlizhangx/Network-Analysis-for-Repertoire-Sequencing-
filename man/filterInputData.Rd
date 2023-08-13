@@ -33,8 +33,9 @@ filterInputData(
     characters are dropped.
 }
   \item{drop_matches}{
-    Accepts a regular expression (see \code{\link[base]{regex}}). Checks values
-    in the receptor sequence column for a pattern match using \code{\link{grep}}.
+    Accepts a character string containing a regular expression
+    (see \code{\link[base]{regex}}). Checks values in the receptor sequence
+    column for a pattern match using \code{\link{grep}}.
     Rows in which a match is found are dropped.
 }
   \item{subset_cols}{

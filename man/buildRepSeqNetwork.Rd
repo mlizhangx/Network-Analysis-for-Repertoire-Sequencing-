@@ -76,10 +76,10 @@ buildRepSeqNetwork(
     fewer than \code{min_seq_length} characters are removed prior to network analysis.
 }
   \item{drop_matches}{
-    Optional. Passed to \code{\link{filterInputData}}. Accepts a regular expression
-    (see \code{\link[base]{regex}}). Checks receptor sequences for a pattern match
-    using \code{\link{grep}}. Those returning a match are removed prior to network
-    analysis.
+    Optional. Passed to \code{\link{filterInputData}}. Accepts a character string
+    containing a regular expression (see \code{\link[base]{regex}}).
+    Checks receptor sequences for a pattern match using \code{\link{grep}}.
+    Those returning a match are removed prior to network analysis.
 }
   \item{dist_type}{
     Specifies the function used to quantify the similarity between sequences.
