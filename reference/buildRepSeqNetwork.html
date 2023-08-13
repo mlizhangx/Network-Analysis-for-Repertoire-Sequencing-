@@ -139,10 +139,10 @@
     fewer than <code>min_seq_length</code> characters are removed prior to network analysis.</p></dd>
 
   <dt>drop_matches</dt>
-<dd><p>Optional. Passed to <code><a href="filterInputData.html">filterInputData</a></code>. Accepts a regular expression
-    (see <code><a href="https://rdrr.io/r/base/regex.html" class="external-link">regex</a></code>). Checks receptor sequences for a pattern match
-    using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></code>. Those returning a match are removed prior to network
-    analysis.</p></dd>
+<dd><p>Optional. Passed to <code><a href="filterInputData.html">filterInputData</a></code>. Accepts a character string
+    containing a regular expression (see <code><a href="https://rdrr.io/r/base/regex.html" class="external-link">regex</a></code>).
+    Checks receptor sequences for a pattern match using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></code>.
+    Those returning a match are removed prior to network analysis.</p></dd>
 
   <dt>dist_type</dt>
 <dd><p>Specifies the function used to quantify the similarity between sequences.
