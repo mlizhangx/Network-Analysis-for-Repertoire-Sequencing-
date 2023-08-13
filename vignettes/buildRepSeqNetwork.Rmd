@@ -576,7 +576,7 @@ names(output_minimal)
 
 ## <a name="standalone_filtering"></a> Standalone Input Filtering 
 
-Filtering the input data can be performed as a separate step prior to calling `generateNetworkObjects()`. This is done using `filterInputData()`. The function has arguments [`data`, `seq_col`](#mainargs), [`min_seq_length`, `drop_matches`, `subset_cols`](#input_options) and [`count_col`](#cluster_analysis), all of which behave in the same manner as seen in `buildRepSeqNetwork()`. 
+Filtering the input data can be performed as a separate step prior to calling `generateNetworkObjects()`. This is done using `filterInputData()`. The function has arguments [`data`, `seq_col`](#mainargs), [`min_seq_length`, `drop_matches`](#input_options) and [`subset_cols`](#subset_cols), all of which behave in the same manner as seen in `buildRepSeqNetwork()`.  In addition, the `count_col` argument can be used to specify a column containing the clone count or UMI count. If specified, observations with `NA` values in this column will be removed from the data.
 
 ```{r}
 # Filter input data as a preprocessing step
