@@ -8,7 +8,7 @@ To learn about the NAIR package and get started, visit the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/}{package website},
 or browse the package vignettes offline:
 
-\code{browseVignettes(package = "NAIRw")}
+\code{browseVignettes(package = "NAIR")}
 
 The following vignette is a good place to start:
 
