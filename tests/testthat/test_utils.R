@@ -198,8 +198,10 @@ test_that("sparseAdjacencyMatFromSeqs behaves as expected", {
 
   cloneSeq <- c("A", "AA", "AB", "BB")
   cloneSeqB <- c("A", "AA", "ACCC", "AB", "BB")
-  adjMat_k0 <- sparseAdjacencyMatFromSeqs(
-    cloneSeq, max_dist = 0, dist_type = "levenshtein"
+  expect_warning(
+    adjMat_k0 <- sparseAdjacencyMatFromSeqs(
+      cloneSeq, max_dist = 0, dist_type = "levenshtein"
+    )
   )
   adjMat_k1 <- sparseAdjacencyMatFromSeqs(
     cloneSeq, max_dist = 1, dist_type = "levenshtein"
@@ -208,8 +210,10 @@ test_that("sparseAdjacencyMatFromSeqs behaves as expected", {
     cloneSeq, max_dist = 2, dist_type = "levenshtein"
   )
 
-  adjMatB_k0 <- sparseAdjacencyMatFromSeqs(
-    cloneSeqB, max_dist = 0, dist_type = "levenshtein"
+  expect_warning(
+    adjMatB_k0 <- sparseAdjacencyMatFromSeqs(
+      cloneSeqB, max_dist = 0, dist_type = "levenshtein"
+    )
   )
   adjMatB_k1 <- sparseAdjacencyMatFromSeqs(
     cloneSeqB, max_dist = 1, dist_type = "levenshtein"
@@ -297,8 +301,10 @@ test_that("sparseAdjacencyMatFromSeqs behaves as expected", {
     cloneSeqB[1:5], dimnames(adjMatB_k4)[[2]]
   )
 
-  adjMat_k0 <- sparseAdjacencyMatFromSeqs(
-    cloneSeq, max_dist = 0, dist_type = "hamming"
+  expect_warning(
+    adjMat_k0 <- sparseAdjacencyMatFromSeqs(
+      cloneSeq, max_dist = 0, dist_type = "hamming"
+    )
   )
   adjMat_k1 <- sparseAdjacencyMatFromSeqs(
     cloneSeq, max_dist = 1, dist_type = "hamming"
@@ -307,8 +313,10 @@ test_that("sparseAdjacencyMatFromSeqs behaves as expected", {
     cloneSeq, max_dist = 2, dist_type = "hamming"
   )
 
-  adjMatB_k0 <- sparseAdjacencyMatFromSeqs(
-    cloneSeqB, max_dist = 0, dist_type = "hamming"
+  expect_warning(
+    adjMatB_k0 <- sparseAdjacencyMatFromSeqs(
+      cloneSeqB, max_dist = 0, dist_type = "hamming"
+    )
   )
   adjMatB_k1 <- sparseAdjacencyMatFromSeqs(
     cloneSeqB, max_dist = 1, dist_type = "hamming"
@@ -402,13 +410,17 @@ test_that("sparseAdjacencyMatFromSeqs behaves as expected", {
   expect_equal(colnames(mat), colnames(mat2))
   expect_equal(rownames(mat), rownames(mat2))
 
-  mat <- sparseAdjacencyMatFromSeqs(
-    c("foo", "foobar", "fubar", "bar")
+  expect_warning(
+    mat <- sparseAdjacencyMatFromSeqs(
+      c("foo", "foobar", "fubar", "bar")
+    )
   )
   expect_s4_class(mat, "sparseMatrix")
   expect_equal(dim(mat), c(0, 0))
-  mat <- sparseAdjacencyMatFromSeqs(
-    c("foo", "foobar", "fubar", "bar"), max_dist = 2
+  expect_warning(
+    mat <- sparseAdjacencyMatFromSeqs(
+      c("foo", "foobar", "fubar", "bar"), max_dist = 2
+    )
   )
   expect_s4_class(mat, "sparseMatrix")
   expect_equal(dim(mat), c(0, 0))
