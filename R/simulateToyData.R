@@ -109,6 +109,10 @@ simulateToyData <- function(
     }
   }
 
-  if (!no_return) { return(dat) } else { return(TRUE) }
+  if (!no_return) {
+    return(dat)
+  } else {
+    return(TRUE)
+  }
 }
 
