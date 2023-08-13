@@ -2,6 +2,8 @@ importFrom(Rcpp, evalCpp)
 
 importClassesFrom(Matrix, dgCMatrix)
 
+importFrom(lifecycle, deprecated)
+
 importFrom(igraph, cluster_fast_greedy)
 importFrom(igraph, cluster_edge_betweenness)
 importFrom(igraph, cluster_fluid_communities)

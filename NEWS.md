@@ -7,10 +7,10 @@
 * Tests
     * Tests added for `hamDistBounded()`, `levDistBounded()`, `sparseAdjacencyMatFromSeqs()`.
     * Tests added for low-level argument checks.
-* DESCRIPTION
-    * Added R minimum version requirement 3.1.0 to `Depends`, since version 3.0.2 or greater is needed to require specific minimum versions of RcppArmadillo and Rcpp in the `LinkingTo` field (requiring 3.1.0 since CRAN advises against requiring R versions that don't have 0 as the third value).
-* Compile Flags in Makevars
-    * Re-enabled OpenMP support for Unix-based systems.
+* Added R minimum version requirement 3.1.0 to `Depends` field of DESCRIPTION, since version 3.0.2 or greater is needed to require specific minimum versions of RcppArmadillo and Rcpp in the `LinkingTo` field (requiring 3.1.0 since CRAN advises against requiring R versions that don't have 0 as the third value).
+* Reintroduced compile flags for OpenMP support to Makevars (this change only applies to MacOS and Linux, as these compile flags were never removed from Makevars.win)
+* Added the `lifecycle` package to `Imports`, imported the `deprecated()` function and copied lifecycle badge images into the package files. Functions and their arguments can now be assigned lifecycle stages and badges can be used in package documentation files.
+* Removed the `reticulate` package from `Imports` and removed the associated scaffolding throughout the package that was set up for integration with python scripts.
 
 ## Documentation and Vignettes
 
