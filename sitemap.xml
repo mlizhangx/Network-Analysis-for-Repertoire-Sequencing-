@@ -55,9 +55,6 @@
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/addNodeNetworkStats.html</loc>
   </url>
   <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/adjacencyMatAtchleyFromSeqs.html</loc>
-  </url>
-  <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/aggregateIdenticalClones.html</loc>
   </url>
   <url>
@@ -80,9 +77,6 @@
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/combineSamples.html</loc>
-  </url>
-  <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/encodeTCRSeqsByAtchleyFactor.html</loc>
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/filterInputData.html</loc>
@@ -116,12 +110,6 @@
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/installPythonModules.html</loc>
-  </url>
-  <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/kmeansAtchley.html</loc>
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/levDistBounded.html</loc>

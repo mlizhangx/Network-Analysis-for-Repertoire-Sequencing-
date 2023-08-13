@@ -294,12 +294,12 @@ to the <code>file_list</code> argument of
 <span>                         <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpwSWaV9/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpwSWaV9/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmpwSWaV9/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmpwSWaV9/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmpwSWaV9/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmpwSWaV9/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/Rtmp2tb6hn/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/Rtmp2tb6hn/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/Rtmp2tb6hn/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/Rtmp2tb6hn/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/Rtmp2tb6hn/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/Rtmp2tb6hn/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
@@ -897,7 +897,7 @@ step</a>:</p>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpwSWaV9/assoc_seq_nbds</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/Rtmp2tb6hn/assoc_seq_nbds</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findassociatedclones">
@@ -1194,16 +1194,16 @@ vignette</a> for further details on how the output files are named.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpwSWaV9/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmp2tb6hn/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpwSWaV9/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/Rtmp2tb6hn/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpwSWaV9/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmp2tb6hn/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpwSWaV9/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/Rtmp2tb6hn/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpwSWaV9/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/Rtmp2tb6hn/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>In the graph plot of the global network, where the nodes are colored
 according to the binary variable of interest, we see that the treatment
 group shows high representation in the clusters, affirming the
@@ -1388,61 +1388,6 @@ opposed to relatively few samples.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID...</span></span></code></pre>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-20-2.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
-</div>
-<div class="section level3">
-<h3 id="k-means-clustering-on-tcr-sequences-encoded-by-atchley-factors">K-means Clustering on TCR Sequences Encoded By Atchley Factors<a class="anchor" aria-label="anchor" href="#k-means-clustering-on-tcr-sequences-encoded-by-atchley-factors"></a>
-</h3>
-<p><strong>NOTE: This step applies to TCR CDR3 amino acid sequences
-only</strong></p>
-<p>As an additional step in our analysis, we can take the TCR sequences
-from the global network and use a deep learning algorithm to encode each
-TCR sequence as a 30-dimensional numeric vector based on the
-Atchley-factor representations of its amino acids. This is done using
-the software <a href="https://www.nature.com/articles/s41592-020-01020-3" class="external-link">TESSA</a>.</p>
-<p>We can then perform <span class="math inline">\(K\)</span>-means
-clustering on the TCR sequences based on their numerically encoded
-values, resulting in <span class="math inline">\(K\)</span>
-clusters.</p>
-<p>For each sample, the frequency distribution of its TCR sequences
-across the <span class="math inline">\(K\)</span> clusters is recorded
-in a length-<span class="math inline">\(K\)</span> vector, where each
-entry is the fraction of TCRs in a particular cluster (with all <span class="math inline">\(K\)</span> entries summing to 1). Fraction of TCRs
-refers to the fraction of the sample’s total number of unique TCR
-sequences.</p>
-<p>The correlation in fraction of TCRs per cluster is computed between
-pairs of samples. This is done by pairing corresponding entries from
-both samples’ <span class="math inline">\(K\)</span>-vectors. Each of
-the <span class="math inline">\(K\)</span> pairs of values is treated as
-an independent observation from a common bivariate random variable. This
-treats the fraction of TCRs in a cluster as a random variable, where the
-cluster is also considered random. It may be noted, however, that the
-<span class="math inline">\(K\)</span> paired observations are not
-actually independent, since they sum to <span class="math inline">\((1,
-1)\)</span>. Nonetheless, the correlation computed in this manner
-provides</p>
-<p>Two heatmaps are produced for comparing the samples. The first
-heatmap depicts each sample’s fraction of TCRs in each cluster. The
-second heatmap depicts the pairwise correlation between samples that is
-described above. In both heatmaps, each column corresponds to a sample.
-A colored bar appears above each column, with the color indicating the
-group to which the sample belongs, based on the group assignments
-specified by the <code>group_ids</code> argument. This aids in the
-detection of differences and similarities within and between groups.</p>
-<p>All of these steps are performed by <code><a href="../reference/kmeansAtchley.html">kmeansAtchley()</a></code>.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">atchley_results</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/kmeansAtchley.html">kmeansAtchley</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
-<span>                amino_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
-<span>                sample_col <span class="op">=</span> <span class="st">"SampleID"</span>, </span>
-<span>                group_col <span class="op">=</span> <span class="st">"GroupID"</span>,</span>
-<span>                k <span class="op">=</span> <span class="fl">5</span>, </span>
-<span>                output_dir <span class="op">=</span> <span class="va">dir_global_net</span>, </span>
-<span>                return_output <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p>The heatmaps are saved as pdfs. Data containing the
-numerically-encoded TCR values, their cluster membership, and each
-sample’s fraction of TCRs in each cluster will be returned if
-<code>return_output = TRUE</code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
