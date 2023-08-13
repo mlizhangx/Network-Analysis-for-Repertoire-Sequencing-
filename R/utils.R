@@ -472,7 +472,7 @@ aggregateIdenticalClones <- function(
   out
 }
 
-# return subset of data corresponding to adjacency matrix
 .subsetDataForAdjacencyMatrix <- function(data, adjacency_matrix) {
+  # return subset of data corresponding to adjacency matrix
   return(data[as.numeric(dimnames(adjacency_matrix)[[1]]), , drop = FALSE])
 }

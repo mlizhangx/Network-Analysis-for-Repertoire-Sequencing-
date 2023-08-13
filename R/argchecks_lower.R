@@ -47,9 +47,10 @@
 
 # Type Checks -------------------------------------------------------------
 
-# combine with other checks to allow NULL argument values
-# only works with checks that have only value, argname as inputs
+
 .orNull <- function(check, value, argname) {
+  # combine with other checks to allow NULL argument values
+  # only works with checks that have only value, argname as inputs
   if (!is.null(value)) {
     check(value, argname)
   }

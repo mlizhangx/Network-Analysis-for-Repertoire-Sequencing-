@@ -524,12 +524,12 @@ getClusterStats <- function(
   out
 }
 
-# wrapper to getClusterStats, for potentially avoiding redoing clustering computation
-# after computing node level stats
+
 .getClusterStats2 <- function(
     data, adjacency_matrix, seq_col, count_col,
     cluster_fun = cluster_fast_greedy
 ) {
+  # check to avoid redundant cluster analysis after computing node level stats
   cluster_id_col <- degree_col <- NULL
   if ("cluster_id" %in% names(data)) { cluster_id_col <- "cluster_id" }
   if ("degree" %in% names(data)) { degree_col <- "degree" }
