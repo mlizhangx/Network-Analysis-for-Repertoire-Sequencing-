@@ -1,3 +1,38 @@
+
+
+# Changes in NAIR version 0.0.9044 (8/13/2023)
+
+## Package 
+
+* Tests
+    * Tests added for `hamDistBounded()`, `levDistBounded()`, `sparseAdjacencyMatFromSeqs()`.
+    * Tests added for low-level argument checks.
+* DESCRIPTION
+    * Added R minimum version requirement 3.1.0 to `Depends`, since version 3.0.2 or greater is needed to require specific minimum versions of RcppArmadillo and Rcpp in the `LinkingTo` field (requiring 3.1.0 since CRAN advises against requiring R versions that don't have 0 as the third value).
+* Compile Flags in Makevars
+    * Re-enabled OpenMP support for Unix-based systems.
+
+## Documentation and Vignettes
+
+* URLs in documentation files and vignettes have been curated to conform with CRAN's policies. Specifically, any URL that redirected to another URL has been replaced by the target of the redirection. Links to package CRAN pages are now in canonical form.
+* All function reference files now run their examples when the package is built or checked. Some examples have been expanded.
+* Examples and vignette code now remove files and directories created in the temporary directory for the current R session.
+* Added a documentation file for the package itself (`NAIR-package`).
+* All function reference files now have a Value section, including functions that do not return a value.
+
+## Functions
+
+* Argument checks have been expanded to encompass most user-facing package functions.
+* `addClusterMembership()`
+    * The `fun` argument is now passed to `match.fun()` before being called. This allows users to specify clustering algorithms using the syntax, e.g., `cluster_fun = "cluster_walktrap"` in addition to the previously-accepted `cluster_fun = cluster_walktrap`.
+* `findAssociatedClones()`
+    * Upon completion, removes files and directories created in the temporary directory for the current R session.
+* Internal package C++ functions `hamAdjacencyMatSparse()` and `levAdjacencyMatSparse()` have an additional argument specifying the directory in which to write the file `col_ids.txt` (previously it was written to the current working directory of the R session at the time they were called).
+* `sparseAdjacencyMatFromSeqs()`
+    * Now uses the temporary directory for the current R session when calling internal package C++ functions `hamAdjacencyMatSparse()` and `levAdjacencyMatSparse()`, rather than the current working directory.
+
+
+
 # Changes in NAIR version 0.0.9043 (8/7/2023)
 
 ## Vignettes
