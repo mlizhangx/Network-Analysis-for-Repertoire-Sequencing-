@@ -188,6 +188,13 @@
     min_seq_length, drop_matches, min_sample_membership, pval_cutoff, outfile
 ) {
 
+  if (!is.null(groups)) {
+    warning(paste(
+      "groups argument is deprecated; group labels are now determined from",
+      "the unique values of the group_ids argument. Avoid using the groups",
+      "argument to avoid errors in future versions of NAIR"
+    ))
+  }
   .hasAtLeastTwoRows(data)
   .isSeqCol(data, seq_col)
   .isDataCol(data, group_col, "group_col")
@@ -423,4 +430,13 @@
   .isDataColOrNull(data, cluster_id_col, "cluster_id_col")
   .isDataColOrNull(data, degree_col, "degree_col")
   .checkClusterFun(cluster_fun)
+}
+
+.checkargs.sparseAdjacencyMatFromSeqs <- function(
+    seqs, dist_type, max_dist, drop_isolated_nodes
+) {
+  .isValidSeqVector(seqs)
+  .isDistType(dist_type)
+  .isNonneg(max_dist, "max_dist")
+  .isTF(drop_isolated_nodes, "drop_isolated_nodes")
 }
