@@ -105,9 +105,6 @@ vignette("NAIR", package = "NAIR")
 
 # Display vignettes in html browser
 browseVignettes("NAIR")
-
-# Browse documentation
-help(package = "NAIR")
 ```
 
 ## The `buildRepSeqNetwork` function
