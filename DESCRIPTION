@@ -1,14 +1,12 @@
 Package: NAIR
 Type: Package
-Title: Network Analysis for Immune Repertoire
+Title: Network Analysis of Immune Repertoire
 Version: 0.0.9043
 Authors@R: c(
     person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
     person("Phi Long", "Le", email = "PhiLong.Le@ucsf.edu", role = "aut"),
-    person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = "aut"),
-    person("Ze", "Zhang", email = "Ze.Zhang@UTsouthwestern.edu", role = "ctb",
-           comment = "Author of TESSA (BriseisEncoder.py)"))
+    person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = c("cph", "aut")))
 Description: Pipelines for studying the adaptive immune repertoire of T
     and B cells via network analysis based on receptor sequence similarity. 
     Relate clinical outcomes to immune repertoires based on their network 
@@ -18,18 +16,9 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.0.2)
-Imports: reticulate, igraph, ggraph, ggplot2, gplots, graphics, grDevices, utils, Matrix, stats, plyr, dplyr, reshape2, RColorBrewer, viridisLite
+Imports: igraph, ggraph, ggplot2, grDevices, utils, Matrix, stats, plyr, dplyr, RColorBrewer, viridisLite
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 LinkingTo: Rcpp (>= 1.0.8), RcppArmadillo (>= 0.10.8.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Config/reticulate:
-  list(
-    packages = list(
-      list(package = "numpy"),
-      list(package = "pandas"),
-      list(package = "tensorflow"),
-      list(package = "keras")
-    )
-  )
 URL: https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/, https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-
