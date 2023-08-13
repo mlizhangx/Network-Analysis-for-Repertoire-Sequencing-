@@ -10,7 +10,7 @@
     pdf_width, pdf_height
 ) {
 
-  .isDataFrame(data)
+  .isDataFrame(data, "data")
   .hasAtLeastTwoRows(data)
   .isSeqCol(data, seq_col)
   .isDataColOrNull(data, count_col, "count_col")
@@ -21,15 +21,15 @@
   .isTF(plots, "plots")
   .isTF(print_plots, "print_plots")
   .isString(output_name, "output_name")
-  .isStringOrNull(plot_title, "plot_title")
-  .isStringOrNull(plot_subtitle, "plot_subtitle")
-  .isStringOrNull(drop_matches, "drop_matches")
-  .isPosIntOrNull(min_seq_length, "min_seq_length")
+  .orNull(.isString, plot_title, "plot_title")
+  .orNull(.isString, plot_subtitle, "plot_subtitle")
+  .orNull(.isString, drop_matches, "drop_matches")
+  .orNull(.isPosInt, min_seq_length, "min_seq_length")
   .isNonneg(dist_cutoff, "dist_cutoff")
   .isPos(pdf_width, "pdf_width")
   .isPos(pdf_height, "pdf_height")
   .isDistType(dist_type)
-  .isStringOrNull(output_dir, "output_dir")
+  .orNull(.isString, output_dir, "output_dir")
   if (!is.null(output_dir)) {
     .isOutputType(output_type)
   }
@@ -57,19 +57,19 @@
   )
   .isCharOrNumericVector(sample_ids, "sample_ids")
   .isCharOrNumericVector(seq_col, "seq_col")
-  .isCharOrNumericScalarOrNull(count_col, "count_col")
-  .isNonnegOrNull(min_seq_length, "min_seq_length")
-  .isStringOrNull(drop_matches, "drop_matches")
+  .orNull(.isCharOrNumericScalar, count_col, "count_col")
+  .orNull(.isNonneg, min_seq_length, "min_seq_length")
+  .orNull(.isString, drop_matches, "drop_matches")
   .isPosInt(top_n_clusters, "top_n_clusters")
   .isPosInt(min_node_count, "min_node_count")
-  .isPosOrNull(min_clone_count, "min_clone_count")
+  .orNull(.isPos, min_clone_count, "min_clone_count")
   .isTF(plots, "plots")
   .isTF(print_plots, "print_plots")
-  .isStringOrNull(plot_title, "plot_title")
-  .isCharOrNumericVectorOrNull(color_nodes_by, "color_nodes_by")
-  .isStringOrNull(output_dir, "output_dir")
+  .orNull(.isString, plot_title, "plot_title")
+  .orNull(.isCharOrNumericVector, color_nodes_by, "color_nodes_by")
+  .orNull(.isString, output_dir, "output_dir")
   .isOutputType(output_type, type = "findPublicClusters")
-  .isStringOrNull(output_dir_unfiltered, "output_dir")
+  .orNull(.isString, output_dir_unfiltered, "output_dir")
   if (!is.null(output_dir_unfiltered)) {
     .isOutputType(output_type_unfiltered)
   }
@@ -103,8 +103,8 @@
   }
   .isCharOrNumericVector(color_nodes_by, "color_nodes_by")
   .isCharVector(color_scheme, "color_scheme")
-  .isStringOrNull(plot_title, "plot_title")
-  .isStringOrNull(output_dir, "output_dir")
+  .orNull(.isString, plot_title, "plot_title")
+  .orNull(.isString, output_dir, "output_dir")
   .isString(output_name, "output_name")
 
 }
@@ -120,17 +120,17 @@
     file_list, input_type, data_symbols, header, sep
   )
   .isCharOrNumericVector(seq_col, "seq_col")
-  .isCharOrNumericScalarOrNull(count_col, "count_col")
+  .orNull(.isCharOrNumericScalar, count_col, "count_col")
   .isDistType(dist_type)
   .isNonneg(dist_cutoff, "dist_cutoff")
   .checkClusterFun(cluster_fun)
   .isTF(plots, "plots")
   .isTF(print_plots, "print_plots")
-  .isStringOrNull(plot_title, "plot_title")
-  .isStringOrNull(plot_subtitle, "plot_subtitle")
+  .orNull(.isString, plot_title, "plot_title")
+  .orNull(.isString, plot_subtitle, "plot_subtitle")
   .isCharOrNumericVector(color_nodes_by, "color_nodes_by")
   .checkColorScheme(color_scheme, color_nodes_by, plots)
-  .isStringOrNull(output_dir, "output_dir")
+  .orNull(.isString, output_dir, "output_dir")
   if (!is.null(output_dir)) {
     .isOutputType(output_type)
   }
@@ -152,15 +152,15 @@
   .checkargs.InputFiles(
     file_list, input_type, data_symbols, header, sep
   )
-  .isCharOrNumericVectorOrNull(subject_ids, "subject_ids")
+  .orNull(.isCharOrNumericVector, subject_ids, "subject_ids")
   .isCharOrNumericVector(group_ids, "group_ids")
   .isCharOrNumericVector(seq_col, "seq_col")
-  .isCharOrNumericScalarOrNull(freq_col, "freq_col")
-  .isNonnegOrNull(min_seq_length, "min_seq_length")
-  .isStringOrNull(drop_matches, "drop_matches")
-  .isNonnegOrNull(min_sample_membership, "min_sample_membership")
+  .orNull(.isCharOrNumericScalar, freq_col, "freq_col")
+  .orNull(.isNonneg, min_seq_length, "min_seq_length")
+  .orNull(.isString, drop_matches, "drop_matches")
+  .orNull(.isNonneg, min_sample_membership, "min_sample_membership")
   .isPos(pval_cutoff, "pval_cutoff")
-  .isStringOrNull(outfile, "outfile")
+  .orNull(.isString, outfile, "outfile")
   if (!is.null(subject_ids)) {
     stopifnot(
       "file_list and subject_ids have non-matching lengths" =
@@ -194,11 +194,11 @@
   .isDataCol(data, sample_col, "sample_col")
   .isDataCol(data, subject_col, "subject_col")
   .isDataColOrNull(data, freq_col, "freq_col")
-  .isNonnegOrNull(min_seq_length, "min_seq_length")
-  .isStringOrNull(drop_matches, "drop_matches")
-  .isNonnegOrNull(min_sample_membership, "min_sample_membership")
+  .orNull(.isNonneg, min_seq_length, "min_seq_length")
+  .orNull(.isString, drop_matches, "drop_matches")
+  .orNull(.isNonneg, min_sample_membership, "min_sample_membership")
   .isPos(pval_cutoff, "pval_cutoff")
-  .isStringOrNull(outfile, "outfile")
+  .orNull(.isString, outfile, "outfile")
   if (!is.null(groups)) {
     warning("`groups` argument is deprecated; group labels are now determined from the unique values of the `group_ids` argument. Avoid using the `groups` argument to avoid errors in future versions of NAIR")
   }
@@ -214,19 +214,19 @@
   .checkargs.InputFiles(
     file_list, input_type, data_symbols, header, sep
   )
-  .isCharOrNumericVectorOrNull(subject_ids, "subject_ids")
+  .orNull(.isCharOrNumericVector, subject_ids, "subject_ids")
   .isCharOrNumericVector(group_ids, "group_ids")
   .isCharOrNumericVector(sample_ids, "sample_ids")
   .isCharOrNumericVector(seq_col, "seq_col")
   .isCharOrNumericVector(assoc_seqs, "assoc_seqs")
   .isNonneg(nbd_radius, "nbd_radius")
   .isDistType(dist_type)
-  .isNonnegOrNull(min_seq_length, "min_seq_length")
-  .isStringOrNull(drop_matches, "drop_matches")
-  .isCharOrNumericVectorOrNull(subset_cols, "subset_cols")
+  .orNull(.isNonneg, min_seq_length, "min_seq_length")
+  .orNull(.isString, drop_matches, "drop_matches")
+  .orNull(.isCharOrNumericVector, subset_cols, "subset_cols")
   .isString(output_dir, "output_dir")
   .isOutputType(output_type, "findAssociatedClones")
-  .isTF(verbose)
+  .isTF(verbose, "verbose")
 
 }
 
@@ -240,13 +240,13 @@
     file_list, input_type, data_symbols, header, sep
   )
   .isCharOrNumericVector(seq_col, "seq_col")
-  .isNonnegOrNull(min_seq_length, "min_seq_length")
-  .isStringOrNull(drop_matches, "drop_matches")
+  .orNull(.isNonneg, min_seq_length, "min_seq_length")
+  .orNull(.isString, drop_matches, "drop_matches")
   .isTF(drop_isolated_nodes, "drop_isolated_nodes")
   .isTF(node_stats, "node_stats")
   .isTF(cluster_stats, "cluster_stats")
   .checkStatsToInclude(stats_to_include)
-  .isCharOrNumericVectorOrNull(color_nodes_by, "color_nodes_by")
+  .orNull(.isCharOrNumericVector, color_nodes_by, "color_nodes_by")
   .isString(output_name, "output_name")
 
 }
@@ -264,8 +264,8 @@
   .isDataFrame(data, "data")
   .checkIgraphAgainstData(igraph, data)
   .isTF(print_plots, "print_plots")
-  .isStringOrNull(plot_title, "plot_title")
-  .isStringOrNull(plot_subtitle, "plot_subtitle")
+  .orNull(.isString, plot_title, "plot_title")
+  .orNull(.isString, plot_subtitle, "plot_subtitle")
   .checkColorNodesBy(color_nodes_by, data)
   .checkColorScheme(color_scheme, color_nodes_by)
   .isTFOrAuto(color_legend, "color_legend")
@@ -273,7 +273,7 @@
   .isPos(edge_width, "edge_width")
   .checkSizeNodesBy(size_nodes_by, data)
   .checkNodeSizeLimits(node_size_limits)
-  .isStringOrNull(size_title, "size_title")
+  .orNull(.isString, size_title, "size_title")
 
 }
 
@@ -283,7 +283,7 @@
     data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
 ) {
 
-  .isDataFrame(data)
+  .isDataFrame(data, "data")
   .hasAtLeastTwoRows(data)
   .isSeqCol(data, seq_col)
   .isDistType(dist_type)
@@ -315,22 +315,22 @@
     file_list, input_type, data_symbols, header, sep
   )
   .isCharOrNumericVector(seq_col, "seq_col")
-  .isNonnegOrNull(min_seq_length, "min_seq_length")
-  .isStringOrNull(drop_matches, "drop_matches")
-  .isCharOrNumericVectorOrNull(subset_cols, "subset_cols")
-  .isCharOrNumericVectorOrNull(sample_ids, "sample_ids")
-  .isCharOrNumericVectorOrNull(subject_ids, "subject_ids")
-  .isCharOrNumericVectorOrNull(group_ids, "group_ids")
+  .orNull(.isNonneg, min_seq_length, "min_seq_length")
+  .orNull(.isString, drop_matches, "drop_matches")
+  .orNull(.isCharOrNumericVector, subset_cols, "subset_cols")
+  .orNull(.isCharOrNumericVector, sample_ids, "sample_ids")
+  .orNull(.isCharOrNumericVector, subject_ids, "subject_ids")
+  .orNull(.isCharOrNumericVector, group_ids, "group_ids")
 }
 
 .checkargs.filterInputData <- function(
     data, seq_col, min_seq_length, drop_matches, subset_cols, count_col
 ) {
 
-  .isDataFrame(data)
+  .isDataFrame(data, "data")
   .isSeqCol(data, seq_col)
-  .isNonnegOrNull(min_seq_length, "min_seq_length")
-  .isStringOrNull(drop_matches, "drop_matches")
+  .orNull(.isNonneg, min_seq_length, "min_seq_length")
+  .orNull(.isString, drop_matches, "drop_matches")
   .isDataColsOrNull(data, subset_cols, "subset_cols")
   .isDataColOrNull(data, count_col, "count_col")
 
@@ -348,7 +348,7 @@
   .isDataCol(net$cluster_data, criterion, "criterion")
   .isPos(size, "size")
   .isString(color, "color")
-  .isTF(greatest_values)
+  .isTF(greatest_values, "greatest_values")
 
 }
 
@@ -357,7 +357,7 @@
 ) {
 
   .isBaseNetworkOutput(net, "net")
-  .isStringOrNull(output_dir, "output_dir")
+  .orNull(.isString, output_dir, "output_dir")
   .isOutputType(output_type)
   .isString(output_filename, "output_filename")
   .isPos(pdf_width, "pdf_width")
@@ -399,14 +399,14 @@
   data, net, stats_to_include, cluster_fun
 ) {
   .isDataFrame(data, "data")
-  .isIgraph(net)
+  .isIgraph(net, "net")
   .checkIgraphAgainstData(net, data)
   .checkStatsToInclude(stats_to_include)
   .checkClusterFun(cluster_fun)
 }
 .checkargs.addClusterMembership <- function(data, net, fun) {
   .isDataFrame(data, "data")
-  .isIgraph(net)
+  .isIgraph(net, "net")
   .checkIgraphAgainstData(net, data)
   .checkClusterFun(fun, "fun")
 }
