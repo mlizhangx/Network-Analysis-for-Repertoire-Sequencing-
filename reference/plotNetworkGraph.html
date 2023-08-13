@@ -128,11 +128,12 @@ For manual generation of plots, the generateNetworkGraphPlots
   <dt>color_scheme</dt>
 <dd><p>A character string specifying the color scale used to color the nodes.
     <code>"default"</code> uses default <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></code> colors.
-    Other options are one of the <code><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></code> color scales
-    (e.g., <code>"plasma"</code> or <code>"A"</code>) or (for discrete variables) a palette
+    Other options are one of the viridis color scales (e.g., <code>"plasma"</code>,
+    <code>"A"</code> or other valid inputs to the <code>option</code> argument of
+    <code><a href="https://sjmgarnier.github.io/viridis/reference/scale_viridis.html" class="external-link">scale_color_viridis</a></code>) or (for discrete variables) a palette
     from <code><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.pals</a></code> (e.g., <code>"RdYlGn"</code>). Each of the
-    <code><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html" class="external-link">viridis</a></code> color scales can include the suffix
-    <code>"-1"</code> to reverse its direction (e.g., <code>"plasma-1"</code> or <code>"A-1"</code>).</p></dd>
+    viridis color scales can include the suffix <code>"-1"</code>
+    to reverse its direction (e.g., <code>"plasma-1"</code> or <code>"A-1"</code>).</p></dd>
 
   <dt>color_legend</dt>
 <dd><p>A logical scalar specifying whether to display the color legend in the plot.
