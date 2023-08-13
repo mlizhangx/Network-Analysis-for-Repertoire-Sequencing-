@@ -72,7 +72,7 @@ If the user does not wish the nodes to be colored dynamically, this can be speci
 A preset color palette can be used to color the nodes by providing the appropriate character string to the `color_scheme` argument. The argument accepts the following values:
 
 * `"default"` for default `ggplot2` colors
-* One of the following color scales from the `viridisLite` package. These scales are designed to maintain their perceptual uniformity (consistently across the scale, values close together appear similar, while values far apart appear distinct) when printed in grey scale or when viewed by individuals with common forms of color-blindness or color vision deficiency. More information, including images of the color scales, can be referenced in the [Introduction to the viridis color maps vignette](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html).
+* One of the following color scales from the `viridis` package. These scales are designed to maintain their perceptual uniformity (consistently across the scale, values close together appear similar, while values far apart appear distinct) when printed in grey scale or when viewed by individuals with common forms of color-blindness or color vision deficiency. More information, including images of the color scales, can be referenced in the "Introduction to the viridis color maps" vignette, linked on the [CRAN page for the viridis package](https://CRAN.R-project.org/package=viridis). For offline information, see the documentation for `ggraph::scale_color_viridis()`.
 * `"magma"` (or `"A"`)
 * `"inferno"` (or `"B"`)
 * `"plasma"` (or `"C"`)
