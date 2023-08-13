@@ -330,8 +330,8 @@
 
 .isAdjacencyMatrix <- function(value, argname) {
   .stopifnot(
-    is.matrix(value) || inherits(value, "dgCMatrix"),
-    argname, "must be a matrix or dgCMatrix"
+    is.matrix(value) || inherits(value, "sparseMatrix"),
+    argname, "must be a matrix or sparseMatrix"
   )
   .stopifnot(
     dim(value)[[1]] == dim(value)[[2]],
