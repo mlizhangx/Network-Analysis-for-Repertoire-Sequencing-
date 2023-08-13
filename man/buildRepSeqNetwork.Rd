@@ -87,9 +87,7 @@ buildRepSeqNetwork(
     their respective nodes in the network graph, with greater similarity corresponding
     to shorter distance. Valid options are \code{"hamming"} (the default), which
     uses \code{\link{hamDistBounded}}, and \code{"levenshtein"}, which uses
-    \code{\link{levDistBounded}}. An additional option \code{"euclidean_on_atchley"}
-    exists for TCR CDR3 amino acid sequences
-    (see \code{\link{adjacencyMatAtchleyFromSeqs}}).
+    \code{\link{levDistBounded}}.
 }
   \item{dist_cutoff}{
     A nonnegative scalar. Specifies the maximum pairwise distance (based on

@@ -595,46 +595,6 @@ sparseAdjacencyMatFromSeqs <- function(
 }
 
 
-# Adjacency Matrix: Euclidean Distance on Atchley Factor Embedding
-# (Only applicable to TCR CDR3 Amino Acid Sequences)
-# This function is intended for building the network for a single cluster, where
-# the adjacency matrix is typically dense
-adjacencyMatAtchleyFromSeqs <- function(
-    seqs, # List of TCR CDR3 amino acid sequences corresponding to the seqs
-    contig_ids = seq_along(seqs), # used by BriseisEncoder to perform the Atchley-factor embedding of the TCR sequences
-    max_dist, # Maximum Euclidean distance threshold for edge/adjacency between two sequences
-    return_type = "adjacency_matrix", # can be set to "distance_matrix" to return the distance matrix instead
-    outfile_distance_matrix = NULL # savefile for Euclidean distance matrix
-) {
-  # Embed amino acid seqs in Euclidean 30-space by Atchley factor representation
-  embedded_values <- encodeTCRSeqsByAtchleyFactor(seqs, contig_ids)
-
-  # Compute Euclidean distance matrix on embedded sequence values
-  cat("Computing Euclidean distances between the embedded values...")
-  distance_matrix <- as.matrix(stats::dist(embedded_values[ , -1]))
-  cat(" Done.\n")
-
-  if (!is.null(outfile_distance_matrix)) {
-    # Save distance matrix to file
-    utils::write.csv(distance_matrix, outfile_distance_matrix)
-    cat(paste0("Distance matrix saved to file:\n  ", outfile_distance_matrix,
-               "\n")) }
-
-  if (return_type == "distance_matrix") {
-    return(distance_matrix)
-  } else {
-    # Convert distance matrix to adjacency matrix using specified bound
-    cat(paste0("Generating adjacency matrix based on a maximum distance of ",
-               max_dist, "..."))
-    adjacency_matrix <-
-      matrix(1, nrow = nrow(distance_matrix), ncol = ncol(distance_matrix))
-    adjacency_matrix[distance_matrix > max_dist] <- 0
-    cat(" Done.\n")
-    return(adjacency_matrix)
-  }
-}
-
-
 
 
 
@@ -675,13 +635,6 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
     if (sum(dim(adjacency_matrix)) == 0) {
       return(NULL)   # no nodes connected (empty matrix)
     }
-  } else if (dist_type == "euclidean_on_atchley") {
-    adjacency_matrix <-
-      adjacencyMatAtchleyFromSeqs(
-        seqs = seqs,
-        contig_ids = contig_ids,
-        max_dist = dist_cutoff,
-        outfile_distance_matrix = outfile_distance_matrix)
   } else { stop("invalid option for argument `dist_type`") }
   if (return_type == "adjacency_matrix") {
     return(adjacency_matrix)
@@ -1646,48 +1599,3 @@ addClusterLabels <- function(plot, net,
 }
 
 
-
-# Atchley Factor Embedding ------------------------------------------------
-
-# Embed TCR CDR3 amino acid sequences in Euclidean 30-space based on the Atchley
-# factor representations of their elements, using a trained encoding model
-encodeTCRSeqsByAtchleyFactor <- function(
-    cdr3_AA, # List of TCR CDR3 amino acid sequences
-    contig_ids = seq_along(cdr3_AA) # used by BriseisEncoder
-) {
-  .checkPythonModules()
-  if (length(cdr3_AA) != length(contig_ids)) {
-    stop("length of `cdr3_AA` and `contig_ids` must match")
-  }
-  # Write sequences and contig_ids to temporary file
-  tempfile_clones <- file.path(getwd(),
-                               "Atchley_factor_tcr_only_tmp.csv")
-  utils::write.csv(data.frame("contig_id" = contig_ids, "cdr3" = cdr3_AA),
-                   file = tempfile_clones, row.names = FALSE)
-
-  # Write files for trained encoder and Atchley factor table to working dir
-  file_trained_encoder <-
-    system.file(file.path("python", "TrainedEncoder.h5"),
-                package = "NAIR")
-  file_atchley_table <-
-    system.file(file.path("python", "Atchley_factors.csv"),
-                package = "NAIR")
-  utils::write.csv(data.frame("sysfiles" = c(file_atchley_table,
-                                             file_trained_encoder)),
-                   file.path(getwd(), "temp_sysfiles.csv"),
-                   row.names = FALSE)
-
-  # Run BriseisEncoder python function
-  cat("Embedding TCR CDR3 amino acid sequences in 30-dimensional Euclidean space based on Atchley factor representation and a trained encoding model using deep learning routines from the keras & tensorflow python modules. This may produce some warnings...\n")
-  reticulate::py_run_file(
-    system.file(file.path("python", "BriseisEncoder_modified.py"),
-                package = "NAIR"))
-
-  # Import embedded values and remove temp files
-  embedded_values <- utils::read.csv("temp_atchley_factors_encoded.csv")
-  file.remove("Atchley_factor_tcr_only_tmp.csv", "temp_sysfiles.csv",
-              "temp_atchley_factors_encoded.csv")
-  cat("Embedding complete.\n")
-  warning("The encoder was trained on TCR CDR3 sequences; results not valid for other amino acid sequences")
-  return(embedded_values)
-}

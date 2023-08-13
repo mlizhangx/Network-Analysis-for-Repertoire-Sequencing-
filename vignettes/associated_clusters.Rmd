@@ -703,39 +703,9 @@ buildRepSeqNetwork(
 ```
 
 
-## K-means Clustering on TCR Sequences Encoded By Atchley Factors
-
-**NOTE: This step applies to TCR CDR3 amino acid sequences only**
-
-As an additional step in our analysis, we can take the TCR sequences from the global network and use a deep learning algorithm to encode each TCR sequence as a 30-dimensional numeric vector based on the Atchley-factor representations of its amino acids. This is done using the software [TESSA](https://www.nature.com/articles/s41592-020-01020-3).
-
-We can then perform $K$-means clustering on the TCR sequences based on their numerically encoded values, resulting in $K$ clusters.
-
-For each sample, the frequency distribution of its TCR sequences across the $K$ clusters is recorded in a length-$K$ vector, where each entry is the fraction of TCRs in a particular cluster (with all $K$ entries summing to 1). Fraction of TCRs refers to the fraction of the sample's total number of unique TCR sequences.
-
-The correlation in fraction of TCRs per cluster is computed between pairs of samples. This is done by pairing corresponding entries from both samples' $K$-vectors. Each of the $K$ pairs of values is treated as an independent observation from a common bivariate random variable. This treats the fraction of TCRs in a cluster as a random variable, where the cluster is also considered random. It may be noted, however, that the $K$ paired observations are not  actually independent, since they sum to $(1, 1)$. Nonetheless, the correlation computed in this manner provides 
-
-Two heatmaps are produced for comparing the samples. The first heatmap depicts each sample's fraction of TCRs in each cluster. The second heatmap depicts the pairwise correlation between samples that is described above. In both heatmaps, each column corresponds to a sample. A colored bar appears above each column, with the color indicating the group to which the sample belongs, based on the group assignments specified by the `group_ids` argument. This aids in the detection of differences and similarities within and between groups.
-
-All of these steps are performed by `kmeansAtchley()`.
-
-```{r, eval = FALSE}
-atchley_results <- 
-  kmeansAtchley(data = all_clusters$node_data,
-                amino_col = "CloneSeq", 
-                sample_col = "SampleID", 
-                group_col = "GroupID",
-                k = 5, 
-                output_dir = dir_global_net, 
-                return_output = TRUE
-  )
-```
-
-The heatmaps are saved as pdfs. Data containing the numerically-encoded TCR values, their cluster membership, and each sample's fraction of TCRs in each cluster will be returned if `return_output = TRUE`.
 
 
-
-```{r include=FALSE}
+```{r eval=FALSE, include=FALSE}
 # clean up temp directory
 unlink(
   c(dir_nbds, dir_input_samples, dir_global_net),

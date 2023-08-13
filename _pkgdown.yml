@@ -57,13 +57,6 @@ reference:
   contents:
   - hamDistBounded
   - levDistBounded
-- title: "Analysis Using TESSA"
-  desc: "Analyze TCR CDR3 amino acid sequence data using deep learning"
-  contents:
-  - installPythonModules
-  - encodeTCRSeqsByAtchleyFactor
-  - adjacencyMatAtchleyFromSeqs
-  - kmeansAtchley
 - title: "Other Functions and Topics"
   contents:
   - simulateToyData
