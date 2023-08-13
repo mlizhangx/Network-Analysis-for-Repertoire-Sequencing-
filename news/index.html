@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9043</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,6 +57,47 @@
       <small>Source: <a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.9044" id="changes-in-nair-version-009044-8132023">Changes in NAIR version 0.0.9044 (8/13/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009044-8132023"></a></h2>
+<div class="section level3">
+<h3 id="package-0-0-9044">Package<a class="anchor" aria-label="anchor" href="#package-0-0-9044"></a></h3>
+<ul><li>Tests
+<ul><li>Tests added for <code><a href="../reference/hamDistBounded.html">hamDistBounded()</a></code>, <code><a href="../reference/levDistBounded.html">levDistBounded()</a></code>, <code><a href="../reference/sparseAdjacencyMatFromSeqs.html">sparseAdjacencyMatFromSeqs()</a></code>.</li>
+<li>Tests added for low-level argument checks.</li>
+</ul></li>
+<li>DESCRIPTION
+<ul><li>Added R minimum version requirement 3.1.0 to <code>Depends</code>, since version 3.0.2 or greater is needed to require specific minimum versions of RcppArmadillo and Rcpp in the <code>LinkingTo</code> field (requiring 3.1.0 since CRAN advises against requiring R versions that don’t have 0 as the third value).</li>
+</ul></li>
+<li>Compile Flags in Makevars
+<ul><li>Re-enabled OpenMP support for Unix-based systems.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-and-vignettes-0-0-9044">Documentation and Vignettes<a class="anchor" aria-label="anchor" href="#documentation-and-vignettes-0-0-9044"></a></h3>
+<ul><li>URLs in documentation files and vignettes have been curated to conform with CRAN’s policies. Specifically, any URL that redirected to another URL has been replaced by the target of the redirection. Links to package CRAN pages are now in canonical form.</li>
+<li>All function reference files now run their examples when the package is built or checked. Some examples have been expanded.</li>
+<li>Examples and vignette code now remove files and directories created in the temporary directory for the current R session.</li>
+<li>Added a documentation file for the package itself (<code>NAIR-package</code>).</li>
+<li>All function reference files now have a Value section, including functions that do not return a value.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="functions-0-0-9044">Functions<a class="anchor" aria-label="anchor" href="#functions-0-0-9044"></a></h3>
+<ul><li>Argument checks have been expanded to encompass most user-facing package functions.</li>
+<li>
+<code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code>
+<ul><li>The <code>fun</code> argument is now passed to <code><a href="https://rdrr.io/r/base/match.fun.html" class="external-link">match.fun()</a></code> before being called. This allows users to specify clustering algorithms using the syntax, e.g., <code>cluster_fun = "cluster_walktrap"</code> in addition to the previously-accepted <code>cluster_fun = cluster_walktrap</code>.</li>
+</ul></li>
+<li>
+<code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>
+<ul><li>Upon completion, removes files and directories created in the temporary directory for the current R session.</li>
+</ul></li>
+<li>Internal package C++ functions <code>hamAdjacencyMatSparse()</code> and <code>levAdjacencyMatSparse()</code> have an additional argument specifying the directory in which to write the file <code>col_ids.txt</code> (previously it was written to the current working directory of the R session at the time they were called).</li>
+<li>
+<code><a href="../reference/sparseAdjacencyMatFromSeqs.html">sparseAdjacencyMatFromSeqs()</a></code>
+<ul><li>Now uses the temporary directory for the current R session when calling internal package C++ functions <code>hamAdjacencyMatSparse()</code> and <code>levAdjacencyMatSparse()</code>, rather than the current working directory.</li>
+</ul></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9043" id="changes-in-nair-version-009043-872023">Changes in NAIR version 0.0.9043 (8/7/2023)<a class="anchor" aria-label="anchor" href="#changes-in-nair-version-009043-872023"></a></h2>
 <div class="section level3">
