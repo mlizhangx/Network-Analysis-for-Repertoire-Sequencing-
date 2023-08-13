@@ -6,7 +6,7 @@ using namespace Rcpp;
 using namespace arma;
 // [[Rcpp::depends(RcppArmadillo)]]
 
-// [[Rcpp::export]]
+// [[Rcpp::export(".levAdjacencyMatSparse")]]
 arma::sp_umat levAdjacencyMatSparse(
     std::vector<std::string> strings,
     const int& maxdist,
