@@ -54,11 +54,12 @@ plotNetworkGraph(
   \item{color_scheme}{
     A character string specifying the color scale used to color the nodes.
     \code{"default"} uses default \code{\link[ggplot2]{ggplot}} colors.
-    Other options are one of the \code{\link[viridisLite]{viridis}} color scales
-    (e.g., \code{"plasma"} or \code{"A"}) or (for discrete variables) a palette
+    Other options are one of the viridis color scales (e.g., \code{"plasma"},
+    \code{"A"} or other valid inputs to the \code{option} argument of
+    \code{\link[ggraph]{scale_color_viridis}}) or (for discrete variables) a palette
     from \code{\link[grDevices]{hcl.pals}} (e.g., \code{"RdYlGn"}). Each of the
-    \code{\link[viridisLite]{viridis}} color scales can include the suffix
-    \code{"-1"} to reverse its direction (e.g., \code{"plasma-1"} or \code{"A-1"}).
+    viridis color scales can include the suffix \code{"-1"}
+    to reverse its direction (e.g., \code{"plasma-1"} or \code{"A-1"}).
 }
   \item{color_legend}{
     A logical scalar specifying whether to display the color legend in the plot.
