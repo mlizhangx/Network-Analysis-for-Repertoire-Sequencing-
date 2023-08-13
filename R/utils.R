@@ -333,8 +333,13 @@ getNeighborhood <- function(
     data, seq_col, target_seq, dist_type = "hamming", max_dist = 1)
 {
   if (!target_seq %in% data[[seq_col]]) { return(NULL) }
-  dist_fun <- hamDistBounded
-  if (dist_type == "levenshtein") { dist_fun <- levDistBounded }
+  if (dist_type %in% c("hamming", "Hamming", "ham", "Ham", "h", "H")) {
+    dist_fun <- hamDistBounded
+  } else if (dist_type %in% c("levenshtein", "Levenshtein", "lev", "Lev", "l", "L")) {
+    dist_fun <- levDistBounded
+  } else {
+    stop("invalid option for dist_type")
+  }
   dists_to_targetseq <- sapply(
     X = data[[seq_col]], FUN = dist_fun, b = target_seq, k = max_dist)
   # get data for sequences within the specified radius
@@ -547,7 +552,7 @@ sparseAdjacencyMatFromSeqs <- function(
   seqs <- as.vector(seqs, mode = "character")
 
   # Compute adjacency matrix
-  if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L")) {
+  if (dist_type %in% c("levenshtein", "Levenshtein", "lev", "Lev", "l", "L")) {
     cat(paste0(
       "Computing network edges based on a max ", dist_type, " distance of ", max_dist, "..."
     ))
@@ -657,7 +662,7 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
     outfile_distance_matrix = NULL,
     return_type = "network"
 ) {
-  if (dist_type %in% c("levenshtein", "Levenshtein, lev, Lev, l, L",
+  if (dist_type %in% c("levenshtein", "Levenshtein", "lev", "Lev", "l", "L",
                        "hamming", "Hamming", "ham", "Ham", "h", "H")) {
     adjacency_matrix <-
       sparseAdjacencyMatFromSeqs(seqs = seqs,
@@ -924,6 +929,7 @@ exclusiveNodeStats <- function(
 addClusterMembership <- function(
     data, net, fun = cluster_fast_greedy) {
   .checkargs.addClusterMembership(data, net, fun)
+  fun <- match.fun(fun)
   cat("Computing cluster membership within the network...")
   data$cluster_id <- as.factor(as.integer(fun(net)$membership))
   cat(" Done.\n")
