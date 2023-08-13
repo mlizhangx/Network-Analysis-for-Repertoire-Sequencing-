@@ -5,15 +5,15 @@ test_that(".nonNull works correctly", {
     .nonNull(NULL, "argument"),
     "argument is required but value is NULL"
   )
-  expect_identical(.nonNull(3, "argument"), NULL)
-  expect_identical(.nonNull("foo", "argument"), NULL)
-  expect_identical(.nonNull(NA, "argument"), NULL)
-  expect_identical(.nonNull(logical(0), "argument"), NULL)
-  expect_identical(.nonNull(numeric(0), "argument"), NULL)
-  expect_identical(.nonNull(character(0), "argument"), NULL)
-  expect_identical(.nonNull(NaN, "argument"), NULL)
-  expect_identical(.nonNull(Inf, "argument"), NULL)
-  expect_identical(.nonNull(TRUE, "argument"), NULL)
+  expect_null(.nonNull(3, "argument"))
+  expect_null(.nonNull("foo", "argument"))
+  expect_null(.nonNull(NA, "argument"))
+  expect_null(.nonNull(logical(0), "argument"))
+  expect_null(.nonNull(numeric(0), "argument"))
+  expect_null(.nonNull(character(0), "argument"))
+  expect_null(.nonNull(NaN, "argument"))
+  expect_null(.nonNull(Inf, "argument"))
+  expect_null(.nonNull(TRUE, "argument"))
 })
 
 test_that(".noNAs works correctly", {
@@ -33,14 +33,14 @@ test_that(".noNAs works correctly", {
     .noNAs(c(3, NaN), "argument"),
     "argument must not contain NA/NaNs"
   )
-  expect_identical(.noNAs(3, "argument"), NULL)
-  expect_identical(.noNAs("foo", "argument"), NULL)
-  expect_identical(.noNAs(NULL, "argument"), NULL)
-  expect_identical(.noNAs(logical(0), "argument"), NULL)
-  expect_identical(.noNAs(numeric(0), "argument"), NULL)
-  expect_identical(.noNAs(character(0), "argument"), NULL)
-  expect_identical(.noNAs(Inf, "argument"), NULL)
-  expect_identical(.noNAs(TRUE, "argument"), NULL)
+  expect_null(.noNAs(3, "argument"))
+  expect_null(.noNAs("foo", "argument"))
+  expect_null(.noNAs(NULL, "argument"))
+  expect_null(.noNAs(logical(0), "argument"))
+  expect_null(.noNAs(numeric(0), "argument"))
+  expect_null(.noNAs(character(0), "argument"))
+  expect_null(.noNAs(Inf, "argument"))
+  expect_null(.noNAs(TRUE, "argument"))
 })
 
 test_that(".hasLength1 works correctly", {
@@ -72,12 +72,12 @@ test_that(".hasLength1 works correctly", {
     .hasLength1(1:3, "argument"),
     "argument must have length 1"
   )
-  expect_identical(.hasLength1(3, "argument"), NULL)
-  expect_identical(.hasLength1("foo", "argument"), NULL)
-  expect_identical(.hasLength1(NA, "argument"), NULL)
-  expect_identical(.hasLength1(NaN, "argument"), NULL)
-  expect_identical(.hasLength1(Inf, "argument"), NULL)
-  expect_identical(.hasLength1(TRUE, "argument"), NULL)
+  expect_null(.hasLength1(3, "argument"))
+  expect_null(.hasLength1("foo", "argument"))
+  expect_null(.hasLength1(NA, "argument"))
+  expect_null(.hasLength1(NaN, "argument"))
+  expect_null(.hasLength1(Inf, "argument"))
+  expect_null(.hasLength1(TRUE, "argument"))
 })
 
 test_that(".hasLength2 works correctly", {
@@ -129,10 +129,10 @@ test_that(".hasLength2 works correctly", {
     .hasLength2(TRUE, "argument"),
     "argument must have length 2"
   )
-  expect_identical(.hasLength2(c("fee", "fie"), "argument"), NULL)
-  expect_identical(.hasLength2(c(23, NaN), "argument"), NULL)
-  expect_identical(.hasLength2(c(TRUE, FALSE), "argument"), NULL)
-  expect_identical(.hasLength2(numeric(2), "argument"), NULL)
+  expect_null(.hasLength2(c("fee", "fie"), "argument"))
+  expect_null(.hasLength2(c(23, NaN), "argument"))
+  expect_null(.hasLength2(c(TRUE, FALSE), "argument"))
+  expect_null(.hasLength2(numeric(2), "argument"))
 })
 
 test_that(".hasLength works correctly", {
@@ -180,10 +180,10 @@ test_that(".hasLength works correctly", {
     .hasLength(2, Inf, "argument"),
     "argument must have length 2"
   )
-  expect_identical(.hasLength(2, c("fee", "fie"), "argument"), NULL)
-  expect_identical(.hasLength(2, c(23, NaN), "argument"), NULL)
-  expect_identical(.hasLength(2, c(TRUE, FALSE), "argument"), NULL)
-  expect_identical(.hasLength(2, numeric(2), "argument"), NULL)
+  expect_null(.hasLength(2, c("fee", "fie"), "argument"))
+  expect_null(.hasLength(2, c(23, NaN), "argument"))
+  expect_null(.hasLength(2, c(TRUE, FALSE), "argument"))
+  expect_null(.hasLength(2, numeric(2), "argument"))
   expect_error(
     .hasLength(1, NULL, "argument"),
     "argument must have length 1"
@@ -212,16 +212,16 @@ test_that(".hasLength works correctly", {
     .hasLength(1, 1:3, "argument"),
     "argument must have length 1"
   )
-  expect_identical(.hasLength(1, 3, "argument"), NULL)
-  expect_identical(.hasLength(1, "foo", "argument"), NULL)
-  expect_identical(.hasLength(1, NA, "argument"), NULL)
-  expect_identical(.hasLength(1, NaN, "argument"), NULL)
-  expect_identical(.hasLength(1, Inf, "argument"), NULL)
+  expect_null(.hasLength(1, 3, "argument"))
+  expect_null(.hasLength(1, "foo", "argument"))
+  expect_null(.hasLength(1, NA, "argument"))
+  expect_null(.hasLength(1, NaN, "argument"))
+  expect_null(.hasLength(1, Inf, "argument"))
   expect_error(
     .hasLength(3, 1:4, "argument"),
     "argument must have length 3"
   )
-  expect_identical(.hasLength(3, 1:3, "argument"), NULL)
+  expect_null(.hasLength(3, 1:3, "argument"))
 })
 
 test_that(".orNull works correctly", {
@@ -241,9 +241,9 @@ test_that(".orNull works correctly", {
     .orNull(.isNumeric, "foo", "argument"),
     "argument must be of type numeric"
   )
-  expect_identical(.orNull(.noNAs, NULL, "argument"), NULL)
-  expect_identical(.orNull(.hasLength1, NULL, "argument"), NULL)
-  expect_identical(.orNull(.isNumeric, NULL, "argument"), NULL)
+  expect_null(.orNull(.noNAs, NULL, "argument"))
+  expect_null(.orNull(.hasLength1, NULL, "argument"))
+  expect_null(.orNull(.isNumeric, NULL, "argument"))
 })
 
 test_that(".isLogical works correctly", {
@@ -275,10 +275,10 @@ test_that(".isLogical works correctly", {
     .isLogical(NA, "argument"),
     "argument must not contain NA/NaNs"
   )
-  expect_identical(.isLogical(TRUE, "argument"), NULL)
-  expect_identical(.isLogical(FALSE, "argument"), NULL)
-  expect_identical(.isLogical(logical(0), "argument"), NULL)
-  expect_identical(.isLogical(c(TRUE, FALSE), "argument"), NULL)
+  expect_null(.isLogical(TRUE, "argument"))
+  expect_null(.isLogical(FALSE, "argument"))
+  expect_null(.isLogical(logical(0), "argument"))
+  expect_null(.isLogical(c(TRUE, FALSE), "argument"))
 })
 
 test_that(".isChar works correctly", {
@@ -310,9 +310,9 @@ test_that(".isChar works correctly", {
     .isChar(NULL, "argument"),
     "argument must be of type character"
   )
-  expect_identical(.isChar("foo", "argument"), NULL)
-  expect_identical(.isChar(character(0), "argument"), NULL)
-  expect_identical(.isChar(c("foo", "bar"), "argument"), NULL)
+  expect_null(.isChar("foo", "argument"))
+  expect_null(.isChar(character(0), "argument"))
+  expect_null(.isChar(c("foo", "bar"), "argument"))
 })
 
 test_that(".isNumeric works correctly", {
@@ -333,11 +333,11 @@ test_that(".isNumeric works correctly", {
     .isNumeric(TRUE, "argument"),
     "argument must be of type numeric"
   )
-  expect_identical(.isNumeric(3, "argument"), NULL)
-  expect_identical(.isNumeric(numeric(0), "argument"), NULL)
-  expect_identical(.isNumeric(NaN, "argument"), NULL)
-  expect_identical(.isNumeric(Inf, "argument"), NULL)
-  expect_identical(.isNumeric(1:4, "argument"), NULL)
+  expect_null(.isNumeric(3, "argument"))
+  expect_null(.isNumeric(numeric(0), "argument"))
+  expect_null(.isNumeric(NaN, "argument"))
+  expect_null(.isNumeric(Inf, "argument"))
+  expect_null(.isNumeric(1:4, "argument"))
 })
 
 test_that(".isCharOrNumeric works correctly", {
@@ -357,14 +357,14 @@ test_that(".isCharOrNumeric works correctly", {
     .isCharOrNumeric(list(c("fee", "fie"), 1:2), "argument"),
     "argument must be of type character or numeric"
   )
-  expect_identical(.isCharOrNumeric("foo", "argument"), NULL)
-  expect_identical(.isCharOrNumeric(character(0), "argument"), NULL)
-  expect_identical(.isCharOrNumeric(3, "argument"), NULL)
-  expect_identical(.isCharOrNumeric(numeric(0), "argument"), NULL)
-  expect_identical(.isCharOrNumeric(NaN, "argument"), NULL)
-  expect_identical(.isCharOrNumeric(Inf, "argument"), NULL)
-  expect_identical(.isCharOrNumeric(1:4, "argument"), NULL)
-  expect_identical(.isCharOrNumeric(c("foo", "bar"), "argument"), NULL)
+  expect_null(.isCharOrNumeric("foo", "argument"))
+  expect_null(.isCharOrNumeric(character(0), "argument"))
+  expect_null(.isCharOrNumeric(3, "argument"))
+  expect_null(.isCharOrNumeric(numeric(0), "argument"))
+  expect_null(.isCharOrNumeric(NaN, "argument"))
+  expect_null(.isCharOrNumeric(Inf, "argument"))
+  expect_null(.isCharOrNumeric(1:4, "argument"))
+  expect_null(.isCharOrNumeric(c("foo", "bar"), "argument"))
 })
 
 test_that(".isCharOrLogical works correctly", {
@@ -400,13 +400,13 @@ test_that(".isCharOrLogical works correctly", {
     .isCharOrLogical(NA, "argument"),
     "argument must not contain NA/NaNs"
   )
-  expect_identical(.isCharOrLogical("foo", "argument"), NULL)
-  expect_identical(.isCharOrLogical(character(0), "argument"), NULL)
-  expect_identical(.isCharOrLogical(c("foo", "bar"), "argument"), NULL)
-  expect_identical(.isCharOrLogical(TRUE, "argument"), NULL)
-  expect_identical(.isCharOrLogical(FALSE, "argument"), NULL)
-  expect_identical(.isCharOrLogical(logical(0), "argument"), NULL)
-  expect_identical(.isCharOrLogical(c(TRUE, FALSE), "argument"), NULL)
+  expect_null(.isCharOrLogical("foo", "argument"))
+  expect_null(.isCharOrLogical(character(0), "argument"))
+  expect_null(.isCharOrLogical(c("foo", "bar"), "argument"))
+  expect_null(.isCharOrLogical(TRUE, "argument"))
+  expect_null(.isCharOrLogical(FALSE, "argument"))
+  expect_null(.isCharOrLogical(logical(0), "argument"))
+  expect_null(.isCharOrLogical(c(TRUE, FALSE), "argument"))
 })
 
 test_that(".hasPosLength works correctly", {
@@ -426,19 +426,19 @@ test_that(".hasPosLength works correctly", {
     .hasPosLength(character(0), "argument"),
     "argument must have positive length"
   )
-  expect_identical(.hasPosLength(3, "argument"), NULL)
-  expect_identical(.hasPosLength("foo", "argument"), NULL)
-  expect_identical(.hasPosLength(NA, "argument"), NULL)
-  expect_identical(.hasPosLength(NaN, "argument"), NULL)
-  expect_identical(.hasPosLength(Inf, "argument"), NULL)
-  expect_identical(.hasPosLength(TRUE, "argument"), NULL)
-  expect_identical(.hasPosLength(c("fee", "fie"), "argument"), NULL)
-  expect_identical(.hasPosLength(c(23, NaN), "argument"), NULL)
-  expect_identical(.hasPosLength(c(TRUE, FALSE), "argument"), NULL)
-  expect_identical(.hasPosLength(numeric(2), "argument"), NULL)
-  expect_identical(.hasPosLength(1:4, "argument"), NULL)
-  expect_identical(.hasPosLength(3, "argument"), NULL)
-  expect_identical(.hasPosLength(diag(2), "argument"), NULL)
+  expect_null(.hasPosLength(3, "argument"))
+  expect_null(.hasPosLength("foo", "argument"))
+  expect_null(.hasPosLength(NA, "argument"))
+  expect_null(.hasPosLength(NaN, "argument"))
+  expect_null(.hasPosLength(Inf, "argument"))
+  expect_null(.hasPosLength(TRUE, "argument"))
+  expect_null(.hasPosLength(c("fee", "fie"), "argument"))
+  expect_null(.hasPosLength(c(23, NaN), "argument"))
+  expect_null(.hasPosLength(c(TRUE, FALSE), "argument"))
+  expect_null(.hasPosLength(numeric(2), "argument"))
+  expect_null(.hasPosLength(1:4, "argument"))
+  expect_null(.hasPosLength(3, "argument"))
+  expect_null(.hasPosLength(diag(2), "argument"))
 })
 
 test_that(".isTF works correctly", {
@@ -478,8 +478,8 @@ test_that(".isTF works correctly", {
     .isTF(c(TRUE, FALSE), "argument"),
     "argument must have length 1"
   )
-  expect_identical(.isTF(TRUE, "argument"), NULL)
-  expect_identical(.isTF(FALSE, "argument"), NULL)
+  expect_null(.isTF(TRUE, "argument"))
+  expect_null(.isTF(FALSE, "argument"))
 })
 
 test_that(".isTFOrAuto works correctly", {
@@ -531,9 +531,9 @@ test_that(".isTFOrAuto works correctly", {
     .isTFOrAuto(NULL, "argument"),
     "argument is required but value is NULL"
   )
-  expect_identical(.isTFOrAuto(TRUE, "argument"), NULL)
-  expect_identical(.isTFOrAuto(FALSE, "argument"), NULL)
-  expect_identical(.isTFOrAuto("auto", "argument"), NULL)
+  expect_null(.isTFOrAuto(TRUE, "argument"))
+  expect_null(.isTFOrAuto(FALSE, "argument"))
+  expect_null(.isTFOrAuto("auto", "argument"))
 })
 
 test_that(".isFinite works correctly", {
@@ -574,8 +574,8 @@ test_that(".isFinite works correctly", {
     .isFinite(c(2, Inf), "argument"),
     "argument must contain finite values"
   )
-  expect_identical(.isFinite(3, "argument"), NULL)
-  expect_identical(.isFinite(1:4, "argument"), NULL)
+  expect_null(.isFinite(3, "argument"))
+  expect_null(.isFinite(1:4, "argument"))
 })
 
 test_that(".isNonneg works correctly", {
@@ -624,8 +624,8 @@ test_that(".isNonneg works correctly", {
     .isNonneg(-1.5, "argument"),
     "argument must be nonnegative"
   )
-  expect_identical(.isNonneg(3, "argument"), NULL)
-  expect_identical(.isNonneg(0, "argument"), NULL)
+  expect_null(.isNonneg(3, "argument"))
+  expect_null(.isNonneg(0, "argument"))
 })
 
 test_that(".isPos works correctly", {
@@ -678,7 +678,7 @@ test_that(".isPos works correctly", {
     .isPos(-1.5, "argument"),
     "argument must be strictly positive"
   )
-  expect_identical(.isPos(3, "argument"), NULL)
+  expect_null(.isPos(3, "argument"))
 })
 
 test_that(".isInt works correctly", {
@@ -727,8 +727,8 @@ test_that(".isInt works correctly", {
     .isInt(pi, "argument"),
     "argument must be integer-valued"
   )
-  expect_identical(.isInt(3, "argument"), NULL)
-  expect_identical(.isInt(3.0, "argument"), NULL)
+  expect_null(.isInt(3, "argument"))
+  expect_null(.isInt(3.0, "argument"))
 })
 
 test_that(".isPosInt works correctly", {
@@ -785,8 +785,8 @@ test_that(".isPosInt works correctly", {
     .isPosInt(0, "argument"),
     "argument must be strictly positive"
   )
-  expect_identical(.isPosInt(3, "argument"), NULL)
-  expect_identical(.isPosInt(3.0, "argument"), NULL)
+  expect_null(.isPosInt(3, "argument"))
+  expect_null(.isPosInt(3.0, "argument"))
 })
 
 test_that(".isString works correctly", {
@@ -826,7 +826,7 @@ test_that(".isString works correctly", {
     .isString(character(0), "argument"),
     "argument must have length 1"
   )
-  expect_identical(.isString("foo", "argument"), NULL)
+  expect_null(.isString("foo", "argument"))
 })
 
 test_that(".isCharOrNumericScalar works correctly", {
@@ -870,8 +870,8 @@ test_that(".isCharOrNumericScalar works correctly", {
     .isCharOrNumericScalar(Inf, "argument"),
     "argument must contain finite values"
   )
-  expect_identical(.isCharOrNumericScalar("foo", "argument"), NULL)
-  expect_identical(.isCharOrNumericScalar(3, "argument"), NULL)
+  expect_null(.isCharOrNumericScalar("foo", "argument"))
+  expect_null(.isCharOrNumericScalar(3, "argument"))
 })
 
 test_that(".isCharVector works correctly", {
@@ -903,8 +903,8 @@ test_that(".isCharVector works correctly", {
     .isCharVector(c("foo", NA), "argument"),
     "argument must not contain NA/NaNs"
   )
-  expect_identical(.isCharVector("foo", "argument"), NULL)
-  expect_identical(.isCharVector(c("foo", "bar"), "argument"), NULL)
+  expect_null(.isCharVector("foo", "argument"))
+  expect_null(.isCharVector(c("foo", "bar"), "argument"))
 })
 
 test_that(".isCharOrNumericVector works correctly", {
@@ -960,10 +960,10 @@ test_that(".isCharOrNumericVector works correctly", {
     .isCharOrNumericVector(c(2.1, Inf), "argument"),
     "argument must contain finite values"
   )
-  expect_identical(.isCharOrNumericVector("foo", "argument"), NULL)
-  expect_identical(.isCharOrNumericVector(c("foo", "bar"), "argument"), NULL)
-  expect_identical(.isCharOrNumericVector(3, "argument"), NULL)
-  expect_identical(.isCharOrNumericVector(1:4, "argument"), NULL)
+  expect_null(.isCharOrNumericVector("foo", "argument"))
+  expect_null(.isCharOrNumericVector(c("foo", "bar"), "argument"))
+  expect_null(.isCharOrNumericVector(3, "argument"))
+  expect_null(.isCharOrNumericVector(1:4, "argument"))
 
 
 })
@@ -975,23 +975,23 @@ test_that(".hasAtLeastTwoRows works correctly", {
     .hasAtLeastTwoRows(foo),
     "need at least two data rows"
   )
-  expect_identical(.hasAtLeastTwoRows(foo2), NULL)
+  expect_null(.hasAtLeastTwoRows(foo2))
 })
 
 test_that(".isDataCol and similar checks work correctly", {
   dat <- simulateToyData(sample_size = 5)
-  expect_identical(.isDataCol(dat, "CloneSeq", "argument"), NULL)
-  expect_identical(.isDataCol(dat, 1, "argument"), NULL)
-  expect_identical(.isDataColOrNull(dat, "CloneSeq", "argument"), NULL)
-  expect_identical(.isDataColOrNull(dat, NULL, "argument"), NULL)
-  expect_identical(.isDataCols(dat, "CloneSeq", "argument"), NULL)
-  expect_identical(
-    .isDataCols(dat, c("CloneSeq", "CloneCount"), "argument"), NULL
+  expect_null(.isDataCol(dat, "CloneSeq", "argument"))
+  expect_null(.isDataCol(dat, 1, "argument"))
+  expect_null(.isDataColOrNull(dat, "CloneSeq", "argument"))
+  expect_null(.isDataColOrNull(dat, NULL, "argument"))
+  expect_null(.isDataCols(dat, "CloneSeq", "argument"))
+  expect_null(
+    .isDataCols(dat, c("CloneSeq", "CloneCount"), "argument")
   )
-  expect_identical(
-    .isDataColsOrNull(dat, c("CloneSeq", "CloneCount"), "argument"), NULL
+  expect_null(
+    .isDataColsOrNull(dat, c("CloneSeq", "CloneCount"), "argument")
   )
-  expect_identical(.isDataColsOrNull(dat, NULL, "argument"), NULL)
+  expect_null(.isDataColsOrNull(dat, NULL, "argument"))
   expect_error(
     .isDataCol(dat, NULL, "argument"),
     "argument is required but value is NULL"
@@ -1153,13 +1153,13 @@ test_that(".isValidSeqVector works correctly", {
       .isValidSeqVector(c(NA, NA)),
       "specified column or vector of receptor sequences contains only NA values after being coerced to a character vector"
     )
-  expect_identical(.isValidSeqVector("foo"), NULL)
-  expect_identical(.isValidSeqVector(1), NULL)
-  expect_identical(.isValidSeqVector(c("foo", "bar")), NULL)
-  expect_identical(.isValidSeqVector(c("foo", NA)), NULL)
-  expect_identical(.isValidSeqVector(1:2), NULL)
-  expect_identical(.isValidSeqVector(c(1, NA, NaN, Inf)), NULL)
-  expect_identical(.isValidSeqVector(as.factor(c("foo", "bar", "bar"))), NULL)
+    expect_null(.isValidSeqVector("foo"))
+  expect_null(.isValidSeqVector(1))
+  expect_null(.isValidSeqVector(c("foo", "bar")))
+  expect_null(.isValidSeqVector(c("foo", NA)))
+  expect_null(.isValidSeqVector(1:2))
+  expect_null(.isValidSeqVector(c(1, NA, NaN, Inf)))
+  expect_null(.isValidSeqVector(as.factor(c("foo", "bar", "bar"))))
 })
 
 test_that(".isSeqCol works correctly", {
@@ -1216,9 +1216,9 @@ test_that(".isSeqCol works correctly", {
     .isSeqCol(dat, c(1, 1.1)),
     "each element of seq_col is of type numeric and hence must be integer-valued"
   )
-  expect_identical(.isSeqCol(dat, "CloneSeq"), NULL)
-  expect_identical(.isSeqCol(dat, "CloneCount"), NULL)
-  expect_identical(.isSeqCol(dat, c("CloneSeq", "CloneCount")), NULL)
+  expect_null(.isSeqCol(dat, "CloneSeq"))
+  expect_null(.isSeqCol(dat, "CloneCount"))
+  expect_null(.isSeqCol(dat, c("CloneSeq", "CloneCount")))
 })
 
 test_that(".hasElement works correctly", {
@@ -1239,7 +1239,7 @@ test_that(".hasElement works correctly", {
     .hasElement(c("first", "second", "third"), "argument", "first"),
     "argument does not contain an element named first"
   )
-  expect_identical(.hasElement(foo, "argument", "first"), NULL)
+  expect_null(.hasElement(foo, "argument", "first"))
 })
 
 test_that("network output type checks work correctly", {
@@ -1266,7 +1266,7 @@ test_that("network output type checks work correctly", {
   )
   expect_error(
     .isAdjacencyMatrix(net, "argument"),
-    "argument must be a matrix or dgCMatrix"
+    "argument must be a matrix or sparseMatrix"
   )
   expect_error(
     .isAdjacencyMatrix(matrix(0, nrow = 1, ncol = 2), "argument"),
@@ -1292,12 +1292,12 @@ test_that("network output type checks work correctly", {
     .checkDataAgainstMatrix(diag(3), diag(2)),
     "number of data rows does not match dimensions of the adjacency matrix"
   )
-  expect_identical(
-    .isAdjacencyMatrix(matrix(0, nrow = 2, ncol = 2), "argument"), NULL
+  expect_null(
+    .isAdjacencyMatrix(matrix(0, nrow = 2, ncol = 2), "argument")
   )
-  expect_identical(.isBaseNetworkOutput(net, "argument"), NULL)
-  expect_identical(.hasNodeAndClusterData(net, "argument"), NULL)
-  expect_identical(.isPlotlist(net$plots, "argument"), NULL)
+  expect_null(.isBaseNetworkOutput(net, "argument"))
+  expect_null(.hasNodeAndClusterData(net, "argument"))
+  expect_null(.isPlotlist(net$plots, "argument"))
 })
 
 test_that(".isDistType works correctly", {
@@ -1305,13 +1305,13 @@ test_that(".isDistType works correctly", {
     .isDistType("foo"),
     "Invalid option for dist_type argument"
   )
-  expect_identical(.isDistType("lev"), NULL)
+  expect_null(.isDistType("lev"))
 })
 
 test_that(".isInputType works correctly", {
   valid_input_types <- c("csv", "table", "tsv", "txt", "rds", "rda")
   for (i in 1:length(valid_input_types)) {
-    expect_identical(.isInputType(valid_input_types[[i]]), NULL)
+    expect_null(.isInputType(valid_input_types[[i]]))
   }
   valid_input_types <- paste(valid_input_types, collapse = ", ")
   expect_error(
@@ -1345,17 +1345,17 @@ test_that(".isOutputType works correctly", {
     .isOutputType("individual", "generic"),
     "output_type is invalid. Defaulting to rda"
   )
-  expect_identical(
-    .isOutputType("individual"), NULL
+  expect_null(
+    .isOutputType("individual")
   )
-  expect_identical(
-    .isOutputType("rds", "findPublicClusters"), NULL
+  expect_null(
+    .isOutputType("rds", "findPublicClusters")
   )
-  expect_identical(
-    .isOutputType("tsv", "findAssociatedClones"), NULL
+  expect_null(
+    .isOutputType("tsv", "findAssociatedClones")
   )
-  expect_identical(
-    .isOutputType("table", "generic"), NULL
+  expect_null(
+    .isOutputType("table", "generic")
   )
 })
 
@@ -1373,33 +1373,26 @@ test_that(".checkColorNodesBy works correctly", {
     .checkColorNodesBy(c("CloneSeq", "degree"), dat),
     "color_nodes_by specifies one or more variables not present in data or among the node-level network properties to be computed"
   )
-  expect_identical(
-    .checkColorNodesBy(c("CloneSeq", "CloneCount"), dat),
-    NULL
+  expect_null(
+    .checkColorNodesBy(c("CloneSeq", "CloneCount"), dat)
   )
-  expect_identical(
-    .checkColorNodesBy("CloneSeq", dat),
-    NULL
+  expect_null(
+    .checkColorNodesBy("CloneSeq", dat)
   )
-  expect_identical(
-    .checkColorNodesBy("auto", dat),
-    NULL
+  expect_null(
+    .checkColorNodesBy("auto", dat)
   )
-  expect_identical(
-    .checkColorNodesBy("degree", dat, node_stats = TRUE),
-    NULL
+  expect_null(
+    .checkColorNodesBy("degree", dat, node_stats = TRUE)
   )
-  expect_identical(
-    .checkColorNodesBy(c("CloneSeq", "degree"), dat, node_stats = TRUE),
-    NULL
+  expect_null(
+    .checkColorNodesBy(c("CloneSeq", "degree"), dat, node_stats = TRUE)
   )
-  expect_identical(
-    .checkColorNodesBy("foo", dat, plots = FALSE),
-    NULL
+  expect_null(
+    .checkColorNodesBy("foo", dat, plots = FALSE)
   )
-  expect_identical(
-    .checkColorNodesBy(NULL, dat),
-    NULL
+  expect_null(
+    .checkColorNodesBy(NULL, dat)
   )
 })
 
