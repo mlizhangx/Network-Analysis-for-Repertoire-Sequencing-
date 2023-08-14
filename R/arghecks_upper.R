@@ -430,8 +430,8 @@
 # Deprecated Arguments ----------------------------------------------------
 .checkDeprecated.buildPublicClusterNetwork <- function(
     node_stats, stats_to_include, cluster_stats,
-    env = rlang::caller_env(),
-    user_env = rlang::caller_env(2)
+    env = caller_env(),
+    user_env = caller_env(2)
 ) {
   if (lifecycle::is_present(node_stats)) {
     lifecycle::deprecate_warn(
@@ -467,8 +467,8 @@
 
 .checkDeprecated.findAssociatedSeqs <- function(
     sample_ids, groups,
-    env = rlang::caller_env(),
-    user_env = rlang::caller_env(2)
+    env = caller_env(),
+    user_env = caller_env(2)
 ) {
   if (lifecycle::is_present(groups)) {
     lifecycle::deprecate_warn(

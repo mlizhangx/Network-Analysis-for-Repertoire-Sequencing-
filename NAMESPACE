@@ -3,6 +3,7 @@ importFrom(Rcpp, evalCpp)
 importClassesFrom(Matrix, dgCMatrix)
 
 importFrom(lifecycle, deprecated)
+importFrom(rlang, caller_env)
 
 importFrom(igraph, cluster_fast_greedy)
 importFrom(igraph, cluster_edge_betweenness)
