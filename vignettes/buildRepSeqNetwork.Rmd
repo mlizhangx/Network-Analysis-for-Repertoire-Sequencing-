@@ -114,14 +114,14 @@ names(output$plots)
 class(output$plots$uniform_color)
 ```
 
-Plots can be customized through [optional arguments](network_visualization.html) to `buildRepSeqNetwork()` as well as by [modifying them](network_visualization.html#modifying-plots-after-creation) after they are created.
+Plots can be customized through [optional arguments](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) to `buildRepSeqNetwork()` as well as by [modifying them](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#modifying-plots-after-creation) after they are created.
 
 
 ## `igraph`
 
 The list element `igraph` is an object of class `igraph` from the [igraph package](https://r.igraph.org). This object contains the list of nodes and edges that comprise the network graph. 
 
-The `igraph` object can be used for [downstream computation of network properties](#downstream), as an alternative to [computing network properties when calling `buildRepSeqNetwork()`](#network_properties). It can also be used to [generate additional plots of the network graph](network_visualization.html#new_plots).
+The `igraph` object can be used for [downstream computation of network properties](#downstream), as an alternative to [computing network properties when calling `buildRepSeqNetwork()`](#network_properties). It can also be used to [generate additional plots of the network graph](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots).
 
 
 ```{r}
@@ -347,7 +347,7 @@ By default, clustering is performed using `cluster_fast_greedy()`. Other cluster
 
 For example, setting `cluster_fun = cluster_leiden` performs clustering using the `cluster_leiden` algorithm.
 
-For details on the clustering algorithms, refer to [this documentation file](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/clustering_algorithms.html), which can be accessed offline using the command `?NAIR::clustering_algorithms` in R.
+For details on the clustering algorithms, refer to [this documentation file](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/clustering_algorithms.html), which can be accessed offline using the command `?clustering_algorithms` in R.
 
 
 ### <a name="cluster_properties"></a> Cluster-Level Network Properties
@@ -408,13 +408,13 @@ If a count column is specified, then its values will be coerced to numeric value
 
 ### Labeling Clusters
 
-In order to more easily reference the clusters within the visual plot of the network graph, it is possible to label the clusters in the plot with their cluster IDs. This must be done after calling `buildRepSeqNetwork()`, and is accomplished  using the `addClusterLabels` function [as described here](network_visualization.html#labeling_clusters).
+In order to more easily reference the clusters within the visual plot of the network graph, it is possible to label the clusters in the plot with their cluster IDs. This must be done after calling `buildRepSeqNetwork()`, and is accomplished  using the `addClusterLabels` function [as described here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#labeling-clusters).
 
 
 
 # Visualization
 
-The `buildRepSeqNetwork()` function includes various arguments that facilitate customization of the network visualization. See [this vignette](network_visualization.html) for an overview.
+The `buildRepSeqNetwork()` function includes various arguments that facilitate customization of the network visualization. See [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) for an overview.
 
 Additionally, the following arguments can be used to control whether plots are generated and/or displayed in R:
 
@@ -455,7 +455,7 @@ The column specified by the `seq_col` argument will automatically be included re
 * For better compression and fewer files, users can specify `output_type = "rds"` or `output_type = "rda"`, which will save the entire output list to a single rds file or a single rda file, respectively.
     * If the output list is saved using the `"rda"` (Rdata) format, the output list will be named `net` in the R environment when the Rdata file is loaded into R using the `load` function.
 * Regardless of the output file format specified, if `plots = TRUE`, a pdf file is written to the output directory. The pdf contains all plots generated for the network, with one plot per page. The dimensions (in inches) for each page can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively.
-* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot()` function as described [here](network_visualization.html#new_plots).
+* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using the `generateGraphPlot()` function as described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots).
 
 
 ## <a name="output_filenames"></a> Output File Name(s)
@@ -599,7 +599,7 @@ head(filtered_data)
 The following tasks performed by `buildRepSeqNetwork()` are not performed by `generateNetworkObjects()`:
 
 * [Computation of network properties and cluster analysis](#downstream)
-* [Generation of visual plot](network_visualization.html#new_plots)
+* [Generation of visual plot](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots)
 * [Saving output](#downstream_save_output)
 
 Each of the omitted tasks can be performed as its own step using functions in the `NAIR` package. Click on a particular task for details on how it can be accomplished.
