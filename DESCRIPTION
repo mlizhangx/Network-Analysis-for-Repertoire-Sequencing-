@@ -7,7 +7,7 @@ Authors@R: c(
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
     person("Phi Long", "Le", email = "PhiLong.Le@ucsf.edu", role = "aut"),
     person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = c("cph", "aut")))
-Description: Pipelines for studying the adaptive immune repertoire of T
+Description: Pipelines for studying the adaptive immune repertoire of T cells 
     and B cells via network analysis based on receptor sequence similarity. 
     Relate clinical outcomes to immune repertoires based on their network 
     properties, or to particular clusters and clones within a repertoire. 
