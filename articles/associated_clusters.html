@@ -292,12 +292,12 @@ to the <code>file_list</code> argument of
 <span>                         <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpXBE7ZL/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmpXBE7ZL/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmpXBE7ZL/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmpXBE7ZL/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmpXBE7ZL/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmpXBE7ZL/input_samples/Sample6.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpiUDm97/input_samples/Sample1.rds"</span></span>
+<span><span class="co">#&gt; [2] "/tmp/RtmpiUDm97/input_samples/Sample2.rds"</span></span>
+<span><span class="co">#&gt; [3] "/tmp/RtmpiUDm97/input_samples/Sample3.rds"</span></span>
+<span><span class="co">#&gt; [4] "/tmp/RtmpiUDm97/input_samples/Sample4.rds"</span></span>
+<span><span class="co">#&gt; [5] "/tmp/RtmpiUDm97/input_samples/Sample5.rds"</span></span>
+<span><span class="co">#&gt; [6] "/tmp/RtmpiUDm97/input_samples/Sample6.rds"</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="file-format-of-sample-data">
@@ -893,7 +893,7 @@ step</a>:</p>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
 <span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpXBE7ZL/assoc_seq_nbds</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpiUDm97/assoc_seq_nbds</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="output-of-findassociatedclones">
@@ -1011,7 +1011,7 @@ default values.</p>
 <li><code>dist_cutoff = 1</code></li>
 <li><code>drop_isolated_nodes = FALSE</code></li>
 </ul>
-<p>Refer to <a href="buildRepSeqNetwork.html#network_settings">this
+<p>Refer to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network_settings">this
 section of the buildRepSeqNetwork vignette</a> for an explanation of
 their meaning.</p>
 </div>
@@ -1032,23 +1032,23 @@ of interest.</p>
 <p>By default, clustering is performed using the
 <code><a href="../reference/clustering_algorithms.html">cluster_fast_greedy()</a></code> algorithm from the
 <code>igraph</code> package. A different clustering algorithm can be
-specified using the <code>cluster_fun</code> argument. See <a href="buildRepSeqNetwork.html#cluster_alg">this section of the
-buildRepSeqNetwork vignette</a> for details.</p>
+specified using the <code>cluster_fun</code> argument. See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#clustering-algorithm">this
+section of the buildRepSeqNetwork vignette</a> for details.</p>
 </div>
 <div class="section level4">
 <h4 id="network-properties">
 <a name="global_network_properties"></a> Network Properties<a class="anchor" aria-label="anchor" href="#network-properties"></a>
 </h4>
 <p>By default, <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> computes
-both <a href="buildRepSeqNetwork.html#node_properties">node-level</a>
-and <a href="buildRepSeqNetwork.html#cluster_properties">cluster-level</a>
+both <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties">node-level</a>
+and <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties">cluster-level</a>
 properties of the global network. Node-level properties can be excluded
 by setting <code>node_stats = FALSE</code>, and cluster-level properties
 can be excluded by setting <code>cluster_stats = FALSE</code>.</p>
 <p>The set of node-level properties to be computed can be specified
-using the <code>stats_to_include</code> argument. Refer to the <a href="buildRepSeqNetwork.html#choose_node_stats">“Specifying the
-Node-Level Properties” section of the buildRepSeqNetwork vignette</a>
-for an explanation of its usage.</p>
+using the <code>stats_to_include</code> argument. Refer to the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#specifying-the-node-level-properties">“Specifying
+the Node-Level Properties” section of the buildRepSeqNetwork
+vignette</a> for an explanation of its usage.</p>
 <p>Note that regardless of the value of the
 <code>stats_to_include</code> argument, the node-level property
 <code>cluster_id</code> is always computed as part of the clustering
@@ -1078,28 +1078,28 @@ data or, e.g., <code>"SampleID"</code> or <code>"AssocSeq"</code>) or a
 has been computed for the global network</a> (e.g.,
 <code>"cluster_id"</code> or <code>"degree"</code>).</p>
 <p>The <code>color_nodes_by</code> argument also accommodates a
-character vector specifying multiple variables, in which case <a href="network_visualization.html#multiple_plots">one plot will be
-created for each variable specified, with each plot coloring the nodes
-according to the respective variable</a>. If the user wishes to include
-the binary variable of interest as one of these variables, it is
-contained in each neighborhood’s data frame as the variable
-<code>"GroupID"</code>.</p>
-<p><a href="network_visualization.html">This vignette</a> details
-additional arguments that can be used to further customize the visual
-plot, such as arguments to control the color scale, node size, title and
-legend.</p>
+character vector specifying multiple variables, in which case <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generate-multiple-plots-of-a-network">one
+plot will be created for each variable specified, with each plot
+coloring the nodes according to the respective variable</a>. If the user
+wishes to include the binary variable of interest as one of these
+variables, it is contained in each neighborhood’s data frame as the
+variable <code>"GroupID"</code>.</p>
+<p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">This
+vignette</a> details additional arguments that can be used to further
+customize the visual plot, such as arguments to control the color scale,
+node size, title and legend.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 class="tabset" id="output-settings-for-step-3">Output Settings for Step 3<a class="anchor" aria-label="anchor" href="#output-settings-for-step-3"></a>
 </h3>
 <p>The output returned by <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>
-has the <a href="buildRepSeqNetwork.html#base_output">same structure</a>
-as the output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. The function returns
-a list containing data frames with the node-level and cluster-level
-metadata for the global network, as well as any plots generated, in
-addition to the network adjacency matrix and the <code>igraph</code>
-network edge list.</p>
+has the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output">same
+structure</a> as the output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. The
+function returns a list containing data frames with the node-level and
+cluster-level metadata for the global network, as well as any plots
+generated, in addition to the network adjacency matrix and the
+<code>igraph</code> network edge list.</p>
 <p>The following settings allow control over whether and how this output
 is saved.</p>
 <div class="section level4">
@@ -1123,9 +1123,9 @@ network output, whose file path is saved to
 <h4 id="output-file-format-for-step-3">Output File Format for Step 3<a class="anchor" aria-label="anchor" href="#output-file-format-for-step-3"></a>
 </h4>
 <p>Each element of the output list is saved as an individual file using
-the <a href="buildRepSeqNetwork.html#output_format">default file formats
-from <code>buildRepSeqNetwork()</code></a>. In particular, the
-node-level and cluster-level metadata are saved as csv files.</p>
+the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-format">default
+file formats from <code>buildRepSeqNetwork()</code></a>. In particular,
+the node-level and cluster-level metadata are saved as csv files.</p>
 <p>Alternatively, the user can save the entire output list to a single
 compressed rds or rda file by setting <code>output_type = "rds"</code>
 or <code>output_type = "rda"</code>, respectively.</p>
@@ -1148,7 +1148,7 @@ is only saved if the user sets <code>output_type = "rds"</code> or
 <code>output_type = "rda"</code>. Using one of these settings is
 recommended used if the user wishes to modify any plots in the future.
 Note, however, that plots can always be re-generated from the node-level
-meta data using <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> as described <a href="network_visualization.html#new_plots">here</a>.</li>
+meta data using <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> as described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots">here</a>.</li>
 </ul>
 </div>
 <div class="section level4">
@@ -1158,7 +1158,7 @@ meta data using <code><a href="../reference/generateNetworkGraphPlots.html">gene
 <code>AssociatedClusterNetwork</code>. This prefix can be changed using
 the <code>output_name</code> argument, which accepts a character
 vector.</p>
-<p>Refer to <a href="buildRepSeqNetwork.html#output_filenames">this
+<p>Refer to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-names">this
 vignette</a> for further details on how the output files are named.</p>
 </div>
 </div>
@@ -1190,16 +1190,16 @@ vignette</a> for further details on how the output files are named.</p>
 <span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
 <span><span class="co">#&gt;  Done.</span></span>
 <span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpXBE7ZL/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpiUDm97/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
 <span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpXBE7ZL/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
+<span><span class="co">#&gt;   /tmp/RtmpiUDm97/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;"></p>
 <pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpXBE7ZL/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpiUDm97/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
 <span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpXBE7ZL/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
+<span><span class="co">#&gt;   /tmp/RtmpiUDm97/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
 <span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmpXBE7ZL/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
+<span><span class="co">#&gt;   /tmp/RtmpiUDm97/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
 <p>In the graph plot of the global network, where the nodes are colored
 according to the binary variable of interest, we see that the treatment
 group shows high representation in the clusters, affirming the
@@ -1229,8 +1229,8 @@ names:</p>
 <span><span class="co">#&gt; [5] "plots"</span></span></code></pre></div>
 <p>Below, we examine the data frames <code>node_data</code> and
 <code>cluster_data</code>. For details on the other list elements, refer
-to <a href="buildRepSeqNetwork.html#base_output">the output of the
-<code>buildRepSeqNetwork()</code> function</a>.</p>
+to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output">the
+output of the <code>buildRepSeqNetwork()</code> function</a>.</p>
 <div class="section level5">
 <h5 id="node-metadata-for-global-network">
 <a name="node_variables"></a> Node Metadata for Global Network<a class="anchor" aria-label="anchor" href="#node-metadata-for-global-network"></a>
@@ -1255,8 +1255,8 @@ that were present in each sample’s original data, such as
 <code>"CloneFrequency"</code> and <code>"CloneCount"</code>, are
 automatically carried over into this data.</p>
 <p>In addition, variables containing various node-level network
-properties are also present. Refer <a href="buildRepSeqNetwork.html#node_properties">here</a> for more
-information about these properties.</p>
+properties are also present. Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties">here</a>
+for more information about these properties.</p>
 </div>
 <div class="section level5">
 <h5 id="cluster-metadata-for-global-network">
@@ -1279,7 +1279,7 @@ this data frame:</p>
 <span><span class="co">#&gt; [13] "edge_density"                "degree_centrality_index"    </span></span>
 <span><span class="co">#&gt; [15] "closeness_centrality_index"  "eigen_centrality_index"     </span></span>
 <span><span class="co">#&gt; [17] "eigen_centrality_eigenvalue"</span></span></code></pre></div>
-<p>Refer <a href="buildRepSeqNetwork.html#cluster_properties">here</a>
+<p>Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties">here</a>
 for more information about the cluster-level network properties.</p>
 </div>
 </div>
@@ -1297,9 +1297,9 @@ following tasks can be performed using the returned output.</p>
 <p>We may wish to generate additional plots of the global network graph.
 For example, we may wish to color the nodes according to different
 metadata to gain further insight into the associated clusters.</p>
-<p>Refer to <a href="#network_visualization.html#new_plots">this section
-of the Network Visualization vignette</a> for details on how to generate
-new plots from existing network output.</p>
+<p>Refer to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots">this
+section of the Network Visualization vignette</a> for details on how to
+generate new plots from existing network output.</p>
 <p>Below, we generate a new plot of the global network where the nodes
 are colored according to the associated sequence of the neighborhood to
 which they belong.</p>
@@ -1327,7 +1327,7 @@ sequences differ by only a single amino acid.</p>
 plot with the clusters in the data, we can label the clusters with their
 ID numbers.</p>
 <p>This is accomplished using the <code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code>
-function <a href="network_visualization.html#labeling_clusters">as
+function <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#labeling-clusters">as
 described here</a>.</p>
 <p>We label the clusters in the global network plot with their cluster
 IDs:</p>

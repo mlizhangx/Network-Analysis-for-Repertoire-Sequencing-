@@ -252,8 +252,7 @@ to build a global network using only a single representative sequence from each
 cluster. This allows prominent public clusters to still be identified.</p>
 <p>See the
 <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
-package vignette for more details. The vignette can be accessed offline using
-<code><a href="../articles/public_clusters.html">vignette("public_clusters")</a></code>.</p>
+article on the package website.</p>
     </div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -315,8 +314,6 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## 1. Find Public Clusters in Each Sample</span></span></span>
 <span class="r-in"><span><span class="va">sample_files</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span></span>
@@ -665,59 +662,16 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (19 nodes) remain. Saving results... Done.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> All samples complete. Filtered data is located in the following directory:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpojBnyK</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## 2. Build Global Network of Public Clusters</span></span></span>
-<span class="r-in"><span><span class="va">public_clusters</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    file_list <span class="op">=</span></span></span>
-<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"node_meta_data"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        full.names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>      <span class="op">)</span>,</span></span>
-<span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
-<span class="r-in"><span>    count_col <span class="op">=</span> <span class="st">"CloneCount"</span>,</span></span>
-<span class="r-in"><span>    size_nodes_by <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>    output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Building network of public clusters:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 517 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Removing sequences with length fewer than 3 characters... Done. 517 rows remaining.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 517 nodes.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 20 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by SampleID...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Node-level meta-data saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpojBnyK/PublicClusterNetwork_NodeMetadata.csv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cluster-level meta-data saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpojBnyK/PublicClusterNetwork_ClusterMetadata.csv</span>
-<span class="r-plt img"><img src="findPublicClusters-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network graph plots saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpojBnyK/PublicClusterNetwork.pdf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network igraph saved in edgelist format to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpojBnyK/PublicClusterNetwork_EdgeList.txt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Adjacency matrix saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpojBnyK/PublicClusterNetwork_AdjacencyMatrix.mtx</span>
-<span class="r-in"><span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmpaVQvHz</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Clean up temporary files</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"PublicClusterNetwork_NodeMetadata.csv"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"PublicClusterNetwork_ClusterMetadata.csv"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"PublicClusterNetwork.pdf"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"PublicClusterNetwork_EdgeList.txt"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"PublicClusterNetwork_AdjacencyMatrix.mtx"</span></span></span>
-<span class="r-in"><span>            <span class="op">)</span></span></span>
+<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [16] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] TRUE TRUE TRUE TRUE TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"node_meta_data"</span>, <span class="st">"cluster_meta_data"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  recursive <span class="op">=</span> <span class="cn">TRUE</span></span></span>
