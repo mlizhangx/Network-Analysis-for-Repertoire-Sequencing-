@@ -1,6 +1,4 @@
-
-
-# NAIR 0.0.9044 
+# NAIR 0.0.9044 (development version)
 
 ## Breaking Changes
 
@@ -28,8 +26,9 @@
 * A lifecycle stage of Experimental has been added for the package.
 * The functions and arguments within the package that were previously deprecated now have their signaling and warnings handled through `lifecycle` package functions.
 
-## Documentation Improvements
+## Documentation Changes
 
+* The vignettes `Searching for Associated TCR/BCR Clusters`, `Searching for Public TCR/BCR Clusters` and `Network Visualization` have been removed from the package and now exist as articles on the package's website. This was done to reduce the size of the installed package.
 * URLs in documentation files and vignettes have been curated to conform with CRAN's policies. Specifically, any URL that redirected to another URL has been replaced by the target of the redirection. Links to package CRAN pages are now in canonical form.
 * All function reference files now run their examples when the package is built or checked. Some examples have been expanded.
 * Examples and vignette code now remove files and directories created in the temporary directory for the current R session.
@@ -48,7 +47,7 @@
 
 
 
-# NAIR 0.0.9043 
+# NAIR 0.0.9043 (development version)
 
 ## Vignettes
 
@@ -67,7 +66,7 @@
 * `packageStartupMessage()` added to `.onAttach()`: When loaded, the package will provide a welcome message with instructions for getting started.
 
 
-# NAIR 0.0.9042
+# NAIR 0.0.9042 (development version)
 
 ## Package Functions
 
@@ -103,7 +102,7 @@
 * All package documentation files have been revised and updated.
 
 
-# NAIR 0.0.9041 
+# NAIR 0.0.9041 (development version)
 
 ## Package Functions
 
@@ -123,7 +122,7 @@
 * `Network Visualization`
     * Restructured sections and minor content revisions
 
-# NAIR 0.0.9040
+# NAIR 0.0.9040 (development version)
 
 ## Package Functions
 
@@ -143,7 +142,7 @@
 * GitHub Actions workflow added to automate publication of future webpage updates 
 * URL for GitHub Pages hosted website added to URL field of DESCRIPTION file and to pkgdown.yaml
 
-# NAIR 0.0.9039
+# NAIR 0.0.9039 (development version)
 
 ## Package Metadata
 
@@ -165,7 +164,7 @@
 * Many documentation files have been revised and updated to use wording that is more clear, accurate and consistent with the language used in package vignettes. Updates to the remaining documentation files are forthcoming.  
 
 
-# NAIR 0.0.9038
+# NAIR 0.0.9038 (development version)
 
 ## Bug Fixes
 
@@ -188,7 +187,7 @@
 * The help file for `plotNetworkGraph` now recommends that users prefer the higher-level function `generateNetworkGraphPlots` over `plotNetworkGraph`, since the former has arguments that behave identically to those of `buildRepSeqNetwork` and supports generation of multiple plots. `plotNetworkGraph` is called by `generateNetworkGraphPlots`, so users should have no need to call `plotNetworkGraph` directly. However, `plotNetworkGraph` remains as an exported function available to the user in order to maintain backwards compatibility with user code. 
 
 
-# NAIR 0.0.9037 
+# NAIR 0.0.9037 (development version) 
 
 * Changes to `findAssociatedSeqs`:
     * `groups` argument still exists but is now deprecated and no longer used. Group labels are now automatically determined from the unique values of `group_ids`
@@ -213,11 +212,11 @@
 * CXX_STD = CXX11 flag removed from src/Makevars and src/Makevars.win
     
     
-# NAIR 0.0.9036
+# NAIR 0.0.9036 (development version)
 
 * `buildRepSeqNetwork` no longer returns an error with `dist_cutoff = 0` (fixed a bug involving the argument checks added in version 0.0.9035).
 
-# 0.0.9035
+# NAIR 0.0.9035 (development version)
 
 * Argument checks added to `buildRepSeqNetwork`
 * `buildRepSeqNetwork` now automatically attempts to perform the following conversions:
@@ -233,23 +232,23 @@
     * `chooseNodeStats` / `node_stat_settings` now generate a named logical vector rather than a list.
 * The `dist_type` argument is now more flexible in the values it will accept; for example `"lev"` or simply `"l"` is now equivalent to `"levenshtein"`
 
-# NAIR 0.0.9034
+# NAIR 0.0.9034 (development version)
 
 * Rdocumentation files
     * All examples now use `simulateToyData` to generate data
     
-# NAIR 0.0.9033
+# NAIR 0.0.9033 (development version)
 
 * Rdocumentation files
     * Added documentation for `simulateToyData`
     * All examples now use `simulateToyData` to generate data
 
-# NAIR 0.0.9032
+# NAIR 0.0.9032 (development version)
 
 * Rdocumentation files
     * Fixed instances where tildes were erroneously used in place of the `\code{}` environment
 
-# NAIR 0.0.9031 
+# NAIR 0.0.9031 (development version)
 
 * Added documentation for the following functions:
     * `addGraphLabels`
@@ -265,12 +264,12 @@
     * `Finding Associated Clones` vignette:
         * `addClusterLabels` function used to label the clusters
 
-# NAIR 0.0.9030
+# NAIR 0.0.9030 (development version)
 
 * Added function `addGraphLabels` for adding text labels to the nodes of a graph plot
 * Added function `addClusterLabels` for adding labels to certain clusters in a graph plot
 
-# NAIR 0.0.9029
+# NAIR 0.0.9029 (development version)
 
 * The algorithm used to identify clusters in `addClusterMembership()` can now be controlled via a new argument `fun`.
 * The following functions have a new argument `cluster_fun` that is passed to the `fun` argument of `addClusterMembership()`:
@@ -282,41 +281,41 @@
     * `buildPublicClusterNetwork()`
     * `buildPublicClusterNetworkByRepresentative()`
 
-# NAIR 0.0.9028
+# NAIR 0.0.9028 (development version)
 
 * `buildRepSeqNetwork()` and `generateNetworkObjects()` now return `NULL` with a warning when the constructed network contains no edges.
 
-# NAIR 0.0.9027 
+# NAIR 0.0.9027 (development version)
 
 * `getClusterStats()` now computes sequence-based statistics (e.g., sequence with max count) for dual-chain networks, including a separate set of such statistics for each chain. 
 * The name of some variables in the output of `getClusterStats()` have been changed to reflect broader applicability to single-cell data:
     * `max_clone_count` changed to `max_count`
     * `agg_clone_count` changed to `agg_count`
 
-# NAIR 0.0.9026
+# NAIR 0.0.9026 (development version)
 
 * Added an argument `verbose` to `findAssociatedClones()` that can be optionally set to `TRUE` in order to print additional console output reporting the number of clones in each neighborhood, both by sample and in total.
 * Discovered and fixed the following bugs that were present from 0.0.9018 onward:
     * Fixed a bug whereby `findAssociatedSeqs()` was not correctly computing the counts used for Fisher's exact test
     * Fixed a bug in `findPublicClones()` involving identification of the top n clusters by node count in each sample: when more than one cluster possessed the nth highest node count, all of these clusters were included in the top n clusters, resulting in more than n clusters identified by this criterion. This has been reverted to the behavior that existed prior to version 0.0.9018, whereby the first n clusters are selected after sorting data rows by descending node count using the `order` function.
 
-# NAIR 0.0.9025
+# NAIR 0.0.9025 (development version)
 
 * Fixed a bug in `filterInputData()` that was preventing filtering by minimum sequence length
 * Removed `BiocManager` from `Suggests` field of DESCRIPTION, since it is no longer used to access demonstration data when building vignettes.
 
-# NAIR 0.0.9024
+# NAIR 0.0.9024 (development version)
 
 * Converted all package vignettes to use data created with `simulateToyData()`
 * Additional detail added to vignettes for associated clones and public clones workflows
 
 
-# NAIR 0.0.9023 
+# NAIR 0.0.9023 (development version)
 
 * Added user-level function `simulateToyData` for generating example (toy) data, primarily for use in vignettes, examples and tests.
 * Converted README to use `simulateToyData`
 
-# NAIR 0.0.9022
+# NAIR 0.0.9022 (development version)
 
 * Numerous utility functions that were previously internal have been renamed and exported to be available to the user. These include `generateNetworkObjects()`, `generateNetworkGraphPlots()`, `filterInputData()`, `getNeighborhood()`, `loadDataFromFileList()`, `combineSamples()`, `saveNetwork()`, and `saveNetworkPlots()`.
 * Remaining documentation added for all user-level functions.
@@ -325,20 +324,20 @@
 
 
 
-# NAIR 0.0.9021
+# NAIR 0.0.9021 (development version)
 
 * Minor bug fixes to a few functions in `utils.R` that caused errors or warnings in rare cases
 
 
-# NAIR 0.0.9020
+# NAIR 0.0.9020 (development version)
 
 * Internal function `.saveNetwork` changed to user-facing function `saveNetwork`, for use in saving output during downstream analysis
 
-# NAIR 0.0.9019 
+# NAIR 0.0.9019 (development version) 
 
 * Bug fixes to associated clones functions
 
-# NAIR 0.0.9018 
+# NAIR 0.0.9018 (development version) 
 
 * Changes to `buildRepSeqNetwork()` (many of these changes carry over to other functions):
     * Changed arguments and functionality for saving output. A new `output_type` argument can be used to save the output list to a rds or rda file, rather than the default behavior of saving each item in an individual, uncompressed file. Rather than specifying the filename of each item individually, the `output_name` argument accepts a character string to be used as a common prefix for any files saved. All items are now saved, and the `save_all` argument has been removed.
@@ -371,12 +370,12 @@
 * `buildRepSeqNetwork()` and other high-level functions that generate a network from sequences now coerce the list of sequences to a character vector if it is not already in this format (e.g., factors).
 * `buildRepSeqNetwork()` and other top-level functions now skip automatic plot generation when more than 1 million nodes are present in the network. This is done to avoid a potential error when calling `ggplot` that occurs when the combined nodes and edges exceed its limitations. After the network is generated and returned, the user can still attempt to manually generate the plot using `plotNetworkGraph()`; in this manner, the potential error will not interfere with completion of building the network.
 
-# NAIR 0.0.9017
+# NAIR 0.0.9017 (development version)
 
 * `buildDualChainNetwork()` function added
 
 
-# NAIR 0.0.9016
+# NAIR 0.0.9016 (development version)
 
 * Package vignette added, which includes an introduction to the package and a tutorial of the `buildRepSeqNetwork()` function
 * Package readme file updated
@@ -385,11 +384,11 @@
 * Identified and fixed an error in `getAssociatedClusters()` that occurred when `neighborhood_plots = FALSE` and `return_all = TRUE` (the function tried to include output related to the neighborhood plots when none existed).
 * `findAssociatedClones()` now returns an informative error when no sequences pass the filter for minimum sample membership.
 
-# NAIR 0.0.9015
+# NAIR 0.0.9015 (development version)
 
 * Fixed minor bugs related to changes in 0.0.9014
 
-# NAIR 0.0.9014
+# NAIR 0.0.9014 (development version)
 
 * The following argument names have been changed in functions in which they appear:
     * `clone_col` to `seq_col`
@@ -418,7 +417,7 @@
     * `embedTCRSeqsByAtchleyFactor`
 
 
-# NAIR 0.0.9013
+# NAIR 0.0.9013 (development version)
 
 * R Documentation files added for package functions:
     * `aggregateIdenticalClones`
@@ -433,7 +432,7 @@
 * Implemented on-install testing of package functions using package `testthat`
 
 
-# NAIR 0.0.9012
+# NAIR 0.0.9012 (development version)
 
 * Package name changed to NAIR (Network Analysis for Immune Repertoire)
 * Added `findPublicClusters()`
@@ -442,7 +441,7 @@
 * `generateAtchleyCorrHeatmap()` renamed to `kmeansAtchley()`
 * `levAdjacencyMatSparse()` and `hamAdjacencyMatSparse()` have a new argument `drop_isolated_nodes` that can be set to `FALSE` to keep isolated nodes. This argument has been added to higher-level functions that dispatch calls to these routines.
 
-# NAIR 0.0.9011
+# NAIR 0.0.9011 (development version)
 
 * Separate function `embedClonesByAtchleyFactor()` created to perform embedding of TCR CDR3 amino acid sequences in Euclidean 30-space based on Atchley factor representation; this was previously done within the function `adjacencyMatAtchleyFromClones()`, but has now been placed in its own function for more general use
 * New function `analyzeDiseaseAssociatedClusters()` created, which is used to perform a combined network analysis on the disease-associated clusters generated by `generateDiseaseAssociatedClusters()`
@@ -450,14 +449,14 @@
 * `graphics`, `reshape2`, `gplots`, `viridisLite` and `RColorBrewer` added as package dependencies via the `Imports` directive of the `DESCRIPTION` file
 
 
-# NAIR 0.0.9010
+# NAIR 0.0.9010 (development version)
 
 * `computeMetaForCandidateSeqs()` (helper for `findDiseaseMotifsFromMergedSamples()`) redesigned and renamed to `findDiseaseAssociatedClones()`; this function now takes only the merged sample data as its input data, and filters sequences by a set of criteria (number of samples shared by and minimum seq length) to obtain the list of candidates before conducting the Fisher's exact tests; previously the list of candidates was obtained as input data to the function.
 * `findDiseaseMotifsFromMergedSamples()` redesigned to use candidate sequence metadata as input (previously it computed this metadata from the merged sample data) and renamed to `generateDiseaseAssociatedClusters()`
 * `generateNetworkWithStats()` now automatically prints the ggraph in R when called (previously the user needed to access the variable `graph_plot` contained in the returned list)
 * Added package `dplyr` as a dependency via the `Imports` directive of the `DESCRIPTION` file
 
-# NAIR 0.0.9009
+# NAIR 0.0.9009 (development version)
 
 * `buildNetwork()` renamed to `generateNetworkWithStats()`
 * `adjacencyMatrix()` renamed to `sparseAdjacencyMatFromClones()`
@@ -477,7 +476,7 @@
 * Added vignette for `generateNetworkWithStats()`
     
     
-# NAIR 0.0.9008
+# NAIR 0.0.9008 (development version)
 
 * New function `hamDistBounded` for computing bounded Hamming distance in C++
     * Supports strings of unequal length; the longer string is effectively truncated to the length of the shorter string, and the difference in length is added to the Hamming distance with the truncated version.  This is equivalent to extending the shorter string to the length of the longer string by appending placeholder characters that differ from their counterparts in the longer string.
@@ -488,30 +487,30 @@
     * The file `col_ids.txt` created by the C++ function that computes the adjacency matrix is now deleted by `adjacencyMatrix()` after it has finished its other tasks.  The information in the file is now stored in the row names of the output matrix and so the file is no longer needed.
     
 
-# NAIR 0.0.9007
+# NAIR 0.0.9007 (development version)
 
 * `.genNetworkGraph()` internal helper for `buildNetwork()` renamed into a public version `genNetworkGraph()` for use by other package functions and by users; moved to a new file `utils.R` that will be used to house shared helper functions used by multiple package functions.
 * Added `inst/python/Atchley_factors.csv`, which stores the Atchley factor amino acid embedding used by `BriseisEncoder.py`
 
 
-# NAIR 0.0.9006
+# NAIR 0.0.9006 (development version)
 
 * Python module `tensorflow` added to `installPythonModules()` and Config/reticulate field of the DESCRIPTION file. `tensorflow` is required by the Python module `keras`.
 
 
-# NAIR 0.0.9005
+# NAIR 0.0.9005 (development version)
 
 * file `zzz.R`  created with .onUnload() directive to unload package dll via call to `library.dynam.unload()` when the package is unloaded
 
 
-# NAIR 0.0.9004
+# NAIR 0.0.9004 (development version)
 
 * Reintroduced reticulate package dependency as well as R .onLoad() directives and R functions related to python integration, dependency management and module installation
 * Added Python source code for BriseisEncoder and h5 trained encoder file
 * Removed $(SHLIB_OPENMP_CXXFLAGS) from PKG_CXXFLAGS and PKG_LIBS in Makevars as OpenMP is not supported for MacOS (still enabled in Makevars.win). Added comments with instructions for Linux users to enable OpenMP if desired, and added a corresponding note to the main Readme file's installation section for Linux users.
 
 
-# NAIR 0.0.9003
+# NAIR 0.0.9003 (development version)
 
 * Removed Python source code (previously used to compute adjacency matrix)
 * Removed reticulate package dependency (previously used to manage python dependencies)
@@ -522,7 +521,7 @@
 * Enabled ARMA_64BIT_WORD to accommodate larger matrices when using the C++ function levAdjacencyMatSparse; specifically, #define ARMA_64BIT_WORD=1 was added to the beginning of each .cpp source file, and -DARMA_64BIT_WORD=1 was added to the PKG_CXXFLAGS definition in Makevars and Makevars.win
 
 
-# NAIR 0.0.9002
+# NAIR 0.0.9002 (development version)
 
 * Added internal support for Rcpp
 * Added C++ routine for bounded Levenshtein distance (levDistBounded)
@@ -530,6 +529,6 @@
 * Added C++ routine for sparse Levenshtein adjacency matrix (levAdjacencyMatSparse)
 
 
-# NAIR 0.0.9001
+# NAIR 0.0.9001 (development version)
 
 * Initial (in-development) version 
