@@ -478,7 +478,7 @@ This section covers some basic tasks the user may wish to perform following the 
 
 In some cases, the user may wish to make changes to a plot that was previously created by the `buildRepSeqNetwork()` function. 
 
-Refer to [this vignette](network_visualization#modifying_plots) for further details.
+Refer to [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#modifying-plots-after-creation) for further details.
 
 
 ## Downstream Computation of Network Properties  {.tabset}
