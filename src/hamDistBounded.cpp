@@ -1,9 +1,18 @@
-//compute Hamming distance between two strings a and b of lengths n and m,
-//subject to a specified upper bound k.  If a and b differ in length, the longer
-//string is truncated to the length of the shorter string and the difference in
-//length is added to the distance.  If it is found that the Hamming distance
-//will exceed the bound, the computation is halted and a value of -1 is
-//returned.
+// NAIR: Network Analysis of Immune Repertoire
+// Copyright (C) 2023 Li Zhang
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #define ARMA_64BIT_WORD 1
 #include <RcppArmadillo.h>
