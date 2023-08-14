@@ -178,8 +178,7 @@ and returned along with some additional information.
 The returned ouput is intended for use with the \code{\link{findAssociatedClones}}
 function. See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}
-package vignette for more details. The vignette can be accessed offline using
-\code{vignette("associated_clusters")}.
+article on the package website.
 }
 \value{
     A data frame containing the TCR/BCR sequences found to be associated with
@@ -227,7 +226,7 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
-\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters vignette}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters article on package website}
 }
 
 \author{

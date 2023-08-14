@@ -154,8 +154,7 @@ to construct the global network of complete public clusters.
 
 See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}
-package vignette for more details. The vignette can be accessed offline using
-\code{vignette("public_clusters")}.
+article on the package website.
 }
 \value{
     If the input data contains a combined total of fewer than two rows, or if the
@@ -278,7 +277,7 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
-\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters vignette}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters article on package website}
 }
 \author{
     Brian Neal (\email{Brian.Neal@ucsf.edu})

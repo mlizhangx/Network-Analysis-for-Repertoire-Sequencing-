@@ -25,18 +25,6 @@ We introduce the `NAIR` package, a powerful tool for analyzing the adaptive immu
 [Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. *Frontiers in Immunology*, vol. 14. doi: 10.3389/fimmu.2023.1181825](https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full)
 
 
-<!-- ### What can `NAIR` do? -->
-
-<!-- `NAIR` allows the user to: -->
-
-<!-- * Perform general network analysis on Adaptive Immune Receptor Repertoire (AIRR-Seq) data, including computing local and global network properties of nodes and clusters -->
-<!-- * Search across multiple AIRR-Seq samples for: -->
-<!--     * Clones/clusters associated to subject characteristics/disease conditions/clinical outcomes -->
-<!--     * Public clones/clusters  -->
-<!-- * Generate customized visualizations of the immune repertoire network -->
-<!-- * Perform further downstream analysis -->
-
-
 Our immune repertoire analysis tool allows users to perform various network analysis tasks on Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data. This includes computing local and global network properties of nodes and clusters, which can provide insights into the structural organization of the immune repertoire network.
 
 In addition, our tool enables users to search across multiple AIRR-Seq samples for clones/clusters associated with subject characteristics, disease conditions or clinical outcomes, as well as identify public clones/clusters. This can help researchers identify potentially important TCR/BCR clones.
@@ -89,7 +77,7 @@ See [this vignette](buildRepSeqNetwork.html) for a tutorial on the function's us
 
 # Visualization
 
-`buildRepSeqNetwork()` accepts various arguments for customizing the network visualization. See [this vignette](network_visualization.html) for an overview.
+`buildRepSeqNetwork()` accepts various arguments for customizing the network visualization. See [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) for an overview.
 
 
 
@@ -98,7 +86,7 @@ See [this vignette](buildRepSeqNetwork.html) for a tutorial on the function's us
 
 Given multiple samples of bulk AIRR-Seq data, the `NAIR` package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome. 
 
-See [this vignette](associated_clusters.html) for a detailed tutorial.
+See [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html) for a detailed tutorial.
 
 
 
@@ -108,4 +96,4 @@ The `NAIR` package includes a set of functions that facilitate searching for pub
 
 In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual). 
 
-See [this vignette](public_clusters.html) for a detailed tutorial.
+See [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html) for a detailed tutorial.

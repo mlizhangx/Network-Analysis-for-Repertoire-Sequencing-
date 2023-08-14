@@ -11,3 +11,8 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^cran-comments\.md$
+^revdep$
+^vignettes/associated_clusters\.Rmd$
+^vignettes/public_clusters\.Rmd$
+^vignettes/network_visualization\.Rmd$

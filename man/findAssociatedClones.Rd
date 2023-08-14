@@ -147,8 +147,7 @@ file extension based on \code{output_type}.
 The files saved by this function are intended for use with
 \code{\link{buildAssociatedClusterNetwork}}. See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}
-package vignette for more details. The vignette can be accessed offline using
-\code{vignette("associated_clusters")}.
+article on the package website for more details.
 }
 \value{
 Returns \code{TRUE}, invisibly.
@@ -160,7 +159,7 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/index.html}{Webpage for the NAIR package}
 
-\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters vignette}
+\href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters article on package website}
 }
 \author{
     Brian Neal (\email{Brian.Neal@ucsf.edu})

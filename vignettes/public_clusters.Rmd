@@ -4,10 +4,6 @@ output:
   rmarkdown::html_vignette:
     number_sections: false
     tabset: true
-vignette: >
-  %\VignetteIndexEntry{Searching for Public TCR/BCR Clusters}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
@@ -221,7 +217,7 @@ If desired, all nodes can be kept in the network, including those that do not ha
 
 ### Clustering Algorithm for Sample Networks
 
-By default, clustering within each sample's network is performed using the `cluster_fast_greedy()` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](buildRepSeqNetwork.html#cluster_alg) for details.
+By default, clustering within each sample's network is performed using the `cluster_fast_greedy()` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#clustering-algorithm) for details.
 
 
 
@@ -263,7 +259,7 @@ If desired, data for each sample's full network can also be saved prior to filte
 
 Note that the sequence-based filter settings specified by `min_seq_length` and `drop_chars` still apply to each sample's full network, since the network is only constructed after applying these filters. The full, pre-filtered network refers to the network that contains all of the sample's clusters, i.e., before the public clusters are identified and other clusters are removed.
 
-The full network data for each sample includes [all of the objects contained in the output of `buildRepSeqNetwork`](buildRepSeqNetwork.html#base_output), including cluster metadata. By default, these are placed in a list named `net` and saved to an RDS file whose file name is the [sample ID](#sample_ids). The RDA format can be used instead of RDS by setting `output_type_unfiltered = "rda"`. Alternatively, setting `output_type_unfiltered = "individual"` saves each R object using the [default file formats from `buildRepSeqNetwork`](buildRepSeqNetwork.html#output_format), where each file's name begins with the [sample ID](#sample_ids).
+The full network data for each sample includes [all of the objects contained in the output of `buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output), including cluster metadata. By default, these are placed in a list named `net` and saved to an RDS file whose file name is the [sample ID](#sample_ids). The RDA format can be used instead of RDS by setting `output_type_unfiltered = "rda"`. Alternatively, setting `output_type_unfiltered = "individual"` saves each R object using the [default file formats from `buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-format), where each file's name begins with the [sample ID](#sample_ids).
 
 
 
@@ -273,11 +269,11 @@ By default, `findPublicClusters()` does not produce visual plots when constructi
 
 If desired, visual plots of the full network for each sample (prior to filtering the clusters) can be enabled by setting `plots = TRUE`. This does nothing on its own: by default, these plots are neither printed nor saved. To print the plots in the R plotting window, the user must additionally set `print_plots = TRUE`. To save the plots, the user must [specify a directory to the `output_type_unfiltered` argument](#save_unfiltered).
 
-By default, the plot for each sample will color the nodes according to the cluster to which they belong. The user can specify a different variable for coloring the nodes using the `color_nodes_by` argument  [as detailed here](network_visualization.html#node_colors). It is even possible to generate [multiple plots of each sample's network, with each plot colored according to a different variable](network_visualization.html#multiple_plots).
+By default, the plot for each sample will color the nodes according to the cluster to which they belong. The user can specify a different variable for coloring the nodes using the `color_nodes_by` argument  [as detailed here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#node-colors). It is even possible to generate [multiple plots of each sample's network, with each plot colored according to a different variable](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generate-multiple-plots-of-a-network).
 
 If the user [provides a directory to the `output_type_unfiltered` argument](#save_unfiltered), a pdf file will be saved for each sample, containing all plots generated for the sample's network. Each pdf file's name will be the [sample ID](#sample_ids).
 
-[This vignette](network_visualization.html) details additional arguments that can be used to further customize the visual plot for each sample.
+[This article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) details additional arguments that can be used to further customize the visual plot for each sample.
 
 
 ## <a name="demo1"></a> Demonstration (Step 1)
@@ -331,7 +327,7 @@ names(sample1_filtered_node_data)
 
 Each row in the data frame corresponds to a node belonging to one of the filtered clusters in the sample network.
 
-Refer [here](buildRepSeqNetwork.html#node_properties) for more information about the node-level network properties.
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties) for more information about the node-level network properties.
 
 
 #### <a name="filtered_cluster_data"></a> Cluster Metadata for Filtered Sample Networks
@@ -355,7 +351,7 @@ names(sample1_filtered_cluster_data)
 
 Each row in the data frame corresponds to one of the filtered clusters in the sample network.
 
-Refer [here](buildRepSeqNetwork.html#cluster_properties) for more information about the cluster-level network properties.
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties) for more information about the cluster-level network properties.
 
 
 
@@ -425,14 +421,14 @@ The settings used to construct the network can be customized [using the same arg
 * `dist_cutoff = 1`
 * `drop_isolated_nodes = FALSE`
 
-Refer to [this vignette](buildRepSeqNetwork.html#network_settings) for details on their meaning and behavior.
+Refer to [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network-settings) for details on their meaning and behavior.
 
 
 ### Clustering Algorithm for Global Network
 
 After constructing the global network, `buildPublicClusterNetwork()` performs cluster analysis on the network nodes, partitioning the global network graph into densely-connected subgraphs. These global clusters can contain nodes from different samples.
 
-By default, clustering within the global network is performed using the `cluster_fast_greedy()` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](buildRepSeqNetwork.html#cluster_alg) for details.
+By default, clustering within the global network is performed using the `cluster_fast_greedy()` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#clustering-algorithm) for details.
 
 
 
@@ -444,15 +440,15 @@ By default, the plot colors the nodes according to sample ID. This can assist th
 
 If desired, a different variable can be used to color the nodes. This is done using the `color_nodes_by` argument, which accepts a character string specifying the variable to use. The value should be the name of a [variable present in the filtered node-level metadata for each sample](#subset_cols) or a [node-level network property that has been computed for the global network](#node_variables). 
 
-The `color_nodes_by` argument also accommodates a character vector specifying multiple variables, in which case [one plot will be created for each variable specified, with each plot coloring the nodes according to the respective variable](network_visualization.html#multiple_plots). If the user wishes to include the binary variable of interest as one of these variables, it is contained in each neighborhood's data frame as the variable `"GroupID"`.
+The `color_nodes_by` argument also accommodates a character vector specifying multiple variables, in which case [one plot will be created for each variable specified, with each plot coloring the nodes according to the respective variable](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generate-multiple-plots-of-a-network). If the user wishes to include the binary variable of interest as one of these variables, it is contained in each neighborhood's data frame as the variable `"GroupID"`.
 
-[This vignette](network_visualization.html) details additional arguments that can be used to further customize the visual plot, such as arguments to control the color scale, node size, title and legend.
+[This article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) details additional arguments that can be used to further customize the visual plot, such as arguments to control the color scale, node size, title and legend.
 
 
 
 ## Output Settings for Step 2 {.tabset}
 
-The output returned by `buildPublicClusterNetwork()` follows the [same format as the output of `buildRepSeqNetwork`](buildRepSeqNetwork.html#output_settings). The function returns a list containing the [node-level](#node_variables) and [cluster-level](#cluster_variables) metadata for the global network, as well as any plots generated, in addition to the network adjacency matrix and the `igraph` network edge list.
+The output returned by `buildPublicClusterNetwork()` follows the [same format as the output of `buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-settings). The function returns a list containing the [node-level](#node_variables) and [cluster-level](#cluster_variables) metadata for the global network, as well as any plots generated, in addition to the network adjacency matrix and the `igraph` network edge list.
 
 ### Output Directory for Step 2
 
@@ -465,7 +461,7 @@ The user can also specify `output_dir = NULL` in order to prevent the output fro
 
 ### Output File Format for Step 2
 
-By default, each element of the list returned by `buildPublicClusterNetwork()` is saved as an individual file. The file formats are the same default file formats used by [`buildRepSeqNetwork`](buildRepSeqNetwork.html#output_settings). In particular, the node-level and cluster-level metadata are saved as csv files. 
+By default, each element of the list returned by `buildPublicClusterNetwork()` is saved as an individual file. The file formats are the same default file formats used by [`buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-settings). In particular, the node-level and cluster-level metadata are saved as csv files. 
 
 Alternatively, the user can save the entire output list to a single compressed rds or rda file by setting `output_type = "rds"` or `output_type = "rda"`, respectively.
 
@@ -473,14 +469,14 @@ Alternatively, the user can save the entire output list to a single compressed r
 ### PDF of Global Network Graph Plots
 
 * Regardless of the output file format specified, a separate pdf file is created in `output_dir` containing all graph plots generated for the global network. The dimensions (in inches) for the pdf can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively. The pdf file is not created if no plots are generated (i.e., if the argument `plots` is set to `FALSE`).
-* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using `generateNetworkGraphPlots()` as described [here](network_visualization.html#new_plots).
+* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using `generateNetworkGraphPlots()` as described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots).
 
 
 ### Output File Name(s) for Step 2
 
 By default, the name of each saved file begins with `PublicClusterNetwork`. This prefix can be changed using the `output_name` argument, which accepts a character vector.
 
-Refer to [this vignette](buildRepSeqNetwork.html#output_filenames) for further details on how the output files are named.
+Refer to [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-names) for further details on how the output files are named.
 
 
 
@@ -521,7 +517,7 @@ The elements of the output list returned by `buildPublicClusterNetwork()` have t
 names(public_clusters)
 ```
 
-Below, we examine the data frames `node_data` and `cluster_data`. For details on the other list elements, refer to [the output of the `buildRepSeqNetwork` function](buildRepSeqNetwork.html#base_output).
+Below, we examine the data frames `node_data` and `cluster_data`. For details on the other list elements, refer to [the output of the `buildRepSeqNetwork` function](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output).
 
 
 #### <a name="node_variables"></a> Node Metadata for Global Network
@@ -535,7 +531,7 @@ names(public_clusters$node_data)
 
 Notice that [by default](#subset_cols), all variables that were present in each sample's original data, such as `"CloneFrequency"` and `"CloneCount"`, are automatically carried over into this data.
 
-Many [node-level network properties](buildRepSeqNetwork.html#node_properties) are present in the data. Some pertain to the network for the individual sample from which each node originated, i.e., the networks constructed in [step 1](#step1). This includes all variables that begin with `"SampleLevel"`, such as `SampleLevelNetworkDegree`, as well as the variable `ClusterIDInSample`.
+Many [node-level network properties](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties) are present in the data. Some pertain to the network for the individual sample from which each node originated, i.e., the networks constructed in [step 1](#step1). This includes all variables that begin with `"SampleLevel"`, such as `SampleLevelNetworkDegree`, as well as the variable `ClusterIDInSample`.
 
 The variables that begin with `"Public"`, such as `PublicNetworkDegree`, pertain to the global network. In particular, `ClusterIDPublic` indicates the ID of the global cluster to which each node belongs.
 
@@ -548,7 +544,7 @@ The list element `cluster_data` is a data frame containing metadata for the publ
 names(public_clusters$cluster_data)
 ```
 
-Refer [here](buildRepSeqNetwork.html#cluster_properties) for more information about the cluster-level network properties.
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties) for more information about the cluster-level network properties.
 
 
 # <a name="step3"></a> Step 3: Additional Tasks {.tabset}
@@ -560,7 +556,7 @@ After calling `buildPublicClusterNetwork()`, the following tasks can be performe
 
 In order to more easily cross-reference the clusters in the visual plot with the clusters in the data, we can label the clusters with their ID numbers. 
 
-This is accomplished using `addClusterLabels()` [as described here](network_visualization.html#labeling_clusters). Note that within the node-level metadata, the global cluster ID is stored in the variable `ClusterIDPublic`, so we must provide this column name to the `cluster_id_col` argument. 
+This is accomplished using `addClusterLabels()` [as described here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#labeling-clusters). Note that within the node-level metadata, the global cluster ID is stored in the variable `ClusterIDPublic`, so we must provide this column name to the `cluster_id_col` argument. 
 
 Below, we label the six largest clusters in the plot with their cluster IDs:
 

@@ -187,8 +187,7 @@ cluster. This allows prominent public clusters to still be identified.
 
 See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}
-package vignette for more details. The vignette can be accessed offline using
-\code{vignette("public_clusters")}.
+article on the package website.
 
 }
 \value{
@@ -245,8 +244,6 @@ simulateToyData(
   no_return = TRUE
 )
 
-
-## 1. Find Public Clusters in Each Sample
 sample_files <-
   file.path(tempdir(),
             paste0("Sample", 1:samples, ".rds")
@@ -264,31 +261,10 @@ findPublicClusters(
   output_dir = tempdir()
 )
 
-## 2. Build Global Network of Public Clusters
-public_clusters <-
-  buildPublicClusterNetwork(
-    file_list =
-      list.files(
-        file.path(tempdir(), "node_meta_data"),
-        full.names = TRUE
-      ),
-    seq_col = "CloneSeq",
-    count_col = "CloneCount",
-    size_nodes_by = 1,
-    output_dir = tempdir()
-  )
-
-
 # Clean up temporary files
 file.remove(
   file.path(tempdir(),
-            c(paste0("Sample", 1:samples, ".rds"),
-              "PublicClusterNetwork_NodeMetadata.csv",
-              "PublicClusterNetwork_ClusterMetadata.csv",
-              "PublicClusterNetwork.pdf",
-              "PublicClusterNetwork_EdgeList.txt",
-              "PublicClusterNetwork_AdjacencyMatrix.mtx"
-            )
+            c(paste0("Sample", 1:samples, ".rds"))
   )
 )
 unlink(
