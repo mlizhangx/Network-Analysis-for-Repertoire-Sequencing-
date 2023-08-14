@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!-- [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) -->
+
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/actions/workflows/check-standard.yaml)
@@ -57,7 +59,13 @@ To aid in visualization and interpretation of the immune repertoire network, our
 
 # Installation
 
-The development version of `NAIR` is [hosted on Github](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-) and can be installed from source using the following command:
+<!-- To install the latest release version of `NAIR`, use the following command: -->
+<!-- ```{r} -->
+<!-- install.packages("NAIR") -->
+<!-- ``` -->
+
+
+To install the latest development version of `NAIR` from source (which requires compilation), use the following command:
 
 ```{r, eval = FALSE}
 devtools::install_github(
@@ -76,18 +84,6 @@ devtools::install_github(
 
 
 [The website for the `NAIR` package](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/) contains articles to help users get started. All package documentation and vignettes can be found there.
-
-
-Once the package is installed, package vignettes and documentation can be accessed offline from within R using the following commands:
-
-```{r, eval = FALSE}
-# Package vignette
-vignette("NAIR", package = "NAIR")
-
-# Display vignettes in html browser
-browseVignettes("NAIR")
-```
-
 
 
 
@@ -114,7 +110,7 @@ See [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-
 
 ## Visualization
 
-`buildRepSeqNetwork()` accepts various arguments for customizing the network visualization. See [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) for an overview.
+`buildRepSeqNetwork()` accepts various arguments for customizing the network visualization. See [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) for an overview.
 
 
 
@@ -123,7 +119,7 @@ See [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-
 
 Given multiple samples of AIRR-Seq data, the `NAIR` package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome. 
 
-See [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html) for a detailed tutorial.
+See [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html) for a detailed tutorial.
 
 
 
@@ -133,4 +129,4 @@ The `NAIR` package includes a set of functions that facilitate searching for pub
 
 In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual). 
 
-See [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html) for a detailed tutorial.
+See [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html) for a detailed tutorial.

@@ -1,5 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) -->
 <!-- badges: start -->
 
 [![Lifecycle:
@@ -77,9 +78,13 @@ T-cell or B-cell receptors (TCR or BCR).
 
 # Installation
 
-The development version of `NAIR` is [hosted on
-Github](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-)
-and can be installed from source using the following command:
+<!-- To install the latest release version of `NAIR`, use the following command: -->
+<!-- ```{r} -->
+<!-- install.packages("NAIR") -->
+<!-- ``` -->
+
+To install the latest development version of `NAIR` from source (which
+requires compilation), use the following command:
 
 ``` r
 devtools::install_github(
@@ -97,17 +102,6 @@ devtools::install_github(
 package](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/)
 contains articles to help users get started. All package documentation
 and vignettes can be found there.
-
-Once the package is installed, package vignettes and documentation can
-be accessed offline from within R using the following commands:
-
-``` r
-# Package vignette
-vignette("NAIR", package = "NAIR")
-
-# Display vignettes in html browser
-browseVignettes("NAIR")
-```
 
 ## The `buildRepSeqNetwork` function
 
@@ -135,7 +129,7 @@ for a tutorial on the function’s usage and output.
 
 `buildRepSeqNetwork()` accepts various arguments for customizing the
 network visualization. See [this
-vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html)
+article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html)
 for an overview.
 
 ## Searching for Associated Clusters
@@ -145,7 +139,7 @@ to search for TCR/BCR clusters associated with a binary variable of
 interest, such as a disease condition, treatment or clinical outcome.
 
 See [this
-vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html)
+article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html)
 for a detailed tutorial.
 
 ## Searching for Public Clusters
@@ -159,5 +153,5 @@ acid) that are shared across samples (e.g., across individuals or across
 time points for a single individual).
 
 See [this
-vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html)
+article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html)
 for a detailed tutorial.
