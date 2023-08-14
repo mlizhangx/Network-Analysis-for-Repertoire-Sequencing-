@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="Pipelines for studying the adaptive immune repertoire of T
+<meta name="description" content="Pipelines for studying the adaptive immune repertoire of T cells 
     and B cells via network analysis based on receptor sequence similarity. 
     Relate clinical outcomes to immune repertoires based on their network 
     properties, or to particular clusters and clones within a repertoire. 
@@ -16,7 +16,7 @@
 <script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Network Analysis of Immune Repertoire">
-<meta property="og:description" content="Pipelines for studying the adaptive immune repertoire of T
+<meta property="og:description" content="Pipelines for studying the adaptive immune repertoire of T cells 
     and B cells via network analysis based on receptor sequence similarity. 
     Relate clinical outcomes to immune repertoires based on their network 
     properties, or to particular clusters and clones within a repertoire. 
@@ -126,7 +126,11 @@
 <div class="section level1">
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
-<p>The development version of <code>NAIR</code> is <a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-" class="external-link">hosted on Github</a> and can be installed from source using the following command:</p>
+<!-- To install the latest release version of `NAIR`, use the following command: -->
+<!-- ```{r} -->
+<!-- install.packages("NAIR") -->
+<!-- ``` -->
+<p>To install the latest development version of <code>NAIR</code> from source (which requires compilation), use the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
 <span>  <span class="st">"mlizhangx/Network-Analysis-for-Repertoire-Sequencing-"</span>,</span>
@@ -139,13 +143,6 @@
 <h1 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h1>
 <p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">The website for the <code>NAIR</code> package</a> contains articles to help users get started. All package documentation and vignettes can be found there.</p>
-<p>Once the package is installed, package vignettes and documentation can be accessed offline from within R using the following commands:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Package vignette</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"NAIR"</span>, package <span class="op">=</span> <span class="st">"NAIR"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Display vignettes in html browser</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/browseVignettes.html" class="external-link">browseVignettes</a></span><span class="op">(</span><span class="st">"NAIR"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-buildrepseqnetwork-function">The <code>buildRepSeqNetwork</code> function<a class="anchor" aria-label="anchor" href="#the-buildrepseqnetwork-function"></a>
 </h2>
@@ -174,20 +171,20 @@
 <div class="section level2">
 <h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
 </h2>
-<p><code><a href="reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> accepts various arguments for customizing the network visualization. See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">this vignette</a> for an overview.</p>
+<p><code><a href="reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> accepts various arguments for customizing the network visualization. See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">this article</a> for an overview.</p>
 </div>
 <div class="section level2">
 <h2 id="searching-for-associated-clusters">Searching for Associated Clusters<a class="anchor" aria-label="anchor" href="#searching-for-associated-clusters"></a>
 </h2>
 <p>Given multiple samples of AIRR-Seq data, the <code>NAIR</code> package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome.</p>
-<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html">this vignette</a> for a detailed tutorial.</p>
+<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html">this article</a> for a detailed tutorial.</p>
 </div>
 <div class="section level2">
 <h2 id="searching-for-public-clusters">Searching for Public Clusters<a class="anchor" aria-label="anchor" href="#searching-for-public-clusters"></a>
 </h2>
 <p>The <code>NAIR</code> package includes a set of functions that facilitate searching for public TCR/BCR clusters across multiple samples of AIRR-seq data.</p>
 <p>In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual).</p>
-<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">this vignette</a> for a detailed tutorial.</p>
+<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">this article</a> for a detailed tutorial.</p>
 </div>
 </div>
 
