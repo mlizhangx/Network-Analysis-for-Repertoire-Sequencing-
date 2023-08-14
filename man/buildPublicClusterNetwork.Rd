@@ -24,7 +24,9 @@ buildPublicClusterNetwork(
 
   ## Network Settings ##
   drop_isolated_nodes = FALSE,
-  node_stats = NULL, stats_to_include = NULL, cluster_stats = NULL,
+  node_stats = deprecated(),
+  stats_to_include = deprecated(),
+  cluster_stats = deprecated(),
 
   ## Visualization ##
   color_nodes_by = "SampleID",

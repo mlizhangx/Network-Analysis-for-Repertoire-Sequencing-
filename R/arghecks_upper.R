@@ -83,7 +83,7 @@
 
 .checkargs.buildPublicClusterNetwork <- function(
     file_list, input_type, data_symbols, header, sep, seq_col,
-    drop_isolated_nodes, node_stats, stats_to_include, cluster_stats,
+    drop_isolated_nodes,
     color_nodes_by, color_scheme, plot_title, output_dir, output_name
 ) {
 
@@ -92,15 +92,6 @@
   )
   .isCharOrNumericVector(seq_col, "seq_col")
   .isTF(drop_isolated_nodes, "drop_isolated_nodes")
-  if (!is.null(node_stats)) {
-    warning("`node_stats` argument is deprecated; all node-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
-  }
-  if (!is.null(stats_to_include)) {
-    warning("`stats_to_include` argument is deprecated; all node-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
-  }
-  if (!is.null(cluster_stats)) {
-    warning("`cluster_stats` argument is deprecated; cluster-level network properties are now automatically computed. Avoid using this argument to avoid potential errors in future versions")
-  }
   .isCharOrNumericVector(color_nodes_by, "color_nodes_by")
   .isCharVector(color_scheme, "color_scheme")
   .orNull(.isString, plot_title, "plot_title")
@@ -146,7 +137,7 @@
 
 .checkargs.findAssociatedSeqs <- function(
     file_list, input_type, data_symbols, header, sep,
-    sample_ids, subject_ids, group_ids, groups, seq_col, freq_col,
+    subject_ids, group_ids, seq_col, freq_col,
     min_seq_length, drop_matches, min_sample_membership, pval_cutoff, outfile
 ) {
   .checkargs.InputFiles(
@@ -175,12 +166,6 @@
     "file_list contains duplicate values" =
       length(file_list) == length(unique(file_list))
   )
-  if (!is.null(groups)) {
-    warning("`groups` argument is deprecated; group labels are now determined from the unique values of the `group_ids` argument. Avoid using the `groups` argument to avoid errors in future versions of NAIR")
-  }
-  if (!is.null(sample_ids)) {
-    warning("`sample_ids` argument is deprecated; custom sample IDs are not relevant to `findAssociatedSeqs`. Avoid using the `sample_ids` argument to avoid errors in future versions of NAIR")
-  }
 }
 
 .checkargs.findAssociatedSeqs2 <- function(
@@ -439,4 +424,70 @@
   .isDistType(dist_type)
   .isNonneg(max_dist, "max_dist")
   .isTF(drop_isolated_nodes, "drop_isolated_nodes")
+}
+
+
+# Deprecated Arguments ----------------------------------------------------
+.checkDeprecated.buildPublicClusterNetwork <- function(
+    node_stats, stats_to_include, cluster_stats,
+    env = rlang::caller_env(),
+    user_env = rlang::caller_env(2)
+) {
+  if (lifecycle::is_present(node_stats)) {
+    lifecycle::deprecate_warn(
+      when = "0.0.9038",
+      what = "buildPublicClusterNetwork(node_stats)",
+      details =
+        "all node-level network properties are now automatically computed",
+      env = env,
+      user_env = user_env
+    )
+  }
+  if (lifecycle::is_present(stats_to_include)) {
+    lifecycle::deprecate_warn(
+      when = "0.0.9038",
+      what = "buildPublicClusterNetwork(stats_to_include)",
+      details =
+        "all node-level network properties are now automatically computed",
+      env = env,
+      user_env = user_env
+    )
+  }
+  if (lifecycle::is_present(cluster_stats)) {
+    lifecycle::deprecate_warn(
+      when = "0.0.9038",
+      what = "buildPublicClusterNetwork(cluster_stats)",
+      details =
+        "all cluster-level network properties are now automatically computed",
+      env = env,
+      user_env = user_env
+    )
+  }
+}
+
+.checkDeprecated.findAssociatedSeqs <- function(
+    sample_ids, groups,
+    env = rlang::caller_env(),
+    user_env = rlang::caller_env(2)
+) {
+  if (lifecycle::is_present(groups)) {
+    lifecycle::deprecate_warn(
+      when = "0.0.9038",
+      what = "findAssociatedSeqs(groups)",
+      details =
+        "group labels are now determined from the unique values of group_ids",
+      env = env,
+      user_env = user_env
+    )
+  }
+  if (lifecycle::is_present(sample_ids)) {
+    lifecycle::deprecate_warn(
+      when = "0.0.9038",
+      what = "findAssociatedSeqs(sample_ids)",
+      details =
+        "custom sample IDs are not relevant to this function",
+      env = env,
+      user_env = user_env
+    )
+  }
 }

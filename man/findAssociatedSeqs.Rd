@@ -25,10 +25,10 @@ findAssociatedSeqs(
   input_type,
   data_symbols = NULL,
   header = TRUE, sep = "",
-  sample_ids = NULL,
+  sample_ids = deprecated(),
   subject_ids = NULL,
   group_ids,
-  groups = NULL,
+  groups = deprecated(),
   seq_col,
   freq_col = NULL,
 

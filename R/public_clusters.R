@@ -89,9 +89,12 @@ buildPublicClusterNetwork <- function(
     output_name = "PublicClusterNetwork",
     ...
 ) {
+  .checkDeprecated.buildPublicClusterNetwork(
+    node_stats, stats_to_include, cluster_stats
+  )
   .checkargs.buildPublicClusterNetwork(
     file_list, input_type, data_symbols, header, sep, seq_col,
-    drop_isolated_nodes, node_stats, stats_to_include, cluster_stats,
+    drop_isolated_nodes,
     color_nodes_by, color_scheme, plot_title, output_dir, output_name
   )
   .createOutputDir(output_dir)
@@ -418,7 +421,7 @@ buildPublicClusterNetworkByRepresentative <- function(
       as.matrix(adjacency_matrix[node_ids, node_ids]))
     cdat$DiameterLength[[cluster_id]] <- length(
       igraph::get_diameter(cluster, directed = T)
-      )
+    )
     cdat$Assortativity[[cluster_id]] <-
       igraph::assortativity_degree(cluster, directed = F)
     cdat$GlobalTransitivity[[cluster_id]] <-

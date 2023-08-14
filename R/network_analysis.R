@@ -269,7 +269,7 @@ addNodeNetworkStats <- function(
   data
 }
 
-chooseNodeStats <- node_stat_settings <- function(
+chooseNodeStats <- function(
     degree = TRUE,
     cluster_id = FALSE,
     transitivity = TRUE,
@@ -302,6 +302,35 @@ chooseNodeStats <- node_stat_settings <- function(
     "coreness" = coreness,
     "page_rank" = page_rank,
     "all_stats" = all_stats
+  )
+}
+
+node_stat_settings <- function(
+    degree = TRUE,
+    cluster_id = FALSE,
+    transitivity = TRUE,
+    closeness = FALSE,
+    centrality_by_closeness = FALSE,
+    eigen_centrality = TRUE,
+    centrality_by_eigen = TRUE,
+    betweenness = TRUE,
+    centrality_by_betweenness = TRUE,
+    authority_score = TRUE,
+    coreness = TRUE,
+    page_rank = TRUE,
+    all_stats = FALSE
+) {
+  lifecycle::deprecate_warn(
+    when = "0.0.9035",
+    what = "node_stat_settings()",
+    with = "chooseNodeStats()",
+    details =
+      "all node-level network properties are now automatically computed"
+  )
+  chooseNodeStats(
+    degree, cluster_id, transitivity, closeness, centrality_by_closeness,
+    eigen_centrality, centrality_by_eigen, betweenness,
+    centrality_by_betweenness, authority_score, coreness, page_rank, all_stats
   )
 }
 

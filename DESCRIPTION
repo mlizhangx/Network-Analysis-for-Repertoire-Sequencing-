@@ -16,7 +16,7 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.1.0)
-Imports: Rcpp (>= 1.0.8), lifecycle, igraph, ggraph, ggplot2, grDevices, utils, Matrix, stats, plyr, dplyr
+Imports: Rcpp (>= 1.0.8), lifecycle, igraph, ggraph, ggplot2, grDevices, utils, Matrix, stats, plyr, dplyr, rlang
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 LinkingTo: Rcpp (>= 1.0.8), RcppArmadillo (>= 0.10.8.0.0)
 VignetteBuilder: knitr

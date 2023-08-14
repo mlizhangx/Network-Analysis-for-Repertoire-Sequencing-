@@ -9,6 +9,9 @@
     Create a vector specifying node-level network properties to compute.
     Intended for use with \code{\link{buildRepSeqNetwork}} or
     \code{\link{addNodeNetworkStats}}.
+
+    \code{node_stat_settings()} is the previous name for \code{chooseNodeStats()}.
+    The older function name has been deprecated in favor of the new name.
 }
 \usage{
 chooseNodeStats(

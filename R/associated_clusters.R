@@ -5,10 +5,10 @@ findAssociatedSeqs <- function(
     input_type,
     data_symbols = NULL,
     header = TRUE, sep = "",
-    sample_ids = NULL,
+    sample_ids = deprecated(),
     subject_ids = NULL,
     group_ids,
-    groups = NULL,
+    groups = deprecated(),
     seq_col,
     freq_col = NULL,
     min_seq_length = 7,
@@ -17,9 +17,10 @@ findAssociatedSeqs <- function(
     pval_cutoff = 0.05,
     outfile = "associated_seqs.csv"
 ) {
+  .checkDeprecated.findAssociatedSeqs(sample_ids, groups)
   .checkargs.findAssociatedSeqs(
     file_list, input_type, data_symbols, header, sep,
-    sample_ids, subject_ids, group_ids, groups, seq_col, freq_col,
+    subject_ids, group_ids, seq_col, freq_col,
     min_seq_length, drop_matches, min_sample_membership, pval_cutoff, outfile
   )
   group_ids <- as.character(group_ids)
