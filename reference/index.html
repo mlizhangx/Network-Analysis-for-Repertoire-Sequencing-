@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,10 +27,13 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -69,7 +72,7 @@
 
       <dl><dt>
           
-          <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> 
+          <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> <code><a href="buildRepSeqNetwork.html">buildNet()</a></code> 
         </dt>
         <dd>Network Analysis of Immune Repertoire</dd>
       </dl></div><div class="section level2">
@@ -137,7 +140,7 @@
 
       <dl><dt>
           
-          <code><a href="addNodeNetworkStats.html">addNodeNetworkStats()</a></code> 
+          <code><a href="addNodeStats.html">addNodeStats()</a></code> 
         </dt>
         <dd>Compute Node-Level Network Properties</dd>
       </dl><dl><dt>
@@ -149,17 +152,17 @@
           
           <code><a href="addClusterMembership.html">addClusterMembership()</a></code> 
         </dt>
-        <dd>Perform Cluster Analysis on the Nodes of a Network Graph</dd>
+        <dd>Partition a Network Graph Into Clusters</dd>
+      </dl><dl><dt>
+          
+          <code><a href="addClusterStats.html">addClusterStats()</a></code> 
+        </dt>
+        <dd>Compute Cluster-Level Network Properties</dd>
       </dl><dl><dt>
           
           <code><a href="getClusterStats.html">getClusterStats()</a></code> 
         </dt>
-        <dd>Compute Cluster-Level Network Statistics</dd>
-      </dl><dl><dt>
-          
-          <code><a href="clustering_algorithms.html">clustering_algorithms</a></code> <code><a href="clustering_algorithms.html">cluster_edge_betweenness</a></code> <code><a href="clustering_algorithms.html">cluster_fast_greedy</a></code> <code><a href="clustering_algorithms.html">cluster_fluid_communities</a></code> <code><a href="clustering_algorithms.html">cluster_infomap</a></code> <code><a href="clustering_algorithms.html">cluster_label_prop</a></code> <code><a href="clustering_algorithms.html">cluster_leading_eigen</a></code> <code><a href="clustering_algorithms.html">cluster_leiden</a></code> <code><a href="clustering_algorithms.html">cluster_louvain</a></code> <code><a href="clustering_algorithms.html">cluster_optimal</a></code> <code><a href="clustering_algorithms.html">cluster_spinglass</a></code> <code><a href="clustering_algorithms.html">cluster_walktrap</a></code> 
-        </dt>
-        <dd>Available Clustering Algorithms</dd>
+        <dd>Compute Cluster-Level Network Properties</dd>
       </dl></div><div class="section level2">
       <h2 id="network-visualization">Network Visualization<a class="anchor" aria-label="anchor" href="#network-visualization"></a></h2>
       
@@ -173,24 +176,24 @@
 
       <dl><dt>
           
-          <code><a href="generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> 
+          <code><a href="addPlots.html">addPlots()</a></code> <code><a href="addPlots.html">generateNetworkGraphPlots()</a></code> 
         </dt>
         <dd>Generate Plots of a Network Graph</dd>
       </dl><dl><dt>
           
-          <code><a href="plotNetworkGraph.html">plotNetworkGraph()</a></code> 
-        </dt>
-        <dd>Plot the Graph of an Immune Repertoire Network</dd>
-      </dl><dl><dt>
-          
-          <code><a href="addClusterLabels.html">addClusterLabels()</a></code> 
+          <code><a href="addClusterLabels.html">labelClusters()</a></code> <code><a href="addClusterLabels.html">addClusterLabels()</a></code> 
         </dt>
         <dd>Label Clusters in a Network Graph Plot</dd>
       </dl><dl><dt>
           
-          <code><a href="addGraphLabels.html">addGraphLabels()</a></code> 
+          <code><a href="addGraphLabels.html">labelNodes()</a></code> <code><a href="addGraphLabels.html">addGraphLabels()</a></code> 
         </dt>
         <dd>Label Nodes in a Network Graph Plot</dd>
+      </dl><dl><dt>
+          
+          <code><a href="extractLayout.html">extractLayout()</a></code> 
+        </dt>
+        <dd>Get Coordinate Layout From Graph Plot</dd>
       </dl></div><div class="section level2">
       <h2 id="manual-generation-of-network-components">Manual Generation of Network Components<a class="anchor" aria-label="anchor" href="#manual-generation-of-network-components"></a></h2>
       
@@ -209,12 +212,12 @@
         <dd>Generate Basic Output for an Immune Repertoire Network</dd>
       </dl><dl><dt>
           
-          <code><a href="generateNetworkFromAdjacencyMat.html">generateNetworkFromAdjacencyMat()</a></code> 
+          <code><a href="generateNetworkGraph.html">generateNetworkGraph()</a></code> <code><a href="generateNetworkGraph.html">generateNetworkFromAdjacencyMat()</a></code> 
         </dt>
-        <dd>Generate an igraph From a Network Adjacency Matrix</dd>
+        <dd>Generate the <code>igraph</code> for a Network Adjacency Matrix</dd>
       </dl><dl><dt>
           
-          <code><a href="sparseAdjacencyMatFromSeqs.html">sparseAdjacencyMatFromSeqs()</a></code> 
+          <code><a href="generateAdjacencyMatrix.html">generateAdjacencyMatrix()</a></code> <code><a href="generateAdjacencyMatrix.html">sparseAdjacencyMatFromSeqs()</a></code> 
         </dt>
         <dd>Compute Graph Adjacency Matrix for Immune Repertoire Network</dd>
       </dl></div><div class="section level2">
@@ -300,6 +303,27 @@
           <code><a href="NAIR-package.html">NAIR</a></code> <code><a href="NAIR-package.html">NAIR-package</a></code> 
         </dt>
         <dd>NAIR: Network Analysis of Immune Repertoire</dd>
+      </dl></div><div class="section level2">
+      <h2 id="deprecated-functions">Deprecated Functions<a class="anchor" aria-label="anchor" href="#deprecated-functions"></a></h2>
+      
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="addNodeNetworkStats.html">addNodeNetworkStats()</a></code> 
+        </dt>
+        <dd>Compute Node-Level Network Properties</dd>
+      </dl><dl><dt>
+          
+          <code><a href="plotNetworkGraph.html">plotNetworkGraph()</a></code> 
+        </dt>
+        <dd>Plot the Graph of an Immune Repertoire Network</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>

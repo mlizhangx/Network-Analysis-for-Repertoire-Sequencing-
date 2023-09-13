@@ -6,8 +6,8 @@ Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing
 treatment or clinical outcome, identify receptor sequences that exhibit a
 statistically significant difference in frequency between the two levels of the
 binary variable.
-findAssociatedSeqs is designed for use when each sample is stored in a
-separate file. findAssociatedSeqs2 is designed for use with a single data
+findAssociatedSeqs() is designed for use when each sample is stored in a
+separate file. findAssociatedSeqs2() is designed for use with a single data
 frame containing all samples."><title>Identify TCR/BCR Sequences Associated With a Binary Variable — findAssociatedSeqs • NAIR</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Identify TCR/BCR Sequences Associated With a Binary Variable — findAssociatedSeqs"><meta property="og:description" content="Part of the workflow
 Searching for Associated TCR/BCR Clusters.
 Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing
@@ -15,8 +15,8 @@ Given multiple samples of bulk Adaptive Immune Receptor Repertoire Sequencing
 treatment or clinical outcome, identify receptor sequences that exhibit a
 statistically significant difference in frequency between the two levels of the
 binary variable.
-findAssociatedSeqs is designed for use when each sample is stored in a
-separate file. findAssociatedSeqs2 is designed for use with a single data
+findAssociatedSeqs() is designed for use when each sample is stored in a
+separate file. findAssociatedSeqs2() is designed for use with a single data
 frame containing all samples."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -28,7 +28,7 @@ frame containing all samples."><!-- mathjax --><script src="https://cdnjs.cloudf
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,10 +45,13 @@ frame containing all samples."><!-- mathjax --><script src="https://cdnjs.cloudf
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -84,8 +87,8 @@ frame containing all samples."><!-- mathjax --><script src="https://cdnjs.cloudf
 treatment or clinical outcome, identify receptor sequences that exhibit a
 statistically significant difference in frequency between the two levels of the
 binary variable.</p>
-<p><code>findAssociatedSeqs</code> is designed for use when each sample is stored in a
-separate file. <code>findAssociatedSeqs2</code> is designed for use with a single data
+<p><code>findAssociatedSeqs()</code> is designed for use when each sample is stored in a
+separate file. <code>findAssociatedSeqs2()</code> is designed for use with a single data
 frame containing all samples.</p>
     </div>
 
@@ -96,7 +99,7 @@ frame containing all samples.</p>
 <span>  <span class="va">file_list</span>,</span>
 <span>  <span class="va">input_type</span>,</span>
 <span>  data_symbols <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  header <span class="op">=</span> <span class="cn">TRUE</span>, sep <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  <span class="va">header</span>, <span class="va">sep</span>, <span class="va">read.args</span>,</span>
 <span>  sample_ids <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  subject_ids <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">group_ids</span>,</span>
@@ -111,7 +114,9 @@ frame containing all samples.</p>
 <span>  pval_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span></span>
 <span>  <span class="co">## Output ##</span></span>
-<span>  outfile <span class="op">=</span> <span class="st">"associated_seqs.csv"</span><span class="op">)</span></span>
+<span>  outfile <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="fu">findAssociatedSeqs2</span><span class="op">(</span></span>
@@ -121,7 +126,7 @@ frame containing all samples.</p>
 <span>  <span class="va">sample_col</span>,</span>
 <span>  subject_col <span class="op">=</span> <span class="va">sample_col</span>,</span>
 <span>  <span class="va">group_col</span>,</span>
-<span>  groups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  groups <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  freq_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span></span>
 <span>  <span class="co">## Search Criteria ##</span></span>
@@ -131,35 +136,56 @@ frame containing all samples.</p>
 <span>  pval_cutoff <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span></span>
 <span>  <span class="co">## Ouptut ##</span></span>
-<span>  outfile <span class="op">=</span> <span class="st">"associated_seqs.csv"</span><span class="op">)</span></span></code></pre></div>
+<span>  outfile <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>file_list</dt>
-<dd><p>A vector of file paths where each file contains the data for a sample, with
-  observations indexed by row. Passed to <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+<dd><p>A character vector of file paths, or a list containing
+  <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">connections</a></code> and file paths.
+  Each element corresponds to a single file containing the data
+  for a single sample.
+  Passed to <code><a href="combineSamples.html">loadDataFromFileList()</a></code>.</p></dd>
 
   <dt>input_type</dt>
 <dd><p>A character string specifying the file format of the sample data files.
   Options are <code>"table"</code>, <code>"txt"</code>, <code>"tsv"</code>, <code>"csv"</code>,
-  <code>"rds"</code> and <code>"rda"</code>. Passed to <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+  <code>"rds"</code> and <code>"rda"</code>.
+  Passed to <code><a href="combineSamples.html">loadDataFromFileList()</a></code>.</p></dd>
 
   <dt>data_symbols</dt>
 <dd><p>Used when <code>input_type = "rda"</code>. Specifies the name of each sample's data
   frame within its respective Rdata file.  Passed to
-  <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+  <code><a href="combineSamples.html">loadDataFromFileList()</a></code>.</p></dd>
 
   <dt>header</dt>
-<dd><p>Used for certain values of <code>input_type</code>. Passed to
-  <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+<dd><p>For values of <code>input_type</code> other than <code>"rds"</code> and <code>"rda"</code>,
+    this argument can be used to specify a non-default value of the <code>header</code>
+    argument to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>,
+    <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>, etc.</p></dd>
 
   <dt>sep</dt>
-<dd><p>Used for certain values of <code>input_type</code>. Passed to
-  <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+<dd><p>For values of <code>input_type</code> other than <code>"rds"</code> and <code>"rda"</code>,
+    this argument can be used to specify a non-default value of the <code>sep</code>
+    argument to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>,
+    <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>, etc.</p></dd>
+
+  <dt>read.args</dt>
+<dd><p>For values of <code>input_type</code> other than <code>"rds"</code> and <code>"rda"</code>,
+    this argument can be used to specify non-default values of optional
+    arguments to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>,
+    <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>, etc.
+    Accepts a named list of argument values.
+    Values of <code>header</code> and <code>sep</code>
+    in this list take precedence over values specified via the <code>header</code>
+    and <code>sep</code> arguments.</p></dd>
 
   <dt>sample_ids</dt>
-<dd><p>Deprecated. Does nothing.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
+  Does nothing.</p></dd>
 
   <dt>subject_ids</dt>
 <dd><p>A character or numeric vector of subject IDs, whose length matches that of
@@ -172,28 +198,34 @@ frame containing all samples.</p>
   the two values of the binary variable of interest.</p></dd>
 
   <dt>groups</dt>
-<dd><p>Deprecated. Does nothing.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
+  Does nothing.</p></dd>
 
   <dt>seq_col</dt>
 <dd><p>Specifies the column of each sample's data frame containing the TCR/BCR sequences.
-    Accepts either the column name or column index.</p></dd>
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.</p></dd>
 
   <dt>freq_col</dt>
 <dd><p>Optional. Specifies the column of each sample's data frame containing the clone
     frequency (i.e., clone count divided by the sum of the clone counts across all
-    clones in the sample). Accepts either the column name or column index. If this
+    clones in the sample).
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+    If this
     argument is specified, the maximum clone frequency (across all samples) for
     each associated sequence will be included in the content of the <code>label</code>
     variable of the returned data frame.</p></dd>
 
   <dt>min_seq_length</dt>
 <dd><p>Controls the minimum TCR/BCR sequence length considered when searching for
-    associated sequences. Passed to <code><a href="filterInputData.html">filterInputData</a></code>.</p></dd>
+    associated sequences. Passed to <code><a href="filterInputData.html">filterInputData()</a></code>.</p></dd>
 
   <dt>drop_matches</dt>
-<dd><p>Passed to <code><a href="filterInputData.html">filterInputData</a></code>. Accepts a character string containing
+<dd><p>Passed to <code><a href="filterInputData.html">filterInputData()</a></code>.
+    Accepts a character string containing
     a regular expression (see <code><a href="https://rdrr.io/r/base/regex.html" class="external-link">regex</a></code>). Checks TCR/BCR sequences
-    for a pattern match using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></code>. Those returning a match are
+    for a pattern match using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>. Those returning a match are
     excluded from consideration as associated sequences. It is recommended to
     filter out sequences containing special characters that are invalid for use
     in file names. By default, sequences containing any of the characters
@@ -209,23 +241,33 @@ frame containing all samples.</p>
     exact test (see details).</p></dd>
 
   <dt>outfile</dt>
-<dd><p>A file path for saving the output (using <code>write.csv</code>).</p></dd>
+<dd><p>A file path for saving the output (using <code><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv()</a></code>).</p></dd>
+
+  <dt>verbose</dt>
+<dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to <code><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">stderr()</a></code>.</p></dd>
 
 <dt>data</dt>
 <dd><p>A data frame containing the combined AIRR-seq data for all samples.</p></dd>
 
 <dt>sample_col</dt>
-<dd><p>The column of <code>data</code> containing the sample IDs. Accepts the column name
-    or column index.</p></dd>
+<dd><p>The column of <code>data</code> containing the sample IDs.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.</p></dd>
 
 <dt>subject_col</dt>
-<dd><p>Optional. The column of <code>data</code> containing the subject IDs. Accepts the
-    column name or column index. Only relevant when the binary variable of interest
+<dd><p>Optional. The column of <code>data</code> containing the subject IDs.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+    Only relevant when the binary variable of interest
     is subject-specific and multiple samples belong to the same subject.</p></dd>
 
 <dt>group_col</dt>
-<dd><p>The column of <code>data</code> containing the group IDs. Accepts the column name
-    or column index. The groups correspond to the two values of the binary variable
+<dd><p>The column of <code>data</code> containing the group IDs.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+      The groups correspond to the two values of the binary variable
     of interest. Thus there should be exactly two unique values in this column.</p></dd>
 
 </dl></div>
@@ -243,10 +285,12 @@ groups based on the levels of the binary variable. If subject IDs are provided,
 then the test is based on the number of subjects in each group for whom the
 sequence appears in one of their samples. Without subject IDs, the test is
 based on the number of samples possessing the sequence in each group.</p>
-<p>Fisher's exact test is performed using <code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test</a></code>. TCR/BCR
+<p>Fisher's exact test is performed using
+<code><a href="https://rdrr.io/r/stats/fisher.test.html" class="external-link">fisher.test()</a></code>. TCR/BCR
 sequences with a \(P\)-value below <code>pval_cutoff</code> are sorted by \(P\)-value
 and returned along with some additional information.</p>
-<p>The returned ouput is intended for use with the <code><a href="findAssociatedClones.html">findAssociatedClones</a></code>
+<p>The returned ouput is intended for use with the
+<code><a href="findAssociatedClones.html">findAssociatedClones()</a></code>
 function. See the
 <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
 article on the package website.</p>
@@ -288,6 +332,10 @@ article on the package website.</p>
 <dd><p>Of the subjects in which the sequence was observed, the number of subjects
     belonging to the second group (only present if subject IDs are specified).</p></dd>
 
+    <dt>max_freq</dt>
+<dd><p>The maximum clone frequency across all samples.
+    Only present if <code>freq_col</code> is non-null.</p></dd>
+
     <dt>label</dt>
 <dd><p>A character string summarizing the above information. Also includes the
     maximum in-sample clone frequency across all samples, if available.</p></dd>
@@ -307,32 +355,34 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="findAssociatedClones.html">findAssociatedClones</a></code>
-<code><a href="buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork</a></code></p></div>
+    <div class="dont-index"><p><code><a href="findAssociatedClones.html">findAssociatedClones()</a></code>
+<code><a href="buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## Simulate 30 samples from two groups (treatment/control) ##</span></span></span>
-<span class="r-in"><span><span class="va">samples_c</span> <span class="op">&lt;-</span> <span class="va">samples_t</span> <span class="op">&lt;-</span> <span class="fl">15</span> <span class="co"># Number of samples by control/treatment group</span></span></span>
-<span class="r-in"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">samples_c</span> <span class="op">+</span> <span class="va">samples_t</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Simulate 30 samples from two groups (treatment/control) ##</span></span></span>
+<span class="r-in"><span><span class="va">n_control</span> <span class="op">&lt;-</span> <span class="va">n_treatment</span> <span class="op">&lt;-</span> <span class="fl">15</span></span></span>
+<span class="r-in"><span><span class="va">n_samples</span> <span class="op">&lt;-</span> <span class="va">n_control</span> <span class="op">+</span> <span class="va">n_treatment</span></span></span>
 <span class="r-in"><span><span class="va">sample_size</span> <span class="op">&lt;-</span> <span class="fl">30</span> <span class="co"># (seqs per sample)</span></span></span>
 <span class="r-in"><span><span class="va">base_seqs</span> <span class="op">&lt;-</span> <span class="co"># first five are associated with treatment</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CASSGAYEQYF"</span>, <span class="st">"CSVDLGKGNNEQFF"</span>, <span class="st">"CASSIEGQLSTDTQYF"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"CASSEEGQLSTDTQYF"</span>, <span class="st">"CASSPEGQLSTDTQYF"</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"RASSLAGNTEAFF"</span>, <span class="st">"CASSHRGTDTQYF"</span>, <span class="st">"CASDAGVFQPQHF"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Relative generation probabilities by control/treatment group</span></span></span>
-<span class="r-in"><span><span class="va">pgen_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">samples_c</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                 nrow <span class="op">=</span> <span class="va">samples_c</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pgen_t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">samples_t</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                 nrow <span class="op">=</span> <span class="va">samples_t</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pgen_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">n_control</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 nrow <span class="op">=</span> <span class="va">n_control</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pgen_t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">n_treatment</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                 nrow <span class="op">=</span> <span class="va">n_treatment</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pgen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">pgen_c</span>, <span class="va">pgen_t</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  samples <span class="op">=</span> <span class="va">samples</span>,</span></span>
+<span class="r-in"><span>  samples <span class="op">=</span> <span class="va">n_samples</span>,</span></span>
 <span class="r-in"><span>  sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span></span>
 <span class="r-in"><span>  prefix_length <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>  prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">samples</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">n_samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">n_samples</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>,</span></span>
 <span class="r-in"><span>  affix_probs <span class="op">=</span> <span class="va">pgen</span>,</span></span>
 <span class="r-in"><span>  num_edits <span class="op">=</span> <span class="fl">0</span>,</span></span>
@@ -344,10 +394,10 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span><span class="co">## Step 1: Find Associated Sequences ##</span></span></span>
 <span class="r-in"><span><span class="va">sample_files</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">n_samples</span>, <span class="st">".rds"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">samples_c</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">samples_t</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">n_control</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">n_treatment</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">associated_seqs</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">findAssociatedSeqs</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    file_list <span class="op">=</span> <span class="va">sample_files</span>,</span></span>
@@ -357,59 +407,17 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span>    min_seq_length <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>    drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>    min_sample_membership <span class="op">=</span> <span class="fl">0</span>,</span></span>
-<span class="r-in"><span>    pval_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span></span>
-<span class="r-in"><span>    outfile <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span>    pval_cutoff <span class="op">=</span> <span class="fl">0.1</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Data contains 30 samples, 15 of which belong to group reference and 15 of which belong to group comparison.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Loading and compiling data from all samples:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 1: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 2: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 3: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 4: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 5: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 6: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 7: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 8: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 9: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 10: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 11: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 12: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 13: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 14: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 15: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 16: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 17: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 18: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 19: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 20: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 21: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 22: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 23: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 24: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 25: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 26: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 27: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 28: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 29: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Loading sample 30: Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All samples loaded.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Extracting list of unique sequences... Done.  8 unique sequences present.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing sample membership (this may take a while)... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Filtering by Fisher's exact test P-value... Done. 4 sequences remain.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All done. Sorting results by Fisher's exact test P-value and returning.</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        ReceptorSeq fisher_pvalue shared_by_n_samples samples_g0 samples_g1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8   CSVDLGKGNNEQFF  1.052106e-05                  18          3         15</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7      CASSGAYEQYF  1.157316e-04                  17          3         14</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4 CASSEEGQLSTDTQYF  5.197401e-03                  10          1          9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 CASSIEGQLSTDTQYF  6.559548e-02                  16          5         11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                  label</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 Sequence present in 18 samples (3 in group reference, 15 in group comparison)\nFisher's exact test P-value: 1.05e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7 Sequence present in 17 samples (3 in group reference, 14 in group comparison)\nFisher's exact test P-value: 0.000116</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4    Sequence present in 10 samples (1 in group reference, 9 in group comparison)\nFisher's exact test P-value: 0.0052</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   Sequence present in 16 samples (5 in group reference, 11 in group comparison)\nFisher's exact test P-value: 0.0656</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Step 2: Find Associated Clones ##</span></span></span>
+<span class="r-in"><span><span class="va">dir_step2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="findAssociatedClones.html">findAssociatedClones</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  file_list <span class="op">=</span> <span class="va">sample_files</span>,</span></span>
 <span class="r-in"><span>  input_type <span class="op">=</span> <span class="st">"rds"</span>,</span></span>
@@ -418,154 +426,32 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span>  assoc_seqs <span class="op">=</span> <span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>,</span></span>
 <span class="r-in"><span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>  drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="va">dir_step2</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;&lt;&lt; Beginning search for associated clones &gt;&gt;&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 1 of 30 (Sample1):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 2 of 30 (Sample2):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 3 of 30 (Sample3):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 4 of 30 (Sample4):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 5 of 30 (Sample5):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 6 of 30 (Sample6):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 7 of 30 (Sample7):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 8 of 30 (Sample8):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 9 of 30 (Sample9):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 10 of 30 (Sample10):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 11 of 30 (Sample11):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 12 of 30 (Sample12):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 13 of 30 (Sample13):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 14 of 30 (Sample14):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 15 of 30 (Sample15):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 16 of 30 (Sample16):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 17 of 30 (Sample17):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 18 of 30 (Sample18):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 19 of 30 (Sample19):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 20 of 30 (Sample20):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 21 of 30 (Sample21):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 22 of 30 (Sample22):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 23 of 30 (Sample23):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 24 of 30 (Sample24):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 25 of 30 (Sample25):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 26 of 30 (Sample26):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 27 of 30 (Sample27):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 28 of 30 (Sample28):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 29 of 30 (Sample29):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 30 of 30 (Sample30):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Finding clones in a neighborhood of each associated sequence... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Done processing samples. Compiling results:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 1 (CSVDLGKGNNEQFF)... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 2 (CASSGAYEQYF)... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmplEN3mL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Step 3: Global Network of Associated Clusters ##</span></span></span>
 <span class="r-in"><span><span class="va">associated_clusters</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    file_list <span class="op">=</span></span></span>
-<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>, <span class="st">".csv"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    file_list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_step2</span>,</span></span>
+<span class="r-in"><span>                           full.names <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span>,</span></span>
 <span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
 <span class="r-in"><span>    size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span></span>
-<span class="r-in"><span>    output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    print_plots <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;&lt;&lt; Building network of associated clones &gt;&gt;&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 202 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 202 nodes.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 3 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by GroupID...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Node-level meta-data saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmplEN3mL/AssociatedClusterNetwork_NodeMetadata.csv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Cluster-level meta-data saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmplEN3mL/AssociatedClusterNetwork_ClusterMetadata.csv</span>
 <span class="r-plt img"><img src="findAssociatedSeqs-1.png" alt="" width="700" height="433"></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network graph plots saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmplEN3mL/AssociatedClusterNetwork.pdf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network igraph saved in edgelist format to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmplEN3mL/AssociatedClusterNetwork_EdgeList.txt</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Adjacency matrix saved to file:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmplEN3mL/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># \dontshow{</span></span></span>
 <span class="r-in"><span><span class="co"># clean up temp directory</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">$</span><span class="va">ReceptorSeq</span>, <span class="st">".csv"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_NodeMetadata.csv"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_ClusterMetadata.csv"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork.pdf"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_EdgeList.txt"</span>,</span></span>
-<span class="r-in"><span>              <span class="st">"AssociatedClusterNetwork_AdjacencyMatrix.mtx"</span></span></span>
-<span class="r-in"><span>            <span class="op">)</span></span></span>
+<span class="r-in"><span>            <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">n_samples</span>, <span class="st">".rds"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [16] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">dir_step2</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

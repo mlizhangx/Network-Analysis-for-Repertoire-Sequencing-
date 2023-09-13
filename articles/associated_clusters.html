@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,10 +44,13 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -95,11 +98,9 @@ Sequencing (AIRR-Seq) data, the <code>NAIR</code> package can be used to
 search for TCR/BCR clusters associated with a binary variable of
 interest, such as a disease condition, treatment or clinical
 outcome.</p>
-<p>We first provide a brief conceptual overview, followed by a
-demonstration in which we explain the process in greater detail.</p>
-<div class="section level3">
-<h3 id="overview-of-process">Overview of Process<a class="anchor" aria-label="anchor" href="#overview-of-process"></a>
-</h3>
+<div class="section level5">
+<h5 id="overview-of-process">Overview of Process<a class="anchor" aria-label="anchor" href="#overview-of-process"></a>
+</h5>
 <ol style="list-style-type: decimal">
 <li>
 <a href="#step1"><strong>Identify associated sequences.</strong></a>
@@ -109,25 +110,25 @@ significant difference in frequency between the two groups using
 Fisher’s exact test.</li>
 <li>
 <a href="#step2"><strong>Identify clones with sequences similar to
-the associated sequences.</strong></a> For each associated sequence, all
-sequences that fall within a certain distance (e.g., those that differ
-by at most one amino acid) comprise its neighborhood. From all samples,
-identify all clones whose sequences belong to this neighborhood.</li>
+the associated sequences.</strong></a> For a single associated sequence,
+all sequences that fall within a certain distance (e.g., those that
+differ by at most one amino acid) comprise its neighborhood. From all
+samples, identify all clones whose sequences belong to this
+neighborhood. Repeat for each associated sequence.</li>
 <li>
 <a href="#step3"><strong>Construct global network using identified
-clones and perform clustering.</strong></a> Combine the clones from all
-neighborhoods into a single global network. Perform cluster analysis and
-assign membership to the global clusters. These clusters are considered
-as the associated clusters.</li>
+clones.</strong></a> Combine the clones from step 2 into a single global
+network. Use cluster analysis to partition the global network into
+clusters, which are considered as the associated clusters.</li>
 <li>
 <a href="#step4">Perform additional tasks</a> such as labeling the
-clusters in the global network plot and analyzing particular clusters of
+global clusters in the visual plot and analyzing individual clusters of
 interest.</li>
 </ol>
 </div>
-<div class="section level3">
-<h3 id="simulate-data-for-demonstration">Simulate Data for Demonstration<a class="anchor" aria-label="anchor" href="#simulate-data-for-demonstration"></a>
-</h3>
+<div class="section level5">
+<h5 id="simulate-data-for-demonstration">Simulate Data for Demonstration<a class="anchor" aria-label="anchor" href="#simulate-data-for-demonstration"></a>
+</h5>
 <p>We simulate some toy data for demonstration.</p>
 <p>As our binary variable of interest, we consider a single treatment
 factor with two levels, labeled treatment and control.</p>
@@ -137,15 +138,18 @@ fixed within each group. In order to simulate the treatment effect, the
 generation probabilities of certain sequences differ substantially
 between the two groups.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Welcome to the NAIR package. Get started using `vignette("NAIR", package = "NAIR")` or by visiting https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Welcome to NAIR: Network Analysis of Immune Repertoire.</span></span>
+<span><span class="co">#&gt; Get started using `vignette("NAIR", package = "NAIR")`, or by visiting</span></span>
+<span><span class="co">#&gt; https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/</span></span>
 <span><span class="va">data_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">dir_input_samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"input_samples"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">dir_input_samples</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Number of samples by control/treatment group</span></span>
-<span><span class="va">samples_c</span> <span class="op">&lt;-</span> <span class="va">samples_t</span> <span class="op">&lt;-</span> <span class="fl">15</span> </span>
-<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="va">samples_c</span> <span class="op">+</span> <span class="va">samples_t</span></span>
+<span><span class="va">n_control</span> <span class="op">&lt;-</span> <span class="va">n_treatment</span> <span class="op">&lt;-</span> <span class="fl">15</span> </span>
+<span><span class="va">n_samples</span> <span class="op">&lt;-</span> <span class="va">n_control</span> <span class="op">+</span> <span class="va">n_treatment</span></span>
 <span><span class="va">sample_size</span> <span class="op">&lt;-</span> <span class="fl">30</span> <span class="co"># (seqs per sample)          </span></span>
 <span></span>
 <span><span class="co"># sequences (first five are chosen to be associated with treatment)</span></span>
@@ -158,18 +162,18 @@ between the two groups.</p>
 <span>  <span class="op">)</span> </span>
 <span></span>
 <span><span class="co"># relative generation probabilities by control/treatment group</span></span>
-<span><span class="va">pgen_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">samples_c</span><span class="op">)</span>, </span>
-<span>                 nrow <span class="op">=</span> <span class="va">samples_c</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">pgen_t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">samples_t</span><span class="op">)</span>, </span>
-<span>                 nrow <span class="op">=</span> <span class="va">samples_t</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">pgen_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">n_control</span><span class="op">)</span>, </span>
+<span>                 nrow <span class="op">=</span> <span class="va">n_control</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">pgen_t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="va">n_treatment</span><span class="op">)</span>, </span>
+<span>                 nrow <span class="op">=</span> <span class="va">n_treatment</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">pgen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">pgen_c</span>, <span class="va">pgen_t</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/simulateToyData.html">simulateToyData</a></span><span class="op">(</span>    </span>
-<span>  samples <span class="op">=</span> <span class="va">samples</span>, </span>
+<span>  samples <span class="op">=</span> <span class="va">n_samples</span>, </span>
 <span>  sample_size <span class="op">=</span> <span class="va">sample_size</span>,</span>
 <span>  prefix_length <span class="op">=</span> <span class="fl">1</span>, </span>
 <span>  prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">""</span><span class="op">)</span>,</span>
-<span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">samples</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">n_samples</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">n_samples</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  affixes <span class="op">=</span> <span class="va">base_seqs</span>, </span>
 <span>  affix_probs <span class="op">=</span> <span class="va">pgen</span>, </span>
 <span>  num_edits <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -177,11 +181,11 @@ between the two groups.</p>
 <span>  no_return <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>Each sample is saved in a separate file using the .rds file format.
-The files are named “<code>Sample1.rds</code>”,
-“<code>Sample2.rds</code>”, etc. The file path of their directory is
-saved to the R environment variable <code>dir_input_samples</code> for
-later reference.</p>
+<p>Each sample’s data frame is saved to its own file using the RDS file
+format. The files are named “<code>Sample1.rds</code>”,
+“<code>Sample2.rds</code>”, etc. A character string containing the
+directory path is assigned to the R environment variable
+<code>dir_input_samples</code> for later reference.</p>
 <p>The first few rows of the data for the first sample appear as
 follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -201,354 +205,198 @@ follows:</p>
 <a name="step1"></a> Step 1: Find Associated
 Sequences<a class="anchor" aria-label="anchor" href="#step-1-find-associated-sequences"></a>
 </h2>
-<p>The first step is to conduct a systematic search for associated
-sequences within the provided samples using
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
+<p>First, we use <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> to conduct a
+systematic search for associated sequences within the provided
+samples.</p>
 <p>This search is a two-stage procedure.</p>
 <p>The unique receptor sequences are first filtered according to basic
 criteria in order to narrow the list of candidates.</p>
-<p>For each candidate sequence, we then compute the P-value for Fisher’s
-exact test of independence between the binary variable of interest and
-the observed presence of the sequence within a sample/subject. The user
-specifies the P-value cutoff below which an association is detected.</p>
-<p>Below, we explain the usage and behavior of
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
+<p>For each candidate sequence, we then perform Fisher’s exact test of
+independence between the binary variable of interest and the observed
+presence of the sequence within a sample/subject. Significant
+associations are identified based on a specified P-value threshold.</p>
+<p>Below, we explain how to use <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
 <div class="section level3">
-<h3 class="tabset" id="search-criteria-for-associated-sequences">Search Criteria for Associated Sequences<a class="anchor" aria-label="anchor" href="#search-criteria-for-associated-sequences"></a>
+<h3 class="tabset" id="input-data-for-step-1">
+<a name="input_settings"></a> Input Data for Step
+1<a class="anchor" aria-label="anchor" href="#input-data-for-step-1"></a>
 </h3>
-<p>Presented below are parameters that control the criteria used when
-searching for associated sequences. These include several filter
-criteria used to determine which sequences are considered for testing,
-as well as the P-value cutoff below which an association is detected by
-Fisher’s exact test.</p>
-<div class="section level4">
-<h4 id="sample-membership">Sample Membership<a class="anchor" aria-label="anchor" href="#sample-membership"></a>
-</h4>
+<p>Each sample’s AIRR-Seq data must be contained in a separate file,
+with observations indexed by row, and with the same columns across
+samples.</p>
+<div class="section level5">
+<h5 id="file-paths-of-sample-data">
+<a name="input_files"></a> File Paths of Sample Data<a class="anchor" aria-label="anchor" href="#file-paths-of-sample-data"></a>
+</h5>
+<p>The <code>file_list</code> parameter accepts a character vector
+containing file paths (or a list containing file paths and connections),
+where each element corresponds to a file containing a single sample.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># create vector of input file paths for step 1 (one per sample)</span></span>
+<span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>,</span>
+<span>                         <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">n_samples</span>, <span class="st">".rds"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 30</span></span>
+<span><span class="va">input_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "/tmp/Rtmp3qIekl/input_samples/Sample1.rds"</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="file-format-of-sample-data">
+<a name="input_type"></a> File Format of Sample Data<a class="anchor" aria-label="anchor" href="#file-format-of-sample-data"></a>
+</h5>
+<p>The file format of the input files is specified by the
+<code>input_type</code> parameter. The supported values are
+<code>"rds"</code>, <code>"rda"</code>, <code>"csv"</code>,
+<code>"csv2"</code>, <code>"tsv"</code> and <code>"table"</code>.
+Depending on the input type, further options are specified with
+<code>data_symbols</code> or <code>read.args</code>.</p>
+<p>Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/supplementary.html#load">here</a>
+and to <code><a href="../reference/combineSamples.html">loadDataFromFileList()</a></code> for details and examples.</p>
+</div>
+<div class="section level5">
+<h5 id="sequence-column-in-sample-data">
+<a name="seq_col"></a> Sequence Column in Sample Data<a class="anchor" aria-label="anchor" href="#sequence-column-in-sample-data"></a>
+</h5>
+<p>The <code>seq_col</code> parameter specifies the column containing
+the TCR/BCR sequences within each sample. It accepts the column name (as
+a character string) or the column position index.</p>
+</div>
+<div class="section level5">
+<h5 id="assigning-samples-to-groups">
+<a name="group_ids"></a> Assigning Samples to Groups<a class="anchor" aria-label="anchor" href="#assigning-samples-to-groups"></a>
+</h5>
+<p>The <code>group_ids</code> parameter assigns each sample to one of
+two groups, representing the two levels of the binary variable of
+interest. It accepts a vector of the same length as
+<code>file_list</code>, where each entry is the group label for the
+corresponding sample. Any two distinct values may be used for the group
+labels.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># create vector of group labels for the samples</span></span>
+<span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">n_control</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">n_treatment</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="assigning-samples-to-subjects-if-applicable">
+<a name="subject_ids"></a> Assigning Samples to Subjects (If
+Applicable)<a class="anchor" aria-label="anchor" href="#assigning-samples-to-subjects-if-applicable"></a>
+</h5>
+<p>The optional <code>subject_ids</code> parameter assigns each sample
+to a subject. It accepts a vector of the same length as
+<code>file_list</code>, where each entry is the subject ID for the
+corresponding sample.</p>
+<p>Without subjects, each sample is an independent observational unit.
+The contingency table for Fisher’s exact test then counts
+<strong>samples</strong> possessing the given sequence.</p>
+<p>With subjects, all samples from the same subject form one
+observational unit. The contingency table then counts
+<strong>subjects</strong> possessing the given sequence. A sequence is
+counted at most once per subject, and each subject is counted exactly
+once in each margin.</p>
+<p>Subject IDs should be provided when the binary variable of interest
+is subject-specific <strong>and</strong> the data contains multiple
+samples from a single subject.</p>
+</div>
+<div class="section level5">
+<h5 id="clone-frequency-column-optional">
+<a name="freq_col"></a> Clone Frequency Column (Optional)<a class="anchor" aria-label="anchor" href="#clone-frequency-column-optional"></a>
+</h5>
+<p>The optional <code>freq_col</code> parameter specifies the column
+containing the clone frequencies (normalized measure of abundance)
+within each sample. It accepts the column name (as a character string)
+or the column position index. If provided, the maximum clone count
+(across all samples) of each associated sequence will be included in the
+output.</p>
+</div>
+</div>
+<div class="section level3">
+<h3 class="tabset" id="search-criteria">Search Criteria<a class="anchor" aria-label="anchor" href="#search-criteria"></a>
+</h3>
+<p>The following parameters control the criteria used when searching for
+associated sequences. These include filter criteria that determine which
+sequences are considered for testing, as well as the P-value cutoff
+below which an association is detected by Fisher’s exact test.</p>
+<div class="section level5">
+<h5 id="sample-membership">Sample Membership<a class="anchor" aria-label="anchor" href="#sample-membership"></a>
+</h5>
 <p>By default, only sequences that appear in at least five samples will
 be considered. This can be changed by setting the
-<code>min_sample_membership</code> argument to a different value.
-Setting the value to <code>NULL</code> bypasses this check.</p>
+<code>min_sample_membership</code> parameter to a different value. An
+argument value of <code>NULL</code> bypasses this check.</p>
 </div>
-<div class="section level4">
-<h4 id="sequence-length">Sequence Length<a class="anchor" aria-label="anchor" href="#sequence-length"></a>
-</h4>
-<p>By default, only sequences that contain at least seven characters
+<div class="section level5">
+<h5 id="sequence-length">Sequence Length<a class="anchor" aria-label="anchor" href="#sequence-length"></a>
+</h5>
+<p>By default, only sequences with a length of at least seven characters
 will be considered. This can be changed by setting the
-<code>min_seq_length</code> argument to a different value. Setting the
-value to <code>NULL</code> bypasses this check.</p>
+<code>min_seq_length</code> parameter to a different value. An argument
+value of <code>NULL</code> bypasses this check.</p>
 </div>
-<div class="section level4">
-<h4 id="sequence-content">Sequence Content<a class="anchor" aria-label="anchor" href="#sequence-content"></a>
-</h4>
-<p>Sequences can be filtered based on the character content they
-contain. <strong>It is recommended to filter out sequences containing
-special characters that are invalid for use in file names.</strong></p>
-<p>By default, sequences containing any of the characters
-<code>*</code>, <code>|</code> or <code>_</code> will be excluded from
-consideration. This can be changed using the <code>drop_matches</code>
-argument, which accepts a character string containing a regular
-expression that specifies the pattern of content to search for (see
-<code><a href="https://rdrr.io/r/base/regex.html" class="external-link">?regex</a></code>). The content of each sequence is checked for a
-match to this pattern using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>. If a match is found,
-the sequence is excluded from consideration. Setting the value to
-<code>NULL</code> bypasses this check.</p>
+<div class="section level5">
+<h5 id="sequence-content">Sequence Content<a class="anchor" aria-label="anchor" href="#sequence-content"></a>
+</h5>
+<p>Sequences containing any of the characters <code>*</code>,
+<code>|</code> or <code>_</code> will be excluded from consideration.
+This can be changed using the <code>drop_matches</code> parameter, which
+accepts a character string containing a regular expression that
+specifies a pattern of content to search for. Each sequence is checked
+for a pattern match using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>. If a match is found, the
+sequence is excluded. An argument value of <code>NULL</code> bypasses
+this check.</p>
 </div>
-<div class="section level4">
-<h4 id="p-value-cutoff">P-value Cutoff<a class="anchor" aria-label="anchor" href="#p-value-cutoff"></a>
-</h4>
+<div class="section level5">
+<h5 id="p-value-cutoff">P-value Cutoff<a class="anchor" aria-label="anchor" href="#p-value-cutoff"></a>
+</h5>
 <p>By default, sequences with a P-value below 0.05 on Fisher’s exact
 test are included in the output of <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.
 The cutoff can be set to a different value using the
-<code>pval_cutoff</code> argument. The lower the cutoff value, the
+<code>pval_cutoff</code> parameter. The lower the cutoff value, the
 stronger the evidence of an association is required for a sequence to be
 included in the output.</p>
-<p>It should be noted that the sequences returned by
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> are ordered by P-value, and any subset
-of them can be used in <a href="#step2">step2</a>. Thus it is not
-necessary to rerun <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> in order to impose
-a stricter P-value cutoff. The user can instead subset the results in
-order to use only those sequences below a specified P-value.</p>
+<p>It should be noted that the output includes the P-value for each
+associated sequence; furthermore, the sequences are ordered by P-value,
+and any subset of them can be used in <a href="#step2">step2</a>. Thus
+it is not necessary to rerun <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> in order
+to impose a stricter P-value cutoff. The user can instead subset the
+results in order to use only those sequences below a specified
+P-value.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 class="tabset" id="specify-input-data-for-step-1">
-<a name="input_settings"></a> Specify Input Data for
-Step 1<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-1"></a>
+<h3 id="output-settings-for-step-1">Output Settings for Step 1<a class="anchor" aria-label="anchor" href="#output-settings-for-step-1"></a>
 </h3>
-<div class="section level4">
-<h4 id="file-paths-of-sample-data">
-<a name="input_files"></a> File Paths of Sample Data<a class="anchor" aria-label="anchor" href="#file-paths-of-sample-data"></a>
-</h4>
-<p>The main argument of <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is the
-<code>file_list</code> argument, which accepts a vector containing file
-paths. Each file is assumed to contain the AIRR-Seq data for a single
-sample, with observations indexed by row.</p>
-<p>Below, we prepare the vector <code>input_files</code> to be provided
-to the <code>file_list</code> argument of
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># input files for step 1 (one per sample)</span></span>
-<span><span class="va">input_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">dir_input_samples</span>,</span>
-<span>                         <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">samples</span>, <span class="st">".rds"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmppNwZR7/input_samples/Sample1.rds"</span></span>
-<span><span class="co">#&gt; [2] "/tmp/RtmppNwZR7/input_samples/Sample2.rds"</span></span>
-<span><span class="co">#&gt; [3] "/tmp/RtmppNwZR7/input_samples/Sample3.rds"</span></span>
-<span><span class="co">#&gt; [4] "/tmp/RtmppNwZR7/input_samples/Sample4.rds"</span></span>
-<span><span class="co">#&gt; [5] "/tmp/RtmppNwZR7/input_samples/Sample5.rds"</span></span>
-<span><span class="co">#&gt; [6] "/tmp/RtmppNwZR7/input_samples/Sample6.rds"</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="file-format-of-sample-data">
-<a name="input_type"></a> File Format of Sample Data<a class="anchor" aria-label="anchor" href="#file-format-of-sample-data"></a>
-</h4>
-<p>The file format of the input files for
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is specified using the
-<code>input_type</code> parameter. The supported formats include
-<code>"rds"</code>, <code>"rda"</code>, <code>"csv"</code>, as well as
-files that can be read using the <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code> function,
-such as <code>"tsv"</code> and <code>"txt"</code>.</p>
-<p>Our samples are stored in .rds files, so we use
-<code>input_type = "rds"</code>.</p>
-<p>For text formats such as <code>"csv"</code>, <code>"tsv"</code> and
-<code>"txt"</code>, users can specify the separation option by utilizing
-the <code>sep</code> argument. The default setting <code>sep = ""</code>
-accommodates all forms of white space, i.e., one or more spaces, tabs,
-newlines or carriage returns. In addition, it is important to note that
-the first line of the data is assumed to be the header by default. To
-disable this behavior and treat the first line as data, users must set
-the <code>header</code> parameter to <code>FALSE</code>.</p>
-<p>For the <code>"rda"</code> (Rdata) format, the
-<code>data_symbols</code> argument is used to specify the name of each
-sample’s AIRR-Seq data frame within the Rdata file (i.e., the name of
-the data frame as it will appear in the R environment when the Rdata
-file is loaded). The argument accepts a character string. This requires
-that each sample’s data frame has the same name within its respective
-Rdata file. For example, if each sample’s data frame is named
-<code>mydataframe</code> and saved using the command
-<code>save(mydataframe, file = myfilepath)</code>, where the file path
-<code>myfilepath</code> is different for each sample, then we would set
-<code>data_symbols = "mydataframe"</code>.</p>
-</div>
-<div class="section level4">
-<h4 id="sequence-column-in-sample-data">
-<a name="seq_col"></a> Sequence Column in Sample Data<a class="anchor" aria-label="anchor" href="#sequence-column-in-sample-data"></a>
-</h4>
-<p>The <code>seq_col</code> argument is used to specify the column
-containing the clone sequences in the input data for each sample. The
-argument accepts either the column name or column index.</p>
-<p>In our simulated data, the column containing the clone sequences is
-named <code>CloneSeq</code>. Hence we specify
-<code>seq_col = "CloneSeq"</code> when calling
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
-</div>
-<div class="section level4">
-<h4 id="assigning-samples-to-groups">
-<a name="group_ids"></a> Assigning Samples to Groups<a class="anchor" aria-label="anchor" href="#assigning-samples-to-groups"></a>
-</h4>
-<p>The <code>group_ids</code> argument is used to assign each sample to
-one of the two groups, representing the two levels of the binary
-variable of interest. The argument accepts a vector of the same length
-as <code>file_list</code>. Each entry of <code>group_ids</code> is
-assigned as a group label to the sample in the corresponding entry of
-<code>file_list</code>. Any values may be used for the group labels, but
-the vector must contain exactly two unique values.</p>
-<p>For instance, in our simulated data, the first half of the samples
-belong to the control group, while the second half belong to the
-treatment group. Thus, we should assign one group label to the first 15
-samples and a different group label to the last 15 samples. Here we
-choose to label the first 15 samples as <code>"reference"</code> and the
-last 15 samples as <code>"comparison"</code>. However, it should be
-noted that the results will be unchanged if the labels are reversed, or
-if a different pair of labels is used, as long as the first 15 samples
-are assigned to one group and the last 15 samples to the other.</p>
-<p>The vector we will provide to the <code>group_ids</code> argument of
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is created below:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># group label assignments for the samples</span></span>
-<span><span class="va">group_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"reference"</span>, <span class="va">samples_c</span><span class="op">)</span>, </span>
-<span>                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"comparison"</span>, <span class="va">samples_t</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">group_labels</span></span>
-<span><span class="co">#&gt;  [1] "reference"  "reference"  "reference"  "reference"  "reference" </span></span>
-<span><span class="co">#&gt;  [6] "reference"  "reference"  "reference"  "reference"  "reference" </span></span>
-<span><span class="co">#&gt; [11] "reference"  "reference"  "reference"  "reference"  "reference" </span></span>
-<span><span class="co">#&gt; [16] "comparison" "comparison" "comparison" "comparison" "comparison"</span></span>
-<span><span class="co">#&gt; [21] "comparison" "comparison" "comparison" "comparison" "comparison"</span></span>
-<span><span class="co">#&gt; [26] "comparison" "comparison" "comparison" "comparison" "comparison"</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="assigning-samples-to-subjects-if-applicable">
-<a name="subject_ids"></a> Assigning Samples to Subjects (If
-Applicable)<a class="anchor" aria-label="anchor" href="#assigning-samples-to-subjects-if-applicable"></a>
-</h4>
-<p>The <code>subject_ids</code> argument can be used to assign each
-sample to a particular subject. The argument accepts a vector of the
-same length as <code>file_list</code>. Each entry of
-<code>subject_ids</code> is assigned as a subject ID to the sample in
-the corresponding entry of <code>file_list</code>.</p>
-<p>If the <code>subject_ids</code> argument is omitted, Fisher’s exact
-test treats each sample as an independent observational unit. In this
-case, the relevant contingency table involves counts of
-<strong>samples</strong> possessing a given sequence.</p>
-<p>If subject IDs are provided, each subject’s collection of samples is
-treated as a single observational unit. The relevant contingency table
-then involves counts of <strong>subjects</strong> possessing a given
-sequence. This allows a sequence to be counted at most once per subject,
-and results in each subject being counted exactly once in each
-margin.</p>
-<p>Subject IDs should be provided when the binary variable of interest
-is subject-specific and the data contains multiple samples from a single
-subject. Subject IDs should be omitted when the binary variable of
-interest is sample-specific or each sample comes from a different
-subject.</p>
-</div>
-<div class="section level4">
-<h4 id="clone-frequency-column-optional">
-<a name="freq_col"></a> Clone Frequency Column (Optional)<a class="anchor" aria-label="anchor" href="#clone-frequency-column-optional"></a>
-</h4>
-<p>The <code>freq_col</code> argument can be used to specify the column
-in each sample’s data frame that contains the clone frequencies (i.e.,
-clone count divided by the sum of the clone counts across all clones in
-the sample). The argument accepts either the column name or column
-index.</p>
-<p>If clone frequencies are provided, the maximum clone frequency
-(across all samples) for each associated sequence will be included in
-the content of the data frame returned by
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
-</div>
-</div>
-<div class="section level3">
-<h3 id="output-file-path-for-step-1">Output File Path for Step 1<a class="anchor" aria-label="anchor" href="#output-file-path-for-step-1"></a>
-</h3>
-<p><code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> returns a data frame containing the
-associated sequences along with some additional information (see the <a href="#demo1">demonstration</a> below).</p>
-<p>By default, the data frame returned by
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> is also saved to the current working
-directory as a csv file named <code>associated_seqs.csv</code>.</p>
-<p>A different file name and/or directory can be specified by providing
-a file path to the <code>outfile</code> argument. For example, setting
-<code>outfile = "myfile.csv"</code> will save the file to the current
-working directory as <code>myfile.csv</code>, while setting
-<code>outfile = "~/myfolder/myfile.csv"</code> will save the file within
-the subdirectory <code>myfolder</code> located within the current
-working directory.</p>
-<p>The user can also specify <code>outfile = NULL</code> in order to
-prevent the output from being saved.</p>
+<p><code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> returns a data frame (see
+demonstration below). The data frame can be written to a csv file by
+providing a file path to the <code>outfile</code> parameter.</p>
 </div>
 <div class="section level3">
 <h3 id="demonstration-step-1">
-<a name="demo1"></a> Demonstration (Step 1)<a class="anchor" aria-label="anchor" href="#demonstration-step-1"></a>
+<a name="demo1"></a> Demonstration, Step 1<a class="anchor" aria-label="anchor" href="#demonstration-step-1"></a>
 </h3>
-<div class="section level4">
-<h4 id="execute-findassociatedseqs">Execute <code>findAssociatedSeqs()</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedseqs"></a>
-</h4>
-<p>We execute <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> using the <a href="#input_settings">inputs we prepared earlier</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># search across samples for associated sequences using Fisher's exact test</span></span>
-<span><span class="va">associated_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span>file_list <span class="op">=</span> <span class="va">input_files</span>, </span>
+<code class="sourceCode R"><span><span class="va">associated_seqs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs</a></span><span class="op">(</span>file_list <span class="op">=</span> <span class="va">input_files</span>, </span>
 <span>                                      input_type <span class="op">=</span> <span class="st">"rds"</span>, </span>
 <span>                                      group_ids <span class="op">=</span> <span class="va">group_labels</span>, </span>
 <span>                                      seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
 <span>                                      min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, </span>
 <span>                                      drop_matches <span class="op">=</span> <span class="cn">NULL</span>, </span>
 <span>                                      min_sample_membership <span class="op">=</span> <span class="cn">NULL</span>, </span>
-<span>                                      pval_cutoff <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>                                      outfile <span class="op">=</span> <span class="cn">NULL</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Data contains 30 samples, 15 of which belong to group reference and 15 of which belong to group comparison.</span></span>
-<span><span class="co">#&gt; &gt;&gt;&gt; Loading and compiling data from all samples:</span></span>
-<span><span class="co">#&gt; Loading sample 1: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 2: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 3: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 4: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 5: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 6: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 7: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 8: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 9: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 10: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 11: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 12: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 13: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 14: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 15: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 16: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 17: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 18: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 19: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 20: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 21: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 22: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 23: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 24: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 25: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 26: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 27: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 28: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 29: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Loading sample 30: Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; All samples loaded.</span></span>
-<span><span class="co">#&gt; Extracting list of unique sequences... Done.  8 unique sequences present.</span></span>
-<span><span class="co">#&gt; Computing sample membership (this may take a while)... Done.</span></span>
-<span><span class="co">#&gt; Filtering by Fisher's exact test P-value... Done. 4 sequences remain.</span></span>
-<span><span class="co">#&gt; All done. Sorting results by Fisher's exact test P-value and returning.</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="output-of-findassociatedseqs">Output of <code>findAssociatedSeqs()</code><a class="anchor" aria-label="anchor" href="#output-of-findassociatedseqs"></a>
-</h4>
+<span>                                      pval_cutoff <span class="op">=</span> <span class="fl">0.1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> returns a data frame containing the
 associated sequences based on the specified search criteria.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># view first few rows of output</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">associated_seqs</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">associated_seqs</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
 <span><span class="co">#&gt;        ReceptorSeq fisher_pvalue shared_by_n_samples samples_g0 samples_g1</span></span>
 <span><span class="co">#&gt; 8   CSVDLGKGNNEQFF  1.052106e-05                  18          3         15</span></span>
 <span><span class="co">#&gt; 7      CASSGAYEQYF  1.157316e-04                  17          3         14</span></span>
 <span><span class="co">#&gt; 4 CASSEEGQLSTDTQYF  5.197401e-03                  10          1          9</span></span>
-<span><span class="co">#&gt; 5 CASSIEGQLSTDTQYF  6.559548e-02                  16          5         11</span></span>
-<span><span class="co">#&gt;                                                                                                                  label</span></span>
-<span><span class="co">#&gt; 8 Sequence present in 18 samples (3 in group reference, 15 in group comparison)\nFisher's exact test P-value: 1.05e-05</span></span>
-<span><span class="co">#&gt; 7 Sequence present in 17 samples (3 in group reference, 14 in group comparison)\nFisher's exact test P-value: 0.000116</span></span>
-<span><span class="co">#&gt; 4    Sequence present in 10 samples (1 in group reference, 9 in group comparison)\nFisher's exact test P-value: 0.0052</span></span>
-<span><span class="co">#&gt; 5   Sequence present in 16 samples (5 in group reference, 11 in group comparison)\nFisher's exact test P-value: 0.0656</span></span></code></pre></div>
-<p>Each row corresponds to a unique receptor sequence. The rows of the
-data frame are ordered by Fisher’s exact test <span class="math inline">\(P\)</span>-value.</p>
-<p>For the remaining steps, we will only need to use the information in
-the <code>ReceptorSeq</code> column. However, the data contains some
-additional information:</p>
-<ul>
-<li>
-<code>shared_by_n_samples</code>: The number of samples in which the
-sequence was observed</li>
-<li>
-<code>samples_g0</code>: Of the samples in which the sequence was
-observed, the number of samples belonging to the first group</li>
-<li>
-<code>samples_g1</code>: Of the samples in which the sequence was
-observed, the number of samples belonging to the second group</li>
-<li>
-<code>label</code>: A character string summarizing the above
-information. Also includes the maximum in-sample clone frequency across
-all samples, if available.</li>
-</ul>
-<p>In the above context, the first and second groups are determined by
-the first and second unique values of the <code>sample_ids</code>
-vector.</p>
-<p>The following additional variables will be included if subject IDs
-are specified using the <code>subject_ids</code> argument:</p>
-<ul>
-<li>
-<code>shared_by_n_subjects</code>: The number of subjects in which
-the sequence was observed</li>
-<li>
-<code>subjects_g0</code>: Of the subjects in which the sequence was
-observed, the number of subjects belonging to the first group</li>
-<li>
-<code>subjects_g1</code>: Of the subjects in which the sequence was
-observed, the number of subjects belonging to the second group</li>
-</ul>
-</div>
+<span><span class="co">#&gt; 5 CASSIEGQLSTDTQYF  6.559548e-02                  16          5         11</span></span></code></pre></div>
+<p>Each row corresponds to a unique receptor sequence. The rows are
+ordered by <span class="math inline">\(P\)</span>-value.</p>
+<p>For the remaining steps, we will only need to use the
+<code>ReceptorSeq</code> column. The documentation for
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> describes the other variables.</p>
 </div>
 </div>
 <div class="section level2">
@@ -556,49 +404,33 @@ observed, the number of subjects belonging to the second group</li>
 <a name="step2"></a> Step 2: Find Associated
 Clones<a class="anchor" aria-label="anchor" href="#step-2-find-associated-clones"></a>
 </h2>
-<p>In the <a href="#step1">previous step</a>, we used
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> to identify receptor sequences
-associated with the binary variable of interest.</p>
-<p>The next step is to use <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> to search
-across samples and identify all clones with sequences similar to the
-associated sequences identified in step 1.</p>
-<p>For each associated sequence, we define its neighborhood as the set
-of all sequences that fall within a specified distance (e.g., a maximum
-Hamming distance of 1). We then identify all clones (from all samples)
-whose sequences belong to this neighborhood.</p>
-<p>The data for each associated sequence’s neighborhood is then saved to
-a separate file to be used as an input in <a href="#step3">step
-3</a>.</p>
+<p><code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> searches across samples and
+identifies clones with sequences similar to any of the associated
+sequences identified in step 1.</p>
+<p>For each associated sequence, we define its neighborhood as the
+collection of all sequences that fall within a specified distance (e.g.,
+a maximum Hamming distance of 1). We then identify the clones (from all
+samples) whose sequences belong to this neighborhood.</p>
 <div class="section level3">
-<h3 id="specifying-the-associated-sequences">
-<a name="assoc_seqs"></a> Specifying the Associated Sequences<a class="anchor" aria-label="anchor" href="#specifying-the-associated-sequences"></a>
+<h3 id="associated-sequences">
+<a name="assoc_seqs"></a> Associated Sequences<a class="anchor" aria-label="anchor" href="#associated-sequences"></a>
 </h3>
-<p>The associated sequences are specified via the
-<code>assoc_seqs</code> argument, which accepts a character vector
-containing the associated sequences.</p>
-<p>Typically, the vector provided to <code>assoc_seqs</code> will be the
-<code>ReceptorSeq</code> column of the data frame returned by
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>. This considers all of the associated
-sequences found in <a href="#step1">step 1</a>.</p>
-<p>However, it may be desirable to consider only a subset of the
-sequences returned by <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>. The sequences
-are ordered by Fisher’s exact test P-value to facilitate reference. For
-example, if we had many associated sequences, we could choose to
-consider only the 10 with the lowest P-values by specifying
-<code>assoc_seqs = associated_seqs$ReceptorSeq[1:10]</code>.</p>
+<p>The <code>assoc_seqs</code> parameter specifies the associated
+sequences. It accepts a character vector, which is typically the
+<code>ReceptorSeq</code> column from the output of
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>, or a subset of this column if not all
+associated sequences from step 1 are to be considered (the column is
+ordered by P-value to facilitate subsetting).</p>
 </div>
 <div class="section level3">
-<h3 class="tabset" id="specify-input-data-for-step-2">Specify Input Data for Step 2<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-2"></a>
+<h3 class="tabset" id="input-data-for-step-2">Input Data for Step 2<a class="anchor" aria-label="anchor" href="#input-data-for-step-2"></a>
 </h3>
-<div class="section level4">
-<h4 id="arguments-from-step-1">
-<a name="files2"></a> Arguments from Step 1<a class="anchor" aria-label="anchor" href="#arguments-from-step-1"></a>
-</h4>
-<p>In order for <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> to conduct its
-search, we must provide specifications for our sample data, just as we
-did when calling <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>.</p>
-<p><a href="#input_settings">As before</a>, this is done using the
-following arguments:</p>
+<div class="section level5">
+<h5 id="argument-values-from-step-1">
+<a name="files2"></a> Argument Values from Step 1<a class="anchor" aria-label="anchor" href="#argument-values-from-step-1"></a>
+</h5>
+<p>With <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>, we specify our sample data
+using the same parameters from <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code>:</p>
 <ul>
 <li><a href="#input_files"><code>file_list</code></a></li>
 <li><a href="#input_type"><code>input_type</code></a></li>
@@ -608,183 +440,100 @@ following arguments:</p>
 <a href="#subject_ids"><code>subject_ids</code></a> (if
 applicable)</li>
 </ul>
-<p>The user should use the same values for these arguments as they did
-when calling <code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> in <a href="#step1">step
+<p>The user should provide the same argument values used in the call to
+<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> during <a href="#step1">step
 1</a>.</p>
 </div>
-<div class="section level4">
-<h4 id="custom-sample-ids-optional">Custom Sample IDs (Optional)<a class="anchor" aria-label="anchor" href="#custom-sample-ids-optional"></a>
-</h4>
-<p>Each clone’s sample ID is automatically included as a variable in the
-data for each associated sequence’s neighborhood.</p>
-<p>By default, the samples are labeled as <code>"Sample1"</code>,
-<code>"Sample2"</code>, etc., according to their order of appearance in
-<code>file_list</code>.</p>
-<p>The <code>sample_ids</code> argument allows for custom sample IDs to
-be assigned. It accepts a vector of the same length as
-<code>file_list</code>. Each entry of <code>sample_ids</code> is
-assigned as a sample ID to the sample in the corresponding entry of
-<code>file_list</code>.</p>
-<p>If subject IDs are provided using the <code>subject_ids</code>
-argument, the subject IDs will be included in each neighborhood’s data
-frame as a separate variable from the sample ID.</p>
+<div class="section level5">
+<h5 id="custom-sample-ids-optional">Custom Sample IDs (Optional)<a class="anchor" aria-label="anchor" href="#custom-sample-ids-optional"></a>
+</h5>
+<p>Each clone’s sample ID is included in the output. By default, these
+are <code>"Sample1"</code>, <code>"Sample2"</code>, etc., according to
+the order in <code>file_list</code>.</p>
+<p>The optional <code>sample_ids</code> parameter assigns custom sample
+IDs. It accepts a vector of the same length as <code>file_list</code>,
+where each entry is the corresponding sample ID.</p>
 </div>
-<div class="section level4">
-<h4 id="filtering-the-sample-data">Filtering the Sample Data<a class="anchor" aria-label="anchor" href="#filtering-the-sample-data"></a>
-</h4>
+<div class="section level5">
+<h5 id="filtering-the-sample-data">Filtering the Sample Data<a class="anchor" aria-label="anchor" href="#filtering-the-sample-data"></a>
+</h5>
 <p>The clones from each sample are filtered to remove any irrelevant
-data. The following arguments provide user control over the filter
-settings.</p>
-<div class="section level5">
-<h5 id="min_seq_length">
-<code>min_seq_length</code><a class="anchor" aria-label="anchor" href="#min_seq_length"></a>
-</h5>
-<p>By default, clones with sequences that contain fewer than six
-characters will be removed from each sample prior to constructing the
-neighborhoods. This can be changed by setting the
-<code>min_seq_length</code> argument to a different value. Setting the
-value to <code>NULL</code> bypasses this check.</p>
-</div>
-<div class="section level5">
-<h5 id="drop_matches">
-<code>drop_matches</code><a class="anchor" aria-label="anchor" href="#drop_matches"></a>
-</h5>
-<p>Clones with sequences containing any of the characters
-<code>*</code>, <code>|</code> or <code>_</code> will be removed from
-each sample prior to constructing the neighborhoods. This can be changed
-using the <code>drop_matches</code> argument, which accepts a character
-string containing a regular expression that specifies the pattern of
-content to search for (see <code><a href="https://rdrr.io/r/base/regex.html" class="external-link">?regex</a></code>). The content of each
-clone’s sequence is checked for a match to this pattern using
-<code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>. If a match is found, the clone is removed before
-constructing the neighborhoods. Setting the value to <code>NULL</code>
-bypasses this check.</p>
-</div>
+data. By default, clones with sequences that are less than six
+characters in length, as well as sequences containing any of the
+characters <code>*</code>, <code>_</code> or <code>|</code>, will be
+excluded. The <code>min_seq_length</code> and <code>drop_matches</code>
+parameters control the filter settings. Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#input_options">here</a>
+for details.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 class="tabset" id="network-neighborhood-settings">Network Neighborhood Settings<a class="anchor" aria-label="anchor" href="#network-neighborhood-settings"></a>
+<h3 class="tabset" id="defining-the-neighborhoods">Defining the Neighborhoods<a class="anchor" aria-label="anchor" href="#defining-the-neighborhoods"></a>
 </h3>
-<p>For each associated sequence, its neighborhood includes all sequences
-that are sufficiently similar to the associated sequence.</p>
-<p>The settings below control how the similarity between sequences is
-measured, as well as how similar a sequence must be to the associated
-sequence in order to belong to its neighborhood.</p>
-<div class="section level4">
-<h4 id="distance-function">Distance Function<a class="anchor" aria-label="anchor" href="#distance-function"></a>
-</h4>
-<p>The default method for measuring the similarity between TCR/BCR
-sequences is the Hamming distance. It calculates the number of
-differences between two sequences of the same length. If the sequences
-have different lengths, the shorter sequence is extended by adding
-non-matching characters to make it the same length as the longer
+<p>The neighborhood of an associated sequence includes all sequences
+that are sufficiently similar to it. By default, similarity is measured
+using the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/hamDistBounded.html">Hamming
+distance</a>, and “sufficiently similar” means a Hamming distance of at
+most 1.</p>
+<p>The <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/levDistBounded.html">Levenshtein
+distance</a> can be used by specifying <code>dist_type = "lev"</code>.
+As described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#distance-function">here</a>,
+it is preferable for comparing nucleotide sequences, but has greater
+computational cost.</p>
+<p>The maximum distance between an associated sequence other sequences
+in its neighborhood is specified by the <code>nbd_radius</code>
+parameter (the default is 1). Increasing the value increases the
+potential number of clones in each neighborhood. A value of 0 means each
+neighborhood includes only clones with the exact associated
 sequence.</p>
-<p>The Levenshtein distance can be used as an alternative measurement to
-determine the similarity between sequences. It calculates the minimum
-number of single-character edits (insertions, deletions and
-transformations) needed to transform one sequence into the other. This
-method is particularly useful for comparing sequences of different
-lengths and can account for insertions and deletions. When constructing
-a network based on the similarity of CDR-3 nucleotide sequences, it is
-preferable to use the Levenshtein distance instead of the default
-Hamming distance by setting the argument
-<code>dist_type = "levenshtein"</code>. However, the Levenshtein
-distance requires significantly more computational time than the Hamming
-distance, which may be challenging when working with large data sets
-having long TCR/BCR sequences.</p>
-</div>
-<div class="section level4">
-<h4 id="distance-cutoff">Distance Cutoff<a class="anchor" aria-label="anchor" href="#distance-cutoff"></a>
-</h4>
-<p>The distance function specified in the <code>dist_type</code>
-argument (the Hamming distance by default) is used to quantify the
-similarity between TCR/BCR sequences. The chosen distance measurement
-determines a distance between two sequences.</p>
-<p>By default, each associated sequence’s neighborhood includes all
-sequences whose distance from the associated sequence is at most 1.
-However, if users want to adjust this cutoff, the
-<code>nbd_radius</code> argument can be set to a different value.</p>
-<p>For example, if <code>nbd_radius = 2</code>, then each associated
-sequence’s neighborhood will include all sequences whose distance from
-the associated sequence is at most 2. The cutoff value controls the
-stringency of the neighborhood construction and affects the number of
-sequences and clones that belong to each neighborhood.</p>
-</div>
 </div>
 <div class="section level3">
 <h3 class="tabset" id="output-settings-for-step-2">Output Settings for Step 2<a class="anchor" aria-label="anchor" href="#output-settings-for-step-2"></a>
 </h3>
 <p><code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> does not return any direct
-output. Instead, it saves the data for the associated sequence’s
-neighborhoods to files that will be used as inputs in <a href="#step3">step 3</a>.</p>
-<p>For each neighborhood, a data frame is saved to an individual file.
-The data frame contains one row for each clone in the neighborhood, and
-it includes variables for each clone’s sample ID, the group ID for its
-sample, and (if provided) the subject ID for its sample. The following
-arguments can be used to customize the output.</p>
-<div class="section level4">
-<h4 id="variables-to-keep-from-step-2">
-<a name="nbd_variables"></a> Variables to Keep From Step 2<a class="anchor" aria-label="anchor" href="#variables-to-keep-from-step-2"></a>
-</h4>
-<p>By default, <a href="#nbd_output">each neighborhood’s data frame</a>
-will include all of the variables (data columns) from each sample’s
-original input data frame. These variables will be included as metadata
-for the nodes of the global network in <a href="#step3">step 3</a>.</p>
-<p>In some cases, the user may not wish for all of the original
-variables to be included. In this case, the user can specify the
-original data they wish to keep. This is done using the
-<code>subset_cols</code> argument, which accepts either a vector of
-column names or a vector of column indices.</p>
-<p>Regardless of the value of <code>subset_cols</code>, the variable for
-clone sequence (as specified by the <code>seq_col</code> argument) will
-always be included, as will the variables <code>SampleID</code>,
-<code>GroupID</code> and (if applicable) <code>SubjectID.</code> An
-additional variable <code>AssocSeqs</code> records the associated
-sequence of the neighborhood to which each clone belongs.</p>
-<p>Any variables included in the output can be <a href="#vis">used as
-metadata to color the nodes</a> in graph plots of the global network
-during <a href="#step3">step 3</a>.</p>
+output. Instead, the AIRR-Seq data for the neighborhoods is saved to
+files to be used as inputs in <a href="#step3">step 3</a>. The following
+parameters control the output settings.</p>
+<div class="section level5">
+<h5 id="variables-to-keep-from-sample-data">
+<a name="nbd_variables"></a> Variables to Keep From Sample Data<a class="anchor" aria-label="anchor" href="#variables-to-keep-from-sample-data"></a>
+</h5>
+<p>By default, each neighborhood’s <a href="#nbd_output">AIRR-Seq
+data</a> includes all variables from the original sample data. These
+variables can be <a href="#vis">used as metadata in visualizations</a>
+of the global network in <a href="#step3">step 3</a>.</p>
+<p>To keep only a subset of the original variables, specify the
+variables to keep using the <code>subset_cols</code> parameter, which
+accepts a character vector of column names or a vector of column
+indices. The sequence column is always included.</p>
 </div>
-<div class="section level4">
-<h4 id="output-directory-for-step-2">
+<div class="section level5">
+<h5 id="output-directory-for-step-2">
 <a name="output2"></a> Output Directory for Step 2<a class="anchor" aria-label="anchor" href="#output-directory-for-step-2"></a>
-</h4>
-<p>By default, a new directory named
-<code>associated_neighborhoods</code> is created within the current
-working directory, and the neighborhood data files are saved to this
-directory.</p>
-<p>A different output directory can be specified using the
-<code>output_dir</code> argument. The specified directory will be
-created if it does not already exist.</p>
-<p>It is recommended to save the output to a new or empty directory.
-This will simplify the task of <a href="#input_files3">inputting these
-files during step 3</a>.</p>
+</h5>
+<p>The <code>output_dir</code> parameter specifies the output directory.
+It accepts a character string containing the directory path. The
+directory will be created if it does not exist.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># output directory for current step</span></span>
 <span><span class="va">dir_nbds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_seq_nbds"</span><span class="op">)</span></span></code></pre></div>
+<p>Using an empty directory simplifies the task of <a href="#input_files3">inputting the files during step 3</a>.</p>
 </div>
-<div class="section level4">
-<h4 id="output-file-format-for-step-2">Output File Format for Step 2<a class="anchor" aria-label="anchor" href="#output-file-format-for-step-2"></a>
-</h4>
-<p>By default, each neighborhood’s data frame is saved as a csv file.
-This can be changed using the <code>output_type</code> argument. Other
-valid options include <code>"tsv"</code>, <code>"rds"</code> and
-<code>"rda"</code>.</p>
-<p>If files are saved using the <code>"rda"</code> (Rdata) format, each
-data frame will be named <code>data</code> in the R environment when its
-Rdata file is loaded.</p>
+<div class="section level5">
+<h5 id="output-file-format-for-step-2">Output File Format for Step 2<a class="anchor" aria-label="anchor" href="#output-file-format-for-step-2"></a>
+</h5>
+<p>By default, each neighborhood’s data frame is saved as an RDS file.
+This can be changed using the <code>output_type</code> parameter. Other
+accepted values are <code>"rda"</code>, <code>"csv"</code>,
+<code>"csv2"</code>, <code>"tsv"</code> and <code>"table"</code>. For
+<code>"rda"</code>, data frames are named <code>data</code> in the R
+environment. For the remaining options, <code><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table()</a></code> is
+called with <code>row.names = TRUE</code>.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 id="demonstration-step-2">
-<a name="demo2"></a> Demonstration (Step 2)<a class="anchor" aria-label="anchor" href="#demonstration-step-2"></a>
+<a name="demo2"></a> Demonstration, Step 2<a class="anchor" aria-label="anchor" href="#demonstration-step-2"></a>
 </h3>
-<div class="section level4">
-<h4 id="execute-findassociatedclones">Execute <code>findAssociatedClones()</code><a class="anchor" aria-label="anchor" href="#execute-findassociatedclones"></a>
-</h4>
-<p>We execute <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> using the <a href="#files2">inputs from step 1</a> for the <a href="#input_files"><code>file_list</code></a> and <a href="#group_ids"><code>group_ids</code></a> arguments, the <a href="#assoc_seqs">associated sequences from step 1</a>, as well as the
-<a href="#output2">output directory file path we created for the current
-step</a>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Identify clones in a neighborhood around each associated sequence</span></span>
 <span><span class="fu"><a href="../reference/findAssociatedClones.html">findAssociatedClones</a></span><span class="op">(</span>file_list <span class="op">=</span> <span class="va">input_files</span>, </span>
@@ -795,142 +544,48 @@ step</a>:</p>
 <span>                     min_seq_length <span class="op">=</span> <span class="cn">NULL</span>, </span>
 <span>                     drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>                     output_dir <span class="op">=</span> <span class="va">dir_nbds</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;&lt;&lt; Beginning search for associated clones &gt;&gt;&gt;</span></span>
-<span><span class="co">#&gt; Processing sample 1 of 30 (Sample1):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 2 of 30 (Sample2):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 3 of 30 (Sample3):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 4 of 30 (Sample4):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 5 of 30 (Sample5):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 6 of 30 (Sample6):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 7 of 30 (Sample7):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 8 of 30 (Sample8):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 9 of 30 (Sample9):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 10 of 30 (Sample10):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 11 of 30 (Sample11):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 12 of 30 (Sample12):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 13 of 30 (Sample13):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 14 of 30 (Sample14):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 15 of 30 (Sample15):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 16 of 30 (Sample16):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 17 of 30 (Sample17):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 18 of 30 (Sample18):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 19 of 30 (Sample19):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 20 of 30 (Sample20):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 21 of 30 (Sample21):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 22 of 30 (Sample22):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 23 of 30 (Sample23):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 24 of 30 (Sample24):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 25 of 30 (Sample25):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 26 of 30 (Sample26):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 27 of 30 (Sample27):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 28 of 30 (Sample28):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 29 of 30 (Sample29):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; Processing sample 30 of 30 (Sample30):</span></span>
-<span><span class="co">#&gt; Input data contains 30 rows.</span></span>
-<span><span class="co">#&gt; Finding clones in a neighborhood of each associated sequence... Done.</span></span>
-<span><span class="co">#&gt; &gt;&gt;&gt; Done processing samples. Compiling results:</span></span>
-<span><span class="co">#&gt; Gathering data from all samples for sequence 1 (CSVDLGKGNNEQFF)... Done.</span></span>
-<span><span class="co">#&gt; Gathering data from all samples for sequence 2 (CASSGAYEQYF)... Done.</span></span>
-<span><span class="co">#&gt; Gathering data from all samples for sequence 3 (CASSEEGQLSTDTQYF)... Done.</span></span>
-<span><span class="co">#&gt; Gathering data from all samples for sequence 4 (CASSIEGQLSTDTQYF)... Done.</span></span>
-<span><span class="co">#&gt; &gt;&gt;&gt; All tasks complete. Output is contained in the following directory:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppNwZR7/assoc_seq_nbds</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="output-of-findassociatedclones">
-<a name="nbd_output"></a> Output of
-<code>findAssociatedClones()</code><a class="anchor" aria-label="anchor" href="#output-of-findassociatedclones"></a>
-</h4>
-<p>The following files are created in the directory <a href="#output2">specified by the <code>output_dir</code>
-argument</a>:</p>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The following files are created in the output directory:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Files created by findAssociatedClones</span></span>
+<code class="sourceCode R"><span><span class="co"># Files created by findAssociatedClones()</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_nbds</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "CASSEEGQLSTDTQYF.csv" "CASSGAYEQYF.csv"      "CASSIEGQLSTDTQYF.csv"</span></span>
-<span><span class="co">#&gt; [4] "CSVDLGKGNNEQFF.csv"</span></span></code></pre></div>
-<p>Each file contains the <a href="#nbd_variables">neighborhood data</a>
-for a single associated sequence.</p>
-<p>We load one of the files to show the variables it contains.</p>
+<span><span class="co">#&gt; [1] "assoc_nbd_1_CSVDLGKGNNEQFF.rds"   "assoc_nbd_2_CASSGAYEQYF.rds"     </span></span>
+<span><span class="co">#&gt; [3] "assoc_nbd_3_CASSEEGQLSTDTQYF.rds" "assoc_nbd_4_CASSIEGQLSTDTQYF.rds"</span></span></code></pre></div>
+<p><a name="nbd_output"></a></p>
+<p>Each file contains neighborhood data for a single associated
+sequence.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># first neighborhood data file</span></span>
-<span><span class="va">nbd1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_nbds</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">one_nbd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_nbds</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># first few rows</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nbd1</span><span class="op">)</span></span>
-<span><span class="co">#&gt;           CloneSeq CloneFrequency CloneCount SampleID    GroupID</span></span>
-<span><span class="co">#&gt; 1 CASSEEGQLSTDTQYF     0.04349787       4726  Sample1  reference</span></span>
-<span><span class="co">#&gt; 2 CASSIEGQLSTDTQYF     0.03239791       3520  Sample1  reference</span></span>
-<span><span class="co">#&gt; 3 CASSEEGQLSTDTQYF     0.01630940       1772  Sample1  reference</span></span>
-<span><span class="co">#&gt; 4 CASSEEGQLSTDTQYF     0.03451031       3801 Sample20 comparison</span></span>
-<span><span class="co">#&gt; 5 CASSEEGQLSTDTQYF     0.03662578       4034 Sample20 comparison</span></span>
-<span><span class="co">#&gt; 6 CASSIEGQLSTDTQYF     0.02511326       2766 Sample20 comparison</span></span>
-<span><span class="co">#&gt;           AssocSeq</span></span>
-<span><span class="co">#&gt; 1 CASSEEGQLSTDTQYF</span></span>
-<span><span class="co">#&gt; 2 CASSEEGQLSTDTQYF</span></span>
-<span><span class="co">#&gt; 3 CASSEEGQLSTDTQYF</span></span>
-<span><span class="co">#&gt; 4 CASSEEGQLSTDTQYF</span></span>
-<span><span class="co">#&gt; 5 CASSEEGQLSTDTQYF</span></span>
-<span><span class="co">#&gt; 6 CASSEEGQLSTDTQYF</span></span></code></pre></div>
-</div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">one_nbd</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                   CloneSeq CloneFrequency CloneCount SampleID    GroupID</span></span>
+<span><span class="co">#&gt; Sample5.14  CSVDLGKGNNEQFF     0.02668662       2924  Sample5  reference</span></span>
+<span><span class="co">#&gt; Sample7.17  CSVDLGKGNNEQFF     0.01957279       2113  Sample7  reference</span></span>
+<span><span class="co">#&gt; Sample10.17 CSVDLGKGNNEQFF     0.03594648       4097 Sample10  reference</span></span>
+<span><span class="co">#&gt; Sample16.10 CSVDLGKGNNEQFF     0.03404553       3802 Sample16 comparison</span></span>
+<span><span class="co">#&gt; Sample16.28 CSVDLGKGNNEQFF     0.02736537       3056 Sample16 comparison</span></span>
+<span><span class="co">#&gt; Sample17.3  CSVDLGKGNNEQFF     0.04114818       4603 Sample17 comparison</span></span>
+<span><span class="co">#&gt;                   AssocSeq</span></span>
+<span><span class="co">#&gt; Sample5.14  CSVDLGKGNNEQFF</span></span>
+<span><span class="co">#&gt; Sample7.17  CSVDLGKGNNEQFF</span></span>
+<span><span class="co">#&gt; Sample10.17 CSVDLGKGNNEQFF</span></span>
+<span><span class="co">#&gt; Sample16.10 CSVDLGKGNNEQFF</span></span>
+<span><span class="co">#&gt; Sample16.28 CSVDLGKGNNEQFF</span></span>
+<span><span class="co">#&gt; Sample17.3  CSVDLGKGNNEQFF</span></span></code></pre></div>
+<p>The row names identify the sample and original row of each clone.</p>
+<p>In addition to the <a href="#nbd_variables">variables kept</a> from
+the original data, the following variables have been added:</p>
+<ul>
+<li><code>SampleID</code></li>
+<li><code>GroupID</code></li>
+<li>
+<code>AssocSeq</code> (the associated sequence for the
+neighborhood)</li>
+</ul>
+<p>If <code>subject_ids</code> was specified, a variable
+<code>SubjectID</code> will also be present.</p>
 </div>
 </div>
 <div class="section level2">
@@ -938,309 +593,154 @@ for a single associated sequence.</p>
 <a name="step3"></a> Step 3: Global Network of
 Associated Clusters<a class="anchor" aria-label="anchor" href="#step-3-global-network-of-associated-clusters"></a>
 </h2>
-<p>Now that we have identified the clones in each associated sequence’s
-neighborhood, the final step is to use
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> to combine the clones from
-all neighborhoods into a single global network. We then use clustering
-analysis to partition the global network into clusters, which are
-considered as the associated clusters.</p>
+<p><code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> combines the clones from
+all neighborhoods into a single global network. Cluster analysis is used
+to partition the global network into clusters, which are considered as
+the associated clusters.</p>
 <div class="section level3">
-<h3 class="tabset" id="specify-input-data-for-step-3">Specify Input Data for Step 3<a class="anchor" aria-label="anchor" href="#specify-input-data-for-step-3"></a>
+<h3 class="tabset" id="input-data-for-step-3">Input Data for Step 3<a class="anchor" aria-label="anchor" href="#input-data-for-step-3"></a>
 </h3>
-<p>The <a href="#demo2">output files created in the previous step</a>
-are used as the input files for
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> in the current step. Each
-of these files contains the neighborhood data for an associated
-sequence.</p>
-<div class="section level4">
-<h4 id="file-paths-of-neighborhood-data">
+<p>The input files for <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> are
+the <a href="#demo2">output files from step 2</a>. Each file contains
+the AIRR-Seq data for the clones belonging to a particular
+neighborhood.</p>
+<div class="section level5">
+<h5 id="file-paths-of-neighborhood-data">
 <a name="input_files3"></a> File Paths of Neighborhood Data<a class="anchor" aria-label="anchor" href="#file-paths-of-neighborhood-data"></a>
-</h4>
-<p>The <code>file_list</code> argument of
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> is used to specify the
-location of the neighborhood data files. It accepts a character vector
-of file paths.</p>
-<p>The neighborhood data files are located in the <a href="#output2">output directory from step 2</a>. If the files from step
-2 were saved to a new or empty directory as recommended, then they can
-easily be referenced using <code>list.files</code> with
-<code>full.names = TRUE</code>, as seen below.</p>
+</h5>
+<p>As in previous steps, the <code>file_list</code> parameter specifies
+the input files, which are located in the <a href="#output2">output
+directory from step 2</a>. If an empty output directory was used, they
+can be easily referenced using <code><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files()</a></code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Files created by findAssociatedClones</span></span>
+<code class="sourceCode R"><span><span class="co"># Create vector of file paths to files from step 2</span></span>
 <span><span class="va">nbd_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_nbds</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="file-format-of-neighborhood-data">File Format of Neighborhood Data<a class="anchor" aria-label="anchor" href="#file-format-of-neighborhood-data"></a>
-</h4>
-<p>If <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> was called using the default
-value of <code>output_type</code>, then it is not necessary to specify
-the input type when calling
+<div class="section level5">
+<h5 id="file-format-of-neighborhood-data">File Format of Neighborhood Data<a class="anchor" aria-label="anchor" href="#file-format-of-neighborhood-data"></a>
+</h5>
+<p>If <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> was called with a non-default
+value of <code>output_type</code>, this value must be passed to the
+<code>input_type</code> parameter of
 <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>.</p>
-<p>If the files created by <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> were
-saved using a different file format, the <code>input_type</code>
-argument can be used to specify the format used. This argument has the
-<a href="#input_type">same behavior described earlier</a> in
-<code><a href="../reference/findAssociatedSeqs.html">findAssociatedSeqs()</a></code> and
-<code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>. The situational arguments
-<code>header</code>, <code>sep</code> and <code>data_symbols</code> also
-perform the same roles as before.</p>
-<p><strong>Note about Rdata file format:</strong> If the
-<code>"rda"</code> (Rdata) input file format is specified using
-<code>input_type = "rda"</code>, then the <code>data_symbols</code>
-argument is used to specify the name of each neighborhood’s data frame
-within its respective Rdata file. If <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code>
-was called with <code>output_type = "rda"</code>, then the data frame
-for each sample will be named <code>data</code>. Accordingly, the
-default value of <code>data_symbols</code> for
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> is <code>data</code>, so
-the user should not need to manually specify the value of
-<code>data_symbols</code> unless the names within the files have been
-manually changed.</p>
 </div>
 </div>
 <div class="section level3">
-<h3 class="tabset" id="settings-for-global-network-analysis">Settings for Global Network Analysis<a class="anchor" aria-label="anchor" href="#settings-for-global-network-analysis"></a>
+<h3 class="tabset" id="global-network-analysis">Global Network Analysis<a class="anchor" aria-label="anchor" href="#global-network-analysis"></a>
 </h3>
-<div class="section level4">
-<h4 id="network-construction">Network Construction<a class="anchor" aria-label="anchor" href="#network-construction"></a>
-</h4>
-<p>The parameters used by <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>
-when constructing the global network are shown below along with their
-default values.</p>
+<div class="section level5">
+<h5 id="network-construction">Network Construction<a class="anchor" aria-label="anchor" href="#network-construction"></a>
+</h5>
+<p>The parameters that control construction of the global network are
+shown below along with their default values.</p>
 <ul>
 <li><code>dist_type = "hamming"</code></li>
 <li><code>dist_cutoff = 1</code></li>
 <li><code>drop_isolated_nodes = FALSE</code></li>
 </ul>
-<p>Refer to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network_settings">this
-section of the buildRepSeqNetwork vignette</a> for an explanation of
-their meaning.</p>
+<p>Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network_settings">here</a>
+for their meaning and usage.</p>
 </div>
-<div class="section level4">
-<h4 id="clustering-algorithm">Clustering Algorithm<a class="anchor" aria-label="anchor" href="#clustering-algorithm"></a>
-</h4>
-<p>After constructing the global network,
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> performs cluster analysis
-on the network nodes, partitioning the global network graph into
-densely-connected subgraphs.</p>
-<p>If the neighborhoods for two different associated sequences are very
-similar, i.e., the network contains many edge connections joining the
-nodes from one neighborhood to the nodes from the other neighborhood,
-then the two neighborhoods will have a high chance of belonging to the
-same cluster. Thus, cluster analysis assists in identifying distinct
-groups of clones/sequences that are associated with the binary variable
-of interest.</p>
-<p>By default, clustering is performed using the
-<code><a href="../reference/clustering_algorithms.html">cluster_fast_greedy()</a></code> algorithm from the
-<code>igraph</code> package. A different clustering algorithm can be
-specified using the <code>cluster_fun</code> argument. See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#clustering-algorithm">this
-section of the buildRepSeqNetwork vignette</a> for details.</p>
+<div class="section level5">
+<h5 id="clustering-algorithm">Clustering Algorithm<a class="anchor" aria-label="anchor" href="#clustering-algorithm"></a>
+</h5>
+<p>A clustering algorithm is used to partition the global network graph
+into densely-connected subgraphs (clusters). Each cluster represents a
+distinct group of clones that are associated with the binary variable of
+interest.</p>
+<p>By default, clustering is performed using
+<code><a href="https://r.igraph.org/reference/cluster_fast_greedy.html" class="external-link">igraph::cluster_fast_greedy()</a></code>. A different algorithm can be
+specified using the <code>cluster_fun</code> parameter, as described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis.html#clustering-algorithm">here</a>.</p>
 </div>
-<div class="section level4">
-<h4 id="network-properties">
+<div class="section level5">
+<h5 id="network-properties">
 <a name="global_network_properties"></a> Network Properties<a class="anchor" aria-label="anchor" href="#network-properties"></a>
-</h4>
-<p>By default, <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> computes
-both <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties">node-level</a>
-and <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties">cluster-level</a>
-properties of the global network. Node-level properties can be excluded
-by setting <code>node_stats = FALSE</code>, and cluster-level properties
-can be excluded by setting <code>cluster_stats = FALSE</code>.</p>
-<p>The set of node-level properties to be computed can be specified
-using the <code>stats_to_include</code> argument. Refer to the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#specifying-the-node-level-properties">“Specifying
-the Node-Level Properties” section of the buildRepSeqNetwork
-vignette</a> for an explanation of its usage.</p>
-<p>Note that regardless of the value of the
-<code>stats_to_include</code> argument, the node-level property
-<code>cluster_id</code> is always computed as part of the clustering
-analysis performed by <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>, and
-is always included as a variable in the node-level metadata for the
-global network.</p>
+</h5>
+<p>By default, <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> computes <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties">node-level</a>
+and <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis#cluster-properties">cluster-level</a>
+properties of the global network. These can be excluded by setting
+<code>node_stats = FALSE</code> and <code>cluster_stats = FALSE</code>,
+respectively. The set of node-level properties to be computed can be
+specified using the <code>stats_to_include</code> parameter, as
+described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/node_properties.html#choose_node_stats">here</a>.</p>
 </div>
-<div class="section level4">
-<h4 id="visualization-of-global-network">
+<div class="section level5">
+<h5 id="visualization-of-global-network">
 <a name="vis"></a> Visualization of Global Network<a class="anchor" aria-label="anchor" href="#visualization-of-global-network"></a>
-</h4>
+</h5>
 <p>By default, <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> produces a
-visual plot of the global network graph. This step can be omitted by
-setting <code>plots = FALSE</code>.</p>
-<p>By default, the plot colors the nodes according to the binary
-variable of interest. This assists in validating each cluster’s
-association to the binary variable. It also allows one to visually
-identify clusters in which only a single level of the binary variable is
-present (e.g., disease-only clusters).</p>
-<p>If desired, a different variable can be used to color the nodes. This
-is done using the <code>color_nodes_by</code> argument, which accepts a
-character string specifying the variable to use. The value should be the
-name of a <a href="#nbd_variables">variable present in the data frame
-for each neighborhood</a> (such as a variable from the original sample
-data or, e.g., <code>"SampleID"</code> or <code>"AssocSeq"</code>) or a
-<a href="#global_network_properties">node-level network property that
-has been computed for the global network</a> (e.g.,
-<code>"cluster_id"</code> or <code>"degree"</code>).</p>
-<p>The <code>color_nodes_by</code> argument also accommodates a
-character vector specifying multiple variables, in which case <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generate-multiple-plots-of-a-network">one
-plot will be created for each variable specified, with each plot
-coloring the nodes according to the respective variable</a>. If the user
-wishes to include the binary variable of interest as one of these
-variables, it is contained in each neighborhood’s data frame as the
-variable <code>"GroupID"</code>.</p>
-<p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">This
-vignette</a> details additional arguments that can be used to further
-customize the visual plot, such as arguments to control the color scale,
-node size, title and legend.</p>
+visual plot of the global network graph with the nodes colored according
+to the binary variable of interest.</p>
+<p>The <code>color_nodes_by</code> parameter specifies the variable used
+to color the nodes. It accepts a character string naming a <a href="#nbd_output">variable present in the neighborhood data</a> (e.g.,
+<code>"SampleID"</code>) or a <a href="#global_network_properties">computed node-level property</a>
+(e.g., <code>"degree"</code>).</p>
+<p><code>color_nodes_by</code> also accepts a vector naming multiple
+variables. <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-multiple-plots">One
+plot will be created for each entry, with the nodes colored according to
+the respective variable</a>. The name of the binary variable of interest
+is <code>"GroupID"</code>.</p>
+<p>Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">here</a>
+to learn about other parameters for customizing the visualization.</p>
 </div>
 </div>
 <div class="section level3">
 <h3 class="tabset" id="output-settings-for-step-3">Output Settings for Step 3<a class="anchor" aria-label="anchor" href="#output-settings-for-step-3"></a>
 </h3>
-<p>The output returned by <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>
-has the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output">same
-structure</a> as the output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. The
-function returns a list containing data frames with the node-level and
-cluster-level metadata for the global network, as well as any plots
-generated, in addition to the network adjacency matrix and the
-<code>igraph</code> network edge list.</p>
-<p>The following settings allow control over whether and how this output
-is saved.</p>
-<div class="section level4">
-<h4 id="output-directory-for-step-3">Output Directory for Step 3<a class="anchor" aria-label="anchor" href="#output-directory-for-step-3"></a>
-</h4>
-<p>By default, the contents of the list returned by
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> are saved to the current
-working directory.</p>
-<p>The output can be saved to a different directory by providing a file
-path to the <code>output_dir</code> argument. The specified directory
-will be created if it does not already exist.</p>
-<p>The user can also specify <code>output_dir = NULL</code> in order to
-prevent the output from being saved.</p>
-<p>We use a new directory named “assoc_clusters” for saving the global
-network output, whose file path is saved to
-<code>dir_global_net</code>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dir_global_net</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_dir</span>, <span class="st">"assoc_clusters"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="output-file-format-for-step-3">Output File Format for Step 3<a class="anchor" aria-label="anchor" href="#output-file-format-for-step-3"></a>
-</h4>
-<p>Each element of the output list is saved as an individual file using
-the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-format">default
-file formats from <code>buildRepSeqNetwork()</code></a>. In particular,
-the node-level and cluster-level metadata are saved as csv files.</p>
-<p>Alternatively, the user can save the entire output list to a single
-compressed rds or rda file by setting <code>output_type = "rds"</code>
-or <code>output_type = "rda"</code>, respectively.</p>
-</div>
-<div class="section level4">
-<h4 id="pdf-of-global-network-graph-plots">PDF of Global Network Graph Plots<a class="anchor" aria-label="anchor" href="#pdf-of-global-network-graph-plots"></a>
-</h4>
-<ul>
-<li>Regardless of the output file format specified, a separate pdf file
-is created in <code>output_dir</code> containing all graph plots
-generated for the global network. The dimensions (in inches) for the pdf
-can be adjusted using the <code>plot_width</code> and
-<code>plot_height</code> arguments, with the defaults being
-<code>12</code> and <code>10</code>, respectively. The pdf file is not
-created if no plots are generated (i.e., if the argument
-<code>plots</code> is set to <code>FALSE</code>).</li>
-<li>
-<strong>Note:</strong> the <code>ggraph</code> object for each plot
-is only saved if the user sets <code>output_type = "rds"</code> or
-<code>output_type = "rda"</code>. Using one of these settings is
-recommended used if the user wishes to modify any plots in the future.
-Note, however, that plots can always be re-generated from the node-level
-meta data using <code><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots()</a></code> as described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots">here</a>.</li>
-</ul>
-</div>
-<div class="section level4">
-<h4 id="output-file-names-for-step-3">Output File Name(s) for Step 3<a class="anchor" aria-label="anchor" href="#output-file-names-for-step-3"></a>
-</h4>
-<p>By default, the name of each file saved begins with
-<code>AssociatedClusterNetwork</code>. This prefix can be changed using
-the <code>output_name</code> argument, which accepts a character
-vector.</p>
-<p>Refer to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-names">this
-vignette</a> for further details on how the output files are named.</p>
-</div>
+<p><code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> returns a list
+containing plots, metadata and other network objects, with the <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output">same
+structure</a> as the output of <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>.</p>
+<p>The output can be saved to a local directory using the parameters
+<code>output_dir</code>, <code>output_type</code> and
+<code>output_name</code>, whose usage is described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-directory">here</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="demonstration-step-3">
-<a name="demo3"></a> Demonstration (Step 3)<a class="anchor" aria-label="anchor" href="#demonstration-step-3"></a>
+<a name="demo3"></a> Demonstration, Step 3<a class="anchor" aria-label="anchor" href="#demonstration-step-3"></a>
 </h3>
-<div class="section level4">
-<h4 id="execute-buildassociatedclusternetwork">Execute <code>buildAssociatedClusterNetwork()</code><a class="anchor" aria-label="anchor" href="#execute-buildassociatedclusternetwork"></a>
-</h4>
-<p>We execute <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> using the <a href="#input_files3">input we prepared earlier</a> for the
-<code>file_list</code> argument:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Combine neighborhoods and perform network analysis</span></span>
 <span><span class="va">all_clusters</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu"><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork</a></span><span class="op">(</span></span>
 <span>    file_list <span class="op">=</span> <span class="va">nbd_files</span>, </span>
 <span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span>
 <span>    size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="va">dir_global_net</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;&lt;&lt; Building network of associated clones &gt;&gt;&gt;</span></span>
-<span><span class="co">#&gt; Input data contains 202 rows.</span></span>
-<span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
-<span><span class="co">#&gt; Network contains 202 nodes.</span></span>
-<span><span class="co">#&gt; Computing cluster membership within the network... Done.</span></span>
-<span><span class="co">#&gt; Computing node-level network statistics... Done.</span></span>
-<span><span class="co">#&gt; Computing statistics for the 3 clusters in the network... Done.</span></span>
-<span><span class="co">#&gt; Generating graph plot with nodes colored by GroupID...</span></span>
-<span><span class="co">#&gt;  Done.</span></span>
-<span><span class="co">#&gt; Node-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppNwZR7/assoc_clusters/AssociatedClusterNetwork_NodeMetadata.csv</span></span>
-<span><span class="co">#&gt; Cluster-level meta-data saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppNwZR7/assoc_clusters/AssociatedClusterNetwork_ClusterMetadata.csv</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-13-1.png" width="100%" style="display: block; margin: auto;"></p>
-<pre><code><span><span class="co">#&gt; Network graph plots saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppNwZR7/assoc_clusters/AssociatedClusterNetwork.pdf</span></span>
-<span><span class="co">#&gt; Network igraph saved in edgelist format to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppNwZR7/assoc_clusters/AssociatedClusterNetwork_EdgeList.txt</span></span>
-<span><span class="co">#&gt; Adjacency matrix saved to file:</span></span>
-<span><span class="co">#&gt;   /tmp/RtmppNwZR7/assoc_clusters/AssociatedClusterNetwork_AdjacencyMatrix.mtx</span></span></code></pre>
-<p>In the graph plot of the global network, where the nodes are colored
-according to the binary variable of interest, we see that the treatment
-group shows high representation in the clusters, affirming the
-association between these sequences and the treatment variable.</p>
-</div>
-<div class="section level4">
-<h4 id="output-of-buildassociatedclusternetwork">Output of <code>buildAssociatedClusterNetwork()</code><a class="anchor" aria-label="anchor" href="#output-of-buildassociatedclusternetwork"></a>
-</h4>
-<p>The default files saved by
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> have the following
-names:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Files saved by buildAssociatedClusterNetwork</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir_global_net</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "AssociatedClusterNetwork_AdjacencyMatrix.mtx"</span></span>
-<span><span class="co">#&gt; [2] "AssociatedClusterNetwork_ClusterMetadata.csv"</span></span>
-<span><span class="co">#&gt; [3] "AssociatedClusterNetwork_EdgeList.txt"       </span></span>
-<span><span class="co">#&gt; [4] "AssociatedClusterNetwork_NodeMetadata.csv"   </span></span>
-<span><span class="co">#&gt; [5] "AssociatedClusterNetwork.pdf"</span></span></code></pre></div>
-<p>The elements of the output list returned by
-<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> have the following
-names:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># output returned by buildAssociatedClusterNetwork</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "igraph"           "adjacency_matrix" "node_data"        "cluster_data"    </span></span>
-<span><span class="co">#&gt; [5] "plots"</span></span></code></pre></div>
-<p>Below, we examine the data frames <code>node_data</code> and
-<code>cluster_data</code>. For details on the other list elements, refer
-to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output">the
-output of the <code>buildRepSeqNetwork()</code> function</a>.</p>
+<span>    print_plots <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p>The returned list contains the following elements:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "details"          "igraph"           "adjacency_matrix" "node_data"       </span></span>
+<span><span class="co">#&gt; [5] "cluster_data"     "plots"</span></span></code></pre></div>
+<p>The elements are described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output">here</a>.
+We inspect the node metadata and cluster metadata.</p>
 <div class="section level5">
 <h5 id="node-metadata-for-global-network">
 <a name="node_variables"></a> Node Metadata for Global Network<a class="anchor" aria-label="anchor" href="#node-metadata-for-global-network"></a>
 </h5>
 <p>The list element <code>node_data</code> is a data frame containing
-metadata for the network nodes, where each row corresponds to a node in
-the global network graph. The following variables are present in this
-data frame:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># variables in the node-level metadata</span></span>
+metadata for the network nodes, where each row represents a distinct
+clone corresponding to a node in the global network graph.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                   CloneSeq CloneFrequency CloneCount SampleID    GroupID</span></span>
+<span><span class="co">#&gt; Sample5.14  CSVDLGKGNNEQFF     0.02668662       2924  Sample5  reference</span></span>
+<span><span class="co">#&gt; Sample7.17  CSVDLGKGNNEQFF     0.01957279       2113  Sample7  reference</span></span>
+<span><span class="co">#&gt; Sample10.17 CSVDLGKGNNEQFF     0.03594648       4097 Sample10  reference</span></span>
+<span><span class="co">#&gt; Sample16.10 CSVDLGKGNNEQFF     0.03404553       3802 Sample16 comparison</span></span>
+<span><span class="co">#&gt; Sample16.28 CSVDLGKGNNEQFF     0.02736537       3056 Sample16 comparison</span></span>
+<span><span class="co">#&gt; Sample17.3  CSVDLGKGNNEQFF     0.04114818       4603 Sample17 comparison</span></span>
+<span><span class="co">#&gt;                   AssocSeq degree cluster_id</span></span>
+<span><span class="co">#&gt; Sample5.14  CSVDLGKGNNEQFF     53          3</span></span>
+<span><span class="co">#&gt; Sample7.17  CSVDLGKGNNEQFF     53          3</span></span>
+<span><span class="co">#&gt; Sample10.17 CSVDLGKGNNEQFF     53          3</span></span>
+<span><span class="co">#&gt; Sample16.10 CSVDLGKGNNEQFF     53          3</span></span>
+<span><span class="co">#&gt; Sample16.28 CSVDLGKGNNEQFF     53          3</span></span>
+<span><span class="co">#&gt; Sample17.3  CSVDLGKGNNEQFF     53          3</span></span></code></pre></div>
+<p>The row names identify the sample and original row of each clone.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># variables in the node metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "CloneSeq"                  "CloneFrequency"           </span></span>
 <span><span class="co">#&gt;  [3] "CloneCount"                "SampleID"                 </span></span>
@@ -1250,13 +750,9 @@ data frame:</p>
 <span><span class="co">#&gt; [11] "centrality_by_eigen"       "betweenness"              </span></span>
 <span><span class="co">#&gt; [13] "centrality_by_betweenness" "authority_score"          </span></span>
 <span><span class="co">#&gt; [15] "coreness"                  "page_rank"</span></span></code></pre></div>
-<p>Notice that <a href="#nbd_variables">by default</a>, all variables
-that were present in each sample’s original data, such as
-<code>"CloneFrequency"</code> and <code>"CloneCount"</code>, are
-automatically carried over into this data.</p>
-<p>In addition, variables containing various node-level network
-properties are also present. Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties">here</a>
-for more information about these properties.</p>
+<p><a href="#nbd_variables">By default</a>, all variables from the
+original sample data are present. Node-level network properties are also
+present, which are described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties">here</a>.</p>
 </div>
 <div class="section level5">
 <h5 id="cluster-metadata-for-global-network">
@@ -1265,10 +761,9 @@ Network<a class="anchor" aria-label="anchor" href="#cluster-metadata-for-global-
 </h5>
 <p>The list element <code>cluster_data</code> is a data frame containing
 metadata for the associated clusters, where each row corresponds to a
-cluster in the global network. The following variables are present in
-this data frame:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># variables in the node-level metadata</span></span>
+cluster in the global network. It contains the following variables:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># variables in the cluster metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "cluster_id"                  "node_count"                 </span></span>
 <span><span class="co">#&gt;  [3] "mean_seq_length"             "mean_degree"                </span></span>
@@ -1279,9 +774,7 @@ this data frame:</p>
 <span><span class="co">#&gt; [13] "edge_density"                "degree_centrality_index"    </span></span>
 <span><span class="co">#&gt; [15] "closeness_centrality_index"  "eigen_centrality_index"     </span></span>
 <span><span class="co">#&gt; [17] "eigen_centrality_eigenvalue"</span></span></code></pre></div>
-<p>Refer <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties">here</a>
-for more information about the cluster-level network properties.</p>
-</div>
+<p>These cluster properties are described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties">here</a>.</p>
 </div>
 </div>
 </div>
@@ -1292,33 +785,23 @@ for more information about the cluster-level network properties.</p>
 <p>After calling <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code>, the
 following tasks can be performed using the returned output.</p>
 <div class="section level3">
-<h3 id="additional-plots-of-the-global-network">Additional Plots of the Global Network<a class="anchor" aria-label="anchor" href="#additional-plots-of-the-global-network"></a>
+<h3 id="additional-plots">Additional Plots<a class="anchor" aria-label="anchor" href="#additional-plots"></a>
 </h3>
-<p>We may wish to generate additional plots of the global network graph.
-For example, we may wish to color the nodes according to different
-metadata to gain further insight into the associated clusters.</p>
-<p>Refer to <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots">this
-section of the Network Visualization vignette</a> for details on how to
-generate new plots from existing network output.</p>
-<p>Below, we generate a new plot of the global network where the nodes
-are colored according to the associated sequence of the neighborhood to
-which they belong.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<p>We may wish to generate additional plots of the global network graph,
+coloring the nodes according to different metadata to gain further
+insight into the associated clusters. This can be done using
+<code><a href="../reference/addPlots.html">addPlots()</a></code> as described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots">here</a>.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># global network plot, nodes colored by associated sequence</span></span>
-<span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">AssocSeq</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/generateNetworkGraphPlots.html">generateNetworkGraphPlots</a></span><span class="op">(</span>igraph <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">igraph</span>,</span>
-<span>                            data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span>,</span>
-<span>                            color_nodes_by <span class="op">=</span> <span class="st">"AssocSeq"</span>,</span>
-<span>                            color_title <span class="op">=</span> <span class="st">"Neighborhood Sequence"</span>,</span>
-<span>                            size_nodes_by <span class="op">=</span> <span class="fl">1.5</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; Generating graph plot with nodes colored by AssocSeq...</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;"></p>
-<pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
-<p>In the largest cluster, we see that the neighborhoods for two
-distinct associated sequences ended up as a single associated cluster
-within the global network. This is sensible, since the two associated
-sequences differ by only a single amino acid.</p>
+<span><span class="va">all_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addPlots.html">addPlots</a></span><span class="op">(</span><span class="va">all_clusters</span>,</span>
+<span>                         color_nodes_by <span class="op">=</span> <span class="st">"AssocSeq"</span>,</span>
+<span>                         color_title <span class="op">=</span> <span class="st">"Neighborhood Sequence"</span>,</span>
+<span>                         size_nodes_by <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>                         print_plots <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-17-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p>In the cluster on the right, we notice that the neighborhoods for two
+similar associated sequences were grouped into a single cluster.</p>
 </div>
 <div class="section level3">
 <h3 id="labeling-the-global-clusters">Labeling the Global Clusters<a class="anchor" aria-label="anchor" href="#labeling-the-global-clusters"></a>
@@ -1326,64 +809,33 @@ sequences differ by only a single amino acid.</p>
 <p>In order to more easily cross-reference the clusters in the visual
 plot with the clusters in the data, we can label the clusters with their
 ID numbers.</p>
-<p>This is accomplished using the <code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code>
-function <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#labeling-clusters">as
-described here</a>.</p>
-<p>We label the clusters in the global network plot with their cluster
-IDs:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Modify plot to add labels to the clusters</span></span>
-<span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu"><a href="../reference/addClusterLabels.html">addClusterLabels</a></span><span class="op">(</span>plot <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
-<span>                   net <span class="op">=</span> <span class="va">all_clusters</span>,</span>
-<span>                   size <span class="op">=</span> <span class="fl">10</span></span>
-<span>  <span class="op">)</span></span>
+<p>This is accomplished using the <code><a href="../reference/addClusterLabels.html">labelClusters()</a></code> function
+as described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis.html#labeling-clusters">here</a>.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">all_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addClusterLabels.html">labelClusters</a></span><span class="op">(</span><span class="va">all_clusters</span>, size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># View modified plot</span></span>
 <span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; Warning: Removed 199 rows containing missing values (`geom_text()`).</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;"></p>
+<span><span class="co">#&gt; Warning: Removed 172 rows containing missing values (`geom_text()`).</span></span></code></pre></div>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="focusing-on-individual-clusters-of-interest">Focusing on Individual Clusters of Interest<a class="anchor" aria-label="anchor" href="#focusing-on-individual-clusters-of-interest"></a>
+<h3 id="focusing-on-individual-clusters">Focusing on Individual Clusters<a class="anchor" aria-label="anchor" href="#focusing-on-individual-clusters"></a>
 </h3>
-<p>If we wish to focus on a particular cluster of interest within the
-global network, we can build a network exclusively using the clones from
-that cluster. This is accomplished using the
-<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> function, where we subset our data
-according to the value of the <code>cluster_id</code> column, which
-contains the global cluster IDs.</p>
-<p>Below, we focus on the first cluster, which for our example is the
-largest cluster by node count.</p>
-<p>We generate two plots. In the first plot, we color each node
-according to the receptor sequence of its corresponding clone. This
-provides a more detailed account of the sequences that appear in the
-cluster and their relative representation.</p>
-<p>In the second plot, we color each node according to the sample in
-which the corresponding clone originally appeared. This allows one to
-distinguish whether the clones in the cluster come from many samples as
-opposed to relatively few samples.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># focus on the first cluster</span></span>
-<span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">[</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">cluster_id</span> <span class="op">==</span> <span class="fl">1</span>, <span class="op">]</span>,</span>
+<p>To focus on a particular cluster, we can subset the node metadata
+based on the value of <code>cluster_id</code> and use
+<code><a href="../reference/buildRepSeqNetwork.html">buildNet()</a></code> to produce plots of the cluster’s graph.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># focus on the second cluster</span></span>
+<span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildNet</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">[</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">cluster_id</span> <span class="op">==</span> <span class="fl">2</span>, <span class="op">]</span>,</span>
 <span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>, </span>
 <span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneSeq"</span>, <span class="st">"SampleID"</span><span class="op">)</span>, </span>
 <span>  color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plasma"</span>, <span class="st">"turbo"</span><span class="op">)</span>,</span>
 <span>  size_nodes_by <span class="op">=</span> <span class="fl">3</span>, </span>
-<span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>, </span>
-<span>  output_name <span class="op">=</span> <span class="st">"Cluster 1"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Input data contains 83 rows.</span></span>
-<span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 83 rows remaining.</span></span>
-<span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
-<span><span class="co">#&gt; Network contains 83 nodes (after removing isolated nodes).</span></span>
-<span><span class="co">#&gt; Generating graph plot with nodes colored by CloneSeq...</span></span></code></pre></div>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-20-1.png" width="100%" style="display: block; margin: auto;"></p>
-<pre><code><span><span class="co">#&gt;  Done.</span></span>
-<span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID...</span></span></code></pre>
-<p><img src="associated_clusters_files/figure-html/unnamed-chunk-20-2.png" width="100%" style="display: block; margin: auto;"></p>
-<pre><code><span><span class="co">#&gt;  Done.</span></span></code></pre>
+<span>  plot_title <span class="op">=</span> <span class="st">"Cluster 2"</span>,</span>
+<span>  print_plots <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><img src="associated_clusters_files/figure-html/unnamed-chunk-19-1.png" width="100%" style="display: block; margin: auto;"><img src="associated_clusters_files/figure-html/unnamed-chunk-19-2.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

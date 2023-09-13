@@ -16,7 +16,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,10 +33,13 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -89,7 +92,8 @@
 
   <dt>seq_col</dt>
 <dd><p>Specifies the column of <code>data</code> containing the receptor sequences.
-    Accepts either the column name or column index.</p></dd>
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.</p></dd>
 
   <dt>target_seq</dt>
 <dd><p>A character string containing the target receptor sequence. Must be a receptor
@@ -99,9 +103,10 @@
 <dd><p>Specifies the function used to quantify the similarity between receptor
     sequences. The similarity between two sequences determines their pairwise
     distance, with greater similarity corresponding to shorter distance. Valid
-    options are <code>"hamming"</code> (the default), which uses
-    <code><a href="hamDistBounded.html">hamDistBounded</a></code>, and <code>"levenshtein"</code>, which uses
-    <code><a href="levDistBounded.html">levDistBounded</a></code>.</p></dd>
+    options are <code>"hamming"</code> (the default), which
+    uses <code><a href="hamDistBounded.html">hamDistBounded()</a></code>,
+    and <code>"levenshtein"</code>, which uses
+    <code><a href="levDistBounded.html">levDistBounded()</a></code>.</p></dd>
 
   <dt>max_dist</dt>
 <dd><p>Determines whether each cell/clone belongs to the neighborhood based on its
@@ -137,7 +142,7 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span>sample_size <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get neighborhood around first clone sequence</span></span></span>
@@ -145,8 +150,17 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span>  <span class="fu">getNeighborhood</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">toy_data</span>,</span></span>
 <span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
-<span class="r-in"><span>    target_seq <span class="op">=</span> <span class="va">toy_data</span><span class="op">$</span><span class="va">CloneSeq</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span>    target_seq <span class="op">=</span> <span class="st">"GGGGGGGAATTGG"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">nbd</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         CloneSeq CloneFrequency CloneCount SampleID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12  GGGGGGGAATTG    0.001783780       3518  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 GGGGGGGAATCGG    0.001824344       3598  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 GGGCGGGAATTGG    0.002689868       5305  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 GGGGGAGAATTGG    0.002538262       5006  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35 GGGGGGGAATTGC    0.002619896       5167  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37 GGGAGGGAATTGG    0.001884175       3716  Sample1</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

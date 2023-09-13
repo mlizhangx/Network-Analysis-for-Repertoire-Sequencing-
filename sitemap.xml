@@ -19,6 +19,9 @@
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html</loc>
   </url>
   <url>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis.html</loc>
+  </url>
+  <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/dual_chain.html</loc>
   </url>
   <url>
@@ -28,7 +31,13 @@
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html</loc>
   </url>
   <url>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/node_properties.html</loc>
+  </url>
+  <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html</loc>
+  </url>
+  <url>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/supplementary.html</loc>
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/authors.html</loc>
@@ -49,10 +58,19 @@
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/addClusterMembership.html</loc>
   </url>
   <url>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/addClusterStats.html</loc>
+  </url>
+  <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/addGraphLabels.html</loc>
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/addNodeNetworkStats.html</loc>
+  </url>
+  <url>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/addNodeStats.html</loc>
+  </url>
+  <url>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/addPlots.html</loc>
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/aggregateIdenticalClones.html</loc>
@@ -73,10 +91,10 @@
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/chooseNodeStats.html</loc>
   </url>
   <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/clustering_algorithms.html</loc>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/combineSamples.html</loc>
   </url>
   <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/combineSamples.html</loc>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/extractLayout.html</loc>
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/filterInputData.html</loc>
@@ -91,10 +109,10 @@
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/findPublicClusters.html</loc>
   </url>
   <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/generateNetworkFromAdjacencyMat.html</loc>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/generateAdjacencyMatrix.html</loc>
   </url>
   <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/generateNetworkGraphPlots.html</loc>
+    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/generateNetworkGraph.html</loc>
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/generateNetworkObjects.html</loc>
@@ -125,8 +143,5 @@
   </url>
   <url>
     <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/simulateToyData.html</loc>
-  </url>
-  <url>
-    <loc>https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/reference/sparseAdjacencyMatFromSeqs.html</loc>
   </url>
 </urlset>

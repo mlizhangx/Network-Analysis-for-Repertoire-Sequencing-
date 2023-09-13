@@ -20,7 +20,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,10 +37,13 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -84,7 +87,8 @@
 <span>  <span class="va">clone_col</span>,</span>
 <span>  <span class="va">count_col</span>,</span>
 <span>  <span class="va">freq_col</span>,</span>
-<span>  grouping_cols <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  grouping_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -94,21 +98,34 @@
 <dd><p>A data frame containing the bulk AIRR-Seq data, with clones indexed by row.</p></dd>
 
   <dt>clone_col</dt>
-<dd><p>A column name or column index specifying the column of <code>data</code>
-      containing the receptor sequences.</p></dd>
+<dd><p>Specifies the column of <code>data</code> containing
+      the receptor sequences.
+      Accepts a character string containing the column name
+      or a numeric scalar containing the column index.</p></dd>
 
   <dt>count_col</dt>
-<dd><p>A column name or column index specifying the column of <code>data</code>
-      containing the clone counts.</p></dd>
+<dd><p>Specifies the column of <code>data</code> containing
+      the clone counts.
+      Accepts a character string containing the column name
+      or a numeric scalar containing the column index.</p></dd>
 
   <dt>freq_col</dt>
-<dd><p>A column name or column index specifying the column of <code>data</code>
-      containing the clone frequencies.</p></dd>
+<dd><p>Specifies the column of <code>data</code> containing
+      the clone frequencies.
+      Accepts a character string containing the column name
+      or a numeric scalar containing the column index.</p></dd>
 
   <dt>grouping_cols</dt>
-<dd><p>An optional vector of column names or vector of column indices, specifying
-      one or more columns of <code>data</code> used to assign clones to groups. If provided,
-      aggregation occurs within groups, but not across groups. See details.</p></dd>
+<dd><p>An optional character vector of column names
+      or numeric vector of column indices, specifying
+      one or more columns of <code>data</code> used to assign clones to groups.
+      If provided, aggregation occurs within groups, but not across groups.
+      See details.</p></dd>
+
+  <dt>verbose</dt>
+<dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to <code><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">stderr()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -168,49 +185,92 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span>  time_point <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"t_0"</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"t_0"</span>, <span class="st">"t_1"</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  subject_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">my_data</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   clone_seq clone_count clone_freq time_point subject_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      ATCG           1  0.1428571        t_0          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      ACAC           1  0.1428571        t_0          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      ACAC           1  0.1428571        t_1          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      GGGG           1  0.1428571        t_0          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      GGGG           1  0.1428571        t_1          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      GGGG           1  0.1428571        t_0          2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      GGGG           1  0.1428571        t_1          2</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">data_agg</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating reads (rows) by unique clone sequence... Done. 3 unique clone sequences found.</span>
+<span class="r-in"><span><span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_freq"</span>,</span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   clone_seq AggregatedCloneCount AggregatedCloneFrequency UniqueCloneCount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      ACAC                    2                0.2857143                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      ATCG                    1                0.1428571                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      GGGG                    4                0.5714286                1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># group clones by time point</span></span></span>
-<span class="r-in"><span><span class="va">data_agg_time</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
-<span class="r-in"><span>    grouping_cols <span class="op">=</span> <span class="st">"time_point"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating reads (rows) by unique clone sequence... Done. 5 unique clone sequences found.</span>
+<span class="r-in"><span><span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_freq"</span>,</span></span>
+<span class="r-in"><span>  grouping_cols <span class="op">=</span> <span class="st">"time_point"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   clone_seq time_point AggregatedCloneCount AggregatedCloneFrequency</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      ACAC        t_0                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      ACAC        t_1                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      ATCG        t_0                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      GGGG        t_0                    2                0.2857143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      GGGG        t_1                    2                0.2857143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   UniqueCloneCount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># group clones by subject ID</span></span></span>
-<span class="r-in"><span><span class="va">data_agg_subject</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
-<span class="r-in"><span>    grouping_cols <span class="op">=</span> <span class="st">"subject_id"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating reads (rows) by unique clone sequence... Done. 4 unique clone sequences found.</span>
+<span class="r-in"><span><span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_freq"</span>,</span></span>
+<span class="r-in"><span>  grouping_cols <span class="op">=</span> <span class="st">"subject_id"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   clone_seq subject_id AggregatedCloneCount AggregatedCloneFrequency</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      ACAC          1                    2                0.2857143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      ATCG          1                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      GGGG          1                    2                0.2857143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      GGGG          2                    2                0.2857143</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   UniqueCloneCount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># group clones by time point and subject ID</span></span></span>
-<span class="r-in"><span><span class="va">data_agg_time_subject</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">my_data</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_seq"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_count"</span>,</span></span>
-<span class="r-in"><span>    <span class="st">"clone_freq"</span>,</span></span>
-<span class="r-in"><span>    grouping_cols <span class="op">=</span></span></span>
-<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"subject_id"</span>, <span class="st">"time_point"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Aggregating reads (rows) by unique clone sequence... Done. 7 unique clone sequences found.</span>
+<span class="r-in"><span><span class="fu">aggregateIdenticalClones</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">my_data</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_seq"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_count"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"clone_freq"</span>,</span></span>
+<span class="r-in"><span>  grouping_cols <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"subject_id"</span>, <span class="st">"time_point"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   clone_seq subject_id time_point AggregatedCloneCount AggregatedCloneFrequency</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      ACAC          1        t_0                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      ACAC          1        t_1                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      ATCG          1        t_0                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      GGGG          1        t_0                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      GGGG          1        t_1                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      GGGG          2        t_0                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      GGGG          2        t_1                    1                0.1428571</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   UniqueCloneCount</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,10 +44,13 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -92,7 +95,9 @@ based on joint similarity in alpha chain sequence and beta chain
 sequence.</p>
 <p>We simulate some toy data to demonstrate the usage.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">NAIR</a></span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulateToyData.html">simulateToyData</a></span><span class="op">(</span>chains <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
 <span><span class="co">#&gt;        AlphaSeq        BetaSeq Count UMIs SampleID</span></span>
@@ -108,10 +113,10 @@ sequence.</p>
 <li>The data contains separate columns for alpha chain sequence and beta
 chain sequence</li>
 </ul>
-<p>Dual-chain network analysis can be performed using the
-<code>buildRepSeqNetwork</code> function (or
-<code>generateNetworkObjects</code> as a lower-level alternative) by
-supplying a length-2 vector to the <code>seq_col</code> argument:</p>
+<p>Dual-chain network analysis can be performed using
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> (or
+<code><a href="../reference/generateNetworkObjects.html">generateNetworkObjects()</a></code>) by supplying a length-2 vector to
+the <code>seq_col</code> parameter:</p>
 <ul>
 <li>First entry should reference the column for alpha chain
 sequence</li>
@@ -120,41 +125,27 @@ sequence</li>
 </ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Build network based on joint dual-chain similarity</span></span>
-<span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span><span class="va">dat</span>, seq_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AlphaSeq"</span>, <span class="st">"BetaSeq"</span><span class="op">)</span>,</span>
-<span>                              count_col <span class="op">=</span> <span class="st">"UMIs"</span>,</span>
-<span>                              node_stats <span class="op">=</span> <span class="cn">TRUE</span>, stats_to_include <span class="op">=</span> <span class="st">"all"</span>,</span>
-<span>                              cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>                              color_nodes_by <span class="op">=</span> <span class="st">"SampleID"</span>,</span>
-<span>                              size_nodes_by <span class="op">=</span> <span class="st">"UMIs"</span>,</span>
-<span>                              node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>                              print_plots <span class="op">=</span> <span class="cn">FALSE</span>, output_dir <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Input data contains 200 rows.</span></span>
-<span><span class="co">#&gt; Removing sequences with length fewer than 3 characters... Done. 200 rows remaining.</span></span>
-<span><span class="co">#&gt; Computing graph adjacency based on sequences in first chain:</span></span>
-<span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
-<span><span class="co">#&gt; Network contains 200 nodes.</span></span>
-<span><span class="co">#&gt; Computing graph adjacency based on sequences in second chain:</span></span>
-<span><span class="co">#&gt; Computing network edges based on a max hamming distance of 1... Done.</span></span>
-<span><span class="co">#&gt; Network contains 200 nodes.</span></span>
-<span><span class="co">#&gt; Intersecting the adjacencies from both chains... Done.</span></span>
-<span><span class="co">#&gt; Building network based on the combined adjacencies...  Done.</span></span>
-<span><span class="co">#&gt; Dropping isolated nodes... Done.</span></span>
-<span><span class="co">#&gt; Network contains 101 nodes.</span></span>
-<span><span class="co">#&gt; Computing cluster membership within the network... Done.</span></span>
-<span><span class="co">#&gt; Computing node-level network statistics... Done.</span></span>
-<span><span class="co">#&gt; Computing statistics for the 25 clusters in the network... Done.</span></span>
-<span><span class="co">#&gt; Generating graph plot with nodes colored by SampleID... Done.</span></span></code></pre></div>
+<span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildNet</a></span><span class="op">(</span><span class="va">dat</span>, </span>
+<span>                    seq_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AlphaSeq"</span>, <span class="st">"BetaSeq"</span><span class="op">)</span>,</span>
+<span>                    count_col <span class="op">=</span> <span class="st">"UMIs"</span>,</span>
+<span>                    node_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                    stats_to_include <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>                    cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                    color_nodes_by <span class="op">=</span> <span class="st">"SampleID"</span>,</span>
+<span>                    size_nodes_by <span class="op">=</span> <span class="st">"UMIs"</span>,</span>
+<span>                    node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>We print the network graph plot with labels added for the largest two
 clusters:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/addClusterLabels.html">addClusterLabels</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">SampleID</span>, <span class="va">network</span>, top_n_clusters <span class="op">=</span> <span class="fl">2</span>, size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dual_chain_files/figure-html/unnamed-chunk-3-1.png" width="100%" style="display: block; margin: auto;"></p>
-<p>The list returned by <code>buildRepSeqNetwork</code> contains the
-following items:</p>
+<p>The list returned <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> the following
+items:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "igraph"           "adjacency_matrix" "adj_mat_a"        "adj_mat_b"       </span></span>
-<span><span class="co">#&gt; [5] "node_data"        "cluster_data"     "plots"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "details"          "igraph"           "adjacency_matrix" "adj_mat_a"       </span></span>
+<span><span class="co">#&gt; [5] "adj_mat_b"        "node_data"        "cluster_data"     "plots"</span></span></code></pre></div>
 <p>Notice that the list contains three adjacency matrices:
 <code>adjacency_matrix</code> corresponds to the network based on joint
 similarity in both chain sequences, while <code>adj_mat_a</code>
@@ -193,14 +184,14 @@ each of the alpha and beta chain sequences:</p>
 <span><span class="co">#&gt; 5   -1.00000000    0.6666667               0.3333333                  1.0000000</span></span>
 <span><span class="co">#&gt; 6           NaN    1.0000000               0.0000000                  0.0000000</span></span>
 <span><span class="co">#&gt;   eigen_centrality_index eigen_centrality_eigenvalue</span></span>
-<span><span class="co">#&gt; 1           6.385488e-01                    3.680389</span></span>
-<span><span class="co">#&gt; 2           6.131393e-01                    4.419380</span></span>
-<span><span class="co">#&gt; 3           5.291669e-01                    7.257172</span></span>
-<span><span class="co">#&gt; 4           6.107669e-01                    3.750958</span></span>
-<span><span class="co">#&gt; 5           5.857864e-01                    1.414214</span></span>
-<span><span class="co">#&gt; 6           4.440892e-16                    2.000000</span></span></code></pre></div>
-<p>The remainder of the output and customization follows the <a href="buildRepSeqNetwork.html">general case for the buildRepSeqNetwork
-function</a>.</p>
+<span><span class="co">#&gt; 1              0.6385488                    3.680389</span></span>
+<span><span class="co">#&gt; 2              0.6131393                    4.419380</span></span>
+<span><span class="co">#&gt; 3              0.5291669                    7.257172</span></span>
+<span><span class="co">#&gt; 4              0.6107669                    3.750958</span></span>
+<span><span class="co">#&gt; 5              0.5857864                    1.414214</span></span>
+<span><span class="co">#&gt; 6              0.0000000                    2.000000</span></span></code></pre></div>
+<p>The remainder of the output and customization follows the <a href="buildRepSeqNetwork.html">general case for
+<code>buildRepSeqNetwork()</code></a>.</p>
   </main>
 </div>
 

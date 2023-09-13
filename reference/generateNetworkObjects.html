@@ -12,7 +12,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,10 +29,13 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -67,10 +70,14 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generateNetworkObjects</span><span class="op">(</span><span class="va">data</span>, <span class="va">seq_col</span>,</span>
-<span>                       dist_type <span class="op">=</span> <span class="st">"hamming"</span>,</span>
-<span>                       dist_cutoff <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>                       drop_isolated_nodes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generateNetworkObjects</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">seq_col</span>,</span>
+<span>  dist_type <span class="op">=</span> <span class="st">"hamming"</span>,</span>
+<span>  dist_cutoff <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  drop_isolated_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -80,19 +87,23 @@
     and observations (e.g., clones or cells) indexed by row.</p></dd>
 
   <dt>seq_col</dt>
-<dd><p>Specifies the column of <code>data</code> containing the receptor sequences to be
-    used as the basis of similarity between rows. Accepts either the column name
-    or column index. Alternatively, a vector of length 2 specifying two columns
-    with distinct sequences (e.g., alpha chain and beta chain), in which case
-    similarity between rows depends on both types of sequences being similar
-    (e.g., similar alpha chain sequences and similar beta chain sequences).</p></dd>
+<dd><p>Specifies the column(s) of <code>data</code> containing
+    the receptor sequences to be used as the basis of similarity between rows.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+    Also accepts a vector of length 2 specifying distinct sequence columns
+    (e.g., alpha chain and beta chain), in which case
+    similarity between rows depends on similarity in both sequence columns
+    (see details).</p></dd>
 
   <dt>dist_type</dt>
 <dd><p>Specifies the function used to measure the similarity between sequences.
     The similarity between two sequences determines the pairwise distance between
     their respective nodes in the network graph. Valid options are <code>"hamming"</code>
-    (the default), which uses <code><a href="hamDistBounded.html">hamDistBounded</a></code>, and <code>"levenshtein"</code>,
-    which uses <code><a href="levDistBounded.html">levDistBounded</a></code>.</p></dd>
+    (the default), which
+    uses <code><a href="hamDistBounded.html">hamDistBounded()</a></code>,
+    and <code>"levenshtein"</code>, which uses
+    <code><a href="levDistBounded.html">levDistBounded()</a></code>.</p></dd>
 
   <dt>dist_cutoff</dt>
 <dd><p>A nonnegative scalar. Specifies the maximum pairwise distance (based on
@@ -109,6 +120,11 @@
 <dd><p>A logical scalar. When <code>TRUE</code>, removes each node that is not joined by
     an edge connection to any other node in the network graph.</p></dd>
 
+  <dt>verbose</dt>
+<dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to <code><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">stderr()</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -124,6 +140,14 @@ between nodes in the network graph. The more similar two sequences are, the
 shorter the distance between their respective nodes. Two nodes are joined by
 an edge if their receptor sequences are sufficiently similar, i.e., if the
 distance between the nodes is sufficiently small.</p>
+<p>For single-cell data, edge connections between nodes can be based on similarity
+in both the alpha chain and beta chain sequences.
+This is done by providing a vector of length 2 to <code>seq_cols</code>
+specifying the two sequence columns in <code>data</code>.
+The distance between two nodes is then the greater of the two distances between
+sequences in corresponding chains.
+Two nodes will be joined by an edge if their alpha chain sequences are sufficiently
+similar and their beta chain sequences are sufficiently similar.</p>
 <p>See the
 <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
 package vignette for more details. The vignette can be accessed offline using
@@ -170,15 +194,14 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">net</span> <span class="op">&lt;-</span></span></span>
 <span class="r-in"><span>  <span class="fu">generateNetworkObjects</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">toy_data</span>,</span></span>
 <span class="r-in"><span>    <span class="st">"CloneSeq"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 122 nodes (after removing isolated nodes).</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

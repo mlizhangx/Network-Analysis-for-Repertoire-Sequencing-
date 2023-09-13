@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,10 +27,13 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -86,7 +89,7 @@ number of character differences between characters in corresponding positions.
 That is, for each position in one string, the character in that position is checked
 to see whether it differs from the character in the same position of the other string.</p>
 <p>For two character strings of different lengths, the Hamming distance is not defined.
-However, the <code>hamDistBounded</code> function will accommodate strings of different
+However, <code>hamDistBounded()</code> will accommodate strings of different
 lengths, doing so in a conservative fashion that seeks to yield a meaningful result
 for the purpose of checking whether two strings are sufficiently similar. If the two
 strings differ in length, placeholder characters are appended to the shorter string
@@ -96,7 +99,7 @@ of the longer string. This is effectively the same as truncating the end of the
 longer string and adding the number of deleted characters to the Hamming distance
 between the shorter string and the truncated longer string (which is what is
 actually done in practice, as the computation is faster).</p>
-<p>The above method used by <code>hamDistBounded</code> to accommodate unequal string
+<p>The above method used by <code>hamDistBounded()</code> to accommodate unequal string
 lengths results in distance values whose meaning may be questionable, depending
 on context, when the two strings have different lengths. The decision to append
 placeholder characters to the end of the shorter string (as opposed to prepending
@@ -105,8 +108,9 @@ strings of different lengths to be considered sufficiently similar if the conten
 of the shorter string sufficiently matches the beginning content of the longer
 string and the difference in string length is not too great.</p>
 <p>For comparing sequences of different lengths, the Levenshtein distance (see
-<code><a href="levDistBounded.html">levDistBounded</a></code>) is more appropriate and meaningful than using
-<code>hamDistBounded</code>, but comes at the cost of greater computational burden.</p>
+<code><a href="levDistBounded.html">levDistBounded()</a></code>)
+is more appropriate and meaningful than using
+<code>hamDistBounded()</code>, but comes at the cost of greater computational burden.</p>
 <p>Computation is aborted early if the Hamming distance is determined to exceed
 the specified upper bound. This functionality is designed for cases when
 distinguishing between values above the upper bound is not meaningful, taking
@@ -133,7 +137,7 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="levDistBounded.html">levDistBounded</a></code></p></div>
+    <div class="dont-index"><p><code><a href="levDistBounded.html">levDistBounded()</a></code></p></div>
     </div>
 
     <div class="section level2">

@@ -14,7 +14,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,10 +31,13 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -71,12 +74,13 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">filterInputData</span><span class="op">(</span></span>
-<span>    <span class="va">data</span>,</span>
-<span>    <span class="va">seq_col</span>,</span>
-<span>    min_seq_length <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    subset_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    count_col <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">seq_col</span>,</span>
+<span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subset_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  count_col <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,10 +90,13 @@
 <dd><p>A data frame.</p></dd>
 
   <dt>seq_col</dt>
-<dd><p>Specifies the column of <code>data</code> containing the receptor sequences.
-    Accepts either the column name or column index. The column will be coerced
-    to a character vector. Data rows containing a value of <code>NA</code> in this
-    column will be dropped.</p></dd>
+<dd><p>Specifies the column(s) of <code>data</code> containing
+    the receptor sequences.
+    Accepts a character or numeric vector of length 1 or 2,
+      containing either column names or column indices.
+    Each column specified will be coerced
+    to a character vector. Data rows containing a value of <code>NA</code> in any
+    of the specified columns will be dropped.</p></dd>
 
   <dt>min_seq_length</dt>
 <dd><p>Observations whose receptor sequences have fewer than <code>min_seq_length</code>
@@ -98,21 +105,25 @@
   <dt>drop_matches</dt>
 <dd><p>Accepts a character string containing a regular expression
     (see <code><a href="https://rdrr.io/r/base/regex.html" class="external-link">regex</a></code>). Checks values in the receptor sequence
-    column for a pattern match using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></code>.
+    column for a pattern match using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>.
     Rows in which a match is found are dropped.</p></dd>
 
   <dt>subset_cols</dt>
 <dd><p>Specifies which columns of the AIRR-Seq data are included in the output.
-    Accepts a vector of column names or a vector of column indices. The default
+    Accepts a character vector of column names
+    or a numeric vector of column indices.
+    The default
     <code>NULL</code> includes all columns. The receptor sequence column is always
     included regardless of this argument's value.</p></dd>
 
   <dt>count_col</dt>
-<dd><p>Specifies the column of <code>data</code> containing a variable with counts (such
-    as clone count or UMI count). Accepts either the column name or column index.
-    If provided, the specified column of the data will be coerced to numeric and
-    data rows containing a value of <code>NA</code> or <code>NaN</code> in this column will
-    be dropped.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
+  Does nothing.</p></dd>
+
+  <dt>verbose</dt>
+<dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to <code><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">stderr()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -135,23 +146,132 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">raw_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Remove sequences shorter than 13 characters,</span></span></span>
 <span class="r-in"><span><span class="co"># as well as sequences containing the subsequence "GGGG".</span></span></span>
 <span class="r-in"><span><span class="co"># Keep variables for clone sequence, clone frequency and sample ID</span></span></span>
-<span class="r-in"><span><span class="va">filtered_data</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu">filterInputData</span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="va">raw_data</span>,</span></span>
-<span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
-<span class="r-in"><span>    min_seq_length <span class="op">=</span> <span class="fl">13</span>,</span></span>
-<span class="r-in"><span>    drop_matches <span class="op">=</span> <span class="st">"GGGG"</span>,</span></span>
-<span class="r-in"><span>    subset_cols <span class="op">=</span></span></span>
-<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneSeq"</span>, <span class="st">"CloneFrequency"</span>, <span class="st">"SampleID"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 200 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Removing sequences with length fewer than 13 characters... Done. 136 rows remaining.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Removing sequences containing matches to the expression 'GGGG'... Done. 105 rows remaining.</span>
+<span class="r-in"><span><span class="fu">filterInputData</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">raw_data</span>,</span></span>
+<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>  min_seq_length <span class="op">=</span> <span class="fl">13</span>,</span></span>
+<span class="r-in"><span>  drop_matches <span class="op">=</span> <span class="st">"GGGG"</span>,</span></span>
+<span class="r-in"><span>  subset_cols <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CloneSeq"</span>, <span class="st">"CloneFrequency"</span>, <span class="st">"SampleID"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Input data contains 200 rows.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing sequences with length fewer than 13 characters...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  Done. 136 rows remaining.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Removing sequences containing matches to “GGGG”...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  Done. 105 rows remaining.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          CloneSeq CloneFrequency SampleID</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   TTGAGGAAATTCG    0.007873775  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   GGAGATGAATCGG    0.007777102  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   GTCGGGTAATTGG    0.009094910  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   GCCGGGTAATTCG    0.010160859  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   GAAAGAGAATTCG    0.009336593  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   AGGTGGGAATTCG    0.010369470  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   GCGCAGCAATTGG    0.007939920  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9   AGGGACAAATTGG    0.008362229  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  GAGGAAGAATCGG    0.012432679  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14  GGTTAGGAATTCG    0.011582972  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16  CAAGGGAAATTCG    0.012557336  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19  TCGATGGAATTGG    0.014465359  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20  TAGAGAGAATCGG    0.011305673  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21  GGGAAAGAATTGG    0.010964773  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22  CGGAGAGAATCGG    0.011819567  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23  AAGGGATAATTGG    0.008166339  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26  GAGAATAAATTGC    0.008418198  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27  GGAATAGAATTGG    0.013554596  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29  GGAAAGAAATTGG    0.011921328  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30  GGGCGGGAATCGG    0.010537376  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37  GGGAGGGAATTGG    0.006339725  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38  GAGGCGGAATCGG    0.007074950  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39  AGTAGAGAATCGG    0.014307629  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42  GGGAAGGAATCGG    0.012397062  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45  GGGCGGGAATTGC    0.006779842  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46  TGGTCGGAATTGG    0.012854988  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47  GGGTGAAAATTGG    0.010926612  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48  ATGGGAGAATTCG    0.008573384  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50  GGGCGATAATTGG    0.009135615  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53  GGGTGGGAATTGG    0.013697062  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54  GAGACGGAATTGG    0.011175927  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56  AGCGGAGAATTGG    0.011249704  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57  GGAGCTGAATCGG    0.013335810  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64  TGAGGGAAATTGG    0.004574167  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66  GGATAGGAATCGG    0.006746770  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68  AGGTCGGAATTGG    0.008301173  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69  GTGAGGAAATTGG    0.012079058  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70  GTGTGGGAATCGG    0.005960664  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71  CGAGGGAAATTGG    0.010135419  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73  GTGGTGGAATTGG    0.008352053  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75  GGATAGGAATTCG    0.007827983  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76  AGTGGAGAATTGG    0.008003521  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79  AGGGTGAAATTCG    0.007204695  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82  GGAGGCGAATCGG    0.012758315  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84  TAGGGCCAATTGG    0.009295889  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 85  GAGAGCAAATCGG    0.009331505  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 87  AGGGAGGAATTGG    0.009099998  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 88  GGGAGATAATCGG    0.009171231  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90  AGAGGAGAATTGG    0.008303717  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 92  GAAGGGAAATTGG    0.012023090  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 93  GAGGCTGAATCGG    0.011318393  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 95  GGATGAGAATCGG    0.011381994  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 96  AGGAGGAAATTGG    0.008306261  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 98  GGAACGAAATTGG    0.009013501  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 99  GGAGGGAAATTGC    0.007718589  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100 AGAGCTGAATTGG    0.007046965  Sample1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 102 AAAATAAAATTGG    0.011245432  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104 AAAACAAAATTGG    0.009633772  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 106 AAGTAGGAATTGC    0.010566252  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 107 AAAAAAGAATTGC    0.012219664  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111 GGAGAGAAATTGC    0.012035952  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 113 TAAAGGAAATTGC    0.014154213  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 115 GGAAAAAAATTGG    0.013889778  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 117 CTGGCAAAATTGC    0.012369975  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 119 AAAAACTAATTGC    0.011498732  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 120 TGAAAAGAATTGG    0.007715925  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121 AAAAGAAAATTCG    0.009733979  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124 AAGATAAAATTGC    0.003908066  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 127 AGAAGAAAATTGC    0.006833548  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 128 GGAGGAAAATTCG    0.007493243  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 129 AAAAGAGAATTCG    0.007888503  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 130 AAAAGAGAATCGG    0.010104187  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 132 AGAGAAAAATCGG    0.005962306  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 134 AAAAATAAATTGC    0.005619932  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 136 AAGCAGAAATTGG    0.009703360  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 139 TAAAAAAAATTGC    0.008868303  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 140 CAGTAAAAATTCG    0.005539210  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 141 ACAGGACAATTGG    0.004926835  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 142 AGATAGAAATTCG    0.009060366  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146 AGGATGTAATCGG    0.014257203  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148 AAGGAAAAATTGC    0.014524421  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149 AAAAATAAATCGG    0.014911331  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 150 GAAAAAAAATTGC    0.012589873  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152 AGAAAAAAATCGG    0.007958091  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 153 AAAAAAAAATTGC    0.007571182  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 155 ACAAAAGAATTGC    0.012208530  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 156 GAAATAGAATTCG    0.012308737  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 160 AGAAAAGAATTGC    0.012266984  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 162 AGAGAAGAATTGG    0.010986564  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 163 GAAAAAGAATTCG    0.007799430  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 166 AAAATGGAATTCG    0.013664313  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 168 AAGAAGGAATTGG    0.005739624  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 169 AGAAGAAAATTCG    0.010374189  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172 AGAGCAAAATTGG    0.007610151  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 175 GAAATTAAATTGC    0.014028954  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 176 GGGTAAAAATTGC    0.006410453  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179 AAGAAGAAATTGG    0.013230083  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 181 AGAAGAAAATTGC    0.012854308  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 183 AAAAACAAATTGC    0.009338719  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 185 AAATAAAAATCGG    0.013355342  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 189 GAAGAACAATTGC    0.009104903  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 192 CAAAATAAATTCG    0.012854308  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 196 AAAAAGAAATTGC    0.011674094  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 197 AGAAGAAAATTGC    0.012768018  Sample2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 200 AAAAGAAAATTGC    0.010546767  Sample2</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

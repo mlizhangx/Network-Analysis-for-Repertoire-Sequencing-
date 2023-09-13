@@ -34,7 +34,7 @@
     
     <a class="navbar-brand me-2" href="index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,10 +52,13 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -85,14 +88,14 @@
 <div class="section level1">
 <div class="page-header"><h1 id="nair-network-analysis-of-immune-repertoire">NAIR: Network Analysis of Immune Repertoire<a class="anchor" aria-label="anchor" href="#nair-network-analysis-of-immune-repertoire"></a>
 </h1></div>
-<p>We introduce the <code>NAIR</code> package, a powerful tool for analyzing the adaptive immune repertoire using network analysis based on similarities among receptor sequences, which implements methods from the following paper:</p>
+<p><code>NAIR</code> is an R package for analyzing the adaptive immune repertoire using network analysis based on similarities among receptor sequences. It implements methods from the following paper:</p>
 <p><a href="https://www.frontiersin.org/articles/10.3389/fimmu.2023.1181825/full" class="external-link">Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023). NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, vol. 14. https://doi.org/10.3389/fimmu.2023.1181825</a></p>
-<p>Our immune repertoire analysis tool allows users to perform various network analysis tasks on AIRR-Seq data. This includes computing local and global network properties of nodes and clusters, which can provide insights into the structural organization of the immune repertoire network.</p>
-<p>In addition, our tool enables users to search across multiple AIRR-Seq samples for clones/clusters associated with subject characteristics, disease conditions or clinical outcomes, as well as identify public clones/clusters. This can help researchers identify potentially important TCR/BCR clones.</p>
-<p>To aid in visualization and interpretation of the immune repertoire network, our tool also allows for customized visualizations of the network. Furthermore, our tool enables users to perform further downstream analysis on the immune repertoire data, such as clustering analysis and differential abundance testing. These downstream analyses can provide additional insights into the immune response.</p>
-<div class="section level3">
-<h3 id="what-data-does-nair-support">What data does <code>NAIR</code> support?<a class="anchor" aria-label="anchor" href="#what-data-does-nair-support"></a>
-</h3>
+<p><code>NAIR</code> allows users to perform network analysis on Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data, including computing local and global network properties of nodes and clusters, which can provide insights into the structural organization of the immune repertoire network.</p>
+<p><code>NAIR</code> also enables users to search across multiple AIRR-Seq samples for clones/clusters associated with subject characteristics, disease conditions or clinical outcomes, as well as identify public clones/clusters. This can help researchers identify potentially important TCR/BCR clones.</p>
+<p>To aid in interpretation of the immune repertoire network, <code>NAIR</code> includes convenient functionality for generating customized network visualizations.</p>
+<div class="section level4">
+<h4 id="what-data-does-nair-support">What data does <code>NAIR</code> support?<a class="anchor" aria-label="anchor" href="#what-data-does-nair-support"></a>
+</h4>
 <p><code>NAIR</code> supports bulk and single-cell immune repertoire sequence data for T-cell or B-cell receptors (TCR or BCR).</p>
 <ul>
 <li>
@@ -101,9 +104,9 @@
 <strong>Bulk data:</strong> Each row is a distinct TCR/BCR clone (unique combination of V-D-J genes and nucleotide sequence) and typically includes a corresponding measurement of clonal abundance (e.g., clone count and clone frequency/fraction)</li>
 </ul>
 </div>
-<div class="section level3">
-<h3 id="how-does-nair-model-the-immune-repertoire-as-a-network">How does <code>NAIR</code> model the immune repertoire as a network?<a class="anchor" aria-label="anchor" href="#how-does-nair-model-the-immune-repertoire-as-a-network"></a>
-</h3>
+<div class="section level4">
+<h4 id="how-does-nair-model-the-immune-repertoire-as-a-network">How does <code>NAIR</code> model the immune repertoire as a network?<a class="anchor" aria-label="anchor" href="#how-does-nair-model-the-immune-repertoire-as-a-network"></a>
+</h4>
 <ul>
 <li>Each cell (single-cell data) or clone (bulk data) is modeled as a node (vertex) in the network</li>
 <li>For each node, we consider the corresponding receptor sequence (nucleotide or amino acid)</li>
@@ -119,7 +122,7 @@
 </ul>
 </li>
 <li>Network statistics characterize the repertoire in terms of the local and global structural properties of its graph</li>
-<li>Customized visual plots of the network graph are generated, with nodes colored according to desired meta-data (e.g., disease status, sample ID, cluster ID, clone count, etc.)</li>
+<li>Customized visual plots of the network graph are generated, with nodes colored according to desired metadata (e.g., disease status, sample, cluster, clonal abundance, etc.)</li>
 </ul>
 </div>
 </div>
@@ -127,9 +130,6 @@
 <h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h1>
 <!-- To install the latest release version of `NAIR`, use the following command: -->
-<!-- ```{r} -->
-<!-- install.packages("NAIR") -->
-<!-- ``` -->
 <p>To install the latest development version of <code>NAIR</code> from source (which requires compilation), use the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
@@ -142,49 +142,61 @@
 <div class="section level1">
 <h1 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h1>
-<p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/">The website for the <code>NAIR</code> package</a> contains articles to help users get started. All package documentation and vignettes can be found there.</p>
-<div class="section level2">
-<h2 id="the-buildrepseqnetwork-function">The <code>buildRepSeqNetwork</code> function<a class="anchor" aria-label="anchor" href="#the-buildrepseqnetwork-function"></a>
-</h2>
-<p>General network analysis on AIRR-Seq data is performed using <code><a href="reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>. This function does the following:</p>
+<div class="section level3">
+<h3 id="main-function">Main Function<a class="anchor" aria-label="anchor" href="#main-function"></a>
+</h3>
+<p>General network analysis on AIRR-Seq data is performed using <code><a href="reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> or its convenient alias <code><a href="reference/buildRepSeqNetwork.html">buildNet()</a></code>. This function does the following:</p>
 <ul>
-<li>Filters the input AIRR-Seq data according to user specifications</li>
+<li>Filters the AIRR-Seq data according to user specifications</li>
 <li>Builds the network graph for the immune repertoire</li>
 <li>Performs additional network analysis, which can include:
 <ul>
 <li>Cluster analysis</li>
-<li>Computation of network properties</li>
+<li>Network properties</li>
+<li>Customizable visual plots of the network graph</li>
 </ul>
 </li>
-<li>Generates customizable visual plots of the network graph</li>
-<li>Saves and returns the following output:
+<li>Returns (and optionally saves) the following output:
 <ul>
+<li>The network graph (as <code>igraph</code> and adjacency matrix)</li>
+<li>Metadata for the network</li>
 <li>Metadata for the nodes in the network</li>
 <li>Metadata for the clusters in the network</li>
-<li>The plots of the network graph</li>
-<li>The network graph itself, both as an adjacency matrix and as an <code>igraph</code> object</li>
+<li>Plots of the network graph</li>
 </ul>
 </li>
 </ul>
-<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html">this vignette</a> for a tutorial on the function’s usage and output.</p>
+<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html">this vignette</a> for a tutorial.</p>
 </div>
-<div class="section level2">
-<h2 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
-</h2>
-<p><code><a href="reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> accepts various arguments for customizing the network visualization. See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">this article</a> for an overview.</p>
+<div class="section level3">
+<h3 id="searching-for-associated-clusters">Searching for Associated Clusters<a class="anchor" aria-label="anchor" href="#searching-for-associated-clusters"></a>
+</h3>
+<p>Given multiple samples of bulk AIRR-Seq data, <code>NAIR</code> can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome. See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html">this article</a> for a tutorial.</p>
 </div>
-<div class="section level2">
-<h2 id="searching-for-associated-clusters">Searching for Associated Clusters<a class="anchor" aria-label="anchor" href="#searching-for-associated-clusters"></a>
-</h2>
-<p>Given multiple samples of AIRR-Seq data, the <code>NAIR</code> package can be used to search for TCR/BCR clusters associated with a binary variable of interest, such as a disease condition, treatment or clinical outcome.</p>
-<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html">this article</a> for a detailed tutorial.</p>
+<div class="section level3">
+<h3 id="searching-for-public-clusters">Searching for Public Clusters<a class="anchor" aria-label="anchor" href="#searching-for-public-clusters"></a>
+</h3>
+<p>The <code>NAIR</code> package includes a set of functions that facilitate searching for public TCR/BCR clusters across multiple samples of bulk AIRR-seq data. In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual). See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">this article</a> for a tutorial.</p>
 </div>
-<div class="section level2">
-<h2 id="searching-for-public-clusters">Searching for Public Clusters<a class="anchor" aria-label="anchor" href="#searching-for-public-clusters"></a>
-</h2>
-<p>The <code>NAIR</code> package includes a set of functions that facilitate searching for public TCR/BCR clusters across multiple samples of AIRR-seq data.</p>
-<p>In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual).</p>
-<p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html">this article</a> for a detailed tutorial.</p>
+</div>
+<div class="section level1">
+<h1 id="additional-resources">Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"></a>
+</h1>
+<div class="section level3">
+<h3 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
+</h3>
+<p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">This article</a> provides an introduction to the creation and customization of network visualizations using <code>NAIR</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="network-properties-and-cluster-analysis">Network Properties and Cluster Analysis<a class="anchor" aria-label="anchor" href="#network-properties-and-cluster-analysis"></a>
+</h3>
+<p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/node_properties.html">This vignette</a> provides an introduction to computing node-level network properties with <code>NAIR</code>.</p>
+<p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis.html">This vignette</a> explains how to perform cluster analysis with <code>NAIR</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="supplementary-functions">Supplementary Functions<a class="anchor" aria-label="anchor" href="#supplementary-functions"></a>
+</h3>
+<p><a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/supplementary.html">This vignette</a> provides an overview of <code>NAIR</code> utility functions that supplement the main function <code><a href="reference/buildRepSeqNetwork.html">buildNet()</a></code>.</p>
 </div>
 </div>
 

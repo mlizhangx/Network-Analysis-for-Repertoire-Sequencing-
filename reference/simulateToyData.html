@@ -16,7 +16,7 @@ data."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,10 +33,13 @@ data."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -74,30 +77,29 @@ data.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">simulateToyData</span><span class="op">(</span></span>
-<span>    samples <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    chains <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    sample_size <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>    prefix_length <span class="op">=</span> <span class="fl">7</span>,</span>
-<span>    prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G"</span>, <span class="st">"A"</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
-<span>    prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>      <span class="st">"sample1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>      <span class="st">"sample2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">12</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    affixes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AATTGG"</span>, <span class="st">"AATCGG"</span>, <span class="st">"AATTCG"</span>,</span>
-<span>                <span class="st">"AATTGC"</span>, <span class="st">"AATTG"</span>, <span class="st">"AATTC"</span><span class="op">)</span>,</span>
-<span>    affix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>      <span class="st">"sample1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>      <span class="st">"sample2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2.5</span>, <span class="fl">2.5</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    num_edits <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>    edit_pos_probs <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">seq_length</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">4</span>, length.out <span class="op">=</span> <span class="va">seq_length</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">}</span>,</span>
-<span>    edit_ops <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"insertion"</span>, <span class="st">"deletion"</span>, <span class="st">"transmutation"</span><span class="op">)</span>,</span>
-<span>    edit_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>,</span>
-<span>    new_chars <span class="op">=</span> <span class="va">prefix_chars</span>,</span>
-<span>    new_probs <span class="op">=</span> <span class="va">prefix_probs</span>,</span>
-<span>    output_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    no_return <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    seed_value <span class="op">=</span> <span class="fl">42</span></span>
+<span>  samples <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  chains <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  sample_size <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  prefix_length <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>  prefix_chars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"G"</span>, <span class="st">"A"</span>, <span class="st">"T"</span>, <span class="st">"C"</span><span class="op">)</span>,</span>
+<span>  prefix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span>    <span class="st">"sample1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    <span class="st">"sample2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">12</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  affixes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AATTGG"</span>, <span class="st">"AATCGG"</span>, <span class="st">"AATTCG"</span>,</span>
+<span>              <span class="st">"AATTGC"</span>, <span class="st">"AATTG"</span>, <span class="st">"AATTC"</span><span class="op">)</span>,</span>
+<span>  affix_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span>    <span class="st">"sample1"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    <span class="st">"sample2"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2.5</span>, <span class="fl">2.5</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  num_edits <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  edit_pos_probs <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">seq_length</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">4</span>, <span class="fl">4</span>, length.out <span class="op">=</span> <span class="va">seq_length</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span>,</span>
+<span>  edit_ops <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"insertion"</span>, <span class="st">"deletion"</span>, <span class="st">"transmutation"</span><span class="op">)</span>,</span>
+<span>  edit_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  new_chars <span class="op">=</span> <span class="va">prefix_chars</span>,</span>
+<span>  new_probs <span class="op">=</span> <span class="va">prefix_probs</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  no_return <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -179,9 +181,6 @@ data.</p>
     generated data. If <code>TRUE</code>, the function will instead return <code>TRUE</code>
     once all processes are complete.</p></dd>
 
-  <dt>seed_value</dt>
-<dd><p>Passed to <code>set_seed</code> at the start of function execution.</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -197,7 +196,7 @@ data.</p>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>If <code>no_return = FALSE</code> (the default), A data frame whose contents depend
+<p>If <code>no_return = FALSE</code> (the default), a <code>data.frame</code> whose contents depend
     on the value of the <code>chains</code> argument.</p>
 
 
@@ -233,7 +232,7 @@ data.</p>
 <dd><p>The sample ID for each observation.</p></dd>
 
 
-</dl><p>If <code>no_return = FALSE</code>, the function returns <code>TRUE</code> upon completion.</p>
+</dl><p>If <code>no_return = TRUE</code>, the function returns <code>TRUE</code> upon completion.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -242,7 +241,9 @@ data.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Bulk data from two samples</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Bulk data from two samples</span></span></span>
 <span class="r-in"><span><span class="va">dat1</span> <span class="op">&lt;-</span> <span class="fu">simulateToyData</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Single-cell data with alpha and beta chain sequences</span></span></span>
@@ -251,7 +252,6 @@ data.</p>
 <span class="r-in"><span><span class="co"># Write data to file, return nothing</span></span></span>
 <span class="r-in"><span><span class="fu">simulateToyData</span><span class="op">(</span>sample_size <span class="op">=</span> <span class="fl">500</span>,</span></span>
 <span class="r-in"><span>                num_edits <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>                seed_value <span class="op">=</span> <span class="fl">1</span>,</span></span>
 <span class="r-in"><span>                no_return <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>                output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
@@ -331,11 +331,13 @@ data.</p>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># \dontshow{</span></span></span>
 <span class="r-in"><span><span class="co"># clean up temp directory</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="st">".rds"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE TRUE</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

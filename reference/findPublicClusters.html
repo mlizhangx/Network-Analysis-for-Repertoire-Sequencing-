@@ -20,7 +20,7 @@ count and aggregate clone count."><!-- mathjax --><script src="https://cdnjs.clo
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9044</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,10 +37,13 @@ count and aggregate clone count."><!-- mathjax --><script src="https://cdnjs.clo
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
-    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork</a>
-    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/buildRepSeqNetwork.html">buildRepSeqNetwork()/buildNet()</a>
+    <a class="dropdown-item" href="../articles/node_properties.html">Node-Level Network Properties</a>
+    <a class="dropdown-item" href="../articles/cluster_analysis.html">Cluster Analysis</a>
     <a class="dropdown-item" href="../articles/network_visualization.html">Network Visualization</a>
+    <a class="dropdown-item" href="../articles/supplementary.html">Supplementary Functions</a>
+    <a class="dropdown-item" href="../articles/dual_chain.html">Dual-Chain Network Analysis</a>
+    <a class="dropdown-item" href="../articles/associated_clusters.html">Searching for Associated TCR/BCR Clusters</a>
     <a class="dropdown-item" href="../articles/public_clusters.html">Searching for Public TCR/BCR Clusters</a>
   </div>
 </li>
@@ -85,7 +88,7 @@ count and aggregate clone count.</p>
 <span>  <span class="va">file_list</span>,</span>
 <span>  <span class="va">input_type</span>,</span>
 <span>  data_symbols <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  header <span class="op">=</span> <span class="cn">TRUE</span>, sep <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  <span class="va">header</span>, <span class="va">sep</span>, <span class="va">read.args</span>,</span>
 <span>  sample_ids <span class="op">=</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Sample"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">file_list</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">seq_col</span>,</span>
@@ -105,13 +108,14 @@ count and aggregate clone count.</p>
 <span>  color_nodes_by <span class="op">=</span> <span class="st">"cluster_id"</span>,</span>
 <span></span>
 <span>  <span class="co">## Output ##</span></span>
-<span>  output_dir <span class="op">=</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"public_clusters"</span><span class="op">)</span>,</span>
+<span>  <span class="va">output_dir</span>,</span>
 <span>  output_type <span class="op">=</span> <span class="st">"rds"</span>,</span>
 <span></span>
 <span>  <span class="co">## Optional Output ##</span></span>
 <span>  output_dir_unfiltered <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  output_type_unfiltered <span class="op">=</span> <span class="st">"rds"</span>,</span>
+<span></span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span></span>
 <span>  <span class="va">...</span></span>
 <span></span>
@@ -121,26 +125,43 @@ count and aggregate clone count.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>file_list</dt>
-<dd><p>A vector of file paths where each file contains the data for a sample, with
-  observations indexed by row. Passed to <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+<dd><p>A character vector of file paths, or a list containing
+  <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">connections</a></code> and file paths.
+  Each element corresponds to a single file containing the data
+  for a single sample.
+  Passed to <code><a href="combineSamples.html">loadDataFromFileList()</a></code>.</p></dd>
 
   <dt>input_type</dt>
 <dd><p>A character string specifying the file format of the sample data files. Options
   are <code>"table"</code>, <code>"txt"</code>, <code>"tsv"</code>, <code>"csv"</code>, <code>"rds"</code> and
-  <code>"rda"</code>. Passed to <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+  <code>"rda"</code>. Passed to <code><a href="combineSamples.html">loadDataFromFileList()</a></code>.</p></dd>
 
   <dt>data_symbols</dt>
 <dd><p>Used when <code>input_type = "rda"</code>. Specifies the name of each sample's data
   frame within its respective Rdata file.
-  Passed to <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+  Passed to <code><a href="combineSamples.html">loadDataFromFileList()</a></code>.</p></dd>
 
   <dt>header</dt>
-<dd><p>Used for certain values of <code>input_type</code>.
-  Passed to <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+<dd><p>For values of <code>input_type</code> other than <code>"rds"</code> and <code>"rda"</code>,
+    this argument can be used to specify a non-default value of the <code>header</code>
+    argument to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>,
+    <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>, etc.</p></dd>
 
   <dt>sep</dt>
-<dd><p>Used for certain values of <code>input_type</code>.
-  Passed to <code><a href="combineSamples.html">loadDataFromFileList</a></code>.</p></dd>
+<dd><p>For values of <code>input_type</code> other than <code>"rds"</code> and <code>"rda"</code>,
+    this argument can be used to specify a non-default value of the <code>sep</code>
+    argument to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>,
+    <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>, etc.</p></dd>
+
+  <dt>read.args</dt>
+<dd><p>For values of <code>input_type</code> other than <code>"rds"</code> and <code>"rda"</code>,
+    this argument can be used to specify non-default values of optional
+    arguments to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>,
+    <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>, etc.
+    Accepts a named list of argument values.
+    Values of <code>header</code> and <code>sep</code>
+    in this list take precedence over values specified via the <code>header</code>
+    and <code>sep</code> arguments.</p></dd>
 
   <dt>sample_ids</dt>
 <dd><p>A character or numeric vector of sample IDs, whose length matches that of
@@ -149,23 +170,30 @@ count and aggregate clone count.</p>
 
   <dt>seq_col</dt>
 <dd><p>Specifies the column of each sample's data frame containing the TCR/BCR
-    sequences. Accepts either the column name or column index.</p></dd>
+    sequences.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.</p></dd>
 
   <dt>count_col</dt>
 <dd><p>Specifies the column of each sample's data frame containing the clone count
-    (measure of clonal abundance). Accepts either the column name or column index.
+    (measure of clonal abundance).
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
     If <code>NULL</code>, the clusters in each sample's network will be selected solely
     based upon node count.</p></dd>
 
   <dt>min_seq_length</dt>
-<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> when constructing the network for
+<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+  when constructing the network for
   each sample.</p></dd>
 
   <dt>drop_matches</dt>
-<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> when constructing the network for
+<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+  when constructing the network for
   each sample. Accepts a character string containing a regular expression
   (see <code><a href="https://rdrr.io/r/base/regex.html" class="external-link">regex</a></code>).
-  Checks TCR/BCR sequences for a pattern match. Those returning a match are dropped.
+  Checks TCR/BCR sequences for a pattern match using <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code>.
+  Those returning a match are dropped.
   By default, sequences containing any of the characters <code>*</code>, <code>|</code>
   or <code>_</code> are dropped.</p></dd>
 
@@ -183,20 +211,20 @@ count and aggregate clone count.</p>
     and does not select additional clusters based on clone count.</p></dd>
 
   <dt>plots</dt>
-<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> when constructing the network for
-  each sample.</p></dd>
+<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+  when constructing the network for each sample.</p></dd>
 
   <dt>print_plots</dt>
-<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> when constructing the network for
-  each sample.</p></dd>
+<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+  when constructing the network for each sample.</p></dd>
 
   <dt>plot_title</dt>
-<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> when constructing the network for
-  each sample.</p></dd>
+<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+  when constructing the network for each sample.</p></dd>
 
   <dt>color_nodes_by</dt>
-<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> when constructing the network for
-  each sample.</p></dd>
+<dd><p>Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+  when constructing the network for each sample.</p></dd>
 
   <dt>output_dir</dt>
 <dd><p>The file path of the directory for saving the output. The directory will be
@@ -213,41 +241,56 @@ count and aggregate clone count.</p>
   <dt>output_type_unfiltered</dt>
 <dd><p>A character string specifying the file format to use for saving the unfiltered
     network data for each sample. Only applicable if <code>output_dir_unfiltered</code>
-    is non-null. Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></code> when constructing the
-    network for each sample.</p></dd>
+    is non-null. Passed to <code><a href="buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>
+    when constructing the network for each sample.</p></dd>
+
+  <dt>verbose</dt>
+<dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to <code><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">stderr()</a></code>.</p></dd>
 
   <dt>...</dt>
 <dd><p>Other arguments to <code>buildRepSeqNetwork</code> when constructing the network
-    for each sample, not including <code>node_stats</code>, <code>stats_to_include</code> or
-    <code>cluster_stats</code> (see details).</p></dd>
+    for each sample, not including <code>node_stats</code>, <code>stats_to_include</code>,
+    <code>cluster_stats</code>, <code>cluster_id_name</code> or <code>output_name</code>
+    (see details).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>All node-level and cluster-level network properties are automatically computed for
-each sample's network. The node-level properties are renamed to reflect their
-correspondence to the sample-level network. Specifically, the properties are named
-<code>ClusterIDInSample</code>, <code>SampleLevelNetworkDegree</code>,
-<code>SampleLevelTransitivity</code>, <code>SampleLevelCloseness</code>,
-<code>SampleLevelCentralityByCloseness</code>, <code>SampleLevelCentralityByEigen</code>,
-<code>SampleLevelEigenCentrality</code>, <code>SampleLevelBetweenness</code>,
-<code>SampleLevelCentralityByBetweenness</code>, <code>SampleLevelAuthorityScore</code>,
-<code>SampleLevelCoreness</code>, <code>SampleLevelPageRank</code>. A variable <code>SampleID</code>
+    <p>Each sample's network is constructed using an individual call to
+<code><a href="buildRepSeqNetwork.html">buildNet()</a></code> with
+<code>node_stats = TRUE</code>, <code>stats_to_include = "all"</code>,
+<code>cluster_stats = TRUE</code> and <code>cluster_id_name = "ClusterIDInSample"</code>.
+The node-level properties are renamed to reflect their
+correspondence to the sample-level network. Specifically, the properties are named:</p>
+<ul><li><p><code>SampleLevelNetworkDegree</code></p></li>
+<li><p><code>SampleLevelTransitivity</code></p></li>
+<li><p><code>SampleLevelCloseness</code></p></li>
+<li><p><code>SampleLevelCentralityByCloseness</code></p></li>
+<li><p><code>SampleLevelCentralityByEigen</code></p></li>
+<li><p><code>SampleLevelEigenCentrality</code></p></li>
+<li><p><code>SampleLevelBetweenness</code></p></li>
+<li><p><code>SampleLevelCentralityByBetweenness</code></p></li>
+<li><p><code>SampleLevelAuthorityScore</code></p></li>
+<li><p><code>SampleLevelCoreness</code></p></li>
+<li><p><code>SampleLevelPageRank</code></p></li>
+</ul><p>A variable <code>SampleID</code>
 is added to both the node-level and cluster-level meta data for each sample.</p>
 <p>After the clusters in each sample are filtered, the node-level and cluster-level
 metadata are saved in the respective subdirectories <code>node_meta_data</code> and
-<code>cluster_meta_data</code> of the output directory specified by <code>output_dir</code>;
-each is saved using the sample ID (the corresponding element of
-<code>sample_id_list</code>) as a filename prefix, followed by the appropriate file
-extension based on <code>output_type</code>.</p>
+<code>cluster_meta_data</code> of the output directory specified by <code>output_dir</code>.</p>
 <p>The unfiltered network results for each sample can also be saved by supplying a
 directory to <code>output_dir_unfiltered</code>, if these results are desired for
-downstream analysis.</p>
+downstream analysis. Each sample's unfiltered network results will then be saved
+to its own subdirectory created within this directory.</p>
 <p>The files containing the node-level metadata for the filtered clusters can be
-supplied to <code><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork</a></code> in order to construct a global
+supplied to <code><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork()</a></code>
+in order to construct a global
 network of public clusters. If the full global network is too large to practically
 construct, the files containing the cluster-level meta data for the filtered
-clusters can be supplied to <code><a href="buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative</a></code>
+clusters can be supplied to
+<code><a href="buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative()</a></code>
 to build a global network using only a single representative sequence from each
 cluster. This allows prominent public clusters to still be identified.</p>
 <p>See the
@@ -274,13 +317,14 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork</a></code></p>
-<p><code><a href="buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative</a></code></p></div>
+    <div class="dont-index"><p><code><a href="buildPublicClusterNetwork.html">buildPublicClusterNetwork()</a></code></p>
+<p><code><a href="buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Simulate 30 samples with a mix of public/private sequences ##</span></span></span>
 <span class="r-in"><span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fl">30</span></span></span>
 <span class="r-in"><span><span class="va">sample_size</span> <span class="op">&lt;-</span> <span class="fl">30</span> <span class="co"># (seqs per sample)</span></span></span>
@@ -330,340 +374,8 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span>  min_clone_count <span class="op">=</span> <span class="fl">15000</span>,</span></span>
 <span class="r-in"><span>  output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;&lt;&lt; Beginning search for public clusters &gt;&gt;&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 1 of 30: Sample1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 30 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 7 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (18 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 2 of 30: Sample2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 6 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (22 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 3 of 30: Sample3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 29 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 6 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (20 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 4 of 30: Sample4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 6 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (18 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 5 of 30: Sample5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 27 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 6 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (22 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 6 of 30: Sample6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 29 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 9 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (15 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 7 of 30: Sample7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (13 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 8 of 30: Sample8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 9 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (12 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 9 of 30: Sample9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (13 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 10 of 30: Sample10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 9 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (15 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 11 of 30: Sample11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (18 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 12 of 30: Sample12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 29 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 10 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (12 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 13 of 30: Sample13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 27 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (18 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 14 of 30: Sample14</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 7 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (17 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 15 of 30: Sample15</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 29 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (14 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 16 of 30: Sample16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 6 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (21 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 17 of 30: Sample17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 29 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 7 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (22 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 18 of 30: Sample18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 9 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (14 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 19 of 30: Sample19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (17 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 20 of 30: Sample20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (15 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 21 of 30: Sample21</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (19 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 22 of 30: Sample22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (16 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 23 of 30: Sample23</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 27 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 7 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (19 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 24 of 30: Sample24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 27 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 8 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (18 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 25 of 30: Sample25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 9 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (17 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 26 of 30: Sample26</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 7 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (17 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 27 of 30: Sample27</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 25 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 5 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (18 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 28 of 30: Sample28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 26 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 7 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (16 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 29 of 30: Sample29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 29 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 7 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 4 clusters (22 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Processing sample 30 of 30: Sample30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Input data contains 30 rows.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing network edges based on a max hamming distance of 1... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Network contains 28 nodes (after removing isolated nodes).</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing cluster membership within the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing node-level network statistics... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Computing statistics for the 6 clusters in the network... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &gt;&gt;&gt; Filtering clusters in the current sample... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> * 3 clusters (19 nodes) remain. Saving results... Done.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ----------------------------------------------------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> All samples complete. Filtered data is located in the following directory:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   /tmp/RtmplEN3mL</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># \dontshow{</span></span></span>
 <span class="r-in"><span><span class="co"># Clean up temporary files</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.remove</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
@@ -676,6 +388,7 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"node_meta_data"</span>, <span class="st">"cluster_meta_data"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  recursive <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
