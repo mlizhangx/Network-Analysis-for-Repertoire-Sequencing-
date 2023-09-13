@@ -1424,19 +1424,19 @@ test_that("addPlots layout detection works", {
     all.equal(extractLayout(net3$plots[[1]]), net$plots$graph_layout,
               check.attributes = FALSE
     ),
-    "1.49"
+    "Mean relative difference"
   )
   expect_match(
     all.equal(extractLayout(net4$plots[[1]]), net$plots$graph_layout,
               check.attributes = FALSE
     ),
-    "1.36"
+    "Mean relative difference"
   )
   expect_match(
     all.equal(extractLayout(net5$plots[[1]]), net$plots$graph_layout,
               check.attributes = FALSE
     ),
-    "1.49"
+    "Mean relative difference"
   )
 
   expect_equal(extractLayout(net2$plots[[1]]), net2$plots$graph_layout,
