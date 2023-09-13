@@ -12,16 +12,16 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // hamAdjacencyMatSparse
-arma::sp_umat hamAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist, bool drop_deg_zero, std::string temp_dir);
-RcppExport SEXP _NAIR_hamAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP, SEXP drop_deg_zeroSEXP, SEXP temp_dirSEXP) {
+arma::sp_umat hamAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist, bool drop_deg_zero, std::string tempfile);
+RcppExport SEXP _NAIR_hamAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP, SEXP drop_deg_zeroSEXP, SEXP tempfileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string> >::type strings(stringsSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxdist(maxdistSEXP);
     Rcpp::traits::input_parameter< bool >::type drop_deg_zero(drop_deg_zeroSEXP);
-    Rcpp::traits::input_parameter< std::string >::type temp_dir(temp_dirSEXP);
-    rcpp_result_gen = Rcpp::wrap(hamAdjacencyMatSparse(strings, maxdist, drop_deg_zero, temp_dir));
+    Rcpp::traits::input_parameter< std::string >::type tempfile(tempfileSEXP);
+    rcpp_result_gen = Rcpp::wrap(hamAdjacencyMatSparse(strings, maxdist, drop_deg_zero, tempfile));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -39,16 +39,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // levAdjacencyMatSparse
-arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist, bool drop_deg_zero, std::string temp_dir);
-RcppExport SEXP _NAIR_levAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP, SEXP drop_deg_zeroSEXP, SEXP temp_dirSEXP) {
+arma::sp_umat levAdjacencyMatSparse(std::vector<std::string> strings, const int& maxdist, bool drop_deg_zero, std::string tempfile);
+RcppExport SEXP _NAIR_levAdjacencyMatSparse(SEXP stringsSEXP, SEXP maxdistSEXP, SEXP drop_deg_zeroSEXP, SEXP tempfileSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string> >::type strings(stringsSEXP);
     Rcpp::traits::input_parameter< const int& >::type maxdist(maxdistSEXP);
     Rcpp::traits::input_parameter< bool >::type drop_deg_zero(drop_deg_zeroSEXP);
-    Rcpp::traits::input_parameter< std::string >::type temp_dir(temp_dirSEXP);
-    rcpp_result_gen = Rcpp::wrap(levAdjacencyMatSparse(strings, maxdist, drop_deg_zero, temp_dir));
+    Rcpp::traits::input_parameter< std::string >::type tempfile(tempfileSEXP);
+    rcpp_result_gen = Rcpp::wrap(levAdjacencyMatSparse(strings, maxdist, drop_deg_zero, tempfile));
     return rcpp_result_gen;
 END_RCPP
 }

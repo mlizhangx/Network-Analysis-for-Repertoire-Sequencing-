@@ -1,4 +1,5 @@
-\name{sparseAdjacencyMatFromSeqs}
+\name{generateAdjacencyMatrix}
+\alias{generateAdjacencyMatrix}
 \alias{sparseAdjacencyMatFromSeqs}
 \title{
 Compute Graph Adjacency Matrix for Immune Repertoire Network
@@ -6,13 +7,27 @@ Compute Graph Adjacency Matrix for Immune Repertoire Network
 \description{
 Given a list of receptor sequences, computes the adjacency matrix for the
 network graph based on sequence similarity.
+
+\code{sparseAdjacencyMatFromSeqs()} is a deprecated equivalent of
+\code{generateAdjacencyMatrix()}.
 }
 \usage{
+generateAdjacencyMatrix(
+  seqs,
+  dist_type = "hamming",
+  dist_cutoff = 1,
+  drop_isolated_nodes = TRUE,
+  verbose = FALSE
+)
+
+# Deprecated equivalent:
 sparseAdjacencyMatFromSeqs(
-    seqs,
-    dist_type = "hamming",
-    max_dist = 1,
-    drop_isolated_nodes = TRUE
+  seqs,
+  dist_type = "hamming",
+  dist_cutoff = 1,
+  drop_isolated_nodes = TRUE,
+  verbose = FALSE,
+  max_dist = deprecated()
 )
 }
 \arguments{
@@ -27,7 +42,7 @@ shorter distance. Valid options are \code{"hamming"} (the default), which uses
 \code{\link{hamDistBounded}}, and \code{"levenshtein"}, which uses
 \code{\link{levDistBounded}}.
 }
-  \item{max_dist}{
+  \item{dist_cutoff}{
 A nonnegative scalar. Specifies the maximum pairwise distance (based on
 \code{dist_type}) for an edge connection to exist between two nodes. Pairs of
 nodes whose distance is less than or equal to this value will be joined by an
@@ -38,9 +53,18 @@ respective nodes to be joined by an edge connection. A value of \code{0} require
 two sequences to be identical in order for their nodes to be joined by an edge.
 }
   \item{drop_isolated_nodes}{
-A logical scalar. When \code{TRUE}, removes each node that is not joined by an
+Logical. When \code{TRUE}, removes each node that is not joined by an
 edge connection to any other node in the network graph.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link{stderr}}.
+  }
+  \item{max_dist}{
+      \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+      Equivalent to \code{dist_cutoff}.
+  }
 }
 \details{
 The adjacency matrix of a graph with \eqn{n} nodes is the symmetric
@@ -80,42 +104,42 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-sparseAdjacencyMatFromSeqs(
+generateAdjacencyMatrix(
   c("fee", "fie", "foe", "fum", "foo")
 )
 
 # No edge connections exist based on a Hamming distance of 1
 # (returns a 0x0 sparse matrix)
-sparseAdjacencyMatFromSeqs(
+generateAdjacencyMatrix(
   c("foo", "foobar", "fubar", "bar"),
 )
 
 # Same as the above example, but keeping all nodes
 # (returns a 4x4 sparse matrix)
-sparseAdjacencyMatFromSeqs(
+generateAdjacencyMatrix(
   c("foo", "foobar", "fubar", "bar"),
   drop_isolated_nodes = FALSE
 )
 
 # Relaxing the edge criteria using a Hamming distance of 2
 # (still results in no edge connections)
-sparseAdjacencyMatFromSeqs(
+generateAdjacencyMatrix(
   c("foo", "foobar", "fubar", "bar"),
-  max_dist = 2
+  dist_cutoff = 2
 )
 
 # Using a Levenshtein distance of 2, however,
 # does result in edge connections
-sparseAdjacencyMatFromSeqs(
+generateAdjacencyMatrix(
   c("foo", "foobar", "fubar", "bar"),
   dist_type = "levenshtein",
-  max_dist = 2
+  dist_cutoff = 2
 )
 
 # Using a Hamming distance of 3
 # also results in (different) edge connections
-sparseAdjacencyMatFromSeqs(
+generateAdjacencyMatrix(
   c("foo", "foobar", "fubar", "bar"),
-  max_dist = 3
+  dist_cutoff = 3
 )
 }

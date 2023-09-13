@@ -1,37 +1,309 @@
 library(NAIR)
 
-test_that(".nonNull works correctly", {
+
+# Generate data -----------------------------------------------------------
+
+
+
+set.seed(42)
+dat <- simulateToyData()
+suppressWarnings(
+  net <- buildRepSeqNetwork(dat, "CloneSeq", cluster_stats = TRUE)
+)
+
+suppressWarnings(
+  net0 <- buildRepSeqNetwork(dat, "CloneSeq", drop_isolated_nodes = FALSE)
+)
+net1 <- net2 <- net0
+net1$plots$graph_layout <- NULL
+net2$plots$graph_layout <- net$plots$graph_layout
+
+
+# Generic Checks ----------------------------------------------------------
+
+
+test_that(".orNull works correctly", {
   expect_error(
-    .nonNull(NULL, "argument"),
-    "argument is required but value is NULL"
+    .orNull(.noNAs, NA, "argument"),
+    "must not contain NA or NaN values"
   )
-  expect_null(.nonNull(3, "argument"))
-  expect_null(.nonNull("foo", "argument"))
-  expect_null(.nonNull(NA, "argument"))
-  expect_null(.nonNull(logical(0), "argument"))
-  expect_null(.nonNull(numeric(0), "argument"))
-  expect_null(.nonNull(character(0), "argument"))
-  expect_null(.nonNull(NaN, "argument"))
-  expect_null(.nonNull(Inf, "argument"))
-  expect_null(.nonNull(TRUE, "argument"))
+  expect_error(
+    .orNull(.MUST.hasLength1, 1:3, "argument"),
+    "must have length 1"
+  )
+  expect_error(
+    .orNull(.MUST.isNumeric, "foo", "argument"),
+    paste("must be of type", dQuote("numeric"))
+  )
+  expect_error(
+    .orNull(.MUST.isNumeric, "foo", "argument"),
+    paste("must be of type", dQuote("numeric"))
+  )
+  expect_true(.orNull(.noNAs, NULL))
+  expect_true(.orNull(.MUST.hasLength1, NULL))
+  expect_true(.orNull(.MUST.isNumeric, NULL))
 })
+
+
+# Universal Properties ----------------------------------------------------
+
+test_that(".MUST.hasLength works correctly", {
+  expect_error(
+    .MUST.hasLength(NULL, 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(logical(0), 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(numeric(0), 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(character(0), 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(diag(2), 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(1:3, 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(3, 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength("foo", 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(NA, 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(NaN, 2),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength(Inf, 2),
+    "must have length 2"
+  )
+  expect_null(.MUST.hasLength(c("fee", "fie"), 2))
+  expect_null(.MUST.hasLength(c(23, NaN), 2))
+  expect_null(.MUST.hasLength(c(TRUE, FALSE), 2))
+  expect_null(.MUST.hasLength(numeric(2), 2))
+  expect_error(
+    .MUST.hasLength(NULL, 1),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength(logical(0), 1),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength(numeric(0), 1),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength(character(0), 1),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength(c("fee", "fie"), 1),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength(diag(2), 1),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength(1:3, 1),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength(1:3, c(1, 2)),
+    "must have one of the following lengths: 1, 2"
+  )
+  expect_null(.MUST.hasLength(3, 1))
+  expect_null(.MUST.hasLength(3, c(1, 2)))
+  expect_null(.MUST.hasLength(3:4, c(1, 2)))
+  expect_null(.MUST.hasLength("foo", 1))
+  expect_null(.MUST.hasLength(NA, 1))
+  expect_null(.MUST.hasLength(NaN, 1))
+  expect_null(.MUST.hasLength(Inf, 1))
+  expect_error(
+    .MUST.hasLength(1:4, 3),
+    "must have length 3"
+  )
+  expect_null(.MUST.hasLength(1:3, 3))
+})
+
+test_that(".MUST.hasPosLength works correctly", {
+  expect_error(
+    .MUST.hasPosLength(NULL, "argument"),
+    "must have positive length"
+  )
+  expect_error(
+    .MUST.hasPosLength(logical(0), "argument"),
+    "must have positive length"
+  )
+  expect_error(
+    .MUST.hasPosLength(numeric(0), "argument"),
+    "must have positive length"
+  )
+  expect_error(
+    .MUST.hasPosLength(character(0), "argument"),
+    "must have positive length"
+  )
+  expect_null(.MUST.hasPosLength(3, "argument"))
+  expect_null(.MUST.hasPosLength("foo", "argument"))
+  expect_null(.MUST.hasPosLength(NA, "argument"))
+  expect_null(.MUST.hasPosLength(NaN, "argument"))
+  expect_null(.MUST.hasPosLength(Inf, "argument"))
+  expect_null(.MUST.hasPosLength(TRUE, "argument"))
+  expect_null(.MUST.hasPosLength(c("fee", "fie"), "argument"))
+  expect_null(.MUST.hasPosLength(c(23, NaN), "argument"))
+  expect_null(.MUST.hasPosLength(c(TRUE, FALSE), "argument"))
+  expect_null(.MUST.hasPosLength(numeric(2), "argument"))
+  expect_null(.MUST.hasPosLength(1:4, "argument"))
+  expect_null(.MUST.hasPosLength(3, "argument"))
+  expect_null(.MUST.hasPosLength(diag(2), "argument"))
+})
+
+test_that(".MUST.hasLength1 works correctly", {
+  expect_error(
+    .MUST.hasLength1(NULL, "argument"),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength1(logical(0), "argument"),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength1(numeric(0), "argument"),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength1(character(0), "argument"),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength1(c("fee", "fie"), "argument"),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength1(diag(2), "argument"),
+    "must have length 1"
+  )
+  expect_error(
+    .MUST.hasLength1(1:3, "argument"),
+    "must have length 1"
+  )
+  expect_null(.MUST.hasLength1(3, "argument"))
+  expect_null(.MUST.hasLength1("foo", "argument"))
+  expect_null(.MUST.hasLength1(NA, "argument"))
+  expect_null(.MUST.hasLength1(NaN, "argument"))
+  expect_null(.MUST.hasLength1(Inf, "argument"))
+  expect_null(.MUST.hasLength1(TRUE, "argument"))
+})
+
+test_that(".MUST.hasLength2 works correctly", {
+  expect_error(
+    .MUST.hasLength2(NULL, "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(logical(0), "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(numeric(0), "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(character(0), "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(diag(2), "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(1:3, "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(3, "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2("foo", "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(NA, "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(NaN, "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(Inf, "argument"),
+    "must have length 2"
+  )
+  expect_error(
+    .MUST.hasLength2(TRUE, "argument"),
+    "must have length 2"
+  )
+  expect_null(.MUST.hasLength2(c("fee", "fie"), "argument"))
+  expect_null(.MUST.hasLength2(c(23, NaN), "argument"))
+  expect_null(.MUST.hasLength2(c(TRUE, FALSE), "argument"))
+  expect_null(.MUST.hasLength2(numeric(2), "argument"))
+})
+
+test_that(".MUST.hasElement works correctly", {
+  foo <- c("first" = 1, "second" = 2, "third" = 3)
+  expect_error(
+    .MUST.hasElement(foo, "fourth"),
+    "must contain an element named"
+  )
+  expect_error(
+    .MUST.hasElement(NULL, "first"),
+    "must contain an element named"
+  )
+  expect_error(
+    .MUST.hasElement(1:3, "first"),
+    "must contain an element named"
+  )
+  expect_error(
+    .MUST.hasElement(c("first", "second", "third"), "first"),
+    "must contain an element named"
+  )
+  expect_null(.MUST.hasElement(foo, "first"))
+})
+
 
 test_that(".noNAs works correctly", {
   expect_error(
-    .noNAs(NA, "argument"),
-    "argument must not contain NA/NaNs"
+    .noNAs(NA),
+    "must not contain NA or NaN values"
   )
   expect_error(
     .noNAs(NaN, "argument"),
-    "argument must not contain NA/NaNs"
+    "must not contain NA or NaN values"
   )
   expect_error(
     .noNAs(c(3, NA), "argument"),
-    "argument must not contain NA/NaNs"
+    "must not contain NA or NaN values"
   )
   expect_error(
     .noNAs(c(3, NaN), "argument"),
-    "argument must not contain NA/NaNs"
+    "must not contain NA or NaN values"
   )
   expect_null(.noNAs(3, "argument"))
   expect_null(.noNAs("foo", "argument"))
@@ -43,1491 +315,2267 @@ test_that(".noNAs works correctly", {
   expect_null(.noNAs(TRUE, "argument"))
 })
 
-test_that(".hasLength1 works correctly", {
+test_that(".MUST.isFinite works correctly", {
+
   expect_error(
-    .hasLength1(NULL, "argument"),
-    "argument must have length 1"
+    .MUST.isFinite(NULL, "argument"),
+    "must contain finite values"
   )
   expect_error(
-    .hasLength1(logical(0), "argument"),
-    "argument must have length 1"
+    .MUST.isFinite(NA, "argument"),
+    "must contain finite values"
   )
   expect_error(
-    .hasLength1(numeric(0), "argument"),
-    "argument must have length 1"
+    .MUST.isFinite("foo", "argument"),
+    "must contain finite values"
   )
   expect_error(
-    .hasLength1(character(0), "argument"),
-    "argument must have length 1"
+    .MUST.isFinite(TRUE, "argument"),
+    "must contain finite values"
   )
   expect_error(
-    .hasLength1(c("fee", "fie"), "argument"),
-    "argument must have length 1"
+    .MUST.isFinite(character(0), "argument"),
+    "must contain finite values"
   )
   expect_error(
-    .hasLength1(diag(2), "argument"),
-    "argument must have length 1"
+    .MUST.isFinite(numeric(0), "argument"),
+    "must contain finite values"
   )
   expect_error(
-    .hasLength1(1:3, "argument"),
-    "argument must have length 1"
+    .MUST.isFinite(NaN, "argument"),
+    "must contain finite values"
   )
-  expect_null(.hasLength1(3, "argument"))
-  expect_null(.hasLength1("foo", "argument"))
-  expect_null(.hasLength1(NA, "argument"))
-  expect_null(.hasLength1(NaN, "argument"))
-  expect_null(.hasLength1(Inf, "argument"))
-  expect_null(.hasLength1(TRUE, "argument"))
+  expect_error(
+    .MUST.isFinite(Inf, "argument"),
+    "must contain finite values"
+  )
+  expect_error(
+    .MUST.isFinite(c(2, Inf), "argument"),
+    "must contain finite values"
+  )
+  expect_null(.MUST.isFinite(3, "argument"))
+  expect_null(.MUST.isFinite(1:4, "argument"))
 })
 
-test_that(".hasLength2 works correctly", {
+
+# Type Checks -------------------------------------------------------------
+
+
+
+test_that(".MUST.isLogical works correctly", {
   expect_error(
-    .hasLength2(NULL, "argument"),
-    "argument must have length 2"
+    .MUST.isLogical(NaN, "argument"),
+    paste("must be of type", dQuote("logical"))
   )
   expect_error(
-    .hasLength2(logical(0), "argument"),
-    "argument must have length 2"
+    .MUST.isLogical(3, "argument"),
+    paste("must be of type", dQuote("logical"))
   )
   expect_error(
-    .hasLength2(numeric(0), "argument"),
-    "argument must have length 2"
+    .MUST.isLogical(1, "argument"),
+    paste("must be of type", dQuote("logical"))
   )
   expect_error(
-    .hasLength2(character(0), "argument"),
-    "argument must have length 2"
+    .MUST.isLogical(0, "argument"),
+    paste("must be of type", dQuote("logical"))
   )
   expect_error(
-    .hasLength2(diag(2), "argument"),
-    "argument must have length 2"
+    .MUST.isLogical("TRUE", "argument"),
+    paste("must be of type", dQuote("logical"))
   )
   expect_error(
-    .hasLength2(1:3, "argument"),
-    "argument must have length 2"
+    .MUST.isLogical(NULL, "argument"),
+    paste("must be of type", dQuote("logical"))
   )
   expect_error(
-    .hasLength2(3, "argument"),
-    "argument must have length 2"
+    .MUST.isLogical(NA, "argument"),
+    "must not contain NA or NaN values"
   )
-  expect_error(
-    .hasLength2("foo", "argument"),
-    "argument must have length 2"
-  )
-  expect_error(
-    .hasLength2(NA, "argument"),
-    "argument must have length 2"
-  )
-  expect_error(
-    .hasLength2(NaN, "argument"),
-    "argument must have length 2"
-  )
-  expect_error(
-    .hasLength2(Inf, "argument"),
-    "argument must have length 2"
-  )
-  expect_error(
-    .hasLength2(TRUE, "argument"),
-    "argument must have length 2"
-  )
-  expect_null(.hasLength2(c("fee", "fie"), "argument"))
-  expect_null(.hasLength2(c(23, NaN), "argument"))
-  expect_null(.hasLength2(c(TRUE, FALSE), "argument"))
-  expect_null(.hasLength2(numeric(2), "argument"))
+  expect_null(.MUST.isLogical(TRUE, "argument"))
+  expect_null(.MUST.isLogical(FALSE, "argument"))
+  expect_null(.MUST.isLogical(logical(0), "argument"))
+  expect_null(.MUST.isLogical(c(TRUE, FALSE), "argument"))
 })
 
-test_that(".hasLength works correctly", {
+test_that(".MUST.isChar works correctly", {
   expect_error(
-    .hasLength(2, NULL, "argument"),
-    "argument must have length 2"
+    .MUST.isChar(TRUE, "argument"),
+    paste("must be of type", dQuote("character"))
   )
   expect_error(
-    .hasLength(2, logical(0), "argument"),
-    "argument must have length 2"
+    .MUST.isChar(3, "argument"),
+    paste("must be of type", dQuote("character"))
   )
   expect_error(
-    .hasLength(2, numeric(0), "argument"),
-    "argument must have length 2"
+    .MUST.isChar(1, "argument"),
+    paste("must be of type", dQuote("character"))
   )
   expect_error(
-    .hasLength(2, character(0), "argument"),
-    "argument must have length 2"
+    .MUST.isChar(0, "argument"),
+    paste("must be of type", dQuote("character"))
   )
   expect_error(
-    .hasLength(2, diag(2), "argument"),
-    "argument must have length 2"
+    .MUST.isChar(NaN, "argument"),
+    paste("must be of type", dQuote("character"))
   )
   expect_error(
-    .hasLength(2, 1:3, "argument"),
-    "argument must have length 2"
+    .MUST.isChar(NA, "argument"),
+    paste("must be of type", dQuote("character"))
   )
   expect_error(
-    .hasLength(2, 3, "argument"),
-    "argument must have length 2"
+    .MUST.isChar(NULL, "argument"),
+    paste("must be of type", dQuote("character"))
   )
-  expect_error(
-    .hasLength(2, "foo", "argument"),
-    "argument must have length 2"
-  )
-  expect_error(
-    .hasLength(2, NA, "argument"),
-    "argument must have length 2"
-  )
-  expect_error(
-    .hasLength(2, NaN, "argument"),
-    "argument must have length 2"
-  )
-  expect_error(
-    .hasLength(2, Inf, "argument"),
-    "argument must have length 2"
-  )
-  expect_null(.hasLength(2, c("fee", "fie"), "argument"))
-  expect_null(.hasLength(2, c(23, NaN), "argument"))
-  expect_null(.hasLength(2, c(TRUE, FALSE), "argument"))
-  expect_null(.hasLength(2, numeric(2), "argument"))
-  expect_error(
-    .hasLength(1, NULL, "argument"),
-    "argument must have length 1"
-  )
-  expect_error(
-    .hasLength(1, logical(0), "argument"),
-    "argument must have length 1"
-  )
-  expect_error(
-    .hasLength(1, numeric(0), "argument"),
-    "argument must have length 1"
-  )
-  expect_error(
-    .hasLength(1, character(0), "argument"),
-    "argument must have length 1"
-  )
-  expect_error(
-    .hasLength(1, c("fee", "fie"), "argument"),
-    "argument must have length 1"
-  )
-  expect_error(
-    .hasLength(1, diag(2), "argument"),
-    "argument must have length 1"
-  )
-  expect_error(
-    .hasLength(1, 1:3, "argument"),
-    "argument must have length 1"
-  )
-  expect_null(.hasLength(1, 3, "argument"))
-  expect_null(.hasLength(1, "foo", "argument"))
-  expect_null(.hasLength(1, NA, "argument"))
-  expect_null(.hasLength(1, NaN, "argument"))
-  expect_null(.hasLength(1, Inf, "argument"))
-  expect_error(
-    .hasLength(3, 1:4, "argument"),
-    "argument must have length 3"
-  )
-  expect_null(.hasLength(3, 1:3, "argument"))
+  expect_null(.MUST.isChar("foo", "argument"))
+  expect_null(.MUST.isChar(character(0), "argument"))
+  expect_null(.MUST.isChar(c("foo", "bar"), "argument"))
 })
 
-test_that(".orNull works correctly", {
+test_that(".MUST.isNumeric works correctly", {
+
   expect_error(
-    .orNull(.noNAs, NA, "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isNumeric(NULL, "argument"),
+    paste("must be of type", dQuote("numeric"))
   )
   expect_error(
-    .orNull(.hasLength1, 1:3, "argument"),
-    "argument must have length 1"
+    .MUST.isNumeric(NA, "argument"),
+    paste("must be of type", dQuote("numeric"))
   )
   expect_error(
-    .orNull(.isNumeric, "foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isNumeric("foo", "argument"),
+    paste("must be of type", dQuote("numeric"))
   )
   expect_error(
-    .orNull(.isNumeric, "foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isNumeric(TRUE, "argument"),
+    paste("must be of type", dQuote("numeric"))
   )
-  expect_null(.orNull(.noNAs, NULL, "argument"))
-  expect_null(.orNull(.hasLength1, NULL, "argument"))
-  expect_null(.orNull(.isNumeric, NULL, "argument"))
+  expect_null(.MUST.isNumeric(3, "argument"))
+  expect_null(.MUST.isNumeric(numeric(0), "argument"))
+  expect_null(.MUST.isNumeric(NaN, "argument"))
+  expect_null(.MUST.isNumeric(Inf, "argument"))
+  expect_null(.MUST.isNumeric(1:4, "argument"))
 })
 
-test_that(".isLogical works correctly", {
+test_that(".MUST.isCharOrNumeric works correctly", {
   expect_error(
-    .isLogical(NaN, "argument"),
-    "argument must be of type logical"
+    .MUST.isCharOrNumeric(TRUE, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("numeric"))
   )
   expect_error(
-    .isLogical(3, "argument"),
-    "argument must be of type logical"
+    .MUST.isCharOrNumeric(NULL, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("numeric"))
   )
   expect_error(
-    .isLogical(1, "argument"),
-    "argument must be of type logical"
+    .MUST.isCharOrNumeric(NA, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("numeric"))
   )
   expect_error(
-    .isLogical(0, "argument"),
-    "argument must be of type logical"
+    .MUST.isCharOrNumeric(list(c("fee", "fie"), 1:2), "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("numeric"))
   )
-  expect_error(
-    .isLogical("TRUE", "argument"),
-    "argument must be of type logical"
-  )
-  expect_error(
-    .isLogical(NULL, "argument"),
-    "argument must be of type logical"
-  )
-  expect_error(
-    .isLogical(NA, "argument"),
-    "argument must not contain NA/NaNs"
-  )
-  expect_null(.isLogical(TRUE, "argument"))
-  expect_null(.isLogical(FALSE, "argument"))
-  expect_null(.isLogical(logical(0), "argument"))
-  expect_null(.isLogical(c(TRUE, FALSE), "argument"))
+  expect_null(.MUST.isCharOrNumeric("foo", "argument"))
+  expect_null(.MUST.isCharOrNumeric(character(0), "argument"))
+  expect_null(.MUST.isCharOrNumeric(3, "argument"))
+  expect_null(.MUST.isCharOrNumeric(numeric(0), "argument"))
+  expect_null(.MUST.isCharOrNumeric(NaN, "argument"))
+  expect_null(.MUST.isCharOrNumeric(Inf, "argument"))
+  expect_null(.MUST.isCharOrNumeric(1:4, "argument"))
+  expect_null(.MUST.isCharOrNumeric(c("foo", "bar"), "argument"))
 })
 
-test_that(".isChar works correctly", {
+test_that(".MUST.isCharOrLogical works correctly", {
   expect_error(
-    .isChar(TRUE, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrLogical(NULL, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("logical"))
   )
   expect_error(
-    .isChar(3, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrLogical(list(c("fee", "fie"), 1:2), "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("logical"))
   )
   expect_error(
-    .isChar(1, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrLogical(3, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("logical"))
   )
   expect_error(
-    .isChar(0, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrLogical(1, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("logical"))
   )
   expect_error(
-    .isChar(NaN, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrLogical(0, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("logical"))
   )
   expect_error(
-    .isChar(NA, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrLogical(NaN, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("logical"))
   )
   expect_error(
-    .isChar(NULL, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrLogical(Inf, "argument"),
+    paste("must be of type", dQuote("character"), "or", dQuote("logical"))
   )
-  expect_null(.isChar("foo", "argument"))
-  expect_null(.isChar(character(0), "argument"))
-  expect_null(.isChar(c("foo", "bar"), "argument"))
+  expect_error(
+    .MUST.isCharOrLogical(NA, "argument"),
+    "must not contain NA or NaN values"
+  )
+  expect_null(.MUST.isCharOrLogical("foo", "argument"))
+  expect_null(.MUST.isCharOrLogical(character(0), "argument"))
+  expect_null(.MUST.isCharOrLogical(c("foo", "bar"), "argument"))
+  expect_null(.MUST.isCharOrLogical(TRUE, "argument"))
+  expect_null(.MUST.isCharOrLogical(FALSE, "argument"))
+  expect_null(.MUST.isCharOrLogical(logical(0), "argument"))
+  expect_null(.MUST.isCharOrLogical(c(TRUE, FALSE), "argument"))
 })
 
-test_that(".isNumeric works correctly", {
 
+# Scalar Types ------------------------------------------------------------
+
+
+
+test_that(".MUST.isTF works correctly", {
   expect_error(
-    .isNumeric(NULL, "argument"),
-    "argument must be of type numeric"
+    .MUST.isTF(NA, "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
   )
   expect_error(
-    .isNumeric(NA, "argument"),
-    "argument must be of type numeric"
+    .MUST.isTF(NaN, "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
   )
   expect_error(
-    .isNumeric("foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isTF(3, "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
   )
   expect_error(
-    .isNumeric(TRUE, "argument"),
-    "argument must be of type numeric"
+    .MUST.isTF(1, "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
   )
-  expect_null(.isNumeric(3, "argument"))
-  expect_null(.isNumeric(numeric(0), "argument"))
-  expect_null(.isNumeric(NaN, "argument"))
-  expect_null(.isNumeric(Inf, "argument"))
-  expect_null(.isNumeric(1:4, "argument"))
+  expect_error(
+    .MUST.isTF(0, "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
+  )
+  expect_error(
+    .MUST.isTF("TRUE", "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
+  )
+  expect_error(
+    .MUST.isTF(logical(0), "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
+  )
+  expect_error(
+    .MUST.isTF(NULL, "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
+  )
+  expect_error(
+    .MUST.isTF(c(TRUE, FALSE), "argument"),
+    paste("must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE"))
+  )
+  expect_null(.MUST.isTF(TRUE, "argument"))
+  expect_null(.MUST.isTF(FALSE, "argument"))
 })
 
-test_that(".isCharOrNumeric works correctly", {
-  expect_error(
-    .isCharOrNumeric(TRUE, "argument"),
-    "argument must be of type character or numeric"
-  )
-  expect_error(
-    .isCharOrNumeric(NULL, "argument"),
-    "argument must be of type character or numeric"
-  )
-  expect_error(
-    .isCharOrNumeric(NA, "argument"),
-    "argument must be of type character or numeric"
-  )
-  expect_error(
-    .isCharOrNumeric(list(c("fee", "fie"), 1:2), "argument"),
-    "argument must be of type character or numeric"
-  )
-  expect_null(.isCharOrNumeric("foo", "argument"))
-  expect_null(.isCharOrNumeric(character(0), "argument"))
-  expect_null(.isCharOrNumeric(3, "argument"))
-  expect_null(.isCharOrNumeric(numeric(0), "argument"))
-  expect_null(.isCharOrNumeric(NaN, "argument"))
-  expect_null(.isCharOrNumeric(Inf, "argument"))
-  expect_null(.isCharOrNumeric(1:4, "argument"))
-  expect_null(.isCharOrNumeric(c("foo", "bar"), "argument"))
+test_that(".checkTF works", {
+  expect_true(.checkTF(TRUE, default = TRUE))
+  expect_false(.checkTF(FALSE, default = FALSE))
+  expect_warning(.checkTF(as.logical(NA), default = TRUE))
+  expect_warning(.checkTF(logical(0), default = TRUE))
+  expect_warning(.checkTF(c(TRUE, FALSE), default = TRUE))
+  expect_warning(.checkTF(NULL, default = TRUE))
+  expect_warning(.checkTF(NA, default = TRUE))
+  expect_warning(.checkTF(3, default = TRUE))
+  expect_warning(.checkTF(1:3, default = TRUE))
 })
 
-test_that(".isCharOrLogical works correctly", {
+test_that(".MUST.isTFOrAuto works correctly", {
   expect_error(
-    .isCharOrLogical(NULL, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isTFOrAuto(NA, "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
   expect_error(
-    .isCharOrLogical(list(c("fee", "fie"), 1:2), "argument"),
-    "argument must be of type character or logical"
+    .MUST.isTFOrAuto(NaN, "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
   expect_error(
-    .isCharOrLogical(3, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isTFOrAuto(3, "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
   expect_error(
-    .isCharOrLogical(1, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isTFOrAuto(1, "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
   expect_error(
-    .isCharOrLogical(0, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isTFOrAuto(0, "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
   expect_error(
-    .isCharOrLogical(NaN, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isTFOrAuto("TRUE", "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
   expect_error(
-    .isCharOrLogical(Inf, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isTFOrAuto("AUTO", "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
   expect_error(
-    .isCharOrLogical(NA, "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isTFOrAuto(logical(0), "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
   )
-  expect_null(.isCharOrLogical("foo", "argument"))
-  expect_null(.isCharOrLogical(character(0), "argument"))
-  expect_null(.isCharOrLogical(c("foo", "bar"), "argument"))
-  expect_null(.isCharOrLogical(TRUE, "argument"))
-  expect_null(.isCharOrLogical(FALSE, "argument"))
-  expect_null(.isCharOrLogical(logical(0), "argument"))
-  expect_null(.isCharOrLogical(c(TRUE, FALSE), "argument"))
+  expect_error(
+    .MUST.isTFOrAuto(character(0), "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
+  )
+  expect_error(
+    .MUST.isTFOrAuto(numeric(0), "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
+  )
+  expect_error(
+    .MUST.isTFOrAuto(c(TRUE, FALSE), "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
+  )
+  expect_error(
+    .MUST.isTFOrAuto(NULL, "argument"),
+    paste("must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto"))
+  )
+  expect_null(.MUST.isTFOrAuto(TRUE, "argument"))
+  expect_null(.MUST.isTFOrAuto(FALSE, "argument"))
+  expect_null(.MUST.isTFOrAuto("auto", "argument"))
 })
 
-test_that(".hasPosLength works correctly", {
-  expect_error(
-    .hasPosLength(NULL, "argument"),
-    "argument must have positive length"
+test_that(".MUST.isNumericScalar works", {
+  expect_null(.MUST.isNumericScalar(3))
+  expect_null(.MUST.isNumericScalar(pi))
+  expect_null(.MUST.isNumericScalar(1.0))
+  expect_error(.MUST.isNumericScalar("foo"), "must be a finite numeric scalar")
+  expect_error(.MUST.isNumericScalar(NaN), "must be a finite numeric scalar")
+  expect_error(.MUST.isNumericScalar(Inf), "must be a finite numeric scalar")
+  expect_error(.MUST.isNumericScalar(NA), "must be a finite numeric scalar")
+  expect_error(.MUST.isNumericScalar(numeric(0)),
+               "must be a finite numeric scalar"
   )
-  expect_error(
-    .hasPosLength(logical(0), "argument"),
-    "argument must have positive length"
-  )
-  expect_error(
-    .hasPosLength(numeric(0), "argument"),
-    "argument must have positive length"
-  )
-  expect_error(
-    .hasPosLength(character(0), "argument"),
-    "argument must have positive length"
-  )
-  expect_null(.hasPosLength(3, "argument"))
-  expect_null(.hasPosLength("foo", "argument"))
-  expect_null(.hasPosLength(NA, "argument"))
-  expect_null(.hasPosLength(NaN, "argument"))
-  expect_null(.hasPosLength(Inf, "argument"))
-  expect_null(.hasPosLength(TRUE, "argument"))
-  expect_null(.hasPosLength(c("fee", "fie"), "argument"))
-  expect_null(.hasPosLength(c(23, NaN), "argument"))
-  expect_null(.hasPosLength(c(TRUE, FALSE), "argument"))
-  expect_null(.hasPosLength(numeric(2), "argument"))
-  expect_null(.hasPosLength(1:4, "argument"))
-  expect_null(.hasPosLength(3, "argument"))
-  expect_null(.hasPosLength(diag(2), "argument"))
+  expect_error(.MUST.isNumericScalar(1:2), "must be a finite numeric scalar")
 })
 
-test_that(".isTF works correctly", {
+test_that(".MUST.isNonneg works correctly", {
+
   expect_error(
-    .isTF(NA, "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isNonneg(NULL, "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF(NaN, "argument"),
-    "argument must be of type logical"
+    .MUST.isNonneg(NA, "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF(3, "argument"),
-    "argument must be of type logical"
+    .MUST.isNonneg("foo", "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF(1, "argument"),
-    "argument must be of type logical"
+    .MUST.isNonneg(TRUE, "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF(0, "argument"),
-    "argument must be of type logical"
+    .MUST.isNonneg(character(0), "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF("TRUE", "argument"),
-    "argument must be of type logical"
+    .MUST.isNonneg(numeric(0), "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF(logical(0), "argument"),
-    "argument must have length 1"
+    .MUST.isNonneg(1:2, "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF(NULL, "argument"),
-    "argument must be of type logical"
+    .MUST.isNonneg(NaN, "argument"),
+    "must be a finite and nonnegative scalar"
   )
   expect_error(
-    .isTF(c(TRUE, FALSE), "argument"),
-    "argument must have length 1"
+    .MUST.isNonneg(Inf, "argument"),
+    "must be a finite and nonnegative scalar"
   )
-  expect_null(.isTF(TRUE, "argument"))
-  expect_null(.isTF(FALSE, "argument"))
+  expect_error(
+    .MUST.isNonneg(-1, "argument"),
+    "must be a finite and nonnegative scalar"
+  )
+  expect_error(
+    .MUST.isNonneg(-1.5, "argument"),
+    "must be a finite and nonnegative scalar"
+  )
+  expect_null(.MUST.isNonneg(3, "argument"))
+  expect_null(.MUST.isNonneg(0, "argument"))
 })
 
-test_that(".isTFOrAuto works correctly", {
+test_that(".MUST.isPos works correctly", {
+
   expect_error(
-    .isTFOrAuto(NA, "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isPos(NULL, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(NaN, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isPos(NA, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(3, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isPos("foo", "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(1, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isPos(TRUE, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(0, "argument"),
-    "argument must be of type character or logical"
+    .MUST.isPos(character(0), "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto("TRUE", "argument"),
-    "argument must be TRUE, FALSE, or \"auto\""
+    .MUST.isPos(numeric(0), "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto("AUTO", "argument"),
-    "argument must be TRUE, FALSE, or \"auto\""
+    .MUST.isPos(1:2, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(logical(0), "argument"),
-    "argument must have length 1"
+    .MUST.isPos(NaN, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(character(0), "argument"),
-    "argument must have length 1"
+    .MUST.isPos(Inf, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(numeric(0), "argument"),
-    "argument must be of type character or logical"
+    .MUST.isPos(-1, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(c(TRUE, FALSE), "argument"),
-    "argument must have length 1"
+    .MUST.isPos(0, "argument"),
+    "must be a finite and strictly positive scalar"
   )
   expect_error(
-    .isTFOrAuto(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isPos(-1.5, "argument"),
+    "must be a finite and strictly positive scalar"
   )
-  expect_null(.isTFOrAuto(TRUE, "argument"))
-  expect_null(.isTFOrAuto(FALSE, "argument"))
-  expect_null(.isTFOrAuto("auto", "argument"))
+  expect_null(.MUST.isPos(3, "argument"))
 })
 
-test_that(".isFinite works correctly", {
+test_that(".MUST.isInt works correctly", {
 
   expect_error(
-    .isFinite(NULL, "argument"),
-    "argument must be of type numeric"
+    .MUST.isInt(NULL, "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite(NA, "argument"),
-    "argument must be of type numeric"
+    .MUST.isInt(NA, "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite("foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isInt("foo", "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite(TRUE, "argument"),
-    "argument must be of type numeric"
+    .MUST.isInt(TRUE, "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite(character(0), "argument"),
-    "argument must be of type numeric"
+    .MUST.isInt(character(0), "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite(numeric(0), "argument"),
-    "argument must have positive length"
+    .MUST.isInt(numeric(0), "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite(NaN, "argument"),
-    "argument must contain finite values"
+    .MUST.isInt(1:2, "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite(Inf, "argument"),
-    "argument must contain finite values"
+    .MUST.isInt(NaN, "argument"),
+    "must be a finite integer"
   )
   expect_error(
-    .isFinite(c(2, Inf), "argument"),
-    "argument must contain finite values"
+    .MUST.isInt(Inf, "argument"),
+    "must be a finite integer"
   )
-  expect_null(.isFinite(3, "argument"))
-  expect_null(.isFinite(1:4, "argument"))
+  expect_error(
+    .MUST.isInt(-1.5, "argument"),
+    "must be a finite integer"
+  )
+  expect_error(
+    .MUST.isInt(pi, "argument"),
+    "must be a finite integer"
+  )
+  expect_null(.MUST.isInt(3, "argument"))
+  expect_null(.MUST.isInt(3.0, "argument"))
 })
 
-test_that(".isNonneg works correctly", {
+
+test_that(".MUST.isNonnegInt works correctly", {
 
   expect_error(
-    .isNonneg(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isNonnegInt(NULL, "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(NA, "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonnegInt(NA, "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg("foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonnegInt("foo", "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(TRUE, "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonnegInt(TRUE, "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(character(0), "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonnegInt(character(0), "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(numeric(0), "argument"),
-    "argument must have length 1"
+    .MUST.isNonnegInt(numeric(0), "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(1:2, "argument"),
-    "argument must have length 1"
+    .MUST.isNonnegInt(1:2, "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(NaN, "argument"),
-    "argument must contain finite values"
+    .MUST.isNonnegInt(NaN, "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(Inf, "argument"),
-    "argument must contain finite values"
+    .MUST.isNonnegInt(Inf, "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(-1, "argument"),
-    "argument must be nonnegative"
+    .MUST.isNonnegInt(1.5, "argument"),
+    "must be a finite, nonnegative integer"
   )
   expect_error(
-    .isNonneg(-1.5, "argument"),
-    "argument must be nonnegative"
+    .MUST.isNonnegInt(-1.5, "argument"),
+    "must be a finite, nonnegative integer"
   )
-  expect_null(.isNonneg(3, "argument"))
-  expect_null(.isNonneg(0, "argument"))
+  expect_error(
+    .MUST.isNonnegInt(-1, "argument"),
+    "must be a finite, nonnegative integer"
+  )
+  expect_null(.MUST.isNonnegInt(0, "argument"))
+  expect_null(.MUST.isNonnegInt(3, "argument"))
+  expect_null(.MUST.isNonnegInt(3.0, "argument"))
 })
 
-test_that(".isPos works correctly", {
+test_that(".MUST.isPosInt works correctly", {
 
   expect_error(
-    .isPos(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isPosInt(NULL, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(NA, "argument"),
-    "argument must be of type numeric"
+    .MUST.isPosInt(NA, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos("foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isPosInt("foo", "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(TRUE, "argument"),
-    "argument must be of type numeric"
+    .MUST.isPosInt(TRUE, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(character(0), "argument"),
-    "argument must be of type numeric"
+    .MUST.isPosInt(character(0), "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(numeric(0), "argument"),
-    "argument must have length 1"
+    .MUST.isPosInt(numeric(0), "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(1:2, "argument"),
-    "argument must have length 1"
+    .MUST.isPosInt(1:2, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(NaN, "argument"),
-    "argument must contain finite values"
+    .MUST.isPosInt(NaN, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(Inf, "argument"),
-    "argument must contain finite values"
+    .MUST.isPosInt(Inf, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(-1, "argument"),
-    "argument must be strictly positive"
+    .MUST.isPosInt(1.5, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(0, "argument"),
-    "argument must be strictly positive"
+    .MUST.isPosInt(-1.5, "argument"),
+    "must be a finite, strictly positive integer"
   )
   expect_error(
-    .isPos(-1.5, "argument"),
-    "argument must be strictly positive"
+    .MUST.isPosInt(-1, "argument"),
+    "must be a finite, strictly positive integer"
   )
-  expect_null(.isPos(3, "argument"))
+  expect_error(
+    .MUST.isPosInt(0, "argument"),
+    "must be a finite, strictly positive integer"
+  )
+  expect_null(.MUST.isPosInt(3, "argument"))
+  expect_null(.MUST.isPosInt(3.0, "argument"))
 })
 
-test_that(".isInt works correctly", {
-
+test_that(".MUST.isString works correctly", {
   expect_error(
-    .isInt(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isString(NULL, "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt(NA, "argument"),
-    "argument must be of type numeric"
+    .MUST.isString(TRUE, "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt("foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isString(3, "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt(TRUE, "argument"),
-    "argument must be of type numeric"
+    .MUST.isString(1, "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt(character(0), "argument"),
-    "argument must be of type numeric"
+    .MUST.isString(0, "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt(numeric(0), "argument"),
-    "argument must have length 1"
+    .MUST.isString(NaN, "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt(1:2, "argument"),
-    "argument must have length 1"
+    .MUST.isString(NA, "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt(NaN, "argument"),
-    "argument must contain finite values"
+    .MUST.isString(c("foo", "bar"), "argument"),
+    "must be a character string"
   )
   expect_error(
-    .isInt(Inf, "argument"),
-    "argument must contain finite values"
+    .MUST.isString(character(0), "argument"),
+    "must be a character string"
   )
-  expect_error(
-    .isInt(-1.5, "argument"),
-    "argument must be integer-valued"
-  )
-  expect_error(
-    .isInt(pi, "argument"),
-    "argument must be integer-valued"
-  )
-  expect_null(.isInt(3, "argument"))
-  expect_null(.isInt(3.0, "argument"))
+  expect_null(.MUST.isString("foo", "argument"))
+  expect_null(.MUST.isString("", "argument"))
 })
 
-test_that(".isPosInt works correctly", {
-
+test_that(".MUST.isNonemptyString works correctly", {
   expect_error(
-    .isPosInt(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isNonemptyString(NULL, "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(NA, "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonemptyString(TRUE, "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt("foo", "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonemptyString(3, "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(TRUE, "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonemptyString(1, "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(character(0), "argument"),
-    "argument must be of type numeric"
+    .MUST.isNonemptyString(0, "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(numeric(0), "argument"),
-    "argument must have length 1"
+    .MUST.isNonemptyString(NaN, "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(1:2, "argument"),
-    "argument must have length 1"
+    .MUST.isNonemptyString(NA, "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(NaN, "argument"),
-    "argument must contain finite values"
+    .MUST.isNonemptyString(c("foo", "bar"), "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(Inf, "argument"),
-    "argument must contain finite values"
+    .MUST.isNonemptyString(character(0), "argument"),
+    "must be a nonempty character string"
   )
   expect_error(
-    .isPosInt(1.5, "argument"),
-    "argument must be integer-valued"
+    .MUST.isNonemptyString("", "argument"),
+    "must be a nonempty character string"
   )
-  expect_error(
-    .isPosInt(-1.5, "argument"),
-    "argument must be integer-valued"
-  )
-  expect_error(
-    .isPosInt(-1, "argument"),
-    "argument must be strictly positive"
-  )
-  expect_error(
-    .isPosInt(0, "argument"),
-    "argument must be strictly positive"
-  )
-  expect_null(.isPosInt(3, "argument"))
-  expect_null(.isPosInt(3.0, "argument"))
+  expect_null(.MUST.isNonemptyString("foo", "argument"))
 })
 
-test_that(".isString works correctly", {
+
+test_that(".MUST.isCharOrNumericScalar works correctly", {
   expect_error(
-    .isString(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isCharOrNumericScalar(NA, "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(TRUE, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrNumericScalar(TRUE, "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(3, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrNumericScalar(NULL, "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(1, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrNumericScalar(list(c("fee", "fie"), 1:2), "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(0, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrNumericScalar(1:2, "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(NaN, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrNumericScalar(c("fee", "fie"), "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(NA, "argument"),
-    "argument must be of type character"
+    .MUST.isCharOrNumericScalar(character(0), "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(c("foo", "bar"), "argument"),
-    "argument must have length 1"
+    .MUST.isCharOrNumericScalar(numeric(0), "argument"),
+    "must be a character string or finite numeric scalar"
   )
   expect_error(
-    .isString(character(0), "argument"),
-    "argument must have length 1"
+    .MUST.isCharOrNumericScalar(NaN, "argument"),
+    "must be a character string or finite numeric scalar"
   )
-  expect_null(.isString("foo", "argument"))
+  expect_error(
+    .MUST.isCharOrNumericScalar(Inf, "argument"),
+    "must be a character string or finite numeric scalar"
+  )
+  expect_null(.MUST.isCharOrNumericScalar("foo", "argument"))
+  expect_null(.MUST.isCharOrNumericScalar(3, "argument"))
+  expect_null(.MUST.isCharOrNumericScalar(0, "argument"))
+  expect_null(.MUST.isCharOrNumericScalar(pi, "argument"))
+  expect_null(.MUST.isCharOrNumericScalar(-pi, "argument"))
 })
 
-test_that(".isCharOrNumericScalar works correctly", {
+
+test_that(".MUST.isStringOrInt works correctly", {
   expect_error(
-    .isCharOrNumericScalar(NA, "argument"),
-    "argument must be of type character or numeric"
+    .MUST.isStringOrInt(NA, "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(TRUE, "argument"),
-    "argument must be of type character or numeric"
+    .MUST.isStringOrInt(TRUE, "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isStringOrInt(NULL, "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(list(c("fee", "fie"), 1:2), "argument"),
-    "argument must be of type character or numeric"
+    .MUST.isStringOrInt(list(c("fee", "fie"), 1:2), "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(1:2, "argument"),
-    "argument must have length 1"
+    .MUST.isStringOrInt(1:2, "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(c("fee", "fie"), "argument"),
-    "argument must have length 1"
+    .MUST.isStringOrInt(c("fee", "fie"), "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(character(0), "argument"),
-    "argument must have length 1"
+    .MUST.isStringOrInt(character(0), "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(numeric(0), "argument"),
-    "argument must have length 1"
+    .MUST.isStringOrInt(numeric(0), "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(NaN, "argument"),
-    "argument must contain finite values"
+    .MUST.isStringOrInt(NaN, "argument"),
+    "must be a character string or finite integer"
   )
   expect_error(
-    .isCharOrNumericScalar(Inf, "argument"),
-    "argument must contain finite values"
+    .MUST.isStringOrInt(Inf, "argument"),
+    "must be a character string or finite integer"
   )
-  expect_null(.isCharOrNumericScalar("foo", "argument"))
-  expect_null(.isCharOrNumericScalar(3, "argument"))
+  expect_error(
+    .MUST.isStringOrInt(pi, "argument"),
+    "must be a character string or finite integer"
+  )
+  expect_null(.MUST.isStringOrInt("foo", "argument"))
+  expect_null(.MUST.isStringOrInt(3, "argument"))
+  expect_null(.MUST.isStringOrInt(-3, "argument"))
+  expect_null(.MUST.isStringOrInt(0, "argument"))
 })
 
-test_that(".isCharVector works correctly", {
+test_that(".MUST.isStringOrPosInt works correctly", {
   expect_error(
-    .isCharVector(NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isStringOrPosInt(NA, "argument"),
+    "must be a character string or a finite, strictly positive integer"
   )
   expect_error(
-    .isCharVector(TRUE, "argument"),
-    "argument must be a character vector"
+    .MUST.isStringOrPosInt(TRUE, "argument"),
+    "must be a character string or a finite, strictly positive integer"
   )
   expect_error(
-    .isCharVector(3, "argument"),
-    "argument must be a character vector"
+    .MUST.isStringOrPosInt(NULL, "argument"),
+    "must be a character string or a finite, strictly positive integer"
   )
   expect_error(
-    .isCharVector(NaN, "argument"),
-    "argument must be a character vector"
+    .MUST.isStringOrPosInt(list(c("fee", "fie"), 1:2), "argument"),
+    "must be a character string or a finite, strictly positive integer"
   )
   expect_error(
-    .isCharVector(NA, "argument"),
-    "argument must be a character vector"
+    .MUST.isStringOrPosInt(1:2, "argument"),
+    "must be a character string or a finite, strictly positive integer"
   )
   expect_error(
-    .isCharVector(character(0), "argument"),
-    "argument must have positive length"
+    .MUST.isStringOrPosInt(c("fee", "fie"), "argument"),
+    "must be a character string or a finite, strictly positive integer"
   )
   expect_error(
-    .isCharVector(c("foo", NA), "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isStringOrPosInt(character(0), "argument"),
+    "must be a character string or a finite, strictly positive integer"
   )
-  expect_null(.isCharVector("foo", "argument"))
-  expect_null(.isCharVector(c("foo", "bar"), "argument"))
+  expect_error(
+    .MUST.isStringOrPosInt(numeric(0), "argument"),
+    "must be a character string or a finite, strictly positive integer"
+  )
+  expect_error(
+    .MUST.isStringOrPosInt(NaN, "argument"),
+    "must be a character string or a finite, strictly positive integer"
+  )
+  expect_error(
+    .MUST.isStringOrPosInt(Inf, "argument"),
+    "must be a character string or a finite, strictly positive integer"
+  )
+  expect_error(
+    .MUST.isStringOrPosInt(pi, "argument"),
+    "must be a character string or a finite, strictly positive integer"
+  )
+  expect_error(
+    .MUST.isStringOrPosInt(-3, "argument"),
+    "must be a character string or a finite, strictly positive integer"
+  )
+  expect_error(
+    .MUST.isStringOrPosInt(0, "argument"),
+    "must be a character string or a finite, strictly positive integer"
+  )
+  expect_null(.MUST.isStringOrPosInt("foo", "argument"))
+  expect_null(.MUST.isStringOrPosInt(3, "argument"))
 })
 
-test_that(".isCharOrNumericVector works correctly", {
-  expect_error(
-    .isCharOrNumericVector(NULL, "argument"),
-    "argument is required but value is NULL"
-  )
-  expect_error(
-    .isCharOrNumericVector(TRUE, "argument"),
-    "argument must be a character or numeric vector"
-  )
-  expect_error(
-    .isCharOrNumericVector(NA, "argument"),
-    "argument must be a character or numeric vector"
-  )
-  expect_error(
-    .isCharOrNumericVector(list(c("fee", "fie"), 1:2), "argument"),
-    "argument must be a character or numeric vector"
-  )
-  expect_error(
-    .isCharOrNumericVector(character(0), "argument"),
-    "argument must have positive length"
-  )
-  expect_error(
-    .isCharOrNumericVector(numeric(0), "argument"),
-    "argument must have positive length"
-  )
-  expect_error(
-    .isCharOrNumericVector(c(3, NA), "argument"),
-    "argument must not contain NA/NaNs"
-  )
-  expect_error(
-    .isCharOrNumericVector(c("foo", NA), "argument"),
-    "argument must not contain NA/NaNs"
-  )
-  expect_error(
-    .isCharOrNumericVector(NaN, "argument"),
-    "argument must not contain NA/NaNs"
-  )
-  expect_error(
-    .isCharOrNumericVector(c(2.1, NaN), "argument"),
-    "argument must not contain NA/NaNs"
-  )
-  expect_error(
-    .isCharOrNumericVector(c(2.1, NA), "argument"),
-    "argument must not contain NA/NaNs"
-  )
-  expect_error(
-    .isCharOrNumericVector(Inf, "argument"),
-    "argument must contain finite values"
-  )
-  expect_error(
-    .isCharOrNumericVector(c(2.1, Inf), "argument"),
-    "argument must contain finite values"
-  )
-  expect_null(.isCharOrNumericVector("foo", "argument"))
-  expect_null(.isCharOrNumericVector(c("foo", "bar"), "argument"))
-  expect_null(.isCharOrNumericVector(3, "argument"))
-  expect_null(.isCharOrNumericVector(1:4, "argument"))
 
+# Vector Types ------------------------------------------------------------
 
+test_that(".isLogicalVector works", {
+  expect_false(
+    .isLogicalVector(NULL)
+  )
+  expect_true(
+    .isLogicalVector(TRUE)
+  )
+  expect_false(
+    .isLogicalVector(3)
+  )
+  expect_false(
+    .isLogicalVector(NaN)
+  )
+  expect_true(
+    .isLogicalVector(NA)
+  )
+  expect_false(
+    .isLogicalVector(character(0))
+  )
+  expect_false(
+    .isLogicalVector(numeric(0))
+  )
+  expect_false(
+    .isLogicalVector(logical(0))
+  )
+  expect_false(
+    .isLogicalVector(c("foo", NA))
+  )
+  expect_false(.isLogicalVector("foo"))
+  expect_false(.isLogicalVector(c("foo", "bar")))
+  expect_true(.isLogicalVector(c(TRUE, FALSE)))
 })
 
-test_that(".hasAtLeastTwoRows works correctly", {
+test_that(".isNumericVector works", {
+  expect_false(
+    .isNumericVector(NULL)
+  )
+  expect_false(
+    .isNumericVector(TRUE)
+  )
+  expect_true(
+    .isNumericVector(3)
+  )
+  expect_true(
+    .isNumericVector(pi)
+  )
+  expect_true(
+    .isNumericVector(Inf)
+  )
+  expect_true(
+    .isNumericVector(NaN)
+  )
+  expect_false(
+    .isNumericVector(NA)
+  )
+  expect_true(
+    .isNumericVector(c(NA, 3))
+  )
+  expect_true(
+    .isNumericVector(c(Inf, 3))
+  )
+  expect_true(
+    .isNumericVector(c(NaN, 3))
+  )
+  expect_false(
+    .isNumericVector(character(0))
+  )
+  expect_false(
+    .isNumericVector(numeric(0))
+  )
+  expect_false(
+    .isNumericVector(logical(0))
+  )
+  expect_false(
+    .isNumericVector(c("foo", NA))
+  )
+  expect_false(.isNumericVector("foo"))
+  expect_false(.isNumericVector(c("foo", "bar")))
+  expect_false(.isNumericVector(c(TRUE, FALSE)))
+  expect_true(.isNumericVector(c(3, pi)))
+  expect_true(.isNumericVector(1:4))
+  expect_true(.isNumericVector(c(3, NA)))
+  expect_false(.isNumericVector(as.factor(1:5)))
+  expect_true(.isNumericVector(as.factor(1:5), factor_ok = TRUE))
+  expect_true(.isNumericVector(as.factor(c("a", "b", "c")), factor_ok = TRUE))
+})
+
+test_that(".isIntegerVector works", {
+  expect_false(
+    .isIntegerVector(NULL)
+  )
+  expect_false(
+    .isIntegerVector(TRUE)
+  )
+  expect_true(
+    .isIntegerVector(3)
+  )
+  expect_false(
+    .isIntegerVector(pi)
+  )
+  expect_false(
+    .isIntegerVector(c(3, pi))
+  )
+  expect_false(
+    .isIntegerVector(c(3, NaN))
+  )
+  expect_false(
+    .isIntegerVector(c(3, Inf))
+  )
+  expect_false(
+    .isIntegerVector(c(3, NA))
+  )
+  expect_false(
+    .isIntegerVector(NaN)
+  )
+  expect_false(
+    .isIntegerVector(NA)
+  )
+  expect_false(
+    .isIntegerVector(character(0))
+  )
+  expect_false(
+    .isIntegerVector(numeric(0))
+  )
+  expect_false(
+    .isIntegerVector(logical(0))
+  )
+  expect_false(
+    .isIntegerVector(c("foo", NA))
+  )
+  expect_false(.isIntegerVector("foo"))
+  expect_false(.isIntegerVector(c("foo", "bar")))
+  expect_false(.isIntegerVector(c(TRUE, FALSE)))
+  expect_false(.isIntegerVector(c(3, pi)))
+  expect_true(.isIntegerVector(c(-3.0, 2.0)))
+  expect_true(.isIntegerVector(1:4))
+  expect_false(.isIntegerVector(c(3, NA)))
+  expect_false(.isIntegerVector(as.factor(1:5)))
+  expect_true(.isIntegerVector(as.factor(1:5), factor_ok = TRUE))
+  expect_true(.isIntegerVector(as.factor(c("a", "b", "c")), factor_ok = TRUE))
+  expect_error(.MUST.isIntegerVector(c(3, NA)))
+  expect_error(.MUST.isIntegerVector(as.factor(1:5)))
+  expect_null(.MUST.isIntegerVector(as.factor(1:5), factor_ok = TRUE))
+  expect_null(.MUST.isIntegerVector(as.factor(c("a", "b", "c")),
+                                    factor_ok = TRUE)
+  )
+})
+
+test_that(".isNonnegIntegerVector works", {
+  expect_false(
+    .isNonnegIntegerVector(NULL)
+  )
+  expect_false(
+    .isNonnegIntegerVector(TRUE)
+  )
+  expect_true(
+    .isNonnegIntegerVector(3)
+  )
+  expect_false(
+    .isNonnegIntegerVector(pi)
+  )
+  expect_false(
+    .isNonnegIntegerVector(-3)
+  )
+  expect_true(
+    .isNonnegIntegerVector(0)
+  )
+  expect_false(
+    .isNonnegIntegerVector(c(3, pi))
+  )
+  expect_false(
+    .isNonnegIntegerVector(c(3, -3))
+  )
+  expect_false(
+    .isNonnegIntegerVector(c(3, NaN))
+  )
+  expect_false(
+    .isNonnegIntegerVector(c(3, Inf))
+  )
+  expect_false(
+    .isNonnegIntegerVector(c(3, NA))
+  )
+  expect_false(
+    .isNonnegIntegerVector(NaN)
+  )
+  expect_false(
+    .isNonnegIntegerVector(NA)
+  )
+  expect_false(
+    .isNonnegIntegerVector(character(0))
+  )
+  expect_false(
+    .isNonnegIntegerVector(numeric(0))
+  )
+  expect_false(
+    .isNonnegIntegerVector(logical(0))
+  )
+  expect_false(
+    .isNonnegIntegerVector(c("foo", NA))
+  )
+  expect_false(.isNonnegIntegerVector("foo"))
+  expect_false(.isNonnegIntegerVector(c("foo", "bar")))
+  expect_false(.isNonnegIntegerVector(c(TRUE, FALSE)))
+  expect_false(.isNonnegIntegerVector(c(3, pi)))
+  expect_true(.isNonnegIntegerVector(1:4))
+  expect_true(.isNonnegIntegerVector(0:4))
+  expect_true(.isNonnegIntegerVector(c(0.0, 2.0)))
+  expect_false(.isNonnegIntegerVector(-4:4))
+  expect_false(.isNonnegIntegerVector(c(3, NA)))
+  expect_false(.isNonnegIntegerVector(as.factor(1:5)))
+  expect_true(.isNonnegIntegerVector(as.factor(1:5), factor_ok = TRUE))
+  expect_true(.isNonnegIntegerVector(as.factor(c("a", "b", "c")),
+                                     factor_ok = TRUE)
+  )
+})
+
+test_that(".isPosIntegerVector works", {
+  expect_false(
+    .isPosIntegerVector(NULL)
+  )
+  expect_false(
+    .isPosIntegerVector(TRUE)
+  )
+  expect_true(
+    .isPosIntegerVector(3)
+  )
+  expect_false(
+    .isPosIntegerVector(pi)
+  )
+  expect_false(
+    .isPosIntegerVector(-3)
+  )
+  expect_false(
+    .isPosIntegerVector(0)
+  )
+  expect_false(
+    .isPosIntegerVector(c(3, pi))
+  )
+  expect_false(
+    .isPosIntegerVector(c(3, -3))
+  )
+  expect_false(
+    .isPosIntegerVector(c(3, NaN))
+  )
+  expect_false(
+    .isPosIntegerVector(c(3, Inf))
+  )
+  expect_false(
+    .isPosIntegerVector(c(3, NA))
+  )
+  expect_false(
+    .isPosIntegerVector(NaN)
+  )
+  expect_false(
+    .isPosIntegerVector(NA)
+  )
+  expect_false(
+    .isPosIntegerVector(character(0))
+  )
+  expect_false(
+    .isPosIntegerVector(numeric(0))
+  )
+  expect_false(
+    .isPosIntegerVector(logical(0))
+  )
+  expect_false(
+    .isPosIntegerVector(c("foo", NA))
+  )
+  expect_false(.isPosIntegerVector("foo"))
+  expect_false(.isPosIntegerVector(c("foo", "bar")))
+  expect_false(.isPosIntegerVector(c(TRUE, FALSE)))
+  expect_false(.isPosIntegerVector(c(3, pi)))
+  expect_true(.isPosIntegerVector(1:4))
+  expect_true(.isPosIntegerVector(c(1.0, 2.0)))
+  expect_false(.isPosIntegerVector(0:4))
+  expect_false(.isPosIntegerVector(-4:4))
+  expect_false(.isPosIntegerVector(c(3, NA)))
+  expect_false(.isPosIntegerVector(as.factor(1:5)))
+  expect_true(.isPosIntegerVector(as.factor(1:5), factor_ok = TRUE))
+  expect_true(.isPosIntegerVector(as.factor(c("a", "b", "c")),
+                                  factor_ok = TRUE)
+  )
+})
+
+test_that(".MUST.isCharVector works correctly", {
+  expect_error(
+    .MUST.isCharVector(NULL, "argument"),
+    "must be a nonempty character vector"
+  )
+  expect_error(
+    .MUST.isCharVector(TRUE, "argument"),
+    "must be a nonempty character vector"
+  )
+  expect_error(
+    .MUST.isCharVector(3, "argument"),
+    "must be a nonempty character vector"
+  )
+  expect_error(
+    .MUST.isCharVector(NaN, "argument"),
+    "must be a nonempty character vector"
+  )
+  expect_error(
+    .MUST.isCharVector(NA, "argument"),
+    "must be a nonempty character vector"
+  )
+  expect_error(
+    .MUST.isCharVector(character(0), "argument"),
+    "must be a nonempty character vector"
+  )
+  expect_null(
+    .MUST.isCharVector(c("foo", NA), "argument")
+  )
+  expect_null(.MUST.isCharVector("foo", "argument"))
+  expect_null(.MUST.isCharVector(c("foo", "bar"), "argument"))
+  expect_error(.MUST.isCharVector(as.factor(c("foo", "bar"))))
+  expect_error(.MUST.isCharVector(as.factor(NULL), factor_ok = TRUE))
+  expect_null(.MUST.isCharVector(as.factor(c("foo", "bar")), factor_ok = TRUE))
+})
+
+test_that(".MUST.isCharOrNumericVector works correctly", {
+  expect_error(
+    .MUST.isCharOrNumericVector(NULL, "argument"),
+    paste("must be a nonempty vector of type",
+          dQuote("character"), "or", dQuote("numeric")
+    )
+  )
+  expect_error(
+    .MUST.isCharOrNumericVector(TRUE, "argument"),
+    paste("must be a nonempty vector of type",
+          dQuote("character"), "or", dQuote("numeric")
+    )
+  )
+  expect_error(
+    .MUST.isCharOrNumericVector(NA, "argument"),
+    paste("must be a nonempty vector of type",
+          dQuote("character"), "or", dQuote("numeric")
+    )
+  )
+  expect_error(
+    .MUST.isCharOrNumericVector(list(c("fee", "fie"), 1:2), "argument"),
+    paste("must be a nonempty vector of type",
+          dQuote("character"), "or", dQuote("numeric")
+    )
+  )
+  expect_error(
+    .MUST.isCharOrNumericVector(character(0), "argument"),
+    paste("must be a nonempty vector of type",
+          dQuote("character"), "or", dQuote("numeric")
+    )
+  )
+  expect_error(
+    .MUST.isCharOrNumericVector(numeric(0), "argument"),
+    paste("must be a nonempty vector of type",
+          dQuote("character"), "or", dQuote("numeric")
+    )
+  )
+  expect_null(
+    .MUST.isCharOrNumericVector(c(3, NA), "argument")
+  )
+
+  expect_null(
+    .MUST.isCharOrNumericVector(NaN, "argument")
+  )
+  expect_null(
+    .MUST.isCharOrNumericVector(c(2.1, NaN), "argument")
+  )
+  expect_null(
+    .MUST.isCharOrNumericVector(c(2.1, NA), "argument")
+  )
+  expect_null(
+    .MUST.isCharOrNumericVector(Inf, "argument")
+  )
+  expect_null(
+    .MUST.isCharOrNumericVector(c(2.1, Inf), "argument")
+  )
+  expect_null(
+    .MUST.isCharOrNumericVector(c("foo", NA), "argument")
+  )
+  expect_null(.MUST.isCharOrNumericVector("foo", "argument"))
+  expect_null(.MUST.isCharOrNumericVector(c("foo", "bar"), "argument"))
+  expect_null(.MUST.isCharOrNumericVector(3, "argument"))
+  expect_null(.MUST.isCharOrNumericVector(1:4, "argument"))
+  expect_error(.MUST.isCharOrNumericVector(as.factor(c("foo", "bar"))))
+  expect_error(.MUST.isCharOrNumericVector(as.factor(NULL), factor_ok = TRUE))
+  expect_null(.MUST.isCharOrNumericVector(as.factor(c("foo", "bar")),
+                                          factor_ok = TRUE)
+  )
+})
+
+test_that(".MUST.isCharOrIntegerVector works correctly", {
+  expect_error(
+    .MUST.isCharOrIntegerVector(NULL, "argument"),
+    "must be a nonempty character vector or integer-valued vector"
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(TRUE, "argument"),
+    "must be a nonempty character vector or integer-valued vector"
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(NA, "argument"),
+    "must be a nonempty character vector or integer-valued vector"
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(list(c("fee", "fie"), 1:2), "argument"),
+    "must be a nonempty character vector or integer-valued vector"
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(character(0), "argument"),
+    "must be a nonempty character vector or integer-valued vector"
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(numeric(0), "argument"),
+    "must be a nonempty character vector or integer-valued vector"
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(c(3, NA), "argument"),
+    "must be a nonempty character vector or integer-valued vector"
+  )
+
+  expect_error(
+    .MUST.isCharOrIntegerVector(NaN, "argument")
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(c(2, NaN), "argument")
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(c(2, NA), "argument")
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(Inf, "argument")
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(c(2, Inf), "argument")
+  )
+  expect_error(
+    .MUST.isCharOrIntegerVector(c(2, pi), "argument")
+  )
+  expect_null(
+    .MUST.isCharOrIntegerVector(c(-1.0, 3.000), "argument")
+  )
+  expect_null(
+    .MUST.isCharOrIntegerVector(c("foo", NA), "argument")
+  )
+  expect_null(.MUST.isCharOrIntegerVector("foo", "argument"))
+  expect_null(.MUST.isCharOrIntegerVector(c("foo", "bar"), "argument"))
+  expect_null(.MUST.isCharOrIntegerVector(3, "argument"))
+  expect_null(.MUST.isCharOrIntegerVector(1:4, "argument"))
+  expect_error(.MUST.isCharOrIntegerVector(as.factor(c("foo", "bar"))))
+  expect_error(.MUST.isCharOrIntegerVector(as.factor(NULL), factor_ok = TRUE))
+  expect_null(.MUST.isCharOrIntegerVector(as.factor(c("foo", "bar")),
+                                          factor_ok = TRUE)
+  )
+})
+
+
+# Regular Expressions -----------------------------------------------------
+
+test_that(".isValidFilenamePart works", {
+  expect_true(.isValidFilenamePart("foo"))
+  expect_true(.isValidFilenamePart("foo123"))
+  expect_true(.isValidFilenamePart("foo_bar"))
+  expect_true(.isValidFilenamePart("foo-bar"))
+  expect_false(.isValidFilenamePart("foo bar"))
+  expect_false(.isValidFilenamePart("-foo"))
+  expect_false(.isValidFilenamePart("foo_"))
+  expect_false(.isValidFilenamePart("_foo_"))
+  expect_false(.isValidFilenamePart("foo!"))
+  expect_false(.isValidFilenamePart(""))
+})
+
+test_that(".isValidFilename works", {
+
+  expect_true(.isValidFilename("foo.txt"))
+  expect_true(.isValidFilename("foo_bar.txt"))
+  expect_true(.isValidFilename("foo-bar.txt"))
+
+  expect_false(.isValidFilename("foo bar.txt"))
+  expect_false(.isValidFilename("foo.bar.txt"))
+  expect_false(.isValidFilename("_foo.txt"))
+  expect_false(.isValidFilename("foo.txt_"))
+  expect_false(.isValidFilename("foo."))
+  expect_false(.isValidFilename(".foo"))
+  expect_false(.isValidFilename(""))
+})
+
+test_that(".sanitizeFilenamePart works", {
+  expect_equal(.sanitizeFilenamePart("-foo"), "foo")
+  expect_equal(.sanitizeFilenamePart("foo"), "foo")
+  expect_equal(.sanitizeFilenamePart("foo_"), "foo")
+  expect_equal(.sanitizeFilenamePart("_foo_"), "foo")
+  expect_equal(.sanitizeFilenamePart("foo!"), "foo")
+  expect_equal(.sanitizeFilenamePart(".foo"), "foo")
+  expect_equal(.sanitizeFilenamePart("foo-bar"), "foo-bar")
+  expect_equal(.sanitizeFilenamePart("foo_bar"), "foo_bar")
+  expect_equal(.sanitizeFilenamePart("foo bar"), "foo_bar")
+  expect_equal(.sanitizeFilenamePart("foo/bar"), "foo_bar")
+  expect_equal(.sanitizeFilenamePart("foo.bar"), "foo_bar")
+  expect_equal(
+    .sanitizeFilenamePart("--_____-_--__-_-f-_-o__---_-_o-___--__-___-_-__!"),
+    "f-o__-_o"
+  )
+  expect_equal(
+    .sanitizeFilenamePart("--_- -_ -  __--  -__-_foo-bar_baz--!bing.txt__"),
+    "foo-bar_baz-_bing_txt"
+  )
+  expect_equal(.sanitizeFilenamePart("!-_."), "")
+})
+
+# Lists and Data Frames ---------------------------------------------------
+
+test_that(".MUST.isNamedList works", {
+  expect_null(.MUST.isNamedList(list(foo = 1:2, bar = diag(2))))
+  expect_error(.MUST.isNamedList(list(1:2, diag(2))), "must be a named list")
+})
+
+test_that(".MUST.isDataFrame works", {
+  expect_null(.MUST.isDataFrame(as.data.frame(diag(2))))
+  expect_null(.MUST.isDataFrame(data.frame(foo = 1:2, bar = c("bar", "baz"))))
+  expect_error(.MUST.isDataFrame(diag(2)),
+               "could not be coerced to a data frame"
+  )
+})
+
+test_that(".MUST.hasMultipleRows works", {
+  expect_null(.MUST.hasMultipleRows(diag(2)))
+  expect_null(.MUST.hasMultipleRows(as.data.frame(diag(2))))
+  expect_null(
+    .MUST.hasMultipleRows(data.frame(foo = 1:2, bar = c("bar", "baz")))
+  )
+  expect_error(.MUST.hasMultipleRows(diag(1)), "must contain at least two rows")
+  expect_error(.MUST.hasMultipleRows(data.frame(foo = 1, bar = "bar")),
+               "must contain at least two rows"
+  )
+  expect_error(.MUST.hasMultipleRows(matrix()), "must contain at least two rows")
+  expect_error(
+    .MUST.hasMultipleRows(data.frame(foo = numeric(0), bar = character(0))),
+    "must contain at least two rows"
+  )
+  expect_error(.MUST.hasMultipleRows(NULL), "must contain at least two rows")
   foo <- data.frame(a = 1, b = 1, c = 2)
   foo2 <- rbind(foo, foo)
   expect_error(
-    .hasAtLeastTwoRows(foo),
-    "need at least two data rows"
+    .MUST.hasMultipleRows(foo),
+    "must contain at least two rows"
   )
-  expect_null(.hasAtLeastTwoRows(foo2))
+  expect_null(.MUST.hasMultipleRows(foo2))
 })
 
-test_that(".isDataCol and similar checks work correctly", {
-  dat <- simulateToyData(sample_size = 5)
-  expect_null(.isDataCol(dat, "CloneSeq", "argument"))
-  expect_null(.isDataCol(dat, 1, "argument"))
-  expect_null(.isDataColOrNull(dat, "CloneSeq", "argument"))
-  expect_null(.isDataColOrNull(dat, NULL, "argument"))
-  expect_null(.isDataCols(dat, "CloneSeq", "argument"))
+
+
+# Column References -------------------------------------------------------
+
+
+test_that(".MUST.isDataColref works", {
+  expect_null(.MUST.isDataColref("CloneSeq", dat, "argument"))
+  expect_null(.MUST.isDataColref(1, dat, "argument"))
+  expect_null(.orNull(.MUST.isDataColref, "CloneSeq", data = dat))
+  expect_true(.orNull(.MUST.isDataColref, NULL, data = dat))
+  expect_null(.MUST.isDataColrefs("CloneSeq", dat, "argument"))
   expect_null(
-    .isDataCols(dat, c("CloneSeq", "CloneCount"), "argument")
+    .MUST.isDataColrefs(c("CloneSeq", "CloneCount"), dat, "argument")
   )
   expect_null(
-    .isDataColsOrNull(dat, c("CloneSeq", "CloneCount"), "argument")
+    .orNull(.MUST.isDataColrefs, c("CloneSeq", "CloneCount"), data = dat)
   )
-  expect_null(.isDataColsOrNull(dat, NULL, "argument"))
-  expect_error(
-    .isDataCol(dat, NULL, "argument"),
-    "argument is required but value is NULL"
-  )
-  expect_error(
-    .isDataCol(dat, TRUE, "argument"),
-    "argument must be of type character or numeric"
+  expect_true(.orNull(.MUST.isDataColrefs, NULL, data = dat))
+  expect_error(.MUST.isDataColref(NULL, dat, "argument"),
+               "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, NA, "argument"),
-    "argument must be of type character or numeric"
+    .MUST.isDataColref(TRUE, dat, "argument"),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, c(1, 2), "argument"),
-    "argument must have length 1"
+    .MUST.isDataColref(NA, dat, "argument"),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, c("CloneSeq", "CloneCount"), "argument"),
-    "argument must have length 1"
+    .MUST.isDataColref(c(1, 2), dat, "argument"),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, character(0), "argument"),
-    "argument must have length 1"
+    .MUST.isDataColref(c("CloneSeq", "CloneCount"), dat, "argument"),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, numeric(0), "argument"),
-    "argument must have length 1"
+    .MUST.isDataColref(character(0), dat, "argument"),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, "foo", "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColref(numeric(0), dat),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, NaN, "argument"),
-    "argument is of type numeric and hence must contain finite values"
+    .MUST.isDataColref("foo", dat),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, Inf, "argument"),
-    "argument is of type numeric and hence must contain finite values"
+    .MUST.isDataColref(NaN, dat),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, 1.1, "argument"),
-    "argument is of type numeric and hence must be integer-valued"
+    .MUST.isDataColref(Inf, dat),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, 10, "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColref(1.1, dat),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, 0, "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColref(10, dat),
+    "must specify a data column"
   )
   expect_error(
-    .isDataCol(dat, -5, "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColref(0, dat),
+    "must specify a data column"
+  )
+  expect_error(
+    .MUST.isDataColref(-5, dat),
+    "must specify a data column"
   )
 
   expect_error(
-    .isDataCols(dat, NULL, "argument"),
-    "argument is required but value is NULL"
+    .MUST.isDataColrefs(NULL, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, TRUE, "argument"),
-    "argument must be of type character or numeric"
+    .MUST.isDataColrefs(TRUE, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, NA, "argument"),
-    "argument must be of type character or numeric"
+    .MUST.isDataColrefs(NA, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, character(0), "argument"),
-    "argument must have positive length"
+    .MUST.isDataColrefs(character(0), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, numeric(0), "argument"),
-    "argument must have positive length"
+    .MUST.isDataColrefs(numeric(0), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, "foo", "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColrefs("foo", dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, NaN, "argument"),
-    "argument is of type numeric and hence must contain finite values"
+    .MUST.isDataColrefs(NaN, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, Inf, "argument"),
-    "argument is of type numeric and hence must contain finite values"
+    .MUST.isDataColrefs(Inf, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, 1.1, "argument"),
-    "argument is of type numeric and hence must be integer-valued"
+    .MUST.isDataColrefs(1.1, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, 10, "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColrefs(10, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, 0, "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColrefs(0, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, -5, "argument"),
-    "argument must specify a valid column within the data"
+    .MUST.isDataColrefs(-5, dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c("foo", NA), "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isDataColrefs(c("foo", NA), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c(1, NA), "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isDataColrefs(c(1, NA), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c(1, NaN), "argument"),
-    "argument must not contain NA/NaNs"
+    .MUST.isDataColrefs(c(1, NaN), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c("CloneSeq", "foo"), "argument"),
-    "each element of argument must specify a valid column within the data"
+    .MUST.isDataColrefs(c("CloneSeq", "foo"), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c(1, Inf), "argument"),
-    "each element of argument is of type numeric and hence must contain finite values"
+    .MUST.isDataColrefs(c(1, Inf), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c(1, 1.1), "argument"),
-    "each element of argument is of type numeric and hence must be integer-valued"
+    .MUST.isDataColrefs(c(1, 1.1), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c(1, 10), "argument"),
-    "each element of argument must specify a valid column within the data"
+    .MUST.isDataColrefs(c(1, 10), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c(1, 0), "argument"),
-    "each element of argument must specify a valid column within the data"
+    .MUST.isDataColrefs(c(1, 0), dat),
+    "must specify one or more data columns"
   )
   expect_error(
-    .isDataCols(dat, c(1, -10), "argument"),
-    "each element of argument must specify a valid column within the data"
+    .MUST.isDataColrefs(c(1, -10), dat),
+    "must specify one or more data columns"
   )
 
 })
+
+
+test_that(".checkDataColrefs works", {
+  expect_equal(.checkDataColrefs("CloneSeq", dat), "CloneSeq")
+  expect_equal(.checkDataColrefs(c("CloneSeq", "CloneCount"), dat),
+               c("CloneSeq", "CloneCount")
+  )
+  expect_equal(.checkDataColrefs(colnames(dat), dat),
+               colnames(dat)
+  )
+  expect_equal(.checkDataColrefs(1, dat), 1)
+  expect_equal(.checkDataColrefs(1:4, dat), 1:4)
+  expect_warning(.checkDataColrefs("foo", dat), "one or more values")
+  expect_warning(.checkDataColrefs(c("CloneSeq", "foo"), dat),
+                 "one or more values"
+  )
+  expect_warning(.checkDataColrefs(0, dat), "one or more values")
+  expect_warning(.checkDataColrefs(-1, dat), "one or more values")
+  expect_warning(.checkDataColrefs(20, dat), "one or more values")
+  expect_warning(.checkDataColrefs(c(1, 20), dat), "one or more values")
+  expect_warning(.checkDataColrefs(c(1, -1), dat), "one or more values")
+  expect_warning(.checkDataColrefs(c(1, 0), dat), "one or more values")
+  expect_warning(.checkDataColrefs(character(0), dat), "one or more values")
+  expect_warning(.checkDataColrefs(numeric(0), dat), "one or more values")
+  expect_warning(.checkDataColrefs(TRUE, dat), "one or more values")
+})
+
+
+test_that(".checkDataForColref works", {
+  expect_equal(.checkDataForColref("CloneSeq", dat, .isCharVector), "CloneSeq")
+  expect_equal(.checkDataForColref("CloneCount", dat, .isIntegerVector),
+               "CloneCount"
+  )
+  expect_warning(.checkDataForColref("CloneSeq", dat, .isIntegerVector),
+                 "with the correct properties."
+  )
+  expect_warning(.checkDataForColref("CloneCount", dat, .isCharVector),
+                 "with the correct properties."
+  )
+})
+
+# AIRR-Seq Data -----------------------------------------------------------
+
+
 
 test_that(".isValidSeqVector works correctly", {
-    expect_error(
-      .isValidSeqVector(NULL),
-      "specified column or vector of receptor sequences must have positive length"
-    )
-    expect_error(
-      .isValidSeqVector(character(0)),
-      "specified column or vector of receptor sequences must have positive length"
-    )
-    expect_error(
-      .isValidSeqVector(NA),
-      "specified column or vector of receptor sequences contains only NA values after being coerced to a character vector"
-    )
-    expect_error(
-      .isValidSeqVector(c(NA, NA)),
-      "specified column or vector of receptor sequences contains only NA values after being coerced to a character vector"
-    )
-    expect_null(.isValidSeqVector("foo"))
-  expect_null(.isValidSeqVector(1))
-  expect_null(.isValidSeqVector(c("foo", "bar")))
-  expect_null(.isValidSeqVector(c("foo", NA)))
-  expect_null(.isValidSeqVector(1:2))
-  expect_null(.isValidSeqVector(c(1, NA, NaN, Inf)))
-  expect_null(.isValidSeqVector(as.factor(c("foo", "bar", "bar"))))
+  expect_error(
+    .MUST.isValidSeqVector(NULL),
+    "must be coercible to a character vector with at least one non-NA value"
+  )
+  expect_error(
+    .MUST.isValidSeqVector(character(0)),
+    "must be coercible to a character vector with at least one non-NA value"
+  )
+  expect_error(
+    .MUST.isValidSeqVector(NA),
+    "must be coercible to a character vector with at least one non-NA value"
+  )
+  expect_error(
+    .MUST.isValidSeqVector(c(NA, NA)),
+    "must be coercible to a character vector with at least one non-NA value"
+  )
+  expect_null(.MUST.isValidSeqVector("foo"))
+  expect_null(.MUST.isValidSeqVector(1))
+  expect_null(.MUST.isValidSeqVector(c("foo", "bar")))
+  expect_null(.MUST.isValidSeqVector(c("foo", NA)))
+  expect_null(.MUST.isValidSeqVector(1:2))
+  expect_null(.MUST.isValidSeqVector(c(1, NA, NaN, Inf)))
+  expect_null(.MUST.isValidSeqVector(as.factor(c("foo", "bar", "bar"))))
 })
 
-test_that(".isSeqCol works correctly", {
-  dat <- simulateToyData(sample_size = 5)
+test_that(".MUST.isSeqColref works correctly", {
   expect_error(
-    .isSeqCol(dat, NULL),
-    "seq_col is required but value is NULL"
+    .MUST.isSeqColref(NULL, dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, c("CloneSeq", "CloneCount", "CloneFreq")),
-    "seq_col must have length 1 or 2"
+    .MUST.isSeqColrefs(c("CloneSeq", "CloneCount", "CloneFreq"), dat),
+    "does not reference one or two columns of"
   )
   expect_error(
-    .isSeqCol(dat, character(0)),
-    "seq_col must have length 1 or 2"
+    .MUST.isSeqColref(character(0), dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, numeric(0)),
-    "seq_col must have length 1 or 2"
+    .MUST.isSeqColref(numeric(0), dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, "foo"),
-    "seq_col must specify a valid column within the data"
+    .MUST.isSeqColref("foo", dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, 1.1),
-    "seq_col is of type numeric and hence must be integer-valued"
+    .MUST.isSeqColref(1.1, dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, 0),
-    "seq_col must specify a valid column within the data"
+    .MUST.isSeqColref(0, dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, 10),
-    "seq_col must specify a valid column within the data"
+    .MUST.isSeqColref(10, dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, -5),
-    "seq_col must specify a valid column within the data"
+    .MUST.isSeqColref(-5, dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, c("CloneSeq", "foo")),
-    "each element of seq_col must specify a valid column within the data"
+    .MUST.isSeqColref(c("CloneSeq", "CloneCount"), dat),
+    "does not reference a column of"
   )
   expect_error(
-    .isSeqCol(dat, c(-1, -5)),
-    "each element of seq_col must specify a valid column within the data"
+    .MUST.isSeqColrefs(c("CloneSeq", "foo"), dat),
+    "does not reference one or two columns of"
   )
   expect_error(
-    .isSeqCol(dat, c(1, -5)),
-    "each element of seq_col must specify a valid column within the data"
+    .MUST.isSeqColrefs(c(-1, -5), dat),
+    "does not reference one or two columns of"
   )
   expect_error(
-    .isSeqCol(dat, c(1, 1.1)),
-    "each element of seq_col is of type numeric and hence must be integer-valued"
+    .MUST.isSeqColrefs(c(1, -5), dat),
+    "does not reference one or two columns of"
   )
-  expect_null(.isSeqCol(dat, "CloneSeq"))
-  expect_null(.isSeqCol(dat, "CloneCount"))
-  expect_null(.isSeqCol(dat, c("CloneSeq", "CloneCount")))
+  expect_error(
+    .MUST.isSeqColrefs(c(1, 1.1), dat),
+    "does not reference one or two columns of"
+  )
+  expect_null(.MUST.isSeqColref("CloneSeq", dat))
+  expect_null(.MUST.isSeqColref("CloneCount", dat))
+  expect_null(.MUST.isSeqColrefs(c("CloneSeq", "CloneCount"), dat))
 })
 
-test_that(".hasElement works correctly", {
-  foo <- c("first" = 1, "second" = 2, "third" = 3)
-  expect_error(
-    .hasElement(foo, "argument", "fourth"),
-    "argument does not contain an element named fourth"
+
+test_that(".isCountColref works", {
+  expect_null(.MUST.isCountColref("CloneCount", dat))
+  expect_null(.MUST.isCountColref("CloneFrequency", dat))
+  expect_error(.MUST.isCountColref("CloneSeq", dat),
+               "that contains numeric values"
   )
-  expect_error(
-    .hasElement(NULL, "argument", "first"),
-    "argument does not contain an element named first"
-  )
-  expect_error(
-    .hasElement(1:3, "argument", "first"),
-    "argument does not contain an element named first"
-  )
-  expect_error(
-    .hasElement(c("first", "second", "third"), "argument", "first"),
-    "argument does not contain an element named first"
-  )
-  expect_null(.hasElement(foo, "argument", "first"))
 })
 
-test_that("network output type checks work correctly", {
-  dat <- simulateToyData()
-  net <- buildRepSeqNetwork(
-    dat, "CloneSeq", cluster_stats = TRUE, plots = FALSE, output_dir = NULL
+test_that(".checkCountCol works", {
+  expect_equal(.checkCountCol("CloneCount", dat), "CloneCount")
+  expect_equal(.checkCountCol("CloneFrequency", dat), "CloneFrequency")
+  expect_warning(.checkCountCol("CloneSeq", dat),
+                 "or does not specify a numeric variable of"
   )
-  net$plots <- list("first" = ggraph::ggraph(net$igraph))
+})
+
+# Network Objects ---------------------------------------------------------
+
+
+test_that("network object type checks work correctly", {
+
+  expect_null(.MUST.isIgraph(net$igraph))
+  expect_null(.MUST.isIgraph(net0$igraph))
   expect_error(
-    .isIgraph(net$node_data, "argument"),
-    "argument must be of class igraph"
+    .MUST.isIgraph(net$node_data, "argument"),
+    paste("must be of class", dQuote("igraph"))
   )
+
+  expect_null(.MUST.isGgraph(net$plots[[1]]))
+  expect_null(.MUST.isGgraph(net0$plots[[1]]))
   expect_error(
-    .isGgraph(net$plots, "argument"),
-    "argument must be of class ggraph"
+    .MUST.isGgraph(net$plots, "argument"),
+    paste("must be of class", dQuote("ggraph"))
   )
-  expect_error(
-    .isDataFrame(net$plots, "argument"),
-    "argument must be a data frame"
-  )
-  expect_error(
-    .isList(net$adjacency_matrix, "argument"),
-    "argument must be a list"
-  )
-  expect_error(
-    .isAdjacencyMatrix(net, "argument"),
-    "argument must be a matrix or sparseMatrix"
-  )
-  expect_error(
-    .isAdjacencyMatrix(matrix(0, nrow = 1, ncol = 2), "argument"),
-    "argument must have the same row and column dimensions"
-  )
-  expect_error(
-    .isAdjacencyMatrix(matrix(2, nrow = 2, ncol = 2), "argument"),
-    "argument contains values other than 0 or 1"
-  )
-  expect_error(
-    .isBaseNetworkOutput(net$node_data, "argument"),
-    "argument does not contain an element named node_data"
-  )
-  expect_error(
-    .checkIgraphAgainstData(1, diag(2)),
-    "number of nodes in igraph does not match number of rows in data"
-  )
-  expect_error(
-    .checkIgraphAgainstMatrix(1, diag(2)),
-    "number of nodes in igraph does not match dimensions of adjacency matrix"
-  )
-  expect_error(
-    .checkDataAgainstMatrix(diag(3), diag(2)),
-    "number of data rows does not match dimensions of the adjacency matrix"
-  )
+
   expect_null(
-    .isAdjacencyMatrix(matrix(0, nrow = 2, ncol = 2), "argument")
+    .MUST.isAdjacencyMatrix(matrix(0, nrow = 2, ncol = 2), "argument")
   )
-  expect_null(.isBaseNetworkOutput(net, "argument"))
-  expect_null(.hasNodeAndClusterData(net, "argument"))
-  expect_null(.isPlotlist(net$plots, "argument"))
+  expect_error(
+    .MUST.isAdjacencyMatrix(net, "argument"),
+    "must be a symmetric matrix"
+  )
+  expect_error(
+    .MUST.isAdjacencyMatrix(net, "argument"),
+    "must be a symmetric matrix"
+  )
+  expect_error(
+    .MUST.isAdjacencyMatrix(matrix(0, nrow = 1, ncol = 2), "argument"),
+    "must be a symmetric matrix"
+  )
+  expect_error(
+    .MUST.isAdjacencyMatrix(matrix(2, nrow = 2, ncol = 2), "argument"),
+    "must be a symmetric matrix"
+  )
+
+  expect_null(.MUST.isLayout(net$plots$graph_layout))
+  expect_null(.MUST.isLayout(net0$plots$graph_layout))
+  expect_error(.MUST.isLayout(diag(3)),
+               "must be a nonempty two-column numeric matrix"
+  )
+
+  expect_null(.MUST.isPlotlist(net$plots))
+  expect_null(.MUST.isPlotlist(net0$plots))
+  expect_error(.MUST.isPlotlist(net), "and possibly a two-column numeric")
+
 })
 
-test_that(".isDistType works correctly", {
+
+# Correspondence of network objects ---------------------------------------
+
+
+
+test_that("Checks for correspondence of network objects work", {
+
+  expect_null(.MUST.doesIgraphMatchData(net$igraph, net$node_data))
+  expect_null(.MUST.doesIgraphMatchData(net0$igraph, net0$node_data))
   expect_error(
-    .isDistType("foo"),
-    "Invalid option for dist_type argument"
+    .MUST.doesIgraphMatchData(net$igraph, net0$node_data),
+    "must have length equal to row dimension of"
   )
-  expect_null(.isDistType("lev"))
+
+  expect_null(.MUST.doesIgraphMatchMatrix(net$igraph, net$adjacency_matrix))
+  expect_null(.MUST.doesIgraphMatchMatrix(net0$igraph, net0$adjacency_matrix))
+  expect_error(
+    .MUST.doesIgraphMatchMatrix(net$igraph, net0$adjacency_matrix),
+    "must have length equal to row dimension of"
+  )
+
+  expect_null(.MUST.doesDataMatchMatrix(net$node_data, net$adjacency_matrix))
+  expect_null(.MUST.doesDataMatchMatrix(net0$node_data, net0$adjacency_matrix))
+  expect_error(
+    .MUST.doesDataMatchMatrix(net$node_data, net0$adjacency_matrix),
+    "must have the same row dimension"
+  )
+
+  expect_null(.MUST.doesPlotMatchData(net$plots[[1]], net$node_data))
+  expect_null(.MUST.doesPlotMatchData(net0$plots[[1]], net0$node_data))
+  expect_error(
+    .MUST.doesPlotMatchData(net$plots[[1]], net0$node_data),
+    "has node count not equal to the row dimension of"
+  )
+
+  expect_null(.MUST.doesLayoutMatchData(net$plots$graph_layout, net$node_data))
+  expect_null(
+    .MUST.doesLayoutMatchData(net0$plots$graph_layout, net0$node_data)
+  )
+  expect_error(
+    .MUST.doesLayoutMatchData(net$plots$graph_layout, net0$node_data),
+    "must be NULL or a two-column matrix"
+  )
+
+
+  # Network list ------------------------------------------------------------
+
+
 })
+
+test_that("Checks for network output list work", {
+
+  expect_null(.MUST.hasIgraph(net))
+  expect_null(.MUST.hasIgraph(net0))
+  expect_error(.MUST.hasIgraph(net$plots), "must contain an object of class")
+
+  expect_null(.MUST.hasAdjacencyMatrix(net))
+  expect_null(.MUST.hasAdjacencyMatrix(net0))
+  expect_error(.MUST.hasAdjacencyMatrix(net$plots), "must contain a symmetric")
+
+  expect_null(.MUST.hasNodeData(net, "argument"))
+  expect_null(.MUST.hasNodeData(net0, "argument"))
+  expect_error(.MUST.hasNodeData(net$plots), "nonempty data frame named")
+
+  expect_null(.MUST.hasDetails(net))
+  expect_null(.MUST.hasDetails(net0))
+  expect_error(.MUST.hasDetails(net$plots), "nonempty named list named")
+
+  expect_null(.MUST.hasClusterData(net, "argument"))
+  expect_error(.MUST.hasClusterData(net0), "integer-valued variable named")
+
+  expect_null(.MUST.hasPlots(net))
+  expect_null(.MUST.hasPlots(net0))
+  expect_error(.MUST.hasPlots(net$plots), "possibly a two-column")
+
+  expect_null(.MUST.isBaseNetworkOutput(net, "argument"))
+  expect_null(.MUST.isBaseNetworkOutput(net0, "argument"))
+  expect_error(
+    .MUST.isBaseNetworkOutput(net$node_data, "argument"),
+    paste("must be a named list containing elements",
+          paste0(dQuote("igraph"), ","),
+          dQuote("adjacency_matrix"), "and", paste0(dQuote("node_data"), ","),
+          "all corresponding to the same network"
+    )
+  )
+})
+
+
+
+# File Input Arguments ----------------------------------------------------
+
 
 test_that(".isInputType works correctly", {
   valid_input_types <- c("csv", "table", "tsv", "txt", "rds", "rda")
   for (i in 1:length(valid_input_types)) {
-    expect_null(.isInputType(valid_input_types[[i]]))
+    expect_true(.isInputType(valid_input_types[[i]]))
   }
-  valid_input_types <- paste(valid_input_types, collapse = ", ")
   expect_error(
-    .isInputType("foo"),
-    paste("input_type must be one of:", valid_input_types)
+    .MUST.isInputType("foo"),
+    "must be one of:"
+  )
+
+})
+
+
+test_that(".checkargs.InputFiles works correctly", {
+  x <- NULL
+  y <- NULL
+  z <- NULL
+  file_a <- file.path(tempdir(), "a.rds")
+  file_b <- file.path(tempdir(), "b.rds")
+  file_c <- file.path(tempdir(), "c.rds")
+  con_b <- file(file_b)
+  con_c <- gzfile(file_c)
+  saveRDS(x, file = file_a)
+  saveRDS(y, file = file_b)
+  saveRDS(z, file = file_c)
+  good_file_list <- c(file_a, file_b, file_c)
+  good_file_list_b <- list(file_a, con_b, con_c)
+  bad_file_list <- c(file_a, file_b, "foo")
+  bad_file_list_b <- list(file_a, con_b, "foo")
+  bad_file_list_c <- c(file_a, file_a, file_b)
+  bad_file_list_d <- list(file_a, con_b, diag(3))
+  bad_file_list_e <- list(file_a, con_b, c("foo", "bar"))
+  bad_file_list_f <- 5
+  good_data_symbols_1 <- c("x", "y", "z")
+  good_data_symbols_2 <- "x"
+  good_readargs <- list(sep = "", header = TRUE, row.names = 1)
+  bad_readargs <- c(sep = "", header = TRUE)
+  bad_readargs_b <- list(sep = "", foo = "bar")
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "rda", good_data_symbols_1, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "rda", good_data_symbols_2, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "rds", good_data_symbols_2, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "csv", good_data_symbols_2, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "rds", good_data_symbols_2, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "txt", good_data_symbols_2, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "tsv", good_data_symbols_2, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "tsv", NULL, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "table", NULL, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "table", 3, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list_b, "tsv", NULL, TRUE, "")
+  )
+  expect_null(
+    .checkargs.InputFiles(good_file_list, "tsv", NULL, TRUE, "", good_readargs)
+  )
+  expect_error(
+    .checkargs.InputFiles(good_file_list, "tsv", NULL, TRUE, "", bad_readargs),
+    "must be a named list"
+  )
+  expect_error(
+    .checkargs.InputFiles(good_file_list, "tsv", NULL, "", ""),
+    "must evaluate to"
+  )
+  expect_error(
+    .checkargs.InputFiles(good_file_list, "tsv", NULL, TRUE, TRUE),
+    "must be a character string"
+  )
+  expect_error(
+    .checkargs.InputFiles(good_file_list, "tsv", NULL, TRUE, "", bad_readargs),
+    "must be a named list"
+  )
+  expect_warning(.checkReadArgs(bad_readargs_b, TRUE, ""), "dropping argument")
+  expect_error(
+    .checkargs.InputFiles(good_file_list, "rda", 3, TRUE, ""),
+    "must be a nonempty character vector"
+  )
+  expect_error(
+    .checkargs.InputFiles(good_file_list, "rda", c("x", "y"), TRUE, ""),
+    "must have length 1 or equal to that of"
+  )
+  expect_error(
+    .checkargs.InputFiles(bad_file_list, "rds", NULL, TRUE, ""),
+    "nonexistent files"
+  )
+  expect_error(
+    .checkargs.InputFiles(bad_file_list_b, "rds", NULL, TRUE, ""),
+    "nonexistent files"
+  )
+  expect_error(
+    .checkargs.InputFiles(bad_file_list_c, "rds", NULL, TRUE, ""),
+    "duplicate values"
+  )
+  expect_error(
+    .checkargs.InputFiles(bad_file_list_d, "rds", NULL, TRUE, ""),
+    "contains elements other than"
+  )
+  expect_error(
+    .checkargs.InputFiles(bad_file_list_e, "rds", NULL, TRUE, ""),
+    "contains elements other than"
+  )
+  expect_error(
+    .checkargs.InputFiles(bad_file_list_f, "rds", NULL, TRUE, ""),
+    "or a list of character strings and connections"
   )
 })
 
+
+# File Output Arguments ---------------------------------------------------
+
 test_that(".isOutputType works correctly", {
-  expect_warning(
-    .isOutputType("csv"),
-    "output_type is invalid. Defaulting to rda"
+  expect_false(
+    .isOutputType("csv")
   )
-  expect_warning(
-    .isOutputType("tsv", "findPublicClusters"),
-    "output_type is invalid. Defaulting to rds"
+  expect_false(
+    .isOutputType("tsv", "findPublicClusters")
   )
-  expect_warning(
-    .isOutputType("individual", "findPublicClusters"),
-    "output_type is invalid. Defaulting to rds"
+  expect_false(
+    .isOutputType("individual", "findPublicClusters")
   )
-  expect_warning(
-    .isOutputType("individual", "findAssociatedClones"),
-    "output_type is invalid. Defaulting to csv"
+  expect_false(
+    .isOutputType("individual", "findAssociatedClones")
   )
-  expect_warning(
-    .isOutputType("table", "findAssociatedClones"),
-    "output_type is invalid. Defaulting to csv"
+  expect_true(
+    .isOutputType("table", "findAssociatedClones")
   )
-  expect_warning(
-    .isOutputType("individual", "generic"),
-    "output_type is invalid. Defaulting to rda"
+  expect_false(
+    .isOutputType("individual", "generic")
   )
-  expect_null(
+  expect_true(
     .isOutputType("individual")
   )
-  expect_null(
+  expect_true(
     .isOutputType("rds", "findPublicClusters")
   )
-  expect_null(
+  expect_true(
     .isOutputType("tsv", "findAssociatedClones")
   )
-  expect_null(
+  expect_true(
     .isOutputType("table", "generic")
   )
 })
 
-test_that(".checkColorNodesBy works correctly", {
-  dat <- simulateToyData(sample_size = 5)
-  expect_error(
-    .checkColorNodesBy("foo", dat),
-    "color_nodes_by specifies one or more variables not present in data or among the node-level network properties to be computed"
+test_that(".checkOutputName works", {
+  expect_equal(.checkOutputName("foo_bar-123"), "foo_bar-123")
+  expect_warning(.checkOutputName(NULL),
+                 paste("Defaulting to", dQuote("MyRepSeqNetwork"))
   )
-  expect_error(
-    .checkColorNodesBy("degree", dat),
-    "color_nodes_by specifies one or more variables not present in data or among the node-level network properties to be computed"
+  expect_warning(.checkOutputName(c("foo", "bar")),
+                 paste("Defaulting to", dQuote("MyRepSeqNetwork"))
   )
-  expect_error(
-    .checkColorNodesBy(c("CloneSeq", "degree"), dat),
-    "color_nodes_by specifies one or more variables not present in data or among the node-level network properties to be computed"
+  expect_warning(.checkOutputName(""),
+                 paste("Defaulting to", dQuote("MyRepSeqNetwork"))
   )
-  expect_null(
-    .checkColorNodesBy(c("CloneSeq", "CloneCount"), dat)
+  expect_warning(.checkOutputName("_-."),
+                 paste("Value changed to", dQuote("MyRepSeqNetwork"))
   )
-  expect_null(
-    .checkColorNodesBy("CloneSeq", dat)
+  expect_warning(.checkOutputName("foo.bar"),
+                 paste("Value changed to", dQuote("foo_bar"))
   )
-  expect_null(
-    .checkColorNodesBy("auto", dat)
-  )
-  expect_null(
-    .checkColorNodesBy("degree", dat, node_stats = TRUE)
-  )
-  expect_null(
-    .checkColorNodesBy(c("CloneSeq", "degree"), dat, node_stats = TRUE)
-  )
-  expect_null(
-    .checkColorNodesBy("foo", dat, plots = FALSE)
-  )
-  expect_null(
-    .checkColorNodesBy(NULL, dat)
+  expect_warning(.checkOutputName("_foo-bar."),
+                 paste("Value changed to", dQuote("foo-bar"))
   )
 })
 
-test_that(".checkColorScheme works correctly", {
+test_that(".checkOutfileLayout works", {
+  expect_equal(.checkOutfileLayout("foo", net$plots), "foo")
+  expect_equal(.checkOutfileLayout("foo", net0$plots), "foo")
+  expect_warning(.checkOutfileLayout("foo", net1), "valid layout matrix")
+})
+
+
+# Network Analysis Arguments ----------------------------------------------
+
+
+
+test_that(".isDistType works correctly", {
   expect_error(
-    .checkColorScheme("foo", "CloneSeq"),
-    "color_scheme contains one or more values which are not supported"
+    .MUST.isDistType("foo"),
+    paste("must be", dQuote("hamming"), "or", dQuote("levenshtein"))
   )
-  expect_error(
-    .checkColorScheme(c("viridis", "foo"), c("CloneSeq", "CloneCount")),
-    "color_scheme contains one or more values which are not supported"
+  expect_null(.MUST.isDistType("levenshtein"))
+  expect_null(.MUST.isDistType("lev"))
+  expect_null(.MUST.isDistType("l"))
+  expect_null(.MUST.isDistType("Levenshtein"))
+  expect_null(.MUST.isDistType("Lev"))
+  expect_null(.MUST.isDistType("L"))
+  expect_null(.MUST.isDistType("h"))
+  expect_null(.MUST.isDistType("ham"))
+  expect_null(.MUST.isDistType("hamming"))
+  expect_null(.MUST.isDistType("H"))
+  expect_null(.MUST.isDistType("Ham"))
+  expect_null(.MUST.isDistType("Hamming"))
+
+  expect_equal(.matchDistType("levenshtein"), "levenshtein")
+  expect_equal(.matchDistType("lev"), "levenshtein")
+  expect_equal(.matchDistType("l"), "levenshtein")
+  expect_equal(.matchDistType("Levenshtein"), "levenshtein")
+  expect_equal(.matchDistType("Lev"), "levenshtein")
+  expect_equal(.matchDistType("L"), "levenshtein")
+  expect_equal(.matchDistType("h"), "hamming")
+  expect_equal(.matchDistType("ham"), "hamming")
+  expect_equal(.matchDistType("hamming"), "hamming")
+  expect_equal(.matchDistType("H"), "hamming")
+  expect_equal(.matchDistType("Ham"), "hamming")
+  expect_equal(.matchDistType("Hamming"), "hamming")
+
+  expect_equal(.checkDistType("levenshtein"), "levenshtein")
+  expect_equal(.checkDistType("lev"), "levenshtein")
+  expect_equal(.checkDistType("l"), "levenshtein")
+  expect_equal(.checkDistType("Levenshtein"), "levenshtein")
+  expect_equal(.checkDistType("Lev"), "levenshtein")
+  expect_equal(.checkDistType("L"), "levenshtein")
+  expect_equal(.checkDistType("h"), "hamming")
+  expect_equal(.checkDistType("ham"), "hamming")
+  expect_equal(.checkDistType("hamming"), "hamming")
+  expect_equal(.checkDistType("H"), "hamming")
+  expect_equal(.checkDistType("Ham"), "hamming")
+  expect_equal(.checkDistType("Hamming"), "hamming")
+  expect_warning(.checkDistType("foo"), "invalid.")
+})
+
+
+test_that(".checkStatsToInclude works correctly", {
+  expect_warning(
+    .checkStatsToInclude(NULL)
   )
-  expect_error(
-    .checkColorScheme(c("foo", "bar", "baz"), c("CloneSeq", "CloneCount")),
-    "color_scheme must have length 1 or the same length as color_nodes_by"
+  expect_warning(
+    .checkStatsToInclude("foo")
   )
-  expect_null(
-    .checkColorScheme("viridis", c("CloneSeq", "CloneCount"))
+  expect_warning(
+    .checkStatsToInclude(c("degree" = TRUE, "cluster_id" = TRUE))
   )
-  expect_null(
-    .checkColorScheme(c("viridis", "default"), c("CloneSeq", "CloneCount"))
+  expect_equal(
+    .checkStatsToInclude(chooseNodeStats()), chooseNodeStats()
   )
-  expect_null(
-    .checkColorScheme(NULL, NULL)
+  expect_equal(
+    .checkStatsToInclude(exclusiveNodeStats()), exclusiveNodeStats()
   )
-  expect_null(
-    .checkColorScheme("foo", "CloneSeq", plots = FALSE)
+  expect_equal(.checkStatsToInclude("all"), chooseNodeStats(all_stats = TRUE))
+})
+
+
+test_that(".isClusterFun works correctly", {
+  expect_false(
+    .isClusterFun(NULL)
+  )
+  expect_false(
+    .isClusterFun(diag(5))
+  )
+  expect_false(
+    .isClusterFun(log)
+  )
+  expect_false(
+    .isClusterFun(NA)
+  )
+  expect_false(
+    .isClusterFun(0)
+  )
+  expect_false(
+    .isClusterFun(c("cluster_fast_greedy", "cluster_leiden"))
+  )
+  expect_false(
+    .isClusterFun("log")
+  )
+  expect_true(
+    .isClusterFun("cluster_fast_greedy")
+  )
+  expect_true(
+    .isClusterFun("cluster_leiden")
+  )
+  expect_true(
+    .isClusterFun("fast_greedy")
   )
 })
+
+
+# Plotting Arguments ------------------------------------------------------
+
 
 test_that(".checkSizeNodesBy works correctly", {
   dat <- simulateToyData(sample_size = 5)
-  expect_error(
-    .checkSizeNodesBy(1:2, dat),
-    "size_nodes_by is non-null and hence must have length 1"
+  expect_warning(
+    .checkSizeNodesBy(1:2, dat)
   )
-  expect_error(
-    .checkSizeNodesBy("foo", dat),
-    "size_nodes_by is of type character and hence must specify a valid column within the data"
+  expect_warning(
+    .checkSizeNodesBy("foo", dat)
   )
-  expect_error(
-    .checkSizeNodesBy(0, dat),
-    "size_nodes_by is of type numeric and hence must be strictly positive"
+  expect_warning(
+    .checkSizeNodesBy(0, dat)
   )
-  expect_null(
-    .checkSizeNodesBy("CloneSeq", dat)
+  expect_equal(
+    .checkSizeNodesBy("CloneSeq", dat), "CloneSeq"
   )
-  expect_null(
-    .checkSizeNodesBy(1.5, dat)
+  expect_equal(
+    .checkSizeNodesBy("CloneCount", dat), "CloneCount"
   )
-  expect_null(
-    .checkSizeNodesBy(NULL, dat)
+  expect_equal(
+    .checkSizeNodesBy(1.5, dat), 1.5
   )
+  expect_equal(
+    .checkSizeNodesBy(NULL, dat), NULL
+  )
+})
+
+
+test_that(".checkColorNodesBy works correctly", {
+  dat <- simulateToyData(sample_size = 5)
+  expect_warning(.checkColorNodesBy("foo", dat))
+  expect_warning(.checkColorNodesBy("degree", dat))
+  expect_warning(.checkColorNodesBy(c("CloneSeq", "degree"), dat))
+  expect_equal(.checkColorNodesBy(c("CloneSeq", "CloneCount"), dat),
+               c("CloneSeq", "CloneCount"),
+               ignore_attr = TRUE
+  )
+  expect_equal(.checkColorNodesBy("CloneSeq", dat), "CloneSeq",
+               ignore_attr = TRUE
+  )
+  expect_warning(.checkColorNodesBy("auto", dat))
+  expect_equal(.checkColorNodesBy("auto", dat, auto_ok = TRUE),
+               "auto", ignore_attr = TRUE)
+  expect_equal(.checkColorNodesBy("degree", dat, node_stats = TRUE),
+               "degree", ignore_attr = TRUE
+  )
+  expect_equal(
+    .checkColorNodesBy(c("CloneSeq", "degree"), dat, node_stats = TRUE),
+    c("CloneSeq", "degree"), ignore_attr = TRUE
+  )
+  expect_equal(.checkColorNodesBy("foo", dat, plots = FALSE), "foo",
+               ignore_attr = TRUE
+  )
+  expect_equal(.checkColorNodesBy(NULL, dat), NULL, ignore_attr = TRUE)
+})
+
+test_that(".checkColorScheme works correctly", {
+  expect_warning(.checkColorScheme("foo", "CloneSeq")
+  )
+  expect_warning(
+    .checkColorScheme(c("viridis", "foo"), c("CloneSeq", "CloneCount"))
+  )
+  expect_warning(
+    .checkColorScheme(c("foo", "bar", "baz"), c("CloneSeq", "CloneCount")),
+  )
+  expect_equal(
+    .checkColorScheme("viridis", c("CloneSeq", "CloneCount")),
+    "viridis", ignore_attr = TRUE
+  )
+  expect_equal(
+    .checkColorScheme(c("viridis", "default"), c("CloneSeq", "CloneCount")),
+    c("viridis", "default"), ignore_attr = TRUE
+  )
+  expect_equal(.checkColorScheme(NULL, NULL), NULL, ignore_attr = TRUE)
+})
+
+test_that(".checkColorTitle works correctly", {
+  expect_equal(.checkColorTitle("foo", "CloneSeq"), "foo"
+  )
+  expect_warning(
+    .checkColorTitle(c("a", "b", "c"), c("CloneSeq", "CloneCount"))
+  )
+  expect_warning(
+    .checkColorTitle(1:2, c("CloneSeq", "CloneCount")),
+  )
+  expect_equal(
+    .checkColorTitle("title", c("CloneSeq", "CloneCount")),
+    "title"
+  )
+  expect_equal(.checkColorTitle(NULL, "CloneSeq"), NULL)
+  expect_equal(.checkColorTitle(NULL, c("CloneSeq", "CloneCount")), NULL)
+  expect_equal(.checkColorTitle(NULL, NULL), NULL)
 })
 
 test_that(".checkNodeSizeLimits works correctly", {
-  expect_error(
-    .checkNodeSizeLimits(1),
-    "node_size_limits is non-null and hence must have length 2"
+  expect_warning(
+    .checkNodeSizeLimits(1)
   )
-  expect_error(
-    .checkNodeSizeLimits(c(-1, 1)),
-    "values for node_size_limits must be strictly positive"
+  expect_warning(
+    .checkNodeSizeLimits(c(-1, 1))
   )
-  expect_error(
-    .checkNodeSizeLimits(c(1, -1)),
-    "values for node_size_limits must be strictly positive"
+  expect_warning(
+    .checkNodeSizeLimits(c(1, -1))
   )
-  expect_error(
-    .checkNodeSizeLimits(c(1, 0.5)),
-    "first entry of node_size_limits cannot be greater than the second entry"
+  expect_warning(
+    .checkNodeSizeLimits(c(1, 0.5))
   )
-  expect_null(
-    .checkNodeSizeLimits(c(2, 3))
-  )
-  expect_null(
-    .checkNodeSizeLimits(NULL)
-  )
+  expect_equal(.checkNodeSizeLimits(c(2, 3)), c(2, 3), ignore_attr = TRUE)
+  expect_equal(.checkNodeSizeLimits(NULL), NULL, ignore_attr = TRUE)
 })
 
-test_that(".checkStatsToInclude works correctly", {
-  expect_error(
-    .checkStatsToInclude(NULL),
-    "stats_to_include is required but value is NULL"
-  )
-  expect_error(
-    .checkStatsToInclude("foo"),
-    "value for stats_to_include does not match required format. See help file for chooseNodeStats()"
-  )
-  expect_error(
-    .checkStatsToInclude(c("degree" = TRUE, "cluster_id" = TRUE)),
-    "value for stats_to_include does not match required format. See help file for chooseNodeStats()"
-  )
-  expect_null(
-    .checkStatsToInclude(chooseNodeStats())
-  )
-  expect_null(
-    .checkStatsToInclude(exclusiveNodeStats())
-  )
-  expect_null(
-    .checkStatsToInclude("all")
-  )
-  expect_null(
-    .checkStatsToInclude("cluster_id_only")
-  )
-})
-
-test_that(".checkClusterFun works correctly", {
-  expect_error(
-    .checkClusterFun(NULL, "argument"),
-    "argument is required but value is NULL"
-  )
-  expect_error(
-    .checkClusterFun(diag(5), "argument"),
-    "argument must have length 1"
-  )
-  expect_error(
-    .checkClusterFun(log, "argument"),
-    "argument must be a valid clustering algorithm. See help topic \"clustering_algorithms\""
-  )
-  expect_error(
-    .checkClusterFun("log", "argument"),
-    "argument must be a valid clustering algorithm. See help topic \"clustering_algorithms\""
-  )
-  expect_error(
-    .checkClusterFun(NA, "argument"),
-    "argument must be a valid clustering algorithm. See help topic \"clustering_algorithms\""
-  )
-  expect_null(
-    .checkClusterFun(cluster_fast_greedy, "argument")
-  )
-  expect_null(
-    .checkClusterFun(cluster_walktrap, "argument")
-  )
-  expect_null(
-    .checkClusterFun("cluster_fast_greedy", "argument")
+test_that(".checkPlotsAgainstLayout works", {
+  expect_null(.checkPlotsAgainstLayout(net$plots))
+  expect_null(.checkPlotsAgainstLayout(net0$plots))
+  expect_warning(.checkPlotsAgainstLayout(net2$plots),
+                 "does not match one or more of the plots contained in"
   )
 })

@@ -27,7 +27,8 @@ character strings measures the minimum number of single-character edits
 (insertions, deletions and transformations) needed to transform one string into
 the other.
 
-Compared to the Hamming distance (see \code{\link{hamDistBounded}}), the
+Compared to the Hamming distance
+(see \code{\link[=hamDistBounded]{hamDistBounded()}}), the
 Levenshtein distance is particularly useful for comparing sequences of different
 lengths, as it can account for insertions and deletions, whereas the Hamming
 distance only accounts for single-character transformations. However, the

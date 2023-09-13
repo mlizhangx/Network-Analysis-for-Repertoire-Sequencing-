@@ -24,7 +24,8 @@ getNeighborhood(
 }
   \item{seq_col}{
     Specifies the column of \code{data} containing the receptor sequences.
-    Accepts either the column name or column index.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
   \item{target_seq}{
     A character string containing the target receptor sequence. Must be a receptor
@@ -34,9 +35,10 @@ getNeighborhood(
     Specifies the function used to quantify the similarity between receptor
     sequences. The similarity between two sequences determines their pairwise
     distance, with greater similarity corresponding to shorter distance. Valid
-    options are \code{"hamming"} (the default), which uses
-    \code{\link{hamDistBounded}}, and \code{"levenshtein"}, which uses
-    \code{\link{levDistBounded}}.
+    options are \code{"hamming"} (the default), which
+    uses \code{\link[=hamDistBounded]{hamDistBounded()}},
+    and \code{"levenshtein"}, which uses
+    \code{\link[=levDistBounded]{levDistBounded()}}.
 }
   \item{max_dist}{
     Determines whether each cell/clone belongs to the neighborhood based on its
@@ -66,7 +68,7 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 }
 
 \examples{
-
+set.seed(42)
 toy_data <- simulateToyData(sample_size = 500)
 
 # Get neighborhood around first clone sequence
@@ -74,7 +76,9 @@ nbd <-
   getNeighborhood(
     toy_data,
     seq_col = "CloneSeq",
-    target_seq = toy_data$CloneSeq[[1]]
+    target_seq = "GGGGGGGAATTGG"
   )
+
+head(nbd)
 
 }

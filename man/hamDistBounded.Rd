@@ -27,7 +27,7 @@ That is, for each position in one string, the character in that position is chec
 to see whether it differs from the character in the same position of the other string.
 
 For two character strings of different lengths, the Hamming distance is not defined.
-However, the \code{hamDistBounded} function will accommodate strings of different
+However, \code{hamDistBounded()} will accommodate strings of different
 lengths, doing so in a conservative fashion that seeks to yield a meaningful result
 for the purpose of checking whether two strings are sufficiently similar. If the two
 strings differ in length, placeholder characters are appended to the shorter string
@@ -38,7 +38,7 @@ longer string and adding the number of deleted characters to the Hamming distanc
 between the shorter string and the truncated longer string (which is what is
 actually done in practice, as the computation is faster).
 
-The above method used by \code{hamDistBounded} to accommodate unequal string
+The above method used by \code{hamDistBounded()} to accommodate unequal string
 lengths results in distance values whose meaning may be questionable, depending
 on context, when the two strings have different lengths. The decision to append
 placeholder characters to the end of the shorter string (as opposed to prepending
@@ -48,8 +48,9 @@ of the shorter string sufficiently matches the beginning content of the longer
 string and the difference in string length is not too great.
 
 For comparing sequences of different lengths, the Levenshtein distance (see
-\code{\link{levDistBounded}}) is more appropriate and meaningful than using
-\code{hamDistBounded}, but comes at the cost of greater computational burden.
+\code{\link[=levDistBounded]{levDistBounded()}})
+is more appropriate and meaningful than using
+\code{hamDistBounded()}, but comes at the cost of greater computational burden.
 
 Computation is aborted early if the Hamming distance is determined to exceed
 the specified upper bound. This functionality is designed for cases when
@@ -72,7 +73,7 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
-\code{\link{levDistBounded}}
+\code{\link[=levDistBounded]{levDistBounded()}}
 }
 \examples{
 # using an upper bound of 3

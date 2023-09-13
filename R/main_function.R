@@ -27,88 +27,126 @@ buildRepSeqNetwork <- function(
     node_stats = FALSE,
     stats_to_include = chooseNodeStats(),
     cluster_stats = FALSE,
-    cluster_fun = cluster_fast_greedy,
+    cluster_fun = "fast_greedy",
+    cluster_id_name = "cluster_id",
     plots = TRUE,
-    print_plots = TRUE,
+    print_plots = FALSE,
     plot_title = "auto",
     plot_subtitle = "auto",
     color_nodes_by = "auto",
     ...,
-    output_dir = getwd(),
-    output_type = "individual",
+    output_dir = NULL,
+    output_type = "rds",
     output_name = "MyRepSeqNetwork",
     pdf_width = 12,
-    pdf_height = 10
+    pdf_height = 10,
+    verbose = FALSE
 ) {
 
+  # Process arguments
+  data_name <- deparse(substitute(data))
   data <- as.data.frame(data)
-  .checkArgs.buildRepSeqNetwork(
-    data, seq_col, count_col, subset_cols, min_seq_length, drop_matches,
-    dist_type, dist_cutoff, drop_isolated_nodes, node_stats, stats_to_include,
-    cluster_stats, cluster_fun, plots, print_plots, plot_title, plot_subtitle,
-    color_nodes_by, output_dir, output_type, output_name, pdf_width, pdf_height
+  .MUST.isDataFrame(data, data_name)
+  .MUST.hasMultipleRows(data, data_name)
+  .MUST.isSeqColrefs(seq_col, data, deparse(substitute(seq_col)), data_name)
+  count_col <- .checkCountCol(count_col, data, NULL)
+  subset_cols <- .checkDataColrefs(subset_cols, data, NULL)
+  min_seq_length <- .check(min_seq_length, .isNonneg, NULL, ornull = TRUE)
+  drop_matches <- .check(drop_matches, .isString, NULL, ornull = TRUE)
+  dist_type <- .checkDistType(dist_type, "hamming")
+  dist_cutoff <- .check(dist_cutoff, .isNonneg, 1)
+  drop_isolated_nodes <- .checkTF(drop_isolated_nodes, TRUE)
+  node_stats <- .checkTF(node_stats, FALSE)
+  if (isTRUE(node_stats)) {
+    stats_to_include <- .checkStatsToInclude(stats_to_include)
+  }
+  cluster_stats <- .checkTF(cluster_stats, FALSE)
+  cluster_fun <- .check(cluster_fun, .isClusterFun, "fast_greedy")
+  cluster_id_name <- make.names(
+    .check(cluster_id_name, .isString, "cluster_id")
   )
+  output_dir <- .check(output_dir, .isString, NULL, ornull = TRUE)
+  .createOutputDir(output_dir)
+  output_dir <- .checkOutputDir(output_dir)
+  plots <- .checkTF(plots, TRUE)
+  if (isTRUE(plots)) {
+    print_plots <- .checkTF(print_plots, TRUE)
+    plot_title <- .check(plot_title, .isString, "auto", ornull = TRUE)
+    plot_subtitle <- .check(plot_subtitle, .isString, "auto", ornull = TRUE)
+    color_nodes_by <- .checkColorNodesBy(
+      color_nodes_by, data, node_stats, cluster_stats, plots, cluster_id_name,
+      stats_to_include, default = "auto", auto_ok = TRUE
+    )
+    if (!is.null(output_dir)) {
+      pdf_width <- .check(pdf_width, .isPos, 12)
+      pdf_height <- .check(pdf_width, .isPos, 10)
+    }
+  }
+  if (isTRUE(plots) || !is.null(output_dir)) {
+    output_name <- .checkOutputName(output_name, "MyRepSeqNetwork")
+  }
+  if (!is.null(output_dir)) {
+    output_type <- .check(output_type, .isOutputType, "rds")
+  }
   seq_col <- .convertColRef(seq_col, data)
   count_col <- .convertColRef(count_col, data)
   color_nodes_by <- .convertColRef(color_nodes_by, data)
   subset_cols <- .convertColRef(subset_cols, data)
   subset_cols <- .processSubsetCols(subset_cols, c(count_col, color_nodes_by))
   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
-                          subset_cols, count_col
+                          subset_cols, verbose = verbose
   )
   if (nrow(data) < 2) {
-    warning(paste(
-      "Returning NULL, since fewer than two observations remain after",
-      "filtering the data. Check the values used for the min_seq_length",
-      "and drop_matches arguments"
-    ))
+    warning(
+      "Returning NULL since fewer than two observations remain after ",
+      "filtering the data"
+    )
     return(NULL)
   }
-  .createOutputDir(output_dir)
-  out <- generateNetworkObjects(data, seq_col, dist_type, dist_cutoff,
-                                drop_isolated_nodes
+
+  # Build network
+  net <- generateNetworkObjects(data, seq_col, dist_type, dist_cutoff,
+                                drop_isolated_nodes, verbose
   )
-  if (is.null(out)) {
-    warning(paste(
-      "Graph contains no nodes; returning NULL. You may wish to consider",
-      "another distance type or a greater distance cutoff, or setting",
-      "drop_isolated_nodes = FALSE"
-    ))
+  if (is.null(net)) {
+    warning("Graph contains no nodes; returning NULL. ",
+            "Consider increasing ", sQuote("dist_cutoff")
+    )
     return(NULL)
   }
   if (node_stats) {
-    out$node_data <- addNodeNetworkStats(out$node_data, out$igraph,
-                                         stats_to_include, cluster_fun
+    net <- addNodeStats(net, stats_to_include, cluster_fun, cluster_id_name,
+                        verbose
     )
   }
   if (cluster_stats) {
-    out$node_data <- .addClusterAndDegree(out, cluster_fun)
-    out$cluster_data <- .getClusterStats2(out$node_data, out$adjacency_matrix,
-                                          seq_col, count_col, cluster_fun
+    net <- addClusterStats(net, cluster_id_name = cluster_id_name,
+                           seq_col = seq_col, count_col = count_col,
+                           cluster_fun = cluster_fun, verbose = verbose
     )
   }
   if (plots) {
-    out$plots <- .generateNetworkGraphPlotsGuarded(
-      out$igraph, out$node_data, print_plots,
+    net <- addPlots(
+      net, print_plots,
       .makePlotTitle(plot_title, network_name = output_name),
       .makePlotSubtitle(plot_subtitle, seq_col = seq_col,
                         dist_type = dist_type, dist_cutoff = dist_cutoff
       ),
-      .passColorNodesBy(color_nodes_by, out$node_data, count_col),
+      .passColorNodesBy(color_nodes_by, net$node_data, count_col),
+      verbose = verbose,
       ...
     )
   }
-  saveNetwork(out, output_dir, output_type, output_name, pdf_width, pdf_height)
-  invisible(out)
+  net$details$min_seq_length <- ifelse(
+    is.null(min_seq_length), yes = "NULL", no = min_seq_length
+  )
+  net$details$drop_matches <- ifelse(
+    is.null(drop_matches), yes = "NULL", no = drop_matches
+  )
+  saveNetwork(net, output_dir, output_type, output_name, pdf_width, pdf_height,
+              verbose
+  )
+  invisible(net)
 }
 
-.addClusterAndDegree <- function(network, cluster_fun) {
-  if (!"cluster_id" %in% names(network$node_data)) {
-    network$node_data <-
-      addClusterMembership(network$node_data, network$igraph, cluster_fun)
-  }
-  if (!"degree" %in% names(network$node_data)) {
-    network$node_data$deg <- igraph::degree(network$igraph)
-  }
-  return(network$node_data)
-}
+buildNet <- buildRepSeqNetwork

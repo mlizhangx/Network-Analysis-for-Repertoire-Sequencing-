@@ -1,0 +1,160 @@
+---
+title: "Node-Level Network Properties"
+output: 
+  rmarkdown::html_vignette:
+    number_sections: false
+    tabset: true
+vignette: >
+  %\VignetteIndexEntry{Node-Level Network Properties}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
+)
+```
+
+# Introduction
+
+Node-level network properties are properties that pertain to each individual node in the network graph. 
+
+Some are local properties, meaning that their value for a given node depends only on a subset of the nodes in the network. One example is the network degree of a given node, which represents the number of other nodes that are directly joined to the given node by an edge connection.
+
+Other properties are global properties, meaning that their value for a given node depends on all of the nodes in the network. An example is the authority score of a node, which is computed using the entire graph adjacency matrix (if we denote this matrix by $A$, then the principal eigenvector of $A^T A$ represents the authority scores of the network nodes).
+
+Node-level network properties can be computed when calling `buildRepSeqNetwork()` or its alias `buildNet()` by setting `node_stats = TRUE`, or as a separate step using `addNodeStats()`. 
+
+
+
+## Simulate Data for Demonstration
+
+We simulate some toy data for demonstration.
+
+We simulate data consisting of two samples with 100 observations each, for a total of 200 observations (rows).
+
+```{r }
+set.seed(42)
+library(NAIR)
+dir_out <- tempdir()
+
+toy_data <- simulateToyData()
+head(toy_data)
+```
+```{r}
+nrow(toy_data)
+```
+
+
+
+
+# Computing Node-Level Properties
+
+## With `buildRepSeqNetwork()`/`buildNet()`
+
+Calling `buildRepSeqNetwork()` with `node_stats = TRUE` is one way to compute node-level network properties.
+
+```{r}
+# build network with computation of node-level network properties
+net <- buildNet(toy_data, "CloneSeq", 
+                node_stats = TRUE
+)
+```
+
+## With `addNodeStats()`
+
+`addNodeStats()` can be used with the output of `buildRepSeqNetwork()` to compute node properties for the network.
+
+```{r, eval = FALSE}
+net <- buildNet(toy_data, "CloneSeq")
+
+net <- addNodeStats(net)
+```
+
+
+# Results
+
+After using either of the methods described above, the node metadata now contains additional variables for the network properties.
+
+```{r}
+names(net$node_data)
+```
+
+```{r}
+head(net$node_data[ , c("CloneSeq", "degree", "authority_score")])
+```
+
+
+
+# <a name="choose_node_stats"></a> Choosing the Node-Level Properties
+
+The names of the node-level network properties that can be computed are listed below. 
+For details on the individual properties, see `?chooseNodeStats()`. The `cluster_id` property is discussed [here](cluster_analysis.html).
+
+* `degree`
+* `cluster_id`
+* `transitivity`
+* `closeness`
+* `centrality_by_closeness`
+* `eigen_centrality`
+* `centrality_by_eigen`
+* `betweenness`
+* `centrality_by_betweenness`
+* `authority_score`
+* `coreness`
+* `page_rank`
+
+By default, all of the available node-level properties are computed except for `closeness`, `centrality_by_closeness` and `cluster_id`.
+
+When computing node properties with `buildRepSeqNetwork()` or `addNodeStats()`, the properties to compute can be specified using the `stats_to_include` parameter. 
+
+`stats_to_include = "all"` computes all properties.
+
+To specify a subset of properties, `stats_to_include` accepts a named logical vector following a particular format. This vector can be created with `chooseNodeStats()`. Each parameter of `chooseNodeStats()` is one of the property names seen above, accepting `TRUE` or `FALSE` to specify whether the property is computed. (The default values match the default set of node properties, so `stats_to_include = chooseNodeStats()` is the same as leaving  `stats_to_include` unspecified.)
+
+Below, the `closeness` property is computed along with the default properties except for `page_rank`.
+
+```{r, eval = FALSE}
+# Modifying the default set of node-level properties
+net <- buildNet(toy_data, "CloneSeq", 
+                node_stats = TRUE,
+                stats_to_include = 
+                  chooseNodeStats(closeness = TRUE, 
+                                  page_rank = FALSE
+                  )
+)
+```
+
+To include only a few properties and exclude the rest, it is easier to use `exclusiveNodeStats()`, which behaves like `chooseNodeStats()`, but all argument values are `FALSE` by default. 
+
+```{r, eval = FALSE}
+# Include only the node-level properties specified below
+net <- buildNet(toy_data, "CloneSeq", 
+                node_stats = TRUE, 
+                stats_to_include = 
+                  exclusiveNodeStats(degree = TRUE, 
+                                     transitivity = TRUE
+                  )
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

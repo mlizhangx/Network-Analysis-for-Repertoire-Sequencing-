@@ -1,5 +1,6 @@
 \name{buildRepSeqNetwork}
 \alias{buildRepSeqNetwork}
+\alias{buildNet}
 \title{
     Network Analysis of Immune Repertoire
 }
@@ -7,6 +8,9 @@
     Given Adaptive Immune Receptor Repertoire Sequencing (AIRR-Seq) data, builds
     the network graph for the immune repertoire based on sequence similarity,
     computes specified network properties and generates customized visualizations.
+
+    \code{buildNet()} is identical to \code{buildRepSeqNetwork()}, existing as
+    an alias for convenience.
 }
 \usage{
 buildRepSeqNetwork(
@@ -26,24 +30,58 @@ buildRepSeqNetwork(
   node_stats = FALSE,
   stats_to_include = chooseNodeStats(),
   cluster_stats = FALSE,
-  cluster_fun = cluster_fast_greedy,
+  cluster_fun = "fast_greedy",
+  cluster_id_name = "cluster_id",
 
   ## Visualization ##
   plots = TRUE,
-  print_plots = TRUE,
+  print_plots = FALSE,
   plot_title = "auto",
   plot_subtitle = "auto",
   color_nodes_by = "auto",
   ...,
 
   ## Output ##
-  output_dir = getwd(),
-  output_type = "individual",
+  output_dir = NULL,
+  output_type = "rds",
   output_name = "MyRepSeqNetwork",
   pdf_width = 12,
-  pdf_height = 10
+  pdf_height = 10,
+  verbose = FALSE
 
 )
+
+# Alias for buildRepSeqNetwork()
+buildNet(
+  data,
+  seq_col,
+  count_col = NULL,
+  subset_cols = NULL,
+  min_seq_length = 3,
+  drop_matches = NULL,
+  dist_type = "hamming",
+  dist_cutoff = 1,
+  drop_isolated_nodes = TRUE,
+  node_stats = FALSE,
+  stats_to_include = chooseNodeStats(),
+  cluster_stats = FALSE,
+  cluster_fun = "fast_greedy",
+  cluster_id_name = "cluster_id",
+  plots = TRUE,
+  print_plots = FALSE,
+  plot_title = "auto",
+  plot_subtitle = "auto",
+  color_nodes_by = "auto",
+  ...,
+  output_dir = NULL,
+  output_type = "rds",
+  output_name = "MyRepSeqNetwork",
+  pdf_width = 12,
+  pdf_height = 10,
+  verbose = FALSE
+
+)
+
 }
 \arguments{
   \item{data}{
@@ -51,17 +89,20 @@ buildRepSeqNetwork(
     and observations (e.g., clones or cells) indexed by row.
 }
   \item{seq_col}{
-    Specifies the column of \code{data} containing the receptor sequences to be
-    used as the basis of similarity between rows. Accepts either the column name
-    or column index. Alternatively, a vector of length 2 specifying two columns
-    with distinct sequences (e.g., alpha chain and beta chain), in which case
-    similarity between rows depends on both types of sequences being similar
-    (e.g., similar alpha chain sequences and similar beta chain sequences).
+    Specifies the column(s) of \code{data} containing
+    the receptor sequences to be used as the basis of similarity between rows.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+    Also accepts a vector of length 2 specifying distinct sequence columns
+    (e.g., alpha chain and beta chain), in which case
+    similarity between rows depends on similarity in both sequence columns
+    (see details).
 }
   \item{count_col}{
     Optional. Specifies the column of \code{data} containing a measure of abundance,
     e.g., clone count or unique molecular identifier (UMI) count. Accepts either
-    the column name or column index. Passed to \code{\link{getClusterStats}}; only
+    the column name or column index. Passed to
+    \code{\link[=addClusterStats]{addClusterStats()}}; only
     relevant if \code{cluster_stats = TRUE}.
 }
   \item{subset_cols}{
@@ -69,16 +110,17 @@ buildRepSeqNetwork(
     Accepts a vector of column names or a vector of column indices. The default
     \code{NULL} includes all columns. The receptor sequence column is always
     included regardless of this argument's value.
-    Passed to \code{\link{filterInputData}}.
+    Passed to \code{\link[=filterInputData]{filterInputData()}}.
 }
   \item{min_seq_length}{
     A numeric scalar, or \code{NULL}. Observations whose receptor sequences have
     fewer than \code{min_seq_length} characters are removed prior to network analysis.
 }
   \item{drop_matches}{
-    Optional. Passed to \code{\link{filterInputData}}. Accepts a character string
+    Optional. Passed to \code{\link[=filterInputData]{filterInputData()}}.
+    Accepts a character string
     containing a regular expression (see \code{\link[base]{regex}}).
-    Checks receptor sequences for a pattern match using \code{\link{grep}}.
+    Checks receptor sequences for a pattern match using \code{\link[=grep]{grep()}}.
     Those returning a match are removed prior to network analysis.
 }
   \item{dist_type}{
@@ -86,8 +128,9 @@ buildRepSeqNetwork(
     The similarity between two sequences determines the pairwise distance between
     their respective nodes in the network graph, with greater similarity corresponding
     to shorter distance. Valid options are \code{"hamming"} (the default), which
-    uses \code{\link{hamDistBounded}}, and \code{"levenshtein"}, which uses
-    \code{\link{levDistBounded}}.
+    uses \code{\link[=hamDistBounded]{hamDistBounded()}},
+    and \code{"levenshtein"}, which uses
+    \code{\link[=levDistBounded]{levDistBounded()}}.
 }
   \item{dist_cutoff}{
     A nonnegative scalar. Specifies the maximum pairwise distance (based on
@@ -108,19 +151,27 @@ buildRepSeqNetwork(
     A logical scalar. Specifies whether node-level network properties are computed.
 }
   \item{stats_to_include}{
-    A named logical vector returned by \code{\link{chooseNodeStats}} or
-    \code{\link{exclusiveNodeStats}}. Specifies the node-level network properties
-    to compute. Also accepts the values \code{"all"} and \code{"cluster_id_only"}.
+    A named logical vector returned by
+    \code{\link[=chooseNodeStats]{chooseNodeStats()}} or
+    \code{\link[=exclusiveNodeStats]{exclusiveNodeStats()}}.
+    Specifies the node-level network properties
+    to compute. Also accepts the value \code{"all"}.
     Only relevant if \code{node_stats = TRUE}.
 }
   \item{cluster_stats}{
     A logical scalar. Specifies whether to compute cluster-level network properties.
 }
   \item{cluster_fun}{
-    Passed to \code{\link{addClusterMembership}}. Specifies the clustering algorithm
+    Passed to \code{\link[=addClusterMembership]{addClusterMembership()}}.
+    Specifies the clustering algorithm
     used when cluster analysis is performed. Cluster analysis is performed when
     \code{cluster_stats = TRUE} or when \code{node_stats = TRUE} with the
     \code{cluster_id} property enabled via the \code{stats_to_include} argument.
+}
+  \item{cluster_id_name}{
+    Passed to \code{\link[=addClusterMembership]{addClusterMembership()}}.
+    Specifies the name of the cluster membership variable added to the node metadata
+    when cluster analysis is performed (see \code{cluster_fun}).
 }
   \item{plots}{
     A logical scalar. Specifies whether to generate plots of the network graph.
@@ -150,7 +201,7 @@ buildRepSeqNetwork(
     available. A value of \code{NULL} leaves the nodes uncolored.
 }
   \item{...}{
-  Other arguments to \code{\link{generateNetworkGraphPlots}}.
+  Other named arguments to \code{\link[=addPlots]{addPlots()}}.
 }
   \item{output_dir}{
   A file path specifying the directory for saving the output. The directory will
@@ -172,12 +223,17 @@ buildRepSeqNetwork(
 }
   \item{pdf_width}{
     Sets the width of each plot when writing to pdf.
-    Passed to \code{\link{saveNetwork}}.
+    Passed to \code{\link[=saveNetwork]{saveNetwork()}}.
 }
   \item{pdf_height}{
     Sets the height of each plot when writing to pdf.
-    Passed to \code{\link{saveNetwork}}.
+    Passed to \code{\link[=saveNetwork]{saveNetwork()}}.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
 }
 \details{
 To construct the immune repertoire network, each TCR/BCR clone (bulk data)
@@ -194,6 +250,15 @@ shorter the distance between their respective nodes. Two nodes in the graph
 are joined by an edge if the distance between them is sufficiently small,
 i.e., if their receptor sequences are sufficiently similar.
 
+For single-cell data, edge connections between nodes can be based on similarity
+in both the alpha chain and beta chain sequences.
+This is done by providing a vector of length 2 to \code{seq_cols}
+specifying the two sequence columns in \code{data}.
+The distance between two nodes is then the greater of the two distances between
+sequences in corresponding chains.
+Two nodes will be joined by an edge if their alpha chain sequences are sufficiently
+similar and their beta chain sequences are sufficiently similar.
+
 See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html}{buildRepSeqNetwork package vignette}
 for more details. The vignette can be accessed offline using
@@ -204,6 +269,9 @@ for more details. The vignette can be accessed offline using
     \code{NULL}, invisibly, with a warning. Otherwise, the function invisibly
     returns a list containing the following items:
 
+    \item{details}{A list containing information about the network and the
+    settings used during its construction.
+    }
     \item{igraph}{An object of class \code{\link[igraph]{igraph}} containing the
     list of nodes and edges for the network graph.
     }
@@ -222,7 +290,8 @@ for more details. The vignette can be accessed offline using
     where each row corresponds to a cluster in the network graph. Only included if
     \code{cluster_stats = TRUE}.
     }
-    \item{plots}{A list containing each plot generated for the network graph.
+    \item{plots}{A list containing one element for each plot generated
+    as well as an additional element for the matrix that specifies the graph layout.
     Each plot is an object of class \code{\link[ggraph]{ggraph}}. Only included
     if \code{plots = TRUE}.
     }
@@ -240,15 +309,38 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-
+set.seed(42)
 toy_data <- simulateToyData()
 
-network <- buildRepSeqNetwork(
-  toy_data, seq_col = "CloneSeq",
-  node_stats = TRUE, cluster_stats = TRUE,
-  color_nodes_by = "transitivity", color_scheme = "plasma-1",
-  size_nodes_by = "degree", node_size_limits = c(0.5, 1.5),
-  output_dir = NULL)
+# Simple call:
+network = buildNet(
+  toy_data,
+  seq_col = "CloneSeq"
+)
 
+# Customized:
+network <- buildNet(
+  toy_data,
+  seq_col = "CloneSeq",
+  dist_type = "levenshtein",
+  node_stats = TRUE,
+  cluster_stats = TRUE,
+  cluster_fun = "louvain",
+  cluster_id_name = "cluster_id_louvain",
+  count_col = "CloneCount",
+  color_nodes_by = c("transitivity", "cluster_id_louvain", "SampleID"),
+  color_scheme = c("plasma-1", "Viridis", "default"),
+  size_nodes_by = "degree",
+  node_size_limits = c(0.5, 1.5),
+  plot_title = NULL,
+  print_plots = TRUE,
+  verbose = TRUE
+)
+
+network$details
+
+head(network$node_data)
+
+head(network$cluster_data)
 
 }

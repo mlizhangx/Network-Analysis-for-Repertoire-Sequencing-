@@ -1,0 +1,377 @@
+---
+title: "Supplementary Functions"
+output: 
+  rmarkdown::html_vignette:
+    number_sections: false
+    tabset: true
+vignette: >
+  %\VignetteIndexEntry{Supplementary Functions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center", 
+  out.width = "100%",
+  fig.width = 9, fig.height = 7
+)
+```
+
+
+# Introduction
+
+The `NAIR` package contains a number of functions supplementary to `buildRepSeqNetwork()` that can be used to perform additional downstream tasks.
+
+
+## Simulate Data for Demonstration
+
+We simulate some toy data for demonstration.
+
+We simulate data consisting of two samples with 100 observations each, for a total of 200 observations (rows).
+
+```{r }
+set.seed(42)
+library(NAIR)
+dir_out <- tempdir()
+
+toy_data <- simulateToyData()
+head(toy_data)
+```
+```{r}
+nrow(toy_data)
+```
+
+Before we go through the various functions, the code below shows an example of how some of them might be used together.
+
+```{r, eval = FALSE}
+library(magrittr)
+toy_data %>%
+  filterInputData("CloneSeq", drop_matches = "\\W") %>%
+  buildNet("CloneSeq") %>%
+  addNodeStats("all") %>%
+  addClusterMembership("greedy", cluster_id_name = "cluster_greedy") %>%
+  addClusterMembership("leiden", cluster_id_name = "cluster_leiden") %>%
+  addClusterStats("cluster_leiden", "CloneSeq", "CloneCount") %>%
+  addPlots(color_nodes_by = c("cluster_leiden", "cluster_greedy"), 
+           color_scheme = "Viridis"
+  ) %>%
+  labelClusters("cluster_leiden", cluster_id_col = "cluster_leiden") %>%
+  labelClusters("cluster_greedy", cluster_id_col = "cluster_greedy") %>%
+  saveNetwork(output_dir = tempdir(), output_name = "my_network")
+```
+
+
+# `addPlots()`
+
+`addPlots()` can be used to generate plots of a network graph.
+
+```{r}
+net <- buildRepSeqNetwork(toy_data, "CloneSeq")
+net <- addPlots(net, color_nodes_by = "SampleID")
+```
+
+See [this article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#new_plots) for more details.
+
+
+# `addNodeStats()`
+
+`addNodeStats()` can be used to compute node-level network properties for a network.
+
+```{r, eval = FALSE}
+net <- addNodeStats(net, stats_to_include = "all")
+```
+
+See [this article](node_properties.html) for more details.
+
+
+# `addClusterStats()`
+
+`addClusterStats()` can be used to perform cluster analysis for a network. It performs clustering, records the cluster membership of the nodes, and computes cluster properties.
+
+```{r, eval = FALSE}
+net <- addClusterStats(net, cluster_fun = "walktrap",
+                       cluster_id_name = "cluster_walktrap")
+```
+
+See [this article](cluster_analysis.html) for more details.
+
+
+# `addClusterMembership()`
+
+`addClusterMembership()` can be used to perform clustering and record the cluster membership of the nodes without computing cluster properties. It is useful for performing multiple instances of clustering with different algorithms.
+
+```{r}
+net <- addClusterMembership(net, 
+                            cluster_fun = "leiden",
+                            cluster_id_name = "cluster_leiden"
+)
+net <- addClusterMembership(net, 
+                            cluster_fun = "louvain",
+                            cluster_id_name = "cluster_louvain"
+)
+```
+
+Refer [here](cluster_analysis.html#cluster-membership-only) for more details.
+
+
+# `addClusterLabels()`
+
+`addClusterLabels()` can be used to label the clusters in a plot. 
+
+```{r}
+net <- addPlots(net,
+                color_nodes_by = "cluster_louvain",
+                color_scheme = "Viridis"
+)
+net <- labelClusters(net,
+                     cluster_id_col = "cluster_louvain",
+                     top_n_clusters = 7,
+                     size = 7
+)
+net$plots$cluster_louvain
+```
+
+Refer [here](cluster_analysis.html#labeling-clusters) for more details.
+
+
+# `labelNodes()`
+
+`labelNodes()` can be used to label the nodes in network plots. 
+
+```{r}
+set.seed(42)
+small_sample <- simulateToyData(1, sample_size = 10, prefix_length = 1)
+net <- buildNet(small_sample, "CloneSeq", plot_title = NULL)
+net <- labelNodes(net, "CloneSeq", size = 4)
+net$plots[[1]]
+```
+
+
+
+# `saveNetwork()`
+
+`saveNetwork()` can be used to save a list of network objects. Also prints any plots to a PDF containing one plot per page.
+
+```{r, eval = FALSE}
+saveNetwork(net, output_dir = dir_out, output_type = "individual")
+```
+
+The parameters `output_dir`, `output_type`, `output_name`, `pdf_width` and `pdf_height` have the [same behavior](buildRepSeqNetwork.html#output-settings) as they do in the `buildRepSeqNetwork()` function. 
+
+
+# <a name="save"></a> `saveNetworkPlots()`
+
+`saveNetworkPlots()` can be used to save the plots for a network to a PDF containing one plot per page.
+
+```{r, eval = FALSE}
+saveNetworkPlots(net$plots, outfile = file.path(dir_out, "plots.pdf"))
+```
+
+
+
+
+# <a name="load"></a>`loadDataFromFileList()`
+
+`loadDataFromFileList()` can be used to load data from multiple files and combine them into a single data frame. 
+
+```{r, eval = FALSE}
+dat <- loadDataFromFileList(list.files(my_dir), input_type = "rds")
+```
+
+The primary parameter accepts a character vector containing file paths or a list containing file paths and connections. Each element corresponds to a single file. Each file is assumed to contain the data for a single sample, with observations indexed by row, and with the same columns across samples.
+
+The supported values of `input_type` are `"rds"`, `"rda"`, `"csv"`, `"csv2"`, `"tsv"` and `"table"`. Each value specifies a different function to load the files. The respective functions are `readRDS()`, `load()`, `read.csv()`, `read.csv2()`, `read.delim()`, and `read.table()`.
+
+## Text formats
+
+For text formats (values of `input_type` other than `"rds"` and `"rda"`), non-default argument values can be specified to the optional parameters of the reading function using the `read.args` argument. It accepts a named list of argument values. 
+
+```{r, eval = FALSE}
+loadDataFromFileList(list.files(my_dir),
+                     input_type = "table",
+                     read.args = list(
+                       header = TRUE,
+                       sep = " ",
+                       dec = ",",
+                       na.strings = "NA!",
+                       row.names = 1,
+                       col.names = c("RowID", 
+                                     "CloneSeq", "CloneFrequency",
+                                     "CloneCount", "VGene"
+                       )
+                     )
+)
+```
+
+See `?utils::read.table()` for the parameters and their accepted values. Note that `read.csv()`, `read.csv2()` and `read.delim()` are identical to `read.table()` other than their default argument values. Some examples of useful parameters include:
+
+* `header`: Whether the first row contains column names. 
+* `sep`: The character separating consecutive values in each row. 
+* `dec`: The character used as a decimal point. 
+* `quote`: The character(s) used as quotes within character strings.
+* `na.strings`: The character string representing NA values.
+* `row.names`: The row names or the column containing the row names.
+* `col.names`: The column names, for files without a header row.
+* `colClasses`: For manually specifying the class of each column.
+* `as.is`: For specifying the character columns to be converted to factors.
+* `nrows`: Max number of rows (specification can improve memory usage)
+
+
+## RData format
+
+For the `"rda"` input type, the `data_symbols` parameter accepts a character vector specifying the name of each sample's data frame within its respective Rdata file (i.e., the name of the data frame in the R environment). A single character string can be used if each sample's data frame has the same name.
+
+```{r, eval = FALSE}
+save(df_sample1, file = file_1)
+save(df_sample2, file = file_2)
+save(df_sample3, file = file_3)
+loadDataFromFileList(c(file_1, file_2, file_3),
+                     input_type = "rda",
+                     data_symbols = c("df_sample1",
+                                      "df_sample2",
+                                      "df_sample3"
+                     )
+)
+```
+
+
+
+# `combineSamples()`
+
+`combineSamples()` has the same default behavior as `loadDataFromFileList()`, but possesses additional parameters that give it extra functionality, such as the ability to filter data and assign sample/subject/group IDs to each data file, which are then included as variables in the combined data frame.
+
+```{r, eval = FALSE}
+dat <- combineSamples(list.files(my_dir),
+                      input_type = "rds",
+                      min_seq_length = 7,
+                      drop_matches = "[*|_]",
+                      subset_cols = c("CloneSeq", "CloneCount", "VGene"),
+                      sample_ids = 1:5,
+                      subject_ids = c(1, 2, 2, 3, 3),
+                      group_ids = c(1, 1, 1, 2, 2)
+)
+```
+
+
+
+
+
+
+# `filterInputData()`
+
+`filterInputData()` can be used to filter data prior to performing network analysis.
+
+```{r}
+filtered_data <- filterInputData(toy_data, 
+                                 seq_col = "CloneSeq", 
+                                 min_seq_length = 13,
+                                 drop_matches = "GGGG", 
+                                 subset_cols = c("CloneFrequency", "SampleID"),
+                                 count_col = "CloneCount",
+                                 verbose = TRUE
+)
+```
+
+The function has parameters [`data`, `seq_col`](buildRepSeqNetwork.html#mainargs), [`min_seq_length`, `drop_matches`](buildRepSeqNetwork.html#input_options) and [`subset_cols`](buildRepSeqNetwork.html#subset_cols), all of which behave in the same manner as seen in `buildRepSeqNetwork()`.  In addition, the `count_col` parameter can be used to specify a column containing the clone count or UMI count. If specified, observations with `NA` values in this column will be removed from the data.
+
+
+
+# `aggregateIdenticalClones()`
+
+`aggregateIdenticalClones()` can be used on bulk AIRR-seq data to aggregate data rows containing the same clone sequence, with the clone counts and clone frequencies being added together. Aggregation can be restricted to being performed only within groups that are defined based on specified grouping variables.
+
+```{r, eval = FALSE}
+my_data <- data.frame(
+  clone_seq = c("ATCG", rep("ACAC", 2), rep("GGGG", 4)),
+  clone_count = rep(1, 7),
+  clone_freq = rep(1/7, 7),
+  time_point = c("t_0", rep(c("t_0", "t_1"), 3)),
+  subject_id = c(rep(1, 5), rep(2, 2))
+)
+
+# group clones by time point and subject ID
+data_agg_time_subject <-
+  aggregateIdenticalClones(my_data,
+                           clone_col = "clone_seq",
+                           count_col = "clone_count",
+                           freq_col = "clone_freq",
+                           grouping_cols = c("subject_id", "time_point")
+  )
+```
+
+
+# `getNeighborhood()`
+
+`getNeighborhood()` can be used to extract a subset of observations with receptor sequences sufficiently similar to a target sequence.
+
+```{r, eval = FALSE}
+nbd <- getNeighborhood(toy_data,
+                       seq_col = "CloneSeq",
+                       target_seq = "GGGGGGGAATTGG"
+)
+```
+
+
+
+# `generateNetworkObjects()` 
+
+`generateNetworkObjects()` can be used to construct the minimal output possible from `buildRepSeqNetwork()`. It does not filter the input data, produce plots, compute network properties, perform cluster analysis or save data.
+
+```{r, eval = FALSE}
+net <- generateNetworkObjects(toy_data, "CloneSeq")
+```
+
+The function has parameters [`data`, `seq_col`](buildRepSeqNetwork.html#mainargs), [`dist_type`, `dist_cutoff` and `drop_isolated_nodes`](buildRepSeqNetwork.html#network_settings), all of which have the same behavior and default values as seen in `buildRepSeqNetwork()`.
+
+
+
+# `generateNetworkGraph()`
+
+`generateNetworkGraph()` can be used to generate the network `igraph` from the adjacency matrix.
+
+```{r, eval = FALSE}
+net$igraph <- generateNetworkGraph(net$adjacency_matrix)
+```
+
+
+# `generateAdjacencyMatrix()`
+
+`generateAdjacencyMatrix()` can be used to compute the network adjacency matrix from the list of receptor sequences.
+
+
+```{r, eval = FALSE}
+output$adjacency_matrix <- generateAdjacencyMatrix(toy_data$CloneSeq)
+
+# use same settings from original call to buildRepSeqNetwork()
+net$adjacency_matrix <- generateAdjacencyMatrix(
+  net$node_data$CloneSeq,
+  dist_type = net$details$dist_type,
+  dist_cutoff = net$details$dist_cutoff,
+  drop_isolated_nodes = net$details$drop_isolated_nodes
+)
+```
+
+The parameters `dist_type`, `dist_cutoff` and `drop_isolated_nodes` have the [same behavior and default values](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network_settings) as in `buildRepSeqNetwork()`. 
+
+
+```{r include=FALSE, eval = FALSE}
+# clean up temp directory
+file.remove(
+  file.path(
+    tempdir(),
+    c("MyRepSeqNetwork_NodeMetadata.csv",
+      "MyRepSeqNetwork_ClusterMetadata.csv",
+      "MyRepSeqNetwork.pdf",
+      "MyRepSeqNetwork_EdgeList.txt",
+      "MyRepSeqNetwork_AdjacencyMatrix.mtx",
+      "MyRepSeqNetwork_Details.rds",
+      "MyRepSeqNetwork_Plots.rds",
+      "MyRepSeqNetwork_GraphLayout.txt",
+      "MyRepSeqNetwork.rds"
+    )
+  )
+)
+```

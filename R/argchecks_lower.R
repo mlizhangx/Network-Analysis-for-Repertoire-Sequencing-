@@ -14,595 +14,368 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Universal Checks ------------------------------------------------------------
 
-.stopifnot <- function(condition, argname, message) {
-  if (!condition) {
-    stop(paste(argname, message))
+
+# Conventions -------------------------------------------------------------
+
+# Checks beginning with `.is` return TRUE or FALSE
+# Checks beginning with `.MUST` raise an error or return NULL (hard checks)
+# Checks beginning with `.check` return the main argument or a default value
+#                                                               (soft checks)
+
+
+# Generic Checks ----------------------------------------------------------
+# Can be called to apply other checks
+# Or used as building blocks in other checks
+
+
+.stopifnot <- function(condition, name, ..., sep = " ") {
+  if (!isTRUE(condition)) {
+    stop(paste(sQuote(name), ..., sep = sep))
   }
 }
 
-.nonNull <- function(value, argname) {
-  if (is.null(value)) {
-    stop(paste(argname, "is required but value is NULL"))
+.warnifnot <- function(condition, name, ..., sep = " ") {
+  if (!isTRUE(condition)) {
+    warning(paste(sQuote(name), ..., sep = sep))
   }
 }
 
-.noNAs <- function(value, argname) {
-  if (sum(is.na(value)) > 0) {
-    stop(paste(argname, "must not contain NA/NaNs"))
-  }
+.orNull <- function(check, x, ...) {
+  # wrap other checks to allow NULL argument values;
+  # works with hard checks (.MUST.*) and T/F returns (.is*)
+  # does not work with soft checks (.check*)
+  if (!is.null(x)) { return(check(x, ...)) }
+  TRUE
 }
 
-.hasLength1 <- function(value, argname) {
-  if (length(value) != 1) {
-    stop(paste(argname, "must have length 1"))
+.check <- function(x, check, default, ornull = FALSE, ...,
+                   nse = TRUE, dquote = FALSE
+) {
+  # argument `check` is a function that returns TRUE or FALSE
+  # Return original value if check passed, else return default value
+  if ((!ornull && is.null(x)) || (!is.null(x) && !check(x, ...))) {
+    if (nse) {
+      default_name <- deparse(substitute(default))
+    } else {
+      default_name <- default
+    }
+    if (dquote) { default_name <- dQuote(default_name) }
+    warning(
+      "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
+      "Defaulting to ", default_name
+    )
+    return(default)
   }
-}
-
-.hasLength2 <- function(value, argname) {
-  if (length(value) != 2) {
-    stop(paste(argname, "must have length 2"))
-  }
-}
-
-.hasLength <- function(length_spec, value, argname) {
-  if (length(value) != length_spec) {
-    stop(paste(argname, "must have length", length_spec))
-  }
-}
-
-.hasPosLength <- function(value, argname) {
-  if (length(value) == 0) {
-    stop(paste(argname, "must have positive length"))
-  }
+  x
 }
 
 
+
+# Universal Properties ----------------------------------------------------
+
+
+.hasLength <- function(x, len) { length(x) %in% len }
+.MUST.hasLength <- function(x, len, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  emsg <- ifelse(length(len) == 1,
+                 yes = "must have length",
+                 no = "must have one of the following lengths:"
+  )
+  .stopifnot(.hasLength(x, len), name, emsg, paste(len, collapse = ", "))
+}
+
+.hasPosLength <- function(x) { length(x) > 0 }
+.MUST.hasPosLength <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.hasPosLength(x), name, "must have positive length")
+}
+
+.hasLength1 <- function(x) { length(x) == 1 }
+.MUST.hasLength1 <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.hasLength1(x), name, "must have length 1")
+}
+
+
+.hasLength2 <- function(x) { length(x) == 2 }
+.MUST.hasLength2 <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.hasLength2(x), name, "must have length 2")
+}
+
+
+.hasElem <- .hasElement <- function(x, elem) { isTRUE(elem %in% names(x)) }
+.MUST.hasElem <- .MUST.hasElement <- function(x, elem, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.hasElement(x, elem),
+             name, "must contain an element named", dQuote(elem)
+  )
+}
+
+.hasNA <- .hasNAs <- function(x) { sum(is.na(x)) > 0 }
+.noNAs <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(!.hasNA(x), name, "must not contain NA or NaN values")
+}
+
+.isFinite <- function(x) {
+  is.numeric(x) && .hasPosLength(x) && all(is.finite(x))
+}
+.MUST.isFinite <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isFinite(x), name, "must contain finite values")
+}
 
 # Type Checks -------------------------------------------------------------
 
 
-.orNull <- function(check, value, argname) {
-  # combine with other checks to allow NULL argument values
-  # only works with checks that have only value, argname as inputs
-  if (!is.null(value)) {
-    check(value, argname)
+
+.MUST.isLogical <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(is.logical(x), name, "must be of type", dQuote("logical"))
+  .noNAs(x, name)
+}
+
+.MUST.isChar <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(is.character(x), name, "must be of type", dQuote("character"))
+}
+
+.MUST.isNumeric <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(is.numeric(x), name, "must be of type", dQuote("numeric"))
+}
+
+.isCharOrNumeric <- function(x) { is.character(x) || is.numeric(x) }
+.MUST.isCharOrNumeric <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(
+    .isCharOrNumeric(x),
+    name, "must be of type", dQuote("character"), "or", dQuote("numeric")
+  )
+}
+
+.isCharOrLogical <- function(x) { is.character(x) || is.logical(x) }
+.MUST.isCharOrLogical <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(
+    .isCharOrLogical(x),
+    name, "must be of type", dQuote("character"), "or", dQuote("logical")
+  )
+  if (is.logical(x)) { .noNAs(x, name) }
+}
+
+
+
+# Scalar Types ------------------------------------------------------------
+
+.isTF <- function(x) { is.logical(x) && .hasLength1(x) && !is.na(x) }
+.MUST.isTF <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isTF(x),
+             name, "must evaluate to", dQuote("TRUE"), "or", dQuote("FALSE")
+  )
+}
+.checkTF <- function(x, default, or_auto = FALSE) {
+  if (or_auto && isTRUE(x == "auto")) {
+    return(x)
   }
-}
-
-.isLogical <- function(value, argname) {
-  .stopifnot(
-    is.logical(value),
-    argname, "must be of type logical"
-  )
-  .noNAs(value, argname)
-}
-
-.isChar <- function(value, argname) {
-  .stopifnot(
-    is.character(value), argname,
-    "must be of type character"
-  )
-}
-
-.isNumeric <- function(value, argname) {
-  .stopifnot(
-    is.numeric(value),
-    argname, "must be of type numeric"
-  )
-}
-
-.isCharOrNumeric <- function(value, argname) {
-  .stopifnot(
-    is.character(value) || is.numeric(value),
-    argname, "must be of type character or numeric"
-  )
-}
-
-.isCharOrLogical <- function(value, argname) {
-  .stopifnot(
-    is.character(value) || is.logical(value),
-    argname, "must be of type character or logical"
-  )
-  .noNAs(value, argname)
-}
-
-.isTF <- function(value, argname) {
-  .isLogical(value, argname)
-  .hasLength1(value, argname)
-  .stopifnot(sum(value %in% c(TRUE, FALSE)) == 1,
-             argname, "must evaluate to \"TRUE\" or \"FALSE\""
-  )
-}
-.isTFOrAuto <- function(value, argname) {
-  .nonNull(value, argname)
-  .isCharOrLogical(value, argname)
-  .hasLength1(value, argname)
-  if (is.character(value)) {
-    .stopifnot(
-      value == "auto",
-      argname, "must be TRUE, FALSE, or \"auto\""
-    )
-  } else {
-    .stopifnot(
-      sum(value %in% c(TRUE, FALSE)) == 1,
-      argname, "must be TRUE, FALSE, or \"auto\""
-    )
-  }
-}
-
-.isFinite <- function(value, argname) {
-  .isNumeric(value, argname)
-  .hasPosLength(value, argname)
-  .stopifnot(
-    all(is.finite(value)),
-    argname, "must contain finite values"
-  )
-}
-
-.isNonneg <- function(value, argname) {
-  .nonNull(value, argname)
-  .isNumeric(value, argname)
-  .hasLength1(value, argname)
-  .stopifnot(
-    all(is.finite(value)),
-    argname, "must contain finite values"
-  )
-  .stopifnot(
-    value >= 0,
-    argname, "must be nonnegative"
-  )
-}
-
-.isPos <- function(value, argname) {
-  .nonNull(value, argname)
-  .isNumeric(value, argname)
-  .hasLength1(value, argname)
-  .isFinite(value, argname)
-  .stopifnot(
-    value > 0,
-    argname, "must be strictly positive"
-  )
-}
-
-.isInt <- function(value, argname) {
-  .nonNull(value, argname)
-  .isNumeric(value, argname)
-  .hasLength1(value, argname)
-  .isFinite(value, argname)
-  .stopifnot(value %% 1 == 0,
-             argname, "must be integer-valued"
-  )
-}
-
-.isPosInt <- function(value, argname) {
-  .nonNull(value, argname)
-  .isNumeric(value, argname)
-  .hasLength1(value, argname)
-  .isFinite(value, argname)
-  .stopifnot(value %% 1 == 0,
-             argname, "must be integer-valued"
-  )
-  .stopifnot(
-    value > 0,
-    argname, "must be strictly positive"
-  )
-}
-
-.isString <- function(value, argname) {
-  .nonNull(value, argname)
-  .isChar(value, argname)
-  .hasLength1(value, argname)
-}
-
-.isCharOrNumericScalar <- function(value, argname) {
-  .nonNull(value, argname)
-  .isCharOrNumeric(value, argname)
-  .hasLength1(value, argname)
-  if (is.numeric(value)) {
-    .isFinite(value, argname)
-  }
-}
-
-.isCharVector <- function(value, argname) {
-  .nonNull(value, argname)
-  .stopifnot(
-    is.vector(value, mode = "character"),
-    argname, "must be a character vector"
-  )
-  .hasPosLength(value, argname)
-  .noNAs(value, argname)
-}
-
-.isCharOrNumericVector <- function(value, argname) {
-  .nonNull(value, argname)
-  .stopifnot(
-    is.vector(value, mode = "character") || is.vector(value, mode = "numeric"),
-    argname, "must be a character or numeric vector"
-  )
-  .hasPosLength(value, argname)
-  .noNAs(value, argname)
-  if (is.numeric(value)) {
-    .isFinite(value, argname)
-  }
-}
-
-
-# Data Frames and Lists ----------------------------------------------------
-
-
-.hasAtLeastTwoRows <- function(data) {
-  stopifnot("need at least two data rows" = nrow(data) > 1)
-}
-
-.isDataCol <- function(data, colref, argname) {
-  .nonNull(colref, argname)
-  .isCharOrNumeric(colref, argname)
-  .hasLength1(colref, argname)
-  if (is.character(colref)) {
-    .stopifnot(
-      colref %in% names(data),
-      argname, "must specify a valid column within the data")
-  } else if (is.numeric(colref)) {
-    .isInt(colref, paste(argname, "is of type numeric and hence"))
-    .stopifnot(
-      colref >= 1 && colref <= ncol(data),
-      argname, "must specify a valid column within the data")
-  }
-}
-.isDataColOrNull <- function(data, colref, argname) {
-  if (!is.null(colref)) {
-    .isDataCol(data, colref, argname)
-  }
-}
-
-.isDataCols <- function(data, colref, argname) {
-  .nonNull(colref, argname)
-  .isCharOrNumeric(colref, argname)
-  .hasPosLength(colref, argname)
-  if (length(colref) == 1) {
-    .isDataCol(data, colref, argname)
-  } else if (length(colref) > 1) {
-    .noNAs(colref, argname)
-    for (i in length(colref)) {
-      .isDataCol(
-        data, colref[[i]],
-        paste("each element of", argname)
-      )
-    }
-  }
-}
-.isDataColsOrNull <- function(data, colref, argname) {
-  if (!is.null(colref)) {
-    .isDataCols(data, colref, argname)
-  }
-}
-
-.isValidSeqVector <- function(value) {
-  value <- as.vector(value, mode = "character")
-  if (!is.vector(value, mode = "character")) {
-    stop("specified column or vector of receptor sequences must be coercible to a character vector")
-  }
-  .hasPosLength(value, "specified column or vector of receptor sequences")
-  .stopifnot(
-    sum(is.na(value)) < length(value),
-    "specified column or vector of receptor sequences",
-    "contains only NA values after being coerced to a character vector"
-  )
-}
-
-.isSeqCol <- function(data, colref) {
-  .nonNull(colref, "seq_col")
-  .stopifnot(
-    length(colref) %in% c(1, 2),
-    "seq_col", "must have length 1 or 2"
-  )
-  .isDataCols(data, colref, "seq_col")
-  if (length(colref) == 1) {
-    .isValidSeqVector(data[[colref]])
-  } else if (length(colref) == 2) {
-    .isValidSeqVector(data[[colref[[1]]]])
-    .isValidSeqVector(data[[colref[[2]]]])
-  }
-}
-
-.hasElement <- function(value, argname, element_name) {
-  .stopifnot(
-    element_name %in% names(value),
-    argname, paste("does not contain an element named", element_name)
-  )
-}
-
-# Network Output ----------------------------------------------------------
-
-.isIgraph <- function(value, argname) {
-  .stopifnot(
-    inherits(value, "igraph"),
-    argname, "must be of class igraph"
-  )
-}
-
-.isGgraph <- function(value, argname) {
-  .stopifnot(
-    inherits(value, "ggraph"),
-    argname, "must be of class ggraph"
-  )
-}
-
-.isDataFrame <- function(value, argname) {
-  .stopifnot(
-    is.data.frame(value),
-    argname, "must be a data frame"
-  )
-}
-
-.isList <- function(value, argname) {
-  .stopifnot(
-    is.list(value),
-    argname, "must be a list"
-  )
-}
-
-.isAdjacencyMatrix <- function(value, argname) {
-  .stopifnot(
-    is.matrix(value) || inherits(value, "sparseMatrix"),
-    argname, "must be a matrix or sparseMatrix"
-  )
-  .stopifnot(
-    dim(value)[[1]] == dim(value)[[2]],
-    argname, "must have the same row and column dimensions"
-  )
-  .stopifnot(
-    all(unique(as.vector(value)) %in% c(0, 1)),
-    argname, "contains values other than 0 or 1"
-  )
-}
-
-.hasNodeAndClusterData <- function(value, argname) {
-  .isList(value, argname)
-  .hasPosLength(value, argname)
-  .hasElement(value, argname, "node_data")
-  .hasElement(value, argname, "cluster_data")
-  .isDataFrame(value$node_data, paste0(argname, "$node_data"))
-  .isDataFrame(value$cluster_data, paste0(argname, "$cluster_data"))
-}
-
-.checkIgraphAgainstData <- function(igraph, data) {
-  .stopifnot(
-    length(igraph) == nrow(data),
-    "", "number of nodes in igraph does not match number of rows in data"
-  )
-}
-
-.checkIgraphAgainstMatrix <- function(igraph, mat) {
-  .stopifnot(
-    length(igraph) == nrow(mat),
-    "", "number of nodes in igraph does not match dimensions of adjacency matrix"
-  )
-}
-.checkDataAgainstMatrix <- function(data, mat) {
-  .stopifnot(
-    nrow(data) == nrow(mat),
-    "", "number of data rows does not match dimensions of the adjacency matrix"
-  )
-}
-
-.isPlotlist <- function(value, argname) {
-  .isList(value, argname)
-  .hasPosLength(value, argname)
-  for (i in 1:length(value)) {
-    .isGgraph(value[[i]], paste("each element of", argname))
-  }
-}
-
-.isBaseNetworkOutput <- function(value, argname) {
-  .isList(value, argname)
-  .hasPosLength(value, argname)
-  .hasElement(value, argname, "node_data")
-  .hasElement(value, argname, "igraph")
-  .hasElement(value, argname, "adjacency_matrix")
-  .isDataFrame(value$node_data, paste0(argname, "$node_data"))
-  .isIgraph(value$igraph, paste0(argname, "$igraph"))
-  .isAdjacencyMatrix(
-    value$adjacency_matrix, paste0(argname, "$adjacency_matrix")
-  )
-  .checkIgraphAgainstData(value$igraph, value$node_data)
-  .checkIgraphAgainstMatrix(value$igraph, value$adjacency_matrix)
-}
-
-# Specific Arguments -----------------------------------------------------------
-
-.isDistType <- function(value) {
-  .isString(value, "dist_type")
-  stopifnot(
-    "Invalid option for dist_type argument" =
-      value %in% c(
-        "levenshtein", "Levenshtein", "lev", "Lev", "l", "L",
-        "hamming", "Hamming", "ham", "Ham", "h", "H"
-      )
-  )
-}
-
-.isInputType <- function(value) {
-  .isString(value, "input_type")
-  valid_input_types <- c("csv", "table", "tsv", "txt", "rds", "rda")
-  if (!value %in% valid_input_types) {
-    valid_input_types <- paste(valid_input_types, collapse = ", ")
-    stop(
-      paste("input_type must be one of:", valid_input_types)
-    )
-  }
-}
-
-# type = "network" for SaveNetwork()
-# type = "generic" for .saveDataGeneric()
-.isOutputType <- function(value, type = "network") {
-  .isString(value, "output_type")
-  valid_types <- switch(
-    type,
-    "network" = c("individual", "rds", "rda"),
-    "findPublicClusters" = c("rds", "rda", "csv"),
-    "findAssociatedClones" = c("csv", "tsv", "rds", "rda"),
-    "generic" = c("rds", "rda", "csv", "tsv", "table")
-  )
-  if (!value %in% valid_types) {
-    default_type <- switch(
-      type,
-      "network" = "rda",
-      "findPublicClusters" = "rds",
-      "findAssociatedClones" = "csv",
-      "generic" = "rda"
-    )
+  if (!.isTF(x)) {
     warning(
-      paste("output_type is invalid. Defaulting to", default_type)
+      "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
+      "Defaulting to ", deparse(substitute(default))
     )
+    return(default)
   }
+  x
 }
 
-.checkColorNodesBy <- function(value, data, node_stats = FALSE, plots = TRUE) {
-  if (!is.null(value) && isTRUE(plots)) {
-    .isCharVector(value, "color_nodes_by")
-    if (length(value) == 1) {
-      if (value != "auto") {
-        .checkColorNodesBySingle(value, data, node_stats)
-      }
-    } else { # multiple values; check each individually
-      for (i in seq_along(value)) {
-        .checkColorNodesBySingle(value[[i]], data, node_stats)
-      }
-    }
-  }
+.isTFOrAuto <- function(x) {
+  .isTF(x) || (is.character(x) && .hasLength1(x) && x == "auto")
 }
-
-.checkColorNodesBySingle <- function(value, data, node_stats) {
-  valid_names <- names(data)
-  if (node_stats) {
-    valid_names <- c(valid_names, names(chooseNodeStats()))
-    valid_names <- valid_names[-length(valid_names)]  # remove "all_stats"
-  }
-  stopifnot(
-    "color_nodes_by specifies one or more variables not present in data or among the node-level network properties to be computed" =
-      value %in% valid_names
-  )
-}
-
-
-.checkColorScheme <- function(value, color_nodes_by, plots = TRUE) {
-  if (isTRUE(plots) && !is.null(color_nodes_by) && !is.null(value)) {
-    .isCharVector(value, "color_scheme")
-    .stopifnot(
-      length(value) == 1 ||
-        length(value) == length(color_nodes_by),
-      "color_scheme", "must have length 1 or the same length as color_nodes_by"
-    )
-    for (i in seq_along(value)) {
-      .checkColorSchemeSingle(value[[i]])
-    }
-  }
-}
-
-.checkColorSchemeSingle <- function(value) {
-  valid_names <- c(
-    "default", "viridis", "magma", "inferno", "plasma", "cividis", "rocket",
-    "mako", "turbo", "A", "B", "C", "D", "E", "F", "G", "H"
-  )
-  valid_names <- c(
-    valid_names,
-    paste0(valid_names, "-1"),
-    grDevices::hcl.pals()
-  )
+.MUST.isTFOrAuto <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
   .stopifnot(
-    value %in% valid_names,
-    "color_scheme", "contains one or more values which are not supported. See help file for plotNetworkGraph()"
+    .isTFOrAuto(x),
+    name, "must be", dQuote("TRUE"), ",", dQuote("FALSE"), "or", dQuote("auto")
   )
 }
 
-.checkColorTitle <- function(value, color_nodes_by) {
-  if (!is.null(color_nodes_by)) {
-    .orNull(.isCharVector, value, "color_title")
-    if (!is.null(value)) {
-      .stopifnot(
-        length(value) == 1 ||
-          length(value) == length(color_nodes_by),
-        "color_title", "must have length 1 or the same length as color_nodes_by"
-      )
-    }
-  }
+.isNumericScalar <- function(x) { .hasLength1(x) && .isFinite(x) }
+.MUST.isNumericScalar <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isNumericScalar(x), name, "must be a finite numeric scalar")
 }
 
-.checkSizeNodesBy <- function(value, data) {
-  .orNull(.isCharOrNumeric, value, "size_nodes_by")
-  if (!is.null(value)) {
-    .hasLength1(value, "size_nodes_by is non-null and hence")
-    if (is.character(value)) {
-      .isDataCol(data, value, "size_nodes_by is of type character and hence")
-    } else if (is.numeric(value)) {
-      .isPos(value, "size_nodes_by is of type numeric and hence")
-    }
-  }
+.isNonneg <- function(x) { .isNumericScalar(x) && isTRUE(x >= 0) }
+.MUST.isNonneg <- function(x, name = NULL) {
+  .stopifnot(.isNonneg(x), name, "must be a finite and nonnegative scalar")
 }
 
-.checkNodeSizeLimits <- function(value) {
-  .orNull(.isNumeric, value, "node_size_limits")
-  if (!is.null(value)) {
-    .hasLength2(value, "node_size_limits is non-null and hence")
-    .isPos(value[[1]], "values for node_size_limits")
-    .isPos(value[[2]], "values for node_size_limits")
-    .stopifnot(
-      value[[1]] <= value[[2]],
-      "first entry of node_size_limits", "cannot be greater than the second entry"
-    )
-  }
+.isPos <- function(x) { .isNumericScalar(x) && isTRUE(x > 0) }
+.MUST.isPos <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isPos(x), name, "must be a finite and strictly positive scalar")
 }
 
-.checkStatsToInclude <- function(value) {
-  .nonNull(value, "stats_to_include")
-  if (typeof(value) %in% c("logical", "list")) {
-    .stopifnot(
-      length(names(value)) == length(names(chooseNodeStats())) &&
-        all(names(value) == names(chooseNodeStats())),
-      "value for stats_to_include",
-      "does not match required format. See help file for chooseNodeStats()"
-    )
-  } else {
-    .isString(value, "stats_to_include")
-    .stopifnot(
-      value %in% c("all", "cluster_id_only"),
-      "value for stats_to_include",
-      "does not match required format. See help file for chooseNodeStats()"
-    )
-  }
+.isInt <- function(x) { .isNumericScalar(x) && isTRUE(x %% 1 == 0) }
+.MUST.isInt <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isInt(x), name, "must be a finite integer")
 }
 
-.checkClusterFun <- function(value, argname = "cluster_fun") {
-  .nonNull(value, argname)
-  .hasLength1(value, argname)
-  if (is.character(value)) {
-    .stopifnot(
-      value %in% c(
-        "cluster_edge_betweenness", "cluster_fast_greedy",
-        "cluster_fluid_communities", "cluster_infomap",
-        "cluster_label_prop", "cluster_leading_eigen",
-        "cluster_leiden", "cluster_louvain",
-        "cluster_optimal", "cluster_spinglass", "cluster_walktrap"
-      ),
-      argname, "must be a valid clustering algorithm. See help topic \"clustering_algorithms\""
-    )
-  } else {
-    .stopifnot(
-      isTRUE(all.equal(value, cluster_edge_betweenness)) ||
-        isTRUE(all.equal(value, cluster_fast_greedy)) ||
-        isTRUE(all.equal(value, cluster_fluid_communities)) ||
-        isTRUE(all.equal(value, cluster_infomap)) ||
-        isTRUE(all.equal(value, cluster_label_prop)) ||
-        isTRUE(all.equal(value, cluster_leading_eigen)) ||
-        isTRUE(all.equal(value, cluster_leiden)) ||
-        isTRUE(all.equal(value, cluster_louvain)) ||
-        isTRUE(all.equal(value, cluster_optimal)) ||
-        isTRUE(all.equal(value, cluster_spinglass)) ||
-        isTRUE(all.equal(value, cluster_walktrap)),
-      argname, "must be a valid clustering algorithm. See help topic \"clustering_algorithms\""
-    )
-  }
+.isNonnegInt <- function(x) { .isNonneg(x) && isTRUE(x %% 1 == 0) }
+.MUST.isNonnegInt <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isNonnegInt(x),
+             name, "must be a finite, nonnegative integer"
+  )
+}
+
+.isPosInt <- function(x) { .isPos(x) && isTRUE(x %% 1 == 0) }
+.MUST.isPosInt <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isPosInt(x),
+             name, "must be a finite, strictly positive integer")
+}
+
+.isString <- function(x) { is.character(x) && .hasLength1(x) && !is.na(x) }
+.MUST.isString <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isString(x), name, "must be a character string")
+}
+
+.isNonemptyString <- function(x) { .isString(x) && x != "" }
+.MUST.isNonemptyString <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isNonemptyString(x), name, "must be a nonempty character string")
+}
+
+.isStringOrConnection <- function(x) {
+  .isString(x) || inherits(x, "connection")
+}
+.MUST.isStringOrConnection <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isStringOrConnection(x),
+             name, "must be a character string or a connection"
+  )
+}
+
+.isCharOrNumericScalar <- function(x) { .isString(x) || .isNumericScalar(x) }
+.MUST.isCharOrNumericScalar <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isCharOrNumericScalar(x),
+             name, "must be a character string or finite numeric scalar"
+  )
+}
+
+.isStringOrInt <- function(x) { .isString(x) || .isInt(x) }
+.MUST.isStringOrInt <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isStringOrInt(x),
+             name, "must be a character string or finite integer"
+  )
+}
+
+.isStringOrPosInt <- function(x) { .isString(x) || .isPosInt(x) }
+.MUST.isStringOrPosInt <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(
+    .isStringOrPosInt(x),
+    name, "must be a character string or a finite, strictly positive integer"
+  )
+}
+
+
+# Vector Types ------------------------------------------------------------
+
+
+.isLogicalVector <- function(x) {
+  is.vector(x, mode = "logical") && .hasPosLength(x)
+}
+
+.isNumericVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x, mode = "numeric") }
+  is.vector(x, mode = "numeric") && .hasPosLength(x)
+}
+
+.isIntegerVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x, mode = "numeric") }
+  .isNumericVector(x) && isTRUE(sum(x %% 1) == 0)
+}
+.MUST.isIntegerVector <- function(x, name = NULL, factor_ok = FALSE) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isIntegerVector(x, factor_ok),
+             name, "must be a nonempty integer-valued vector"
+  )
+}
+
+.isNonnegIntegerVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x, mode = "numeric") }
+  .isNumericVector(x) && isTRUE(sum(x %% 1) == 0) && all(x >= 0)
+}
+
+.isPosIntegerVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x, mode = "numeric") }
+  .isNumericVector(x) && isTRUE(sum(x %% 1) == 0) && all(x > 0)
+}
+.MUST.isPosIntegerVector <- function(x, name = NULL, factor_ok = FALSE) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isPosIntegerVector(x, factor_ok),
+             name, "must be a nonempty vector containing",
+             "strictly positive integer values"
+  )
+}
+
+.isCharVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x, mode = "character") }
+  is.vector(x, mode = "character") && .hasPosLength(x)
+}
+.MUST.isCharVector <- function(x, name = NULL, factor_ok = FALSE) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isCharVector(x, factor_ok), name,
+             "must be a nonempty character vector"
+  )
+}
+
+.isCharOrNumericVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x) }
+  .hasPosLength(x) && any(is.vector(x, mode = "character"),
+                          is.vector(x, mode = "numeric")
+  )
+}
+.MUST.isCharOrNumericVector <- function(x, name = NULL, factor_ok = FALSE) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(
+    .isCharOrNumericVector(x, factor_ok),
+    name, "must be a nonempty vector of type",
+    dQuote("character"), "or", dQuote("numeric")
+  )
+}
+
+.isCharOrIntegerVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x) }
+  .isCharVector(x) || .isIntegerVector(x)
+}
+.MUST.isCharOrIntegerVector <- function(x, name = NULL, factor_ok = FALSE) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(
+    .isCharOrIntegerVector(x, factor_ok),
+    name, "must be a nonempty character vector or integer-valued vector"
+  )
+}
+
+
+.isCharOrPosIntegerVector <- function(x, factor_ok = FALSE) {
+  if (factor_ok && is.factor(x)) { x <- as.vector(x) }
+  .isCharVector(x) || .isPosIntegerVector(x)
+}
+.MUST.isCharOrPosIntegerVector <- function(x, name = NULL, factor_ok = FALSE) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(
+    .isCharOrPosIntegerVector(x, factor_ok),
+    name, "must be a nonempty character vector or a numeric vector",
+    "with strictly positive integer values"
+  )
 }

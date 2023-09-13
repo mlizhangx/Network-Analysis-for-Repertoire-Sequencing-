@@ -27,7 +27,7 @@ arma::sp_umat levAdjacencyMatSparse(
     std::vector<std::string> strings,
     const int& maxdist,
     bool drop_deg_zero,
-    std::string temp_dir
+    std::string tempfile
 ) {
 
   // allocate memory for data structures
@@ -63,7 +63,7 @@ arma::sp_umat levAdjacencyMatSparse(
 
     // write indices of network nodes to file
     col_ids += 1;  // offset C++'s 0-index starting convention
-    col_ids.save(temp_dir + "/col_ids.txt", raw_ascii);
+    col_ids.save(tempfile, raw_ascii);
 
   }
 

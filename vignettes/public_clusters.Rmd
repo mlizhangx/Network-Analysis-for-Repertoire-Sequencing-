@@ -1,9 +1,5 @@
 ---
 title: "Searching for Public TCR/BCR Clusters"
-output: 
-  rmarkdown::html_vignette:
-    number_sections: false
-    tabset: true
 ---
 
 ```{r setup, include = FALSE}
@@ -22,25 +18,24 @@ The `NAIR` package includes a set of functions that facilitate searching for pub
 
 In this context, a public cluster consists of similar TCR/BCR clones (e.g., those whose CDR3 amino acid sequences differ by at most one amino acid) that are shared across samples (e.g., across individuals or across time points for a single individual).
 
-We first provide a brief conceptual overview, followed by a demonstration in which we explain the process in greater detail.
+
+#### Overview of Process
+
+1. [**Identify prominent clusters within each sample.**](#step1). For each sample, construct the repertoire network and use cluster analysis to partition the network into clusters. From each sample, select clusters based on node count and clone count. 
+2. [**Construct global network using the selected clusters.**](#step2) Combine the selected data from step 1 into a single global network. Use cluster analysis to partition the global network into clusters, which are considered as the public clusters.
+3. [Perform additional tasks](#step3) such as labeling the global clusters in the visual plot and analyzing individual clusters of interest. 
 
 
-## Overview of Process
-
-1. [**Filter the clusters within each sample's network**](#step1). For each sample, construct the repertoire network and use cluster analysis to partition the network into clusters.  Filter the data, keeping only those clusters with sufficient node count or clone count. 
-2. [**Construct global network from the filtered data and perform clustering.**](#step2) Combine the filtered data from all samples into a single global network. Perform cluster analysis and assign membership to the global clusters. These clusters are considered as the public clusters.
-3. [Perform additional tasks](#step3) such as labeling the clusters in the global network plot and analyzing particular clusters of interest. 
-
-
-## Simulate Data for Demonstration
+#### Simulate Data for Demonstration
 
 We simulate some toy data for demonstration.
 
-We simulate a total of 30 samples, each containing 30 observations. 
+Our toy data includes 30 samples, each containing 30 observations. 
 
 Some sequences are simulated with a tendency to appear in relatively few samples, while others are simulated with a tendency to appear in many samples. 
 
 ```{r }
+set.seed(42)
 library(NAIR)
 data_dir <- tempdir()
 dir_input_samples <- file.path(data_dir, "input_samples")
@@ -79,7 +74,7 @@ simulateToyData(
 )
 ```
 
-Each sample is saved in a separate file using the .rds file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. The file path of their directory is saved to the R environment variable `dir_input_samples` for later reference.
+Each sample's data frame is saved to its own file using the RDS file format. The files are named "`Sample1.rds`", "`Sample2.rds`", etc. A character string containing the directory path is assigned to the R environment variable `dir_input_samples` for later reference.
 
 The first few rows of the data for the first sample appear as follows:
 
@@ -89,207 +84,140 @@ head(readRDS(file.path(dir_input_samples, "Sample1.rds")))
 ```
 
 
-# <a name="step1"></a> Step 1: Filter Clusters Within Each Sample {.tabset}
+# <a name="step1"></a> Step 1: Identify Prominent Clusters Within Each Sample {.tabset}
 
-First, we use `findPublicClusters()` to perform network analysis on each sample individually and select clusters based on node count and clone count.
+First, we use `findPublicClusters()` to search across samples and select clones for inclusion in the global network.
 
-For each sample, the repertoire network is constructed and cluster analysis is used to partition the network into clusters. The clusters are then filtered according to node count and clone count based on user-specified criteria. The data for the clusters that remain after filtering are saved as files to be used as inputs for [step 2](#step2).
+Each sample's repertoire network is constructed individually, and cluster analysis is used to partition each network into clusters. The clusters are then filtered according to node count and clone count based on user-specified criteria. The AIRR-Seq data for the clusters that remain after filtering is saved to files to be used as inputs for [step 2](#step2).
 
-Below, we explain the function's usage.
-
-
-## Filter Settings {.tabset}
-
-`findPublicClusters()` has several parameters that control the criteria used to filter the nodes and clusters in each sample. These arguments are presented below.
-
-### Top $n$ Clusters
-
-Within each sample, the clusters are ranked by node count. The top $n$ highest-ranking clusters (those with the greatest node count) within each sample are automatically retained. The default value of $n$ is 20. A different value of $n$ can be specified using the `top_n_clusters` argument.
-
-If more than one cluster is tied for $n$-th place in the ranking by node count, only one such cluster will be included in the top $n$ clusters. This ensures that no more than $n$ clusters are selected from each sample based on this criterion.
-
-If fewer than $n$ clusters are present in the network for a sample, then all of the clusters will be retained.
-
-### Minimum Node Count
-
-In addition to retaining the top $n$ clusters from each sample, clusters that contain a sufficient number of nodes will also be retained. By default, any cluster containing at least ten nodes will be retained. This value can be adjusted using the `min_node_count` argument. For example, setting `min_clone_count = 30` will retain all clusters containing at least 30 nodes.
+Below, we explain how to use `findPublicClusters()`.
 
 
-### Minimum Clone Count
+## <a name="input_settings"></a> Input Data for Step 1 {.tabset}
 
-In addition to the clusters retained based on node count, clusters with a sufficient aggregate clone count will also be retained. The aggregate clone count of a cluster is the sum of the clone counts across all nodes (clones) in the cluster. 
+Each sample's AIRR-Seq data must be contained in a separate file, with observations indexed by row, and with the same columns across samples.
 
-By default, any cluster with an aggregate clone count of at least 100 will be retained. This value can be adjusted using the `min_clone_count` argument. For example, setting `min_clone_count = 500` will retain all clusters with an aggregate clone count of at least 500.
+#### <a name="files1"></a> File Paths of Sample Data
 
-Note that clusters are only selected according to this criterion if clone counts are provided. This is done using the `count_col` argument as explained in the **Specifying the Count Column** subsection.
-
-### Sequence Length
-
-When building the network for each sample, only clones whose receptor sequences are at least three characters in length will be included in the network. This minimum value for sequence length can be adjusted by setting the `min_seq_length` argument to a different value. Setting the value to `NULL` bypasses this check.
-
-### Sequence Content
-
-When building the network for each sample, all clones whose receptor sequences contain any of the characters `*`, `|` or `_` will be omitted from the network. This can be changed using the `drop_matches` argument, which accepts a character string containing a regular expression that specifies the pattern of content to search for (see `?regex`). The content of each clone's sequence is checked for a match to this pattern using `grep()`. If a match is found, the clone is omitted from the network. Setting the value to `NULL` bypasses this check. 
-
-
-## <a name="input_settings"></a> Specify Input Data for Step 1 {.tabset}
-
-### <a name="files1"></a> File Paths of Sample Data
-
-The main argument of `findPublicClusters()` is the `file_list` argument, which accepts a vector containing file paths. Each file is assumed to contain the AIRR-Seq data for a single sample, with observations indexed by row.
-
-Below, we prepare the vector `input_files` to be provided to the `file_list` argument of `findPublicClusters()`:
+The `file_list` parameter accepts a character vector containing file paths (or a list containing file paths and connections), where each element corresponds to a file containing a single sample.
 
 ```{r}
-# input files for step 1 (one per sample)
-input_files <- 
-  file.path(dir_input_samples, 
-            paste0("Sample", 1:samples, ".rds")
-  )
+# create vector of input file paths for step 1 (one per sample)
+input_files <- file.path(dir_input_samples, 
+                         paste0("Sample", 1:samples, ".rds")
+)
 head(input_files)
 ```
 
-### <a name="input_type"></a> File Format of Sample Data
 
-The file format of the input files for `findPublicClusters()` is specified using the `input_type` parameter. The supported formats include `"rds"`, `"rda"`, `"csv"`, as well as files that can be read using `read.table()`, such as `"tsv"` and `"txt"`. 
+#### <a name="input_type"></a> File Format of Sample Data
 
-Our samples are stored in .rds files, so we use `input_type = "rds"`. 
+The file format of the input files is specified by the `input_type` parameter. The supported values are `"rds"`, `"rda"`, `"csv"`, `"csv2"`, `"tsv"` and `"table"`. Depending on the input type, further options are specified with `data_symbols` or `read.args`. 
 
-For text formats such as `"csv"`, `"tsv"` and `"txt"`, users can specify the separation option by utilizing the `sep` argument. The default setting `sep = ""` accommodates all forms of white space, i.e., one or more spaces, tabs, newlines or carriage returns. In addition, it is important to note that the first line of the data is assumed to be the header by default. To disable this behavior and treat the first line as data, users must set the `header` parameter to `FALSE`.
-
-For the `"rda"` (Rdata) format, the `data_symbols` argument is used to specify the name of each sample's AIRR-Seq data frame within the Rdata file (i.e., the name of the data frame as it will appear in the R environment when the Rdata file is loaded). The argument accepts a character string. This requires that each sample's data frame has the same name within its respective Rdata file. For example, if each sample's data frame is named `mydataframe` and saved using the command `save(mydataframe, file = myfilepath)`, where the file path `myfilepath` is different for each sample, then we would set `data_symbols = "mydataframe"`.
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/supplementary.html#load) and to `loadDataFromFileList()` for details and examples.
 
 
+#### <a name="seq_col"></a> Sequence Column in Sample Data 
 
-### Sequence Column in Sample Data 
+The `seq_col` parameter specifies the column containing the TCR/BCR sequences within each sample. It accepts the column name (as a character string) or the column position index. 
 
-Each clone's TCR/BCR sequence is used as the basis of similarity between clones in the network.
+#### <a name="count_col"></a> Count Column in Sample Data
 
-The `seq_col` argument is used to specify the column containing the clone sequences in the data frame for each sample. The argument accepts a character string containing the column name.
+The optional `count_col` parameter specifies the column containing the clone count (clonal abundance) within each sample. It accepts the column name (as a character string) or the column position index. If provided, clone counts [will be considered when filtering the clusters](#minimum-clone-count).
 
-In our simulated data, the column containing the clone sequences is named `CloneSeq`. Hence we specify `seq_col = "CloneSeq"` when calling `findPublicClusters()`.
+#### <a name="sample_ids"></a> Custom Sample IDs (Optional)
 
+Each clone's sample ID is included in the output. By default, these are `"Sample1"`, `"Sample2"`, etc., according to the order in `file_list`. 
 
-### Count Column in Sample Data
+The optional `sample_ids` parameter assigns custom sample IDs. It accepts a vector of the same length as `file_list`, where each entry is the corresponding sample ID.
 
-The clone count for each clone is used to filter the clusters within each sample.
+#### Filtering the Sample Data 
 
-The `count_col` argument is used to specify the column containing the clone counts in the data frame for each sample. The argument accepts a character string containing the column name.
-
-In our simulated data, the column containing the clone sequences is named `CloneCount`. Hence we specify `count_col = "CloneCount"` when calling `findPublicClusters()`.
-
-### <a name="sample_ids"></a> Custom Sample IDs (Optional)
-
-The sample ID for each clone will be included in the filtered data saved by `findPublicClusters()`. This will allow us to distinguish the sample of origin for each clone after we combine the filtered data from all samples in [step 2](#step2).
-
-By default, the samples are labeled as `"Sample1"`, `"Sample2"`, etc., according to their order of appearance in `file_list`. The `sample_ids` argument allows for custom sample IDs to be assigned, if desired. The argument accepts a vector of the same length as `file_list`. Each entry of `sample_ids` is assigned as a sample ID to the sample in the corresponding entry of `file_list`. 
-
-**Sample ID values should avoid using characters that are invalid for use in file names, as well as forward slash and backslash (`/` and `\`).**
+The clones from each sample are filtered to remove any irrelevant data. By default, clones with sequences that are less than three characters in length, as well as sequences containing any of the characters `*`, `_` or `|`, will be excluded. The `min_seq_length` and `drop_matches` parameters control the filter settings. Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#input_options) for details.
 
 
-## <a name="network_settings"></a> Network Settings for Sample Networks {.tabset}
 
-The settings used to construct the network for each sample can be customized using the arguments below.
+#### <a name="network_settings"></a> Construction of Sample Networks {.tabset}
 
+The parameters that control the construction of each sample's network are shown below along with their default values.
 
-### Distance Function
+* `dist_type = "hamming"` 
+* `dist_cutoff = 1`
+* `drop_isolated_nodes = TRUE`
 
-The default method for measuring the similarity between TCR/BCR sequences is the Hamming distance, which is computed using `hamDistBounded()`. It calculates the number of differences between two sequences of the same length. If the sequences have different lengths, the shorter sequence is extended by adding non-matching characters to make it the same length as the longer sequence.
-
-The Levenshtein distance, which is computed using `levDistBounded()`, can be used as an alternative measurement to determine the similarity between sequences. It calculates the minimum number of single-character edits (insertions, deletions and transformations) needed to transform one sequence into the other. This method is particularly useful for comparing sequences of different lengths and can account for insertions and deletions. When constructing a network based on the similarity of CDR-3 nucleotide sequences, it is preferable to use the Levenshtein distance instead of the default Hamming distance by setting the argument `dist_type = "levenshtein"`. However, the Levenshtein distance requires significantly more computational time than the Hamming distance, which may be challenging when working with large data sets having long TCR/BCR sequences.
-
-
-### Distance Cutoff
-
-The distance function specified in the `dist_type` argument (Hamming distance by default) is used to quantify the similarity between TCR/BCR sequences. The chosen distance measurement determines the distance between two nodes in the network graph. 
-
-By default, two nodes in the  graph are connected by an edge if their distance is at most 1. However, if users want to adjust this cutoff, the `dist_cutoff` argument can be set to a different value. 
-
-For example, if `dist_cutoff = 2`, then two nodes will be connected by an edge if their distance is at most 2. The cutoff value controls the stringency of the network construction and affects the number and density of edges in the network.
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network_settings) for their meaning and usage. 
 
 
-### Keep/Remove Isolated Nodes 
 
-By default, if a given node has no edges connecting it to any other nodes in the network, it will be removed from the network graph and will not be included in the output. 
+#### Clustering Algorithm for Sample Networks
 
-If desired, all nodes can be kept in the network, including those that do not have any edge connections to other nodes. This is accomplished by setting the `drop_isolated_nodes` argument to `FALSE`.
+By default, clustering within each sample's network is performed using `igraph::cluster_fast_greedy()`. A different clustering algorithm can be specified using the `cluster_fun` parameter, as described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis.html#clustering-algorithm). 
 
 
-### Clustering Algorithm for Sample Networks
 
-By default, clustering within each sample's network is performed using the `cluster_fast_greedy()` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#clustering-algorithm) for details.
+## Filtering the Sample Clusters {.tabset}
+
+The following parameters control the criteria used to select clusters from each sample.
+
+#### Top $n$ Clusters
+
+Within each sample, the $n = 20$ clusters with the greatest node count are automatically selected. The value of $n$ can be adjusted using the `top_n_clusters` parameter.
+
+#### Minimum Node Count
+
+By default, any cluster containing at least ten nodes will be selected This value can be adjusted using the `min_node_count` parameter. 
+
+#### Minimum Clone Count
+
+By default, any cluster with an aggregate clone count (summed over all nodes) of at least 100 will be selected. This value can be adjusted using the `min_clone_count` parameter. 
+
+This criterion only applies if [clone counts are provided](#count_col) using the `count_col` parameter.
 
 
 
 ## Output Settings for Step 1 {.tabset}
 
-`findPublicClusters()` does not return any direct output. Instead, it saves data for the selected clusters to files that will be used as inputs in step 2. 
-For each sample, `findPublicClusters()` saves two files, one containing [node-specific metadata](#filtered_node_data) and the other containing [cluster-specific metadata](#filtered_cluster_data). The data for each sample is saved after filtering the clusters, and thus includes data only for those clusters that are selected based on the specified filter settings.
+`findPublicClusters()` does not return any direct output. Instead, data for the selected clusters is saved to files to be used as inputs in step 2. The following parameters control the output settings.
 
-### <a name="subset_cols"></a> Variables to Keep From Step 1
+#### <a name="subset_cols"></a> Variables to Keep From Sample Data 
 
-By default, the [node-specific metadata](#filtered_node_data) for each sample includes all of the variables (data columns) from the sample's original input data frame. 
+By default, the output includes all variables from the original sample data. These variables can be [used later as metadata in visualizations](#vis) of the global network.
 
-In some cases, the user may not wish for all of the original variables to be included. In this case, the user can specify the original data columns they wish to keep. This is done using the `subset_cols` argument, which accepts a vector containing either the column names or the column indices of the columns to be kept. 
-
-Regardless of the value of `subset_cols`, the variable for clone sequence (as specified by the `seq_col` argument) will always be included, as will the variable `SampleID`. Also included will be [additional variables for node-level network properties within the sample network](#filtered_node_data).
-
-Any variables included in the output can be [used as metadata to color the nodes](#vis) in graph plots of the global network during [step 2](#step2). 
+To keep only a subset of the original variables, specify the variables to keep using the `subset_cols` parameter, which accepts a character vector of column names or a vector of column indices. The sequence column is always included.
 
 
-### <a name="dir_out1"></a> Output Directory for Step 1
+#### <a name="dir_out1"></a> Output Directory for Step 1
 
-By default, a new directory named `public_clusters` is created within the current working directory, to be used as an output directory for saving the function's output. A different output directory can be specified by providing a file path to the `output_dir` argument. The specified directory will be created if it does not already exist. 
-
-Within the output directory, two subdirectories are created. One subdirectory, named `node_meta_data`, contains the node-level data files for each sample, and the other, named `cluster_meta_data`, contains the cluster-level data files. Within each of these two subdirectories, the file for each sample is named according to its [sample ID](#sample_ids). 
-
-
-### Output File Format for Step 1
-
-By default, each file is saved as a RDS file. This can be changed using the `output_type` argument. Other valid options include `"rda"` and `"csv"`. 
-
-**Note regarding the Rdata format:** For the `"rda"` (Rdata) format, each data frame containing node-level data will be named `ndat` in the R environment when its Rdata file is loaded, while each data frame containing cluster-level data will be named `cdat`.
-
-
-### <a name="save_unfiltered"></a> (Optional) Saving Data for Unfiltered Sample Networks
-
-By default, `findPublicClusters()` saves data only for the clusters that are selected based on the specified filter settings.
-
-If desired, data for each sample's full network can also be saved prior to filtering the clusters. This is done by by providing a file path to the `output_dir_unfiltered` argument, which specifies a separate output directory for the full network data. Each sample's full network data prior to filtering the clusters will then be saved to the directory specified by the `output_dir_unfiltered` argument. This data is saved separately from, and in addition to, the default data that is saved after filtering the clusters. 
-
-Note that the sequence-based filter settings specified by `min_seq_length` and `drop_chars` still apply to each sample's full network, since the network is only constructed after applying these filters. The full, pre-filtered network refers to the network that contains all of the sample's clusters, i.e., before the public clusters are identified and other clusters are removed.
-
-The full network data for each sample includes [all of the objects contained in the output of `buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output), including cluster metadata. By default, these are placed in a list named `net` and saved to an RDS file whose file name is the [sample ID](#sample_ids). The RDA format can be used instead of RDS by setting `output_type_unfiltered = "rda"`. Alternatively, setting `output_type_unfiltered = "individual"` saves each R object using the [default file formats from `buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-format), where each file's name begins with the [sample ID](#sample_ids).
-
-
-
-### (Optional) Visualization of Sample Networks
-
-By default, `findPublicClusters()` does not produce visual plots when constructing the network for each sample. Instead, visualization occurs after combining the data from all samples into a single network in [step 2](#step2).
-
-If desired, visual plots of the full network for each sample (prior to filtering the clusters) can be enabled by setting `plots = TRUE`. This does nothing on its own: by default, these plots are neither printed nor saved. To print the plots in the R plotting window, the user must additionally set `print_plots = TRUE`. To save the plots, the user must [specify a directory to the `output_type_unfiltered` argument](#save_unfiltered).
-
-By default, the plot for each sample will color the nodes according to the cluster to which they belong. The user can specify a different variable for coloring the nodes using the `color_nodes_by` argument  [as detailed here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#node-colors). It is even possible to generate [multiple plots of each sample's network, with each plot colored according to a different variable](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generate-multiple-plots-of-a-network).
-
-If the user [provides a directory to the `output_type_unfiltered` argument](#save_unfiltered), a pdf file will be saved for each sample, containing all plots generated for the sample's network. Each pdf file's name will be the [sample ID](#sample_ids).
-
-[This article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) details additional arguments that can be used to further customize the visual plot for each sample.
-
-
-## <a name="demo1"></a> Demonstration (Step 1)
-
-### Execute `findPublicClusters()`
-
-We execute `findPublicClusters()` using the [input we prepared earlier](#files1) for the `file_list` argument.
-
-The file path of our output directory is saved to the R variable named `dir_filtered_samples` for later reference.
+The `output_dir` parameter specifies the output directory. It accepts a character string containing the directory path. The directory will be created if it does not exist.
 
 ```{r}
-# directory to save filtered sample data
+# create output directory path for step 1
 dir_filtered_samples <- file.path(data_dir, "filtered_samples")
+```
 
-# Filter Clusters Within Each Sample
-findPublicClusters(file_list = input_files, 
+
+#### Output File Format for Step 1
+
+By default, each file is saved as an RDS file. This can be changed using the `output_type` parameter. Other accepted values are `"rda"` and `"csv"`.
+
+
+#### <a name="save_unfiltered"></a> Saving Full Networks for Each Sample (Optional) 
+
+By default, `findPublicClusters()` saves data only for the selected clusters from each sample. If desired, data for each sample's entire network can also be saved by passing a directory path to the `output_dir_unfiltered` parameter. The full network data for each sample is the [output returned by `buildNet()`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output). The `output_type_unfiltered` parameter specifies the file format in the same manner described [here]((https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-format) for the `output_type` parameter of `buildNet()`.
+
+#### Visualization of Sample Networks (Optional) 
+
+By default, `findPublicClusters()` does not produce visual plots. The visualization of interest is of the global network in [step 2](#step2).
+
+A plot of each sample's full network can be produced using `plots = TRUE`. Specifying `print_plots = TRUE` prints these to the R plotting window. The plots will be saved if [`output_dir_unfiltered`](#save_unfiltered) is non-null. By default, the nodes in each plot are colored according to cluster membership. A different variable can be specified using the `color_nodes_by` parameter as detailed [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#node-colors) (or  [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-multiple-plots) for multiple variables).
+
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) to learn about other parameters for customizing the visualization.
+
+
+## <a name="demo1"></a> Demonstration, Step 1
+
+```{r}
+findPublicClusters(input_files, 
                    input_type = "rds",
                    seq_col = "CloneSeq", 
                    count_col = "CloneCount",
@@ -302,249 +230,158 @@ findPublicClusters(file_list = input_files,
 )
 ```
 
-### Output of `findPublicClusters()`
+<a name="filtered_node_data"></a> 
+<a name="node_meta"></a>
 
-In practice, we can proceed to [step 2](#step2) without examining the output from step 1. Here we present some of the output purely for demonstration.
-
-#### <a name="filtered_node_data"></a> Node Metadata for Filtered Sample Networks
-
-For the sake of demonstration, we load the node-level metadata for the first sample's filtered network in order to show the variables it contains.
+Two new directories are created within the specified output directory:
 
 ```{r}
-# Directory of filtered node data
-dir_filtered_samples_node <- 
-  file.path(dir_filtered_samples, "node_meta_data")
-
-# Load first file 
-sample1_filtered_node_data <- 
-  readRDS(
-    list.files(dir_filtered_samples_node, full.names = TRUE)[[1]]
-  )
-
-# Variables contained in each sample's filtered node-level data
-names(sample1_filtered_node_data)
+list.files(dir_filtered_samples)
 ```
 
-Each row in the data frame corresponds to a node belonging to one of the filtered clusters in the sample network.
-
-Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties) for more information about the node-level network properties.
-
-
-#### <a name="filtered_cluster_data"></a> Cluster Metadata for Filtered Sample Networks
-
-We load the cluster-level metadata for the first sample's filtered network in order to show the variables it contains.
+These directories contain cluster-level and node-level metadata, respectively, for the selected clusters from each sample. We require only the node metadata for step 2.
 
 ```{r}
-# Directory of filtered cluster data
-dir_filtered_samples_cluster <- 
-  file.path(dir_filtered_samples, "cluster_meta_data")
-
-# Load first file 
-sample1_filtered_cluster_data <- 
-  readRDS(
-    list.files(dir_filtered_samples_cluster, full.names = TRUE)[[1]]
-  )
-
-# Variables contained in each sample's filtered node-level data
-names(sample1_filtered_cluster_data)
+head(list.files(file.path(dir_filtered_samples, "node_meta_data")))
 ```
-
-Each row in the data frame corresponds to one of the filtered clusters in the sample network.
-
-Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties) for more information about the cluster-level network properties.
+ 
 
 
 
 # <a name="step2"></a> Step 2: Global Network of Public Clusters {.tabset}
 
-In [step 1](#step1), we used `findPublicClusters()` to perform network analysis on each sample individually and select clusters based on node count and clone count.
+`buildPublicClusterNetwork()` combines the selected clusters from all samples into a single global network, where a new round of cluster analysis is performed to partition the global network into clusters.
 
-Next, we will use `buildPublicClusterNetwork()` to combine the filtered data from all samples into a single global network and perform clustering analysis.  
+## Input Data for Step 2
 
+The input files for `buildPublicClusterNetwork()` are the [node metadata files](#demo1) from the output of step 1. Each file contains data for one sample.
 
-## Specify Input Data for Step 2
+#### <a name="files2"></a> File Paths of Node Metadata From Step 1
 
-The output files created in the previous step contain the filtered data for each sample. [As detailed earlier](#dir_out1), these files are located in two separate subdirectories, one containing the files for the node-level metadata and the other containing the files for the cluster-level metadata. 
-
-To call `buildPublicClusterNetwork()`, we only need the files containing the node-level metadata. 
-
-
-### <a name="files2"></a> File Paths of Filtered Node Data
-
-If `findPublicClusters()` was called with the default value of `output_dir`, then it is not necessary to specify the input file paths when calling `buildPublicClusterNetwork()`, *provided the current working directory is the same as the previous working directory, and provided `findPublicClusters()` has not previously been called with different input data while using this working directory.*
-
-If `findPublicClusters()` was called with a non-default value for `output_dir`, then the node data files must be specified using the `file_list` argument, which accepts a vector of file paths. The node data files will be located in the `node_meta_data` subdirectory of the [output directory used in step 1](#demo1). They can be conveniently referenced using `list.files()` with `full.names = TRUE`, assuming that `findPublicClusters()` has not previously been called with different input data and the same output directory.
-
-Below, we create the vector of file paths to provide to the `file_list` argument.
+The `file_list` parameter accepts a character vector of file paths for the input files, which are located in the `node_meta_data` [subdirectory](#demo1) of the [output directory from step 1](#dir_out1). 
 
 ```{r}
-# Directory of filtered node data
+# Directory of node metadata from step 1
 dir_filtered_samples_node <- 
   file.path(dir_filtered_samples, "node_meta_data")
 
-# Vector of file paths for filtered node data
+# Vector of file paths to node metadata from step 1
 files_filtered_samples_node <- 
   list.files(dir_filtered_samples_node, full.names = TRUE)
-
-head(files_filtered_samples_node)
 ```
 
 
 
-### File Format of Filtered Node Data
+#### File Format of Node Metadata From Step 1
 
-If `findPublicClusters()` was called with the default value of `output_type`, then it is not necessary to specify the input type when calling `buildPublicClusterNetwork()`.
-
-If the files created by `findPublicClusters()` were saved using a different file format, the `input_type` argument can be used to specify the format used. This argument has the [same behavior described earlier](#input_type) in `findPublicClusters()`. The situational arguments `header`, `sep` and `data_symbols` also perform the same roles as before.
-
-**Note about Rdata file format:** If the `"rda"` (Rdata) input file format is specified using `input_type = "rda"`, then the `data_symbols` argument is used to specify the name of each sample's node-level data frame within its respective Rdata file. If `findPublicClusters()` was called with `output_type = "rda"`, then the node-level data frame for each sample will be named `ndat`. Accordingly, the default value of `data_symbols` is `ndat`, so the user should not need to manually specify the value of `data_symbols` unless the names within the files are changed.
+If `findPublicClusters()` was called with a non-default value of `output_type`, this value must be passed to the `input_type` parameter of `buildPublicClusterNetwork()`. 
 
 
+#### Argument Values From Step 1
 
-### Column Names in Filtered Node Data
-
-The `seq_col` and `count_col` arguments are used to specify the names of the columns containing the receptor sequences and clone counts, respectively, in the [same manner seen earlier](#input_settings) for `findPublicClusters()`.
-
-Generally, users should provide the same values for these arguments as they did in step 1.
-
-The clone counts are used to compute some of the cluster-level properties, which will be omitted if `count_col` is left unspecified.
+The `seq_col` and `count_col` parameters specify the input data columns containing receptor sequences and clone counts, respectively. Users should pass the same argument values to these parameters as they did when calling `findPublicClusters()` during step 1.
 
 
-## Settings for Global Network Analysis {.tabset}
+## Global Network Analysis {.tabset}
 
+#### Network Construction
 
-### Network Construction
-
-The settings used to construct the network can be customized [using the same arguments from `findPublicClusters()`](#network_settings), shown below with their default values for `buildPublicClusterNetwork()`:
+The parameters that control construction of the global network are shown below along with their default values.
 
 * `dist_type = "hamming"` 
 * `dist_cutoff = 1`
 * `drop_isolated_nodes = FALSE`
 
-Refer to [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network-settings) for details on their meaning and behavior.
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#network_settings) for their meaning and usage. 
 
 
-### Clustering Algorithm for Global Network
+#### Clustering Algorithm for Global Network
 
-After constructing the global network, `buildPublicClusterNetwork()` performs cluster analysis on the network nodes, partitioning the global network graph into densely-connected subgraphs. These global clusters can contain nodes from different samples.
+A clustering algorithm is used to partition the global network graph into densely-connected subgraphs (clusters). Each cluster can contain clones from different samples.
 
-By default, clustering within the global network is performed using the `cluster_fast_greedy()` algorithm from the `igraph` package. A different clustering algorithm can be specified using the `cluster_fun` argument. See [this section of the buildRepSeqNetwork vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#clustering-algorithm) for details.
+By default, clustering within is performed using `igraph::cluster_fast_greedy()`. A different clustering algorithm can be specified using the `cluster_fun` parameter, as described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis.html#clustering-algorithm). 
 
 
 
-### <a name="vis"></a> Visualization of Global Network
+#### <a name="vis"></a> Visualization of Global Network
 
-By default, `buildPublicClusterNetwork()` produces a visual plot of the global network graph. This step can be omitted by setting `plots = FALSE`.
+By default, `buildPublicClusterNetwork()` produces a visual plot of the global network graph with the nodes colored according to sample ID. 
 
-By default, the plot colors the nodes according to sample ID. This can assist the user in identifying the public clusters.
+The `color_nodes_by` parameter specifies the variable used to color the nodes. It accepts a character string naming a variable [kept](#subset_cols) from the original sample data or one of the node-level network properties [listed here](#node_variables).  
 
-If desired, a different variable can be used to color the nodes. This is done using the `color_nodes_by` argument, which accepts a character string specifying the variable to use. The value should be the name of a [variable present in the filtered node-level metadata for each sample](#subset_cols) or a [node-level network property that has been computed for the global network](#node_variables). 
+`color_nodes_by` also accepts a vector naming multiple variables. [One plot will be created for each entry, with the nodes colored according to the respective  variable](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-multiple-plots). 
 
-The `color_nodes_by` argument also accommodates a character vector specifying multiple variables, in which case [one plot will be created for each variable specified, with each plot coloring the nodes according to the respective variable](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generate-multiple-plots-of-a-network). If the user wishes to include the binary variable of interest as one of these variables, it is contained in each neighborhood's data frame as the variable `"GroupID"`.
+Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) to learn about other parameters for customizing the visualization.
 
-[This article](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html) details additional arguments that can be used to further customize the visual plot, such as arguments to control the color scale, node size, title and legend.
 
 
 
 ## Output Settings for Step 2 {.tabset}
 
-The output returned by `buildPublicClusterNetwork()` follows the [same format as the output of `buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-settings). The function returns a list containing the [node-level](#node_variables) and [cluster-level](#cluster_variables) metadata for the global network, as well as any plots generated, in addition to the network adjacency matrix and the `igraph` network edge list.
+`buildPublicClusterNetwork()` returns a list containing plots, metadata and other network objects, with the [same structure](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output) as the output of `buildRepSeqNetwork()`. 
 
-### Output Directory for Step 2
-
-By default, a subdirectory named `public_clusters` is created within the current working directory, and the contents of the list returned by `buildPublicClusterNetwork()` are saved to this subdirectory.
-
-The output can be saved to a different directory by providing a file path to the `output_dir` argument. 
-
-The user can also specify `output_dir = NULL` in order to prevent the output from being saved.
-
-
-### Output File Format for Step 2
-
-By default, each element of the list returned by `buildPublicClusterNetwork()` is saved as an individual file. The file formats are the same default file formats used by [`buildRepSeqNetwork`](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-settings). In particular, the node-level and cluster-level metadata are saved as csv files. 
-
-Alternatively, the user can save the entire output list to a single compressed rds or rda file by setting `output_type = "rds"` or `output_type = "rda"`, respectively.
-
-
-### PDF of Global Network Graph Plots
-
-* Regardless of the output file format specified, a separate pdf file is created in `output_dir` containing all graph plots generated for the global network. The dimensions (in inches) for the pdf can be adjusted using the `plot_width` and `plot_height` arguments, with the defaults being `12` and `10`, respectively. The pdf file is not created if no plots are generated (i.e., if the argument `plots` is set to `FALSE`).
-* **Note:** the `ggraph` object for each plot is only saved if the user sets `output_type = "rds"` or `output_type = "rda"`. Using one of these settings is recommended used if the user wishes to modify any plots in the future. Note, however, that plots can always be re-generated from the node-level meta data using `generateNetworkGraphPlots()` as described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#generating-new-plots).
-
-
-### Output File Name(s) for Step 2
-
-By default, the name of each saved file begins with `PublicClusterNetwork`. This prefix can be changed using the `output_name` argument, which accepts a character vector.
-
-Refer to [this vignette](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-file-names) for further details on how the output files are named.
+The output can be saved to a local directory using the parameters `output_dir`, `output_type` and `output_name`, whose usage is described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#output-directory). 
 
 
 
-## <a name="demo2"></a> Demonstration (Step 2)
-
-### Execute `buildPublicClusterNetwork()`
-
-We execute `buildPublicClusterNetwork()` using the [input we prepared earlier](#files2) for the `file_list` argument:
+## <a name="demo2"></a> Demonstration, Step 2
 
 ```{r}
-dir_out <- file.path(data_dir, "public_clusters")
-
-# Collect clones from all public clusters and perform network analysis
-public_clusters <- 
-  buildPublicClusterNetwork(file_list = files_filtered_samples_node,
-                            seq_col = "CloneSeq", 
-                            count_col = "CloneCount",
-                            size_nodes_by = 1,
-                            output_dir = dir_out
-  )
+public_clusters <- buildPublicClusterNetwork(files_filtered_samples_node,
+                                             seq_col = "CloneSeq", 
+                                             count_col = "CloneCount",
+                                             size_nodes_by = 1,
+                                             print_plots = TRUE
+)
 ```
-
-From the plot of the global network graph, where the nodes are colored according to sample ID, we notice that many samples are represented among the larger clusters. Hence [these clusters may be of particular interest](#step3) as public clusters. 
-
-### Output of `buildPublicClusterNetwork()`
-
-The default files saved by `buildPublicClusterNetwork()` have the following names:
+The returned list contains the following elements:
 
 ```{r}
-# Files saved by buildPublicClusterNetwork
-list.files(dir_out)
-```
-
-The elements of the output list returned by `buildPublicClusterNetwork()` have the following names:
-
-```{r}
-# output returned by buildPublicClusterNetwork
 names(public_clusters)
 ```
 
-Below, we examine the data frames `node_data` and `cluster_data`. For details on the other list elements, refer to [the output of the `buildRepSeqNetwork` function](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output).
+The elements are described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#base-output). We inspect the node metadata and cluster metadata.
 
 
 #### <a name="node_variables"></a> Node Metadata for Global Network
 
-The list element `node_data` is a data frame containing metadata for the network nodes, where each row corresponds to a node in the global network graph. The following variables are present in this data frame:
+The list element `node_data` is a data frame containing metadata for the network nodes, where each row represents a distinct clone corresponding to a node in the global network graph.
+
+```{r}
+nrow(public_clusters$node_data)
+```
+
 
 ```{r}
 # variables in the node-level metadata
 names(public_clusters$node_data)
 ```
 
-Notice that [by default](#subset_cols), all variables that were present in each sample's original data, such as `"CloneFrequency"` and `"CloneCount"`, are automatically carried over into this data.
+All variables [kept from the original sample data during step 1](#subset_cols) are present. The variable `ClusterIDPublic` contains the global cluster membership, while `ClusterIDInSample` contains the in-sample cluster membership. [Node-level network properties](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties) are also present. Those beginning with `SampleLevel` correspond to the sample networks, while those beginning with `Public` correspond to the global network. 
 
-Many [node-level network properties](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#node-level-network-properties) are present in the data. Some pertain to the network for the individual sample from which each node originated, i.e., the networks constructed in [step 1](#step1). This includes all variables that begin with `"SampleLevel"`, such as `SampleLevelNetworkDegree`, as well as the variable `ClusterIDInSample`.
+```{r}
+# View some of the node metadata for the global network
+view_cols <- c("CloneSeq", "SampleID", "ClusterIDInSample", "ClusterIDPublic")
+public_clusters$node_data[49:54 , view_cols]
+```
+The row names indicate the original row ID of each clone within its sample's data.
 
-The variables that begin with `"Public"`, such as `PublicNetworkDegree`, pertain to the global network. In particular, `ClusterIDPublic` indicates the ID of the global cluster to which each node belongs.
 
 #### <a name="cluster_variables"></a> Cluster Metadata for Global Network
 
-The list element `cluster_data` is a data frame containing metadata for the public clusters, where each row corresponds to a cluster in the global network. The following variables are present in this data frame:
+The list element `cluster_data` is a data frame containing metadata for the public clusters, where each row corresponds to a cluster in the global network.
 
 ```{r}
-# variables in the node-level metadata
+# variables in the cluster-level metadata
 names(public_clusters$cluster_data)
 ```
 
 Refer [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties) for more information about the cluster-level network properties.
+
+```{r}
+# View some of the cluster metadata for the global network
+head(public_clusters$cluster_data[, 1:6])
+```
 
 
 # <a name="step3"></a> Step 3: Additional Tasks {.tabset}
@@ -556,57 +393,48 @@ After calling `buildPublicClusterNetwork()`, the following tasks can be performe
 
 In order to more easily cross-reference the clusters in the visual plot with the clusters in the data, we can label the clusters with their ID numbers. 
 
-This is accomplished using `addClusterLabels()` [as described here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html#labeling-clusters). Note that within the node-level metadata, the global cluster ID is stored in the variable `ClusterIDPublic`, so we must provide this column name to the `cluster_id_col` argument. 
+This is accomplished using `labelClusters()` as described [here](https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/cluster_analysis.html#labeling-clusters). 
 
-Below, we label the six largest clusters in the plot with their cluster IDs:
+Below, we label the six largest clusters in the plot with their cluster IDs. The node metadata variable `ClusterIDPublic` contains the global cluster membership, so we pass its name to the `cluster_id_col` parameter. 
 
 ```{r}
-# Modify plot to add labels to the clusters
-public_clusters$plots[[1]] <- 
-  addClusterLabels(plot = public_clusters$plots[[1]],
-                   net = public_clusters,
-                   top_n_clusters = 6,
-                   cluster_id_col = "ClusterIDPublic",
-                   size = 7
+public_clusters <- 
+  labelClusters(public_clusters,
+                top_n_clusters = 6,
+                cluster_id_col = "ClusterIDPublic",
+                size = 7
   )
 
-# View modified plot
 public_clusters$plots[[1]]
 ```
 
-## Focusing on Individual Clusters of Interest
+## Focusing on Individual Clusters
 
-If we wish to focus on a particular cluster of interest within the global network, we can build a network exclusively using the clones from that cluster. This is accomplished using `buildRepSeqNetwork()`, where we subset our data according to the value of the `ClusterIDPublic` column, which contains the global cluster IDs. 
-
-Below, we focus on the first cluster, which in this case is also the largest cluster by node count. In the plot, we color each node according to the receptor sequence of its corresponding clone. 
+To focus on a particular cluster, we can subset the node metadata based on the  value of `ClusterIDPublic` and use `buildNet()` to produce plots of the cluster's graph.
 
 ```{r}
 # focus on cluster 1
-buildRepSeqNetwork(
-  data = 
-    public_clusters$node_data[public_clusters$node_data$ClusterIDPublic == 1, ],
-  seq_col = "CloneSeq", 
+buildNet(
+  public_clusters$node_data[public_clusters$node_data$ClusterIDPublic == 1, ],
+  "CloneSeq", 
   color_nodes_by = "CloneSeq", 
   color_scheme = "plasma", 
   size_nodes_by = 3, 
-  output_dir = NULL, 
-  output_name = "Cluster 1"
+  output_name = "Cluster 1",
+  print_plots = TRUE
 )
 ```
 
-Next, we do the same for the sixth largest cluster:
-
 ```{r}
 # focus on cluster 6
-buildRepSeqNetwork(
-  data = 
-    public_clusters$node_data[public_clusters$node_data$ClusterIDPublic == 6, ],
-  seq_col = "CloneSeq", 
+buildNet(
+  public_clusters$node_data[public_clusters$node_data$ClusterIDPublic == 6, ],
+  "CloneSeq", 
   color_nodes_by = "CloneSeq", 
   color_scheme = "plasma", 
   size_nodes_by = 3, 
-  output_dir = NULL, 
-  output_name = "Cluster 6"
+  output_name = "Cluster 6",
+  print_plots = TRUE
 )
 ```
 
@@ -614,8 +442,15 @@ buildRepSeqNetwork(
 
 ```{r include=FALSE}
 # clean up temp directory
+file.remove(
+  file.path(dir_input_samples,
+            paste0("Sample", 1:samples, ".rds")
+  )
+)
 unlink(
-  c(dir_input_samples, dir_filtered_samples, dir_out),
+  c(dir_filtered_samples_node, 
+    file.path(dir_filtered_samples, "cluster_meta_data")
+  ),
   recursive = TRUE
 )
 ```

@@ -1,15 +1,26 @@
-\name{addClusterLabels}
+\name{labelClusters}
+\alias{labelClusters}
 \alias{addClusterLabels}
 \title{
   Label Clusters in a Network Graph Plot
 }
 \description{
-  Given a graph plot and metadata for a network where clustering analysis has
-  been performed, labels clusters in the plot with their cluster IDs. The user
-  can specify a cluster-level property by which to rank the clusters, labeling
-  only those clusters above a specified rank.
+  Functions for labeling the clusters in network graph plots with their cluster
+  IDs.
+  The user can specify a cluster-level property by which to rank the clusters,
+  labeling only those clusters above a specified rank.
 }
 \usage{
+labelClusters(
+  net,
+  plots = NULL,
+  top_n_clusters = 20,
+  cluster_id_col = "cluster_id",
+  criterion = "node_count",
+  size = 5, color = "black",
+  greatest_values = TRUE
+)
+
 addClusterLabels(
   plot,
   net,
@@ -18,39 +29,51 @@ addClusterLabels(
   criterion = "node_count",
   size = 5,
   color = "black",
-  greatest_values = TRUE)
+  greatest_values = TRUE
+)
 }
 \arguments{
+  \item{net}{
+  A \code{\link{list}} of network objects conforming to the output of
+      \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} or
+      \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}.
+      See details.
+}
+  \item{plots}{
+  Specifies which plots in \code{net$plots} to annotate.
+  Accepts a character vector of element names or a numeric vector of element
+  position indices.
+  The default \code{NULL} annotates all plots.
+}
   \item{plot}{
   A \code{\link[ggraph]{ggraph}} object containing the network graph plot.
-}
-  \item{net}{
-  A list containing data frames named \code{node_data} and \code{cluster_data}
-  with node-level and cluster-level network properties, such as that returned by
-  \code{\link{buildRepSeqNetwork}} when called with \code{cluster_stats = TRUE}.
 }
   \item{top_n_clusters}{
   A positive integer specifying the number of clusters to label. Those with the
   highest rank according to the \code{criterion} argument will be labeled.
 }
+
   \item{cluster_id_col}{
-  The column name of the cluster ID variable within \code{net$node_data}. Note
-  that for \code{net$cluster_data}, the variable is always assumed to be
-  \code{cluster_id}.
+  Specifies the column of \code{net$node_data} containing
+  the variable for cluster membership.
+  Accepts a character string containing the column name.
 }
   \item{criterion}{
-  A column name of \code{net$cluster_data} specifying a cluster-level network
-  property by which to rank the clusters. The property should be quantitative
-  for the ranking to be meaningful. See \code{\link{getClusterStats}} for a
-  list of properties. The default is \code{"node_size"}.
+  Can be used to specify a cluster-level network property by which to rank the
+  clusters. Non-default values are ignored unless \code{net$cluster_data} exists and
+  corresponds to the cluster membership variable specified by \code{cluster_id_col}.
+  Accepts a character string containing a column name of \code{net$cluster_data}.
+  The property must be quantitative for the ranking to be meaningful.
+  By default, clusters are ranked by node count, which is computed based on the
+  cluster membership values if necessary.
 }
   \item{size}{
   The font size of the cluster ID labels. Passed to the \code{size} argument of
-  \code{\link[ggraph]{geom_node_text}}.
+  \code{\link[ggraph:geom_node_text]{geom_node_text()}}.
 }
   \item{color}{
   The color of the cluster ID labels. Passed to the \code{color} argument of
-  \code{\link[ggraph]{geom_node_text}}.
+  \code{\link[ggraph:geom_node_text]{geom_node_text()}}.
 }
   \item{greatest_values}{
   Logical. Controls whether clusters are ranked according to the greatest or
@@ -59,14 +82,27 @@ addClusterLabels(
   lower values, thereby receiving a higher priority to be labeled.
 }
 }
+\details{
+    The list \code{net} must contain the named elements
+    \code{igraph} (of class \code{\link[igraph]{igraph}}),
+    \code{adjacency_matrix} (a \code{\link{matrix}} or
+    \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} encoding edge connections),
+    and \code{node_data} (a \code{\link{data.frame}} containing node metadata),
+    all corresponding to the same network. The lists returned by
+    \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} and
+    \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}
+    are examples of valid inputs for the \code{net} argument.
+}
 \value{
-  A \code{\link[ggraph]{ggraph}} object containing the original plot annotated
-  with the cluster ID labels.
+  \code{labelClusters()} returns a copy of \code{net} with the specified plots
+  annotated.
+
+  \code{addClusterLabels()} returns an annotated copy of \code{plot}.
 }
 \seealso{
-\code{\link{addClusterMembership}},
-\code{\link{getClusterStats}},
-\code{\link{generateNetworkGraphPlots}}
+\code{\link[=addClusterMembership]{addClusterMembership()}},
+\code{\link[=getClusterStats]{getClusterStats()}},
+\code{\link[=generateNetworkGraphPlots]{generateNetworkGraphPlots()}}
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
@@ -79,26 +115,31 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+set.seed(42)
 toy_data <- simulateToyData()
 
 network <- buildRepSeqNetwork(
   toy_data,
   seq_col = "CloneSeq",
-  node_stats = TRUE,
   cluster_stats = TRUE,
-  color_nodes_by = "transitivity",
-  color_scheme = "plasma-1",
-  size_nodes_by = "degree",
-  node_size_limits = c(0.5, 1.5),
-  print_plots = FALSE,
-  output_dir = NULL
+  color_nodes_by = "cluster_id",
+  color_scheme = "Viridis",
+  size_nodes_by = 1
 )
 
-# Label two largest clusters
+network <- labelClusters(
+  network,
+  top_n_clusters = 7,
+  size = 7
+)
+
+network$plots$cluster_id
+
+# Alternative method, working with the plot directly
 addClusterLabels(
-  plot = network$plots$transitivity,
+  plot = network$plots$cluster_id,
   net = network,
-  top_n_clusters = 2,
-  criterion = "node_count" # (the default)
+  top_n_clusters = 7,
+  size = 7
 )
 }

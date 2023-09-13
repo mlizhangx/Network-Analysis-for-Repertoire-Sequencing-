@@ -19,7 +19,7 @@ findPublicClusters(
   file_list,
   input_type,
   data_symbols = NULL,
-  header = TRUE, sep = "",
+  header, sep, read.args,
   sample_ids =
     paste0("Sample", 1:length(file_list)),
   seq_col,
@@ -39,13 +39,14 @@ findPublicClusters(
   color_nodes_by = "cluster_id",
 
   ## Output ##
-  output_dir =
-    file.path(getwd(), "public_clusters"),
+  output_dir,
   output_type = "rds",
 
   ## Optional Output ##
   output_dir_unfiltered = NULL,
   output_type_unfiltered = "rds",
+
+  verbose = FALSE,
 
   ...
 
@@ -53,26 +54,43 @@ findPublicClusters(
 }
 \arguments{
   \item{file_list}{
-  A vector of file paths where each file contains the data for a sample, with
-  observations indexed by row. Passed to \code{\link{loadDataFromFileList}}.
+  A character vector of file paths, or a list containing
+  \code{\link[=connection]{connections}} and file paths.
+  Each element corresponds to a single file containing the data
+  for a single sample.
+  Passed to \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{input_type}{
   A character string specifying the file format of the sample data files. Options
   are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"}, \code{"rds"} and
-  \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
+  \code{"rda"}. Passed to \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{data_symbols}{
   Used when \code{input_type = "rda"}. Specifies the name of each sample's data
   frame within its respective Rdata file.
-  Passed to \code{\link{loadDataFromFileList}}.
+  Passed to \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{header}{
-  Used for certain values of \code{input_type}.
-  Passed to \code{\link{loadDataFromFileList}}.
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify a non-default value of the \code{header}
+    argument to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
 }
   \item{sep}{
-  Used for certain values of \code{input_type}.
-  Passed to \code{\link{loadDataFromFileList}}.
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify a non-default value of the \code{sep}
+    argument to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
+}
+  \item{read.args}{
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify non-default values of optional
+    arguments to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
+    Accepts a named list of argument values.
+    Values of \code{header} and \code{sep}
+    in this list take precedence over values specified via the \code{header}
+    and \code{sep} arguments.
 }
   \item{sample_ids}{
   A character or numeric vector of sample IDs, whose length matches that of
@@ -81,23 +99,30 @@ findPublicClusters(
 }
   \item{seq_col}{
     Specifies the column of each sample's data frame containing the TCR/BCR
-    sequences. Accepts either the column name or column index.
+    sequences.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
   \item{count_col}{
     Specifies the column of each sample's data frame containing the clone count
-    (measure of clonal abundance). Accepts either the column name or column index.
+    (measure of clonal abundance).
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
     If \code{NULL}, the clusters in each sample's network will be selected solely
     based upon node count.
 }
   \item{min_seq_length}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the network for
   each sample.
 }
   \item{drop_matches}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the network for
   each sample. Accepts a character string containing a regular expression
   (see \code{\link[base]{regex}}).
-  Checks TCR/BCR sequences for a pattern match. Those returning a match are dropped.
+  Checks TCR/BCR sequences for a pattern match using \code{\link[=grep]{grep()}}.
+  Those returning a match are dropped.
   By default, sequences containing any of the characters \code{*}, \code{|}
   or \code{_} are dropped.
 }
@@ -115,20 +140,20 @@ findPublicClusters(
     and does not select additional clusters based on clone count.
 }
   \item{plots}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
-  each sample.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the network for each sample.
 }
   \item{print_plots}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
-  each sample.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the network for each sample.
 }
   \item{plot_title}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
-  each sample.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the network for each sample.
 }
   \item{color_nodes_by}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the network for
-  each sample.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the network for each sample.
 }
   \item{output_dir}{
     The file path of the directory for saving the output. The directory will be
@@ -145,43 +170,62 @@ findPublicClusters(
   \item{output_type_unfiltered}{
     A character string specifying the file format to use for saving the unfiltered
     network data for each sample. Only applicable if \code{output_dir_unfiltered}
-    is non-null. Passed to \code{\link{buildRepSeqNetwork}} when constructing the
-    network for each sample.
+    is non-null. Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+    when constructing the network for each sample.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
   \item{\dots}{
     Other arguments to \code{buildRepSeqNetwork} when constructing the network
-    for each sample, not including \code{node_stats}, \code{stats_to_include} or
-    \code{cluster_stats} (see details).
+    for each sample, not including \code{node_stats}, \code{stats_to_include},
+    \code{cluster_stats}, \code{cluster_id_name} or \code{output_name}
+    (see details).
 }
 }
 \details{
-All node-level and cluster-level network properties are automatically computed for
-each sample's network. The node-level properties are renamed to reflect their
-correspondence to the sample-level network. Specifically, the properties are named
-\code{ClusterIDInSample}, \code{SampleLevelNetworkDegree},
-\code{SampleLevelTransitivity}, \code{SampleLevelCloseness},
-\code{SampleLevelCentralityByCloseness}, \code{SampleLevelCentralityByEigen},
-\code{SampleLevelEigenCentrality}, \code{SampleLevelBetweenness},
-\code{SampleLevelCentralityByBetweenness}, \code{SampleLevelAuthorityScore},
-\code{SampleLevelCoreness}, \code{SampleLevelPageRank}. A variable \code{SampleID}
+Each sample's network is constructed using an individual call to
+\code{\link[=buildRepSeqNetwork]{buildNet()}} with
+\code{node_stats = TRUE}, \code{stats_to_include = "all"},
+\code{cluster_stats = TRUE} and \code{cluster_id_name = "ClusterIDInSample"}.
+The node-level properties are renamed to reflect their
+correspondence to the sample-level network. Specifically, the properties are named:
+
+\itemize{
+\item \code{SampleLevelNetworkDegree}
+\item \code{SampleLevelTransitivity}
+\item \code{SampleLevelCloseness}
+\item \code{SampleLevelCentralityByCloseness}
+\item \code{SampleLevelCentralityByEigen}
+\item \code{SampleLevelEigenCentrality}
+\item \code{SampleLevelBetweenness}
+\item \code{SampleLevelCentralityByBetweenness}
+\item \code{SampleLevelAuthorityScore}
+\item \code{SampleLevelCoreness}
+\item \code{SampleLevelPageRank}
+}
+
+A variable \code{SampleID}
 is added to both the node-level and cluster-level meta data for each sample.
 
 After the clusters in each sample are filtered, the node-level and cluster-level
 metadata are saved in the respective subdirectories \code{node_meta_data} and
-\code{cluster_meta_data} of the output directory specified by \code{output_dir};
-each is saved using the sample ID (the corresponding element of
-\code{sample_id_list}) as a filename prefix, followed by the appropriate file
-extension based on \code{output_type}.
+\code{cluster_meta_data} of the output directory specified by \code{output_dir}.
 
 The unfiltered network results for each sample can also be saved by supplying a
 directory to \code{output_dir_unfiltered}, if these results are desired for
-downstream analysis.
+downstream analysis. Each sample's unfiltered network results will then be saved
+to its own subdirectory created within this directory.
 
 The files containing the node-level metadata for the filtered clusters can be
-supplied to \code{\link{buildPublicClusterNetwork}} in order to construct a global
+supplied to \code{\link[=buildPublicClusterNetwork]{buildPublicClusterNetwork()}}
+in order to construct a global
 network of public clusters. If the full global network is too large to practically
 construct, the files containing the cluster-level meta data for the filtered
-clusters can be supplied to \code{\link{buildPublicClusterNetworkByRepresentative}}
+clusters can be supplied to
+\code{\link[=buildPublicClusterNetworkByRepresentative]{buildPublicClusterNetworkByRepresentative()}}
 to build a global network using only a single representative sequence from each
 cluster. This allows prominent public clusters to still be identified.
 
@@ -206,11 +250,12 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
-\code{\link{buildPublicClusterNetwork}}
+\code{\link[=buildPublicClusterNetwork]{buildPublicClusterNetwork()}}
 
-\code{\link{buildPublicClusterNetworkByRepresentative}}
+\code{\link[=buildPublicClusterNetworkByRepresentative]{buildPublicClusterNetworkByRepresentative()}}
 }
 \examples{
+set.seed(42)
 
 ## Simulate 30 samples with a mix of public/private sequences ##
 samples <- 30
@@ -261,6 +306,7 @@ findPublicClusters(
   output_dir = tempdir()
 )
 
+\dontshow{
 # Clean up temporary files
 file.remove(
   file.path(tempdir(),
@@ -271,5 +317,6 @@ unlink(
   file.path(tempdir(), c("node_meta_data", "cluster_meta_data")),
   recursive = TRUE
 )
+}
 
 }

@@ -37,11 +37,8 @@ simulateToyData <- function(
     new_chars = prefix_chars,
     new_probs = prefix_probs,
     output_dir = NULL,
-    no_return = FALSE,
-    seed_value = 42
+    no_return = FALSE
 ) {
-
-  set.seed(seed_value)
 
   # Initialize storage objects
   seqs <- character(samples * sample_size)
@@ -120,8 +117,9 @@ simulateToyData <- function(
   # Save to file if specified
   if (!is.null(output_dir)) {
     for (i in 1:samples) {
-      saveRDS(dat[ranges[ , i], , drop = FALSE],
-              file = file.path(output_dir, paste0("Sample", i, ".rds")))
+      tmp <- dat[ranges[ , i], , drop = FALSE]
+      rownames(tmp) <- 1:nrow(tmp)
+      saveRDS(tmp, file.path(output_dir, paste0("Sample", i, ".rds")))
     }
   }
 

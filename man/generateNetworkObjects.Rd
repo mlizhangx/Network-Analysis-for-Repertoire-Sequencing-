@@ -8,10 +8,14 @@
     the network graph for the immune repertoire based on sequence similarity.
 }
 \usage{
-generateNetworkObjects(data, seq_col,
-                       dist_type = "hamming",
-                       dist_cutoff = 1,
-                       drop_isolated_nodes = TRUE)
+generateNetworkObjects(
+  data,
+  seq_col,
+  dist_type = "hamming",
+  dist_cutoff = 1,
+  drop_isolated_nodes = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
   \item{data}{
@@ -19,19 +23,23 @@ generateNetworkObjects(data, seq_col,
     and observations (e.g., clones or cells) indexed by row.
 }
   \item{seq_col}{
-    Specifies the column of \code{data} containing the receptor sequences to be
-    used as the basis of similarity between rows. Accepts either the column name
-    or column index. Alternatively, a vector of length 2 specifying two columns
-    with distinct sequences (e.g., alpha chain and beta chain), in which case
-    similarity between rows depends on both types of sequences being similar
-    (e.g., similar alpha chain sequences and similar beta chain sequences).
+    Specifies the column(s) of \code{data} containing
+    the receptor sequences to be used as the basis of similarity between rows.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+    Also accepts a vector of length 2 specifying distinct sequence columns
+    (e.g., alpha chain and beta chain), in which case
+    similarity between rows depends on similarity in both sequence columns
+    (see details).
 }
   \item{dist_type}{
     Specifies the function used to measure the similarity between sequences.
     The similarity between two sequences determines the pairwise distance between
     their respective nodes in the network graph. Valid options are \code{"hamming"}
-    (the default), which uses \code{\link{hamDistBounded}}, and \code{"levenshtein"},
-    which uses \code{\link{levDistBounded}}.
+    (the default), which
+    uses \code{\link[=hamDistBounded]{hamDistBounded()}},
+    and \code{"levenshtein"}, which uses
+    \code{\link[=levDistBounded]{levDistBounded()}}.
 }
   \item{dist_cutoff}{
     A nonnegative scalar. Specifies the maximum pairwise distance (based on
@@ -48,6 +56,11 @@ generateNetworkObjects(data, seq_col,
     A logical scalar. When \code{TRUE}, removes each node that is not joined by
     an edge connection to any other node in the network graph.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
 }
 \details{
 To construct the immune repertoire network, each TCR/BCR clone (bulk data)
@@ -63,6 +76,15 @@ between nodes in the network graph. The more similar two sequences are, the
 shorter the distance between their respective nodes. Two nodes are joined by
 an edge if their receptor sequences are sufficiently similar, i.e., if the
 distance between the nodes is sufficiently small.
+
+For single-cell data, edge connections between nodes can be based on similarity
+in both the alpha chain and beta chain sequences.
+This is done by providing a vector of length 2 to \code{seq_cols}
+specifying the two sequence columns in \code{data}.
+The distance between two nodes is then the greater of the two distances between
+sequences in corresponding chains.
+Two nodes will be joined by an edge if their alpha chain sequences are sufficiently
+similar and their beta chain sequences are sufficiently similar.
 
 See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html}{buildRepSeqNetwork}
@@ -105,6 +127,7 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+set.seed(42)
 toy_data <- simulateToyData()
 
 net <-

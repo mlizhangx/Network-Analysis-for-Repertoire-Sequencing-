@@ -11,30 +11,29 @@ data.
 }
 \usage{
 simulateToyData(
-    samples = 2,
-    chains = 1,
-    sample_size = 100,
-    prefix_length = 7,
-    prefix_chars = c("G", "A", "T", "C"),
-    prefix_probs = rbind(
-      "sample1" = c(12, 4, 1, 1),
-      "sample2" = c(4, 12, 1, 1)),
-    affixes = c("AATTGG", "AATCGG", "AATTCG",
-                "AATTGC", "AATTG", "AATTC"),
-    affix_probs = rbind(
-      "sample1" = c(10, 4, 2, 2, 1, 1),
-      "sample2" = c(1, 1, 1, 2, 2.5, 2.5)),
-    num_edits = 0,
-    edit_pos_probs = function(seq_length) {
-      stats::dnorm(seq(-4, 4, length.out = seq_length))
-    },
-    edit_ops = c("insertion", "deletion", "transmutation"),
-    edit_probs = c(5, 1, 4),
-    new_chars = prefix_chars,
-    new_probs = prefix_probs,
-    output_dir = NULL,
-    no_return = FALSE,
-    seed_value = 42
+  samples = 2,
+  chains = 1,
+  sample_size = 100,
+  prefix_length = 7,
+  prefix_chars = c("G", "A", "T", "C"),
+  prefix_probs = rbind(
+    "sample1" = c(12, 4, 1, 1),
+    "sample2" = c(4, 12, 1, 1)),
+  affixes = c("AATTGG", "AATCGG", "AATTCG",
+              "AATTGC", "AATTG", "AATTC"),
+  affix_probs = rbind(
+    "sample1" = c(10, 4, 2, 2, 1, 1),
+    "sample2" = c(1, 1, 1, 2, 2.5, 2.5)),
+  num_edits = 0,
+  edit_pos_probs = function(seq_length) {
+    stats::dnorm(seq(-4, 4, length.out = seq_length))
+  },
+  edit_ops = c("insertion", "deletion", "transmutation"),
+  edit_probs = c(5, 1, 4),
+  new_chars = prefix_chars,
+  new_probs = prefix_probs,
+  output_dir = NULL,
+  no_return = FALSE
 )
 }
 \arguments{
@@ -114,9 +113,6 @@ simulateToyData(
     generated data. If \code{TRUE}, the function will instead return \code{TRUE}
     once all processes are complete.
 }
-  \item{seed_value}{
-    Passed to \code{set_seed} at the start of function execution.
-}
 }
 \details{
     Each observed sequence is obtained by separately generating a prefix and
@@ -129,7 +125,7 @@ simulateToyData(
     to them.
 }
 \value{
-    If \code{no_return = FALSE} (the default), A data frame whose contents depend
+    If \code{no_return = FALSE} (the default), a \code{data.frame} whose contents depend
     on the value of the \code{chains} argument.
 
     For \code{chains = 1}, the data frame contains the following variables:
@@ -146,12 +142,14 @@ simulateToyData(
     \item{Count}{The "count" for each observation.}
     \item{SampleID}{The sample ID for each observation.}
 
-    If \code{no_return = FALSE}, the function returns \code{TRUE} upon completion.
+    If \code{no_return = TRUE}, the function returns \code{TRUE} upon completion.
 }
 \author{
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
+set.seed(42)
+
 # Bulk data from two samples
 dat1 <- simulateToyData()
 
@@ -161,7 +159,6 @@ dat2 <- simulateToyData(chains = 2)
 # Write data to file, return nothing
 simulateToyData(sample_size = 500,
                 num_edits = 10,
-                seed_value = 1,
                 no_return = TRUE,
                 output_dir = tempdir())
 
@@ -240,8 +237,10 @@ dat6 <-
   )
 
 
+\dontshow{
 # clean up temp directory
 file.remove(
   file.path(tempdir(), paste0("Sample", 1:2, ".rds"))
 )
+}
 }

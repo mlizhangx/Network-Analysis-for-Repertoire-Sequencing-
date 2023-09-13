@@ -1,29 +1,18 @@
-\name{addNodeNetworkStats}
-\alias{addNodeNetworkStats}
+\name{addNodeStats}
+\alias{addNodeStats}
 \title{
   Compute Node-Level Network Properties
 }
 \description{
-  \if{html}{\figure{lifecycle-deprecated.svg}{options: width="35\%"}}
-
-  Given the node metadata and \code{\link[igraph]{igraph}} for a network,
+  Given a list of network objects returned by
+  \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} or
+  \code{\link[=generateNetworkObjects]{generateNetworkObjects()}},
   computes a specified set of network properties for the network nodes.
-  The node metadata is returned
-  with each property added as a variable.
-
-  This function was deprecated in favor of
-  \code{\link[=addNodeStats]{addNodeStats()}}
-  in NAIR 1.0.1.
-  The new function accepts and returns the entire list of network
-  objects returned by \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
-  or by \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}.
-  It can compute cluster membership and add the values to the node metadata.
-  It additionally updates the list element \code{details} with further
-  information linking the node-level and cluster-level metadata.
+  The list of network objects is returned
+  with each property added as a variable to the node metadata.
 }
 \usage{
-addNodeNetworkStats(
-  data,
+addNodeStats(
   net,
   stats_to_include = chooseNodeStats(),
   cluster_fun = "fast_greedy",
@@ -35,12 +24,11 @@ addNodeNetworkStats(
 
 }
 \arguments{
-  \item{data}{
-      A data frame containing the node-level metadata for the network, with each
-      row corresponding to a network node.
-}
   \item{net}{
-      The network \code{\link[igraph]{igraph}}.
+      A \code{\link{list}} of network objects conforming to the output of
+      \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} or
+      \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}.
+      See details.
 }
   \item{stats_to_include}{
       Specifies which network properties to compute.
@@ -58,17 +46,17 @@ addNodeNetworkStats(
 }
   \item{cluster_id_name}{
       A character string specifying the name of the cluster membership variable
-      to be added to \code{data}.
+      to be added to the node metadata.
       Applicable only when \code{stats_to_include = "all"} or
       \code{stats_to_include["cluster_id"]} is \code{TRUE}.
       Passed to \code{\link[=addClusterMembership]{addClusterMembership()}}.
 }
   \item{overwrite}{
-      Logical. If \code{TRUE} and \code{data} contains a variable whose
+      Logical. If \code{TRUE} and \code{net$node_data} contains a variable whose
       name matches the value of \code{cluster_id_name}, then its values will be
       overwritten with new cluster membership values (obtained using
-      \code{\link[=addClusterMembership]{addClusterMembership()}}
-      with the specified value of \code{cluster_fun}).
+      \code{\link[=addClusterMembership]{addClusterMembership()}}, to which
+      the values of \code{cluster_fun}, \code{overwrite}).
       Applicable only when \code{stats_to_include = "all"} or
       \code{stats_to_include["cluster_id"]} is \code{TRUE}.
   }
@@ -98,10 +86,22 @@ addNodeNetworkStats(
 
   See \code{\link[=chooseNodeStats]{chooseNodeStats()}}
   for a list of the available node-level network properties.
+
+  The list \code{net} must contain the named elements
+  \code{igraph} (of class \code{\link[igraph]{igraph}}),
+  \code{adjacency_matrix} (a \code{\link{matrix}} or
+  \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} encoding edge connections),
+  and \code{node_data} (a \code{\link{data.frame}} containing node metadata),
+  all corresponding to the same network. The lists returned by
+  \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} and
+  \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}
+  are examples of valid inputs for the \code{net} argument.
+
 }
 \value{
-  A copy of \code{data} with with an additional column for each
-  new network property computed.
+  A modified copy of \code{net},
+  with \code{net$node_data} containing an additional column
+  for each new network property computed.
   See \code{\link[=chooseNodeStats]{chooseNodeStats()}}
   for the network property names,
   which are used as the column names,
@@ -109,7 +109,6 @@ addNodeNetworkStats(
   whose name is the value of \code{cluster_id_name}.
 }
 \seealso{
-\code{\link[=addNodeStats]{addNodeStats()}}
 \code{\link[=chooseNodeStats]{chooseNodeStats()}}
 }
 \references{
@@ -127,17 +126,38 @@ vol. 14.
 set.seed(42)
 toy_data <- simulateToyData()
 
-net <-
-  generateNetworkObjects(
-    toy_data,
-    "CloneSeq"
-  )
+net <- generateNetworkObjects(
+  toy_data, "CloneSeq"
+)
 
-net$node_data <-
-  addNodeNetworkStats(
-    net$node_data,
-    net$igraph
-  )
+# Add default set of node properties
+net <- addNodeStats(net)
+
+# Modify default set of node properties
+net <- addNodeStats(
+  net,
+  stats_to_include =
+    chooseNodeStats(
+      closeness = TRUE,
+      page_rank = FALSE
+    )
+)
+
+# Add only the spepcified node properties
+net <- addNodeStats(
+  net,
+  stats_to_include =
+    exclusiveNodeStats(
+      degree = TRUE,
+      transitivity = TRUE
+    )
+)
+
+# Add all node-level network properties
+net <- addNodeStats(
+  net,
+  stats_to_include = "all"
+)
 
 
 }

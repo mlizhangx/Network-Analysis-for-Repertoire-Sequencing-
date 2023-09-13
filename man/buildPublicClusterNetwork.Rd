@@ -6,7 +6,7 @@
 \description{
 Part of the workflow
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}.
-Intended for use following \code{\link{findPublicClusters}}.
+Intended for use following \code{\link[=findPublicClusters]{findPublicClusters()}}.
 
 Given node-level metadata for each sample's filtered clusters, combines the
 data into a global network and performs network analysis and cluster analysis.
@@ -15,11 +15,11 @@ data into a global network and performs network analysis and cluster analysis.
 buildPublicClusterNetwork(
 
   ## Input ##
-  file_list =
-    list.files(file.path(getwd(), "public_clusters", "node_meta_data")),
+  file_list,
   input_type = "rds",
   data_symbols = "ndat",
-  header = TRUE, sep = "",
+  header = TRUE, sep,
+  read.args = list(row.names = 1),
   seq_col,
 
   ## Network Settings ##
@@ -34,9 +34,9 @@ buildPublicClusterNetwork(
   plot_title = "Global Network of Public Clusters",
 
   ## Output ##
-  output_dir =
-    file.path(getwd(), "public_clusters"),
+  output_dir = NULL,
   output_name = "PublicClusterNetwork",
+  verbose = FALSE,
 
   ...
 
@@ -44,86 +44,136 @@ buildPublicClusterNetwork(
 }
 \arguments{
   \item{file_list}{
-  A vector of file paths where each file contains the node-level metadata for
-  one sample's filtered clusters. Passed to \code{\link{loadDataFromFileList}}.
+  A character vector of file paths, or a list containing
+  \code{\link[=connection]{connections}} and file paths.
+  Each element corresponds to a single file containing the data
+  for a single sample.
+  \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{input_type}{
   A character string specifying the file format of the input files. Options are
   \code{"csv"}, \code{"rds"} and \code{"rda"}. Passed to
-  \code{\link{loadDataFromFileList}}.
+  \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{data_symbols}{
   Used when \code{input_type = "rda"}. Specifies the name of the data frame within
-  each Rdata file. Passed to \code{\link{loadDataFromFileList}}.
+  each Rdata file. Passed to
+  \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{header}{
-  Used for certain values of \code{input_type}. Passed to
-  \code{\link{loadDataFromFileList}}.
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify a non-default value of the \code{header}
+    argument to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
 }
   \item{sep}{
-  Used for certain values of \code{input_type}. Passed to
-  \code{\link{loadDataFromFileList}}.
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify a non-default value of the \code{sep}
+    argument to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
+}
+  \item{read.args}{
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify non-default values of optional
+    arguments to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
+    Accepts a named list of argument values.
+    Values of \code{header} and \code{sep}
+    in this list take precedence over values specified via the \code{header}
+    and \code{sep} arguments.
 }
   \item{seq_col}{
     Specifies the column in the node-level metadata that contains the TCR/BCR
-    sequences. Accepts either the column name or column index.
+    sequences.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
   \item{drop_isolated_nodes}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the global network.
 }
   \item{node_stats}{
-    Deprecated. Does nothing since all network properties are automatically computed.
+  \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+   All network properties are automatically computed.
 }
   \item{stats_to_include}{
-    Deprecated. Does nothing since all network properties are automatically computed.
+  \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+  All network properties are automatically computed.
 }
   \item{cluster_stats}{
-    Deprecated. Does nothing since all network properties are automatically computed.
+  \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+  All network properties are automatically computed.
 }
   \item{color_nodes_by}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the global network.
+  The node-level network properties for the global network (see details) are
+  included among the valid options.
 }
   \item{color_scheme}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
+  Passed to \code{\link[=addPlots]{addPlots()}}
+  when constructing the global network.
 }
   \item{plot_title}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the global network.
 }
   \item{output_dir}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the global network.
 }
   \item{output_name}{
-  Passed to \code{\link{buildRepSeqNetwork}} when constructing the global network.
+  Passed to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  when constructing the global network.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
   \item{\dots}{
-  Other arguments to \code{\link{buildRepSeqNetwork}} when constructing the
-  global network.
+  Other arguments to \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}
+  (including arguments to \code{\link[=addPlots]{addPlots()}})
+  when constructing the global network.
+  Does not include
+  \code{node_stats}, \code{stats_to_include}, \code{cluster_stats}
+  or \code{cluster_id_name}.
 }
 }
 \details{
 The node-level metadata for the filtered clusters from all samples is combined
-in order to construct a single global network. Cluster analysis is used to
-partition the global network into clusters, which are considered as the public
-TCR/BCR clusters. Network properties for the nodes and clusters are computed
-and returned as metadata. A plot of the global network graph is produced, with
-the nodes colored according to sample ID.
+and the global network is constructed by calling
+\code{\link[=buildRepSeqNetwork]{buildNet()}} with
+\code{node_stats = TRUE}, \code{stats_to_include = "all"},
+\code{cluster_stats = TRUE} and \code{cluster_id_name = "ClusterIDPublic"}.
 
 The computed node-level network properties are renamed to reflect their
 correspondence to the global network. This is done to distinguish them from
 the network properties that correspond to the sample-level networks. The names
-are \code{ClusterIDPublic}, \code{PublicNetworkDegree},
-\code{PublicTransitivity}, \code{PublicCloseness},
-\code{PublicCentralityByCloseness}, \code{PublicEigenCentrality},
-\code{PublicCentralityByEigen}, \code{PublicBetweenness},
-\code{PublicCentralityByBetweenness}, \code{PublicAuthorityScore},
-\code{PublicCoreness}, \code{PublicPageRank}.
+are:
+
+\itemize{
+\item \code{ClusterIDPublic}
+\item \code{PublicNetworkDegree}
+\item \code{PublicTransitivity}
+\item \code{PublicCloseness}
+\item \code{PublicCentralityByCloseness}
+\item \code{PublicEigenCentrality}
+\item \code{PublicCentralityByEigen}
+\item \code{PublicBetweenness}
+\item \code{PublicCentralityByBetweenness}
+\item \code{PublicAuthorityScore}
+\item \code{PublicCoreness}
+\item \code{PublicPageRank}
+}
 
 See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/public_clusters.html}{Searching for Public TCR/BCR Clusters}
 article on the package website.
 }
 \value{
-    A list of network objects as returned by \code{\link{buildRepSeqNetwork}}.
+    A list of network objects as returned by
+    \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}}.
     The list is returned invisibly.
     If the input data contains a combined total of fewer than two rows, or if the
     global network contains no nodes, then the function returns \code{NULL},
@@ -142,11 +192,12 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
-\code{\link{findPublicClusters}}
+\code{\link[=findPublicClusters]{findPublicClusters()}}
 
-\code{\link{buildPublicClusterNetworkByRepresentative}}
+\code{\link[=buildPublicClusterNetworkByRepresentative]{buildPublicClusterNetworkByRepresentative()}}
 }
 \examples{
+set.seed(42)
 
 ## Simulate 30 samples with a mix of public/private sequences ##
 samples <- 30
@@ -209,26 +260,20 @@ public_clusters <-
       ),
     seq_col = "CloneSeq",
     count_col = "CloneCount",
-    size_nodes_by = 1,
-    output_dir = tempdir()
+    print_plots = TRUE
   )
 
 
+\dontshow{
 # Clean up temporary files
 file.remove(
   file.path(tempdir(),
-            c(paste0("Sample", 1:samples, ".rds"),
-              "PublicClusterNetwork_NodeMetadata.csv",
-              "PublicClusterNetwork_ClusterMetadata.csv",
-              "PublicClusterNetwork.pdf",
-              "PublicClusterNetwork_EdgeList.txt",
-              "PublicClusterNetwork_AdjacencyMatrix.mtx"
-            )
+            paste0("Sample", 1:samples, ".rds")
   )
 )
 unlink(
   file.path(tempdir(), c("node_meta_data", "cluster_meta_data")),
   recursive = TRUE
 )
-
+}
 }

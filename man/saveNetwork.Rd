@@ -5,23 +5,26 @@
 }
 \description{
     Given a list of network objects such as that returned by
-    \code{\link{buildRepSeqNetwork}} or \code{\link{generateNetworkObjects}},
+    \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} or \code{\link{generateNetworkObjects}},
     saves its contents according to the specified file format scheme.
 }
 \usage{
 saveNetwork(
   net,
-  output_dir = getwd(),
-  output_type = "individual",
-  output_filename = "MyRepSeqNetwork",
+  output_dir,
+  output_type = "rds",
+  output_name = "MyRepSeqNetwork",
   pdf_width = 12,
-  pdf_height = 10
+  pdf_height = 10,
+  verbose = FALSE,
+  output_filename = deprecated()
 )
 }
 \arguments{
   \item{net}{
-    A list conforming to the format returned by \code{\link{buildRepSeqNetwork}}
-    or \code{\link{generateNetworkObjects}}. See details.
+      A list of network objects returned by
+      \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} or
+      \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}.
 }
   \item{output_dir}{
     A file path specifying the directory in which to write the file(s).
@@ -31,7 +34,7 @@ saveNetwork(
   to file. Valid options are \code{"individual"}, \code{"rds"} and \code{"rda"}.
   See detials.
 }
-  \item{output_filename}{
+  \item{output_name}{
   A character string. All files saved will have file names beginning with this value.
 }
   \item{pdf_width}{
@@ -44,30 +47,66 @@ saveNetwork(
     to pdf. Passed to the \code{height} argument of the \code{\link[grDevices]{pdf}}
     function.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
+  \item{output_filename}{
+  \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+  Equivalent to \code{output_name}.
+}
 }
 \details{
-    The list provided to the \code{net} argument must contain at least the elements
-    \code{igraph} (of class \code{\link[igraph]{igraph}}), \code{adjacency_matrix}
-    (of class \code{matrix} or \code{dgCMatrix}), and \code{node_data} (a data frame).
-    The components \code{cluster_data} (a data frame) and \code{plots} (a list of
-    \code{\link[ggraph]{ggraph}} objects) are optional, and will also be saved if
-    present.
+    The list \code{net} must contain the named elements
+    \code{igraph} (of class \code{\link[igraph]{igraph}}),
+    \code{adjacency_matrix} (a \code{\link{matrix}} or
+    \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} encoding edge connections),
+    and \code{node_data} (a \code{\link{data.frame}} containing node metadata),
+    all corresponding to the same network. The list returned by
+    \code{\link[=buildRepSeqNetwork]{buildRepSeqNetwork()}} and
+    \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}
+    is an example of a valid input for the \code{net} argument.
 
-    By default, each list element is saved as a separate, uncompressed file: data
-    frames, including \code{node_data} and \code{cluster_data}, are saved as .csv
-    files; \code{igraph} is saved as a .txt (using \code{\link[igraph]{write_graph}}
-    with \code{format = "edgelist"}); \code{adjacency_matrix} is saved as a .mtx
-    file (for the \code{dgCMatrix} class) or .csv file (for the \code{Matrix} class);
-    the elements of \code{plots} are printed to a .pdf file using
-    \code{\link[grDevices]{pdf}}, with the pdf file containing one plot per page.
+    The additional elements \code{cluster_data} (a \code{\link{data.frame}}) and
+    \code{plots} (a list containing objects of class
+    \code{\link[ggraph:ggraph]{ggraph}}
+    and possibly one \code{\link{matrix}} named \code{graph_layout})
+    will also be saved, if present.
 
-    Setting \code{output_type} to \code{"rda"} or \code{"rds"} writes the entire
-    list \code{net} to a single compressed file (a .RData file or a .RDS file,
-    respectively), while also printing the plots to a .pdf file.
+    By default, the list \code{net} is saved to a compressed data file in the
+    RDS format, while any plots present are printed to a single pdf containing
+    one plot per page.
 
+    The name of each saved file begins with the value of \code{output_name}.
+    When \code{output_type} is one of \code{"rds"} or \code{"rda"},
+    only two files are saved (the rds/rda and the pdf); for each file,
+    \code{output_name} is followed by the appropriate file extension.
+
+    When \code{output_type = "individual"}, each element of \code{net} is saved
+    as a separate file, where \code{output_name} is followed by:
+    \itemize{
+    \item \code{_NodeMetadata.csv} for \code{node_data}
+    \item \code{_ClusterMetadata.csv} for \code{cluster_data}
+    \item \code{_EdgeList.txt} for \code{igraph}
+    \item \code{_AdjacencyMatrix.mtx} for \code{adjacency_matrix}
+    \item \code{_Plots.rda} for \code{plots}
+    \item \code{_GraphLayout.txt} for \code{plots$graph_layout}
+    \item \code{_Details.rds} for \code{details}
+    }
+
+    \code{node_data} and \code{cluster_data} are saved using
+    \code{\link[utils:write.csv]{write.csv()}},
+    with \code{row.names} being \code{TRUE} for \code{node_data}
+    and \code{FALSE} for \code{cluster_data}.
+    The \code{igraph} is saved using
+    \code{\link[igraph:write_graph]{write_graph()}} with \code{format = "edgelist"}.
+    The adjacency matrix is saved using \code{\link[Matrix:writeMM]{writeMM()}}.
+    The graph layout is saved using \code{\link[=write]{write()}} with
+    \code{ncolumns = 2}.
 }
 \value{
-Returns \code{TRUE}, invisibly, if output is saved. If output is not saved due to \code{output_dir} being \code{NULL}, then returns \code{FALSE}, invisibly.
+Returns \code{TRUE} if output is saved, otherwise returns \code{FALSE} (with a warning if \code{output_dir} is non-null and the specified directory does not exist and could not be created).
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
@@ -80,28 +119,47 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \examples{
-
+set.seed(42)
 toy_data <- simulateToyData()
 
-net <-
-  generateNetworkObjects(
-    toy_data,
-    "CloneSeq"
-  )
+net <- buildRepSeqNetwork(
+  toy_data,
+  seq_col = "CloneSeq",
+  node_stats = TRUE,
+  cluster_stats = TRUE,
+  color_nodes_by = c("transitivity", "SampleID")
+)
+
+# save as single RDS file
+saveNetwork(
+  net,
+  output_dir = tempdir(),
+  verbose = TRUE
+)
 
 saveNetwork(
   net,
-  output_dir = tempdir()
+  output_dir = tempdir(),
+  output_type = "individual",
+  verbose = TRUE
 )
 
+\dontshow{
 # clean up temp files
 file.remove(
   file.path(
     tempdir(),
     c("MyRepSeqNetwork_NodeMetadata.csv",
+      "MyRepSeqNetwork_ClusterMetadata.csv",
       "MyRepSeqNetwork_EdgeList.txt",
-      "MyRepSeqNetwork_AdjacencyMatrix.mtx"
+      "MyRepSeqNetwork_AdjacencyMatrix.mtx",
+      "MyRepSeqNetwork_Details.rds",
+      "MyRepSeqNetwork_Plots.rda",
+      "MyRepSeqNetwork_GraphLayout.txt",
+      "MyRepSeqNetwork.pdf",
+      "MyRepSeqNetwork.rds"
     )
   )
 )
+}
 }

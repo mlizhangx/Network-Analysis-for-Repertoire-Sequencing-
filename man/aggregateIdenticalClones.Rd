@@ -17,7 +17,8 @@ aggregateIdenticalClones(
   clone_col,
   count_col,
   freq_col,
-  grouping_cols = NULL
+  grouping_cols = NULL,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -25,22 +26,35 @@ aggregateIdenticalClones(
       A data frame containing the bulk AIRR-Seq data, with clones indexed by row.
 }
   \item{clone_col}{
-      A column name or column index specifying the column of \code{data}
-      containing the receptor sequences.
+      Specifies the column of \code{data} containing
+      the receptor sequences.
+      Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
   \item{count_col}{
-      A column name or column index specifying the column of \code{data}
-      containing the clone counts.
+      Specifies the column of \code{data} containing
+      the clone counts.
+      Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
   \item{freq_col}{
-      A column name or column index specifying the column of \code{data}
-      containing the clone frequencies.
+      Specifies the column of \code{data} containing
+      the clone frequencies.
+      Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
   \item{grouping_cols}{
-      An optional vector of column names or vector of column indices, specifying
-      one or more columns of \code{data} used to assign clones to groups. If provided,
-      aggregation occurs within groups, but not across groups. See details.
+      An optional character vector of column names
+      or numeric vector of column indices, specifying
+      one or more columns of \code{data} used to assign clones to groups.
+      If provided, aggregation occurs within groups, but not across groups.
+      See details.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
 }
 \details{
   If \code{grouping_cols} is left unspecified, the returned data frame will contain
@@ -91,43 +105,40 @@ my_data <- data.frame(
   time_point = c("t_0", rep(c("t_0", "t_1"), 3)),
   subject_id = c(rep(1, 5), rep(2, 2))
 )
+my_data
 
-data_agg <-
-  aggregateIdenticalClones(
-    my_data,
-    "clone_seq",
-    "clone_count",
-    "clone_freq",
-  )
+aggregateIdenticalClones(
+  my_data,
+  "clone_seq",
+  "clone_count",
+  "clone_freq",
+)
 
 # group clones by time point
-data_agg_time <-
-  aggregateIdenticalClones(
-    my_data,
-    "clone_seq",
-    "clone_count",
-    "clone_freq",
-    grouping_cols = "time_point"
-  )
+aggregateIdenticalClones(
+  my_data,
+  "clone_seq",
+  "clone_count",
+  "clone_freq",
+  grouping_cols = "time_point"
+)
 
 # group clones by subject ID
-data_agg_subject <-
-  aggregateIdenticalClones(
-    my_data,
-    "clone_seq",
-    "clone_count",
-    "clone_freq",
-    grouping_cols = "subject_id"
-  )
+aggregateIdenticalClones(
+  my_data,
+  "clone_seq",
+  "clone_count",
+  "clone_freq",
+  grouping_cols = "subject_id"
+)
 
 # group clones by time point and subject ID
-data_agg_time_subject <-
-  aggregateIdenticalClones(
-    my_data,
-    "clone_seq",
-    "clone_count",
-    "clone_freq",
-    grouping_cols =
-      c("subject_id", "time_point")
-  )
+aggregateIdenticalClones(
+  my_data,
+  "clone_seq",
+  "clone_count",
+  "clone_freq",
+  grouping_cols =
+    c("subject_id", "time_point")
+)
 }

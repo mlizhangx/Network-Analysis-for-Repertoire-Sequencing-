@@ -14,8 +14,8 @@ treatment or clinical outcome, identify receptor sequences that exhibit a
 statistically significant difference in frequency between the two levels of the
 binary variable.
 
-\code{findAssociatedSeqs} is designed for use when each sample is stored in a
-separate file. \code{findAssociatedSeqs2} is designed for use with a single data
+\code{findAssociatedSeqs()} is designed for use when each sample is stored in a
+separate file. \code{findAssociatedSeqs2()} is designed for use with a single data
 frame containing all samples.
 }
 \usage{
@@ -24,7 +24,7 @@ findAssociatedSeqs(
   file_list,
   input_type,
   data_symbols = NULL,
-  header = TRUE, sep = "",
+  header, sep, read.args,
   sample_ids = deprecated(),
   subject_ids = NULL,
   group_ids,
@@ -39,7 +39,9 @@ findAssociatedSeqs(
   pval_cutoff = 0.05,
 
   ## Output ##
-  outfile = "associated_seqs.csv")
+  outfile = NULL,
+  verbose = FALSE
+)
 
 
 findAssociatedSeqs2(
@@ -49,7 +51,7 @@ findAssociatedSeqs2(
   sample_col,
   subject_col = sample_col,
   group_col,
-  groups = NULL,
+  groups = deprecated(),
   freq_col = NULL,
 
   ## Search Criteria ##
@@ -59,34 +61,55 @@ findAssociatedSeqs2(
   pval_cutoff = 0.05,
 
   ## Ouptut ##
-  outfile = "associated_seqs.csv")
+  outfile = NULL,
+  verbose = FALSE
+)
 
 }
 \arguments{
   \item{file_list}{
-  A vector of file paths where each file contains the data for a sample, with
-  observations indexed by row. Passed to \code{\link{loadDataFromFileList}}.
+  A character vector of file paths, or a list containing
+  \code{\link[=connection]{connections}} and file paths.
+  Each element corresponds to a single file containing the data
+  for a single sample.
+  Passed to \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{input_type}{
   A character string specifying the file format of the sample data files.
   Options are \code{"table"}, \code{"txt"}, \code{"tsv"}, \code{"csv"},
-  \code{"rds"} and \code{"rda"}. Passed to \code{\link{loadDataFromFileList}}.
+  \code{"rds"} and \code{"rda"}.
+  Passed to \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{data_symbols}{
   Used when \code{input_type = "rda"}. Specifies the name of each sample's data
   frame within its respective Rdata file.  Passed to
-  \code{\link{loadDataFromFileList}}.
+  \code{\link[=loadDataFromFileList]{loadDataFromFileList()}}.
 }
   \item{header}{
-  Used for certain values of \code{input_type}. Passed to
-  \code{\link{loadDataFromFileList}}.
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify a non-default value of the \code{header}
+    argument to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
 }
   \item{sep}{
-  Used for certain values of \code{input_type}. Passed to
-  \code{\link{loadDataFromFileList}}.
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify a non-default value of the \code{sep}
+    argument to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
+}
+  \item{read.args}{
+    For values of \code{input_type} other than \code{"rds"} and \code{"rda"},
+    this argument can be used to specify non-default values of optional
+    arguments to \code{\link[utils:read.table]{read.table()}},
+    \code{\link[utils:read.csv]{read.csv()}}, etc.
+    Accepts a named list of argument values.
+    Values of \code{header} and \code{sep}
+    in this list take precedence over values specified via the \code{header}
+    and \code{sep} arguments.
 }
   \item{sample_ids}{
-  Deprecated. Does nothing.
+  \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+  Does nothing.
 }
   \item{subject_ids}{
   A character or numeric vector of subject IDs, whose length matches that of
@@ -99,28 +122,34 @@ findAssociatedSeqs2(
   the two values of the binary variable of interest.
 }
   \item{groups}{
-  Deprecated. Does nothing.
+  \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+  Does nothing.
 }
   \item{seq_col}{
     Specifies the column of each sample's data frame containing the TCR/BCR sequences.
-    Accepts either the column name or column index.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
   \item{freq_col}{
     Optional. Specifies the column of each sample's data frame containing the clone
     frequency (i.e., clone count divided by the sum of the clone counts across all
-    clones in the sample). Accepts either the column name or column index. If this
+    clones in the sample).
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+    If this
     argument is specified, the maximum clone frequency (across all samples) for
     each associated sequence will be included in the content of the \code{label}
     variable of the returned data frame.
 }
   \item{min_seq_length}{
     Controls the minimum TCR/BCR sequence length considered when searching for
-    associated sequences. Passed to \code{\link{filterInputData}}.
+    associated sequences. Passed to \code{\link[=filterInputData]{filterInputData()}}.
 }
   \item{drop_matches}{
-    Passed to \code{\link{filterInputData}}. Accepts a character string containing
+    Passed to \code{\link[=filterInputData]{filterInputData()}}.
+    Accepts a character string containing
     a regular expression (see \code{\link[base]{regex}}). Checks TCR/BCR sequences
-    for a pattern match using \code{\link{grep}}. Those returning a match are
+    for a pattern match using \code{\link[=grep]{grep()}}. Those returning a match are
     excluded from consideration as associated sequences. It is recommended to
     filter out sequences containing special characters that are invalid for use
     in file names. By default, sequences containing any of the characters
@@ -136,23 +165,33 @@ findAssociatedSeqs2(
     exact test (see details).
 }
   \item{outfile}{
-    A file path for saving the output (using \code{write.csv}).
+    A file path for saving the output (using \code{\link[=write.csv]{write.csv()}}).
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
 \item{data}{
     A data frame containing the combined AIRR-seq data for all samples.
 }
 \item{sample_col}{
-    The column of \code{data} containing the sample IDs. Accepts the column name
-    or column index.
+    The column of \code{data} containing the sample IDs.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
 }
 \item{subject_col}{
-    Optional. The column of \code{data} containing the subject IDs. Accepts the
-    column name or column index. Only relevant when the binary variable of interest
+    Optional. The column of \code{data} containing the subject IDs.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+    Only relevant when the binary variable of interest
     is subject-specific and multiple samples belong to the same subject.
 }
 \item{group_col}{
-    The column of \code{data} containing the group IDs. Accepts the column name
-    or column index. The groups correspond to the two values of the binary variable
+    The column of \code{data} containing the group IDs.
+    Accepts a character string containing the column name
+      or a numeric scalar containing the column index.
+      The groups correspond to the two values of the binary variable
     of interest. Thus there should be exactly two unique values in this column.
 }
 }
@@ -171,11 +210,13 @@ then the test is based on the number of subjects in each group for whom the
 sequence appears in one of their samples. Without subject IDs, the test is
 based on the number of samples possessing the sequence in each group.
 
-Fisher's exact test is performed using \code{\link[stats]{fisher.test}}. TCR/BCR
+Fisher's exact test is performed using
+\code{\link[stats:fisher.test]{fisher.test()}}. TCR/BCR
 sequences with a \eqn{P}-value below \code{pval_cutoff} are sorted by \eqn{P}-value
 and returned along with some additional information.
 
-The returned ouput is intended for use with the \code{\link{findAssociatedClones}}
+The returned ouput is intended for use with the
+\code{\link[=findAssociatedClones]{findAssociatedClones()}}
 function. See the
 \href{https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/associated_clusters.html}{Searching for Associated TCR/BCR Clusters}
 article on the package website.
@@ -214,6 +255,10 @@ article on the package website.
     Of the subjects in which the sequence was observed, the number of subjects
     belonging to the second group (only present if subject IDs are specified).
     }
+    \item{max_freq}{
+    The maximum clone frequency across all samples.
+    Only present if \code{freq_col} is non-null.
+    }
     \item{label}{
     A character string summarizing the above information. Also includes the
     maximum in-sample clone frequency across all samples, if available.
@@ -233,30 +278,32 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
     Brian Neal (\email{Brian.Neal@ucsf.edu})
 }
 \seealso{
-\code{\link{findAssociatedClones}}
-\code{\link{buildAssociatedClusterNetwork}}
+\code{\link[=findAssociatedClones]{findAssociatedClones()}}
+\code{\link[=buildAssociatedClusterNetwork]{buildAssociatedClusterNetwork()}}
 }
 \examples{
+set.seed(42)
+
 ## Simulate 30 samples from two groups (treatment/control) ##
-samples_c <- samples_t <- 15 # Number of samples by control/treatment group
-samples <- samples_c + samples_t
+n_control <- n_treatment <- 15
+n_samples <- n_control + n_treatment
 sample_size <- 30 # (seqs per sample)
 base_seqs <- # first five are associated with treatment
   c("CASSGAYEQYF", "CSVDLGKGNNEQFF", "CASSIEGQLSTDTQYF",
     "CASSEEGQLSTDTQYF", "CASSPEGQLSTDTQYF",
     "RASSLAGNTEAFF", "CASSHRGTDTQYF", "CASDAGVFQPQHF")
 # Relative generation probabilities by control/treatment group
-pgen_c <- matrix(rep(c(rep(1, 5), rep(30, 3)), times = samples_c),
-                 nrow = samples_c, byrow = TRUE)
-pgen_t <- matrix(rep(c(1, 1, rep(1/3, 3), rep(2, 3)), times = samples_t),
-                 nrow = samples_t, byrow = TRUE)
+pgen_c <- matrix(rep(c(rep(1, 5), rep(30, 3)), times = n_control),
+                 nrow = n_control, byrow = TRUE)
+pgen_t <- matrix(rep(c(1, 1, rep(1/3, 3), rep(2, 3)), times = n_treatment),
+                 nrow = n_treatment, byrow = TRUE)
 pgen <- rbind(pgen_c, pgen_t)
 simulateToyData(
-  samples = samples,
+  samples = n_samples,
   sample_size = sample_size,
   prefix_length = 1,
   prefix_chars = c("", ""),
-  prefix_probs = cbind(rep(1, samples), rep(0, samples)),
+  prefix_probs = cbind(rep(1, n_samples), rep(0, n_samples)),
   affixes = base_seqs,
   affix_probs = pgen,
   num_edits = 0,
@@ -267,10 +314,10 @@ simulateToyData(
 ## Step 1: Find Associated Sequences ##
 sample_files <-
   file.path(tempdir(),
-            paste0("Sample", 1:samples, ".rds")
+            paste0("Sample", 1:n_samples, ".rds")
   )
-group_labels <- c(rep("reference", samples_c),
-                  rep("comparison", samples_t))
+group_labels <- c(rep("reference", n_control),
+                  rep("comparison", n_treatment))
 associated_seqs <-
   findAssociatedSeqs(
     file_list = sample_files,
@@ -280,12 +327,12 @@ associated_seqs <-
     min_seq_length = NULL,
     drop_matches = NULL,
     min_sample_membership = 0,
-    pval_cutoff = 0.1,
-    outfile = NULL
+    pval_cutoff = 0.1
   )
-head(associated_seqs)
+head(associated_seqs[, 1:5])
 
 ## Step 2: Find Associated Clones ##
+dir_step2 <- tempfile()
 findAssociatedClones(
   file_list = sample_files,
   input_type = "rds",
@@ -294,31 +341,27 @@ findAssociatedClones(
   assoc_seqs = associated_seqs$ReceptorSeq,
   min_seq_length = NULL,
   drop_matches = NULL,
-  output_dir = tempdir()
+  output_dir = dir_step2
 )
 
 ## Step 3: Global Network of Associated Clusters ##
 associated_clusters <-
   buildAssociatedClusterNetwork(
-    file_list =
-      file.path(tempdir(), paste0(associated_seqs$ReceptorSeq, ".csv")),
+    file_list = list.files(dir_step2,
+                           full.names = TRUE
+    ),
     seq_col = "CloneSeq",
     size_nodes_by = 1.5,
-    output_dir = tempdir()
+    print_plots = TRUE
   )
 
-
+\dontshow{
 # clean up temp directory
 file.remove(
   file.path(tempdir(),
-            c(paste0("Sample", 1:samples, ".rds"),
-              paste0(associated_seqs$ReceptorSeq, ".csv"),
-              "AssociatedClusterNetwork_NodeMetadata.csv",
-              "AssociatedClusterNetwork_ClusterMetadata.csv",
-              "AssociatedClusterNetwork.pdf",
-              "AssociatedClusterNetwork_EdgeList.txt",
-              "AssociatedClusterNetwork_AdjacencyMatrix.mtx"
-            )
+            paste0("Sample", 1:n_samples, ".rds")
   )
 )
+unlink(dir_step2, recursive = TRUE)
+}
 }

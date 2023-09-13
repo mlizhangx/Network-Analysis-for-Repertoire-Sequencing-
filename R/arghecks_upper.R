@@ -14,431 +14,510 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# buildRepSeqNetwork ------------------------------------------------------
+
+# Conventions -------------------------------------------------------------
+
+# Checks beginning with `.is` return TRUE or FALSE
+# Checks beginning with `.MUST` raise an error or return NULL (hard checks)
+# Checks beginning with `.check` return the main argument or a default value
+#                                                               (soft checks)
 
 
-.checkArgs.buildRepSeqNetwork <- function(
-    data, seq_col, count_col, subset_cols, min_seq_length, drop_matches,
-    dist_type, dist_cutoff, drop_isolated_nodes, node_stats, stats_to_include,
-    cluster_stats, cluster_fun, plots, print_plots, plot_title,
-    plot_subtitle, color_nodes_by, output_dir, output_type, output_name,
-    pdf_width, pdf_height
-) {
+# File Input Arguments ----------------------------------------------------
 
-  .isDataFrame(data, "data")
-  .hasAtLeastTwoRows(data)
-  .isSeqCol(data, seq_col)
-  .isDataColOrNull(data, count_col, "count_col")
-  .isDataColsOrNull(data, subset_cols, "subset_cols")
-  .isTF(drop_isolated_nodes, "drop_isolated_nodes")
-  .isTF(node_stats, "node_stats")
-  .isTF(cluster_stats, "cluster_stats")
-  .isTF(plots, "plots")
-  .isTF(print_plots, "print_plots")
-  .isString(output_name, "output_name")
-  .orNull(.isString, plot_title, "plot_title")
-  .orNull(.isString, plot_subtitle, "plot_subtitle")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .orNull(.isPosInt, min_seq_length, "min_seq_length")
-  .isNonneg(dist_cutoff, "dist_cutoff")
-  .isPos(pdf_width, "pdf_width")
-  .isPos(pdf_height, "pdf_height")
-  .isDistType(dist_type)
-  .orNull(.isString, output_dir, "output_dir")
-  if (!is.null(output_dir)) {
-    .isOutputType(output_type)
+
+.isInputType <- function(x) {
+  choices <- c("csv", "csv2", "table", "tsv", "txt", "rds", "rda")
+  .isString(x) && pmatch(x, choices, nomatch = 0)
+}
+.MUST.isInputType <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isInputType(x),
+             name, "must be one of:",
+             paste(dQuote("rds"), dQuote("rda"), dQuote("csv"), dQuote("csv2"),
+                   dQuote("tsv"), dQuote("table"), sep = ", ")
+  )
+}
+
+.checkReadArgs <- function(x, header, sep) {
+  if (!is.null(x)) {
+    choices <- names(formals(utils::read.table))
+    choices <- choices[2:length(choices)]
+    matches <- rep(TRUE, length(x))
+    for (i in 1:length(x)) {
+      if (!names(x)[i] %in% choices) {
+        matches[i] <- FALSE
+        warning("dropping argument ", sQuote(names(x)[i]),
+                " from ", sQuote("read.args"), " as it is not an optional ",
+                "argument to ", sQuote("utils::read.table()")
+        )
+      }
+      x <- x[matches]
+    }
+    if (!"header" %in% names(x)) { x$header <- header }
+    if (!"sep" %in% names(x)) { x$sep <- sep }
   }
-  # color_nodes_by must be NULL, "auto", or valid column reference
-  .checkColorNodesBy(color_nodes_by, data, node_stats, plots)
-  .checkStatsToInclude(stats_to_include)
-  .checkClusterFun(cluster_fun)
+  x
+}
 
+.checkargs.InputFiles <- function(
+    file_list, input_type, data_symbols, header, sep, read.args = NULL
+) {
+  .stopifnot(.isCharVector(file_list) || is.list(file_list),
+             "file_list",
+             "must be a character vector",
+             "or a list of character strings and connections"
+  )
+  if (is.list(file_list)) {
+    .stopifnot(
+      all(sapply(file_list, inherits, what = c("connection", "character"))),
+      "file_list",
+      "contains elements other than character strings and connections"
+    )
+    .stopifnot(
+      all(sapply(file_list, .hasLength1)),
+      "file_list",
+      "contains elements other than character strings and connections"
+    )
+    string_positions <- which(sapply(file_list, inherits, what = "character"))
+  } else {
+    string_positions <- 1:length(file_list)
+  }
+  .stopifnot(isTRUE(all(sapply(file_list[string_positions], file.exists))),
+             "file_list", "specifies one or more nonexistent files"
+  )
+  .stopifnot(length(file_list) == length(unique(file_list)),
+             "file_list", "contains duplicate values"
+  )
+  .MUST.isInputType(input_type)
+  if (input_type == "rda") {
+    .MUST.isCharVector(data_symbols, "data_symbols")
+    .stopifnot(
+      length(data_symbols) %in% c(1, length(file_list)),
+      "data_symbols", "must have length 1 or equal to that of",
+      sQuote("file_list")
+    )
+  }
+  if (input_type %in% c("csv", "csv2", "table", "tsv", "txt")) {
+    .MUST.isTF(header)
+    .MUST.isString(sep)
+    if (!is.null(read.args)) {
+      .MUST.isNamedList(read.args)
+    }
+  }
+}
+
+.checkIDs <- function(x, len, default = NULL,
+                      ornull = FALSE, allow_dupes = FALSE
+) {
+  if (ornull && is.null(x)) {
+    return(x)
+  }
+  if (!.isCharOrNumericVector(x, factor_ok = TRUE) || length(x) != len ||
+      (!allow_dupes && sum(duplicated(x)) > 0)
+  ) {
+    warning(
+      "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
+      "Using default value instead"
+    )
+    return(default)
+  }
+  x
 }
 
 
 
-# Public Clusters ---------------------------------------------------------
+# File Output Arguments ---------------------------------------------------
 
-
-.checkargs.findPublicClusters <- function(
-    file_list, input_type, data_symbols, header, sep, sample_ids, seq_col,
-    count_col, min_seq_length, drop_matches, top_n_clusters, min_node_count,
-    min_clone_count, plots, print_plots, plot_title, color_nodes_by, output_dir,
-    output_type, output_dir_unfiltered, output_type_unfiltered
-) {
-
-  .checkargs.InputFiles(
-    file_list, input_type, data_symbols, header, sep
-  )
-  .isCharOrNumericVector(sample_ids, "sample_ids")
-  .isCharOrNumericVector(seq_col, "seq_col")
-  .orNull(.isCharOrNumericScalar, count_col, "count_col")
-  .orNull(.isNonneg, min_seq_length, "min_seq_length")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .isPosInt(top_n_clusters, "top_n_clusters")
-  .isPosInt(min_node_count, "min_node_count")
-  .orNull(.isPos, min_clone_count, "min_clone_count")
-  .isTF(plots, "plots")
-  .isTF(print_plots, "print_plots")
-  .orNull(.isString, plot_title, "plot_title")
-  .orNull(.isCharOrNumericVector, color_nodes_by, "color_nodes_by")
-  .orNull(.isString, output_dir, "output_dir")
-  .isOutputType(output_type, type = "findPublicClusters")
-  .orNull(.isString, output_dir_unfiltered, "output_dir")
-  if (!is.null(output_dir_unfiltered)) {
-    .isOutputType(output_type_unfiltered)
+.checkOutputDir <- function(x, name = "output_dir") {
+  if (!is.null(x) && !isTRUE(dir.exists(x))) {
+    warning("directory ", dQuote(x), " specified for ", sQuote(name),
+            " does not exist and could not be created. Output will not be saved"
+    )
+    return(NULL)
   }
-  if (all(plots, !print_plots, is.null(output_dir_unfiltered))) {
-    warning("ignoring `plots = TRUE` since `print_plots = FALSE` and `output_dir_unfiltered` is NULL")
-  }
-  stopifnot("lengths of file_list and sample_ids must match" =
-              length(file_list) == length(sample_ids))
-
+  x
 }
 
-.checkargs.buildPublicClusterNetwork <- function(
-    file_list, input_type, data_symbols, header, sep, seq_col,
-    drop_isolated_nodes,
-    color_nodes_by, color_scheme, plot_title, output_dir, output_name
-) {
-
-  .checkargs.InputFiles(
-    file_list, input_type, data_symbols, header, sep
+.requireOutputDir <- function(x, name = "output_dir") {
+  .stopifnot(
+    isTRUE(dir.exists(x)),
+    NULL, "directory", dQuote(x), "specified for", sQuote(name),
+    "does not exist and could not be created"
   )
-  .isCharOrNumericVector(seq_col, "seq_col")
-  .isTF(drop_isolated_nodes, "drop_isolated_nodes")
-  .isCharOrNumericVector(color_nodes_by, "color_nodes_by")
-  .isCharVector(color_scheme, "color_scheme")
-  .orNull(.isString, plot_title, "plot_title")
-  .orNull(.isString, output_dir, "output_dir")
-  .isString(output_name, "output_name")
-
 }
 
-.checkargs.buildPublicClusterNetworkByRep <- function(
-    file_list, input_type, data_symbols, header, sep, seq_col, count_col,
-    dist_type, dist_cutoff, cluster_fun, plots, print_plots, plot_title,
-    plot_subtitle, color_nodes_by, color_scheme, output_dir, output_type,
-    output_name, pdf_width, pdf_height
-) {
-
-  .checkargs.InputFiles(
-    file_list, input_type, data_symbols, header, sep
+# type = "network" for SaveNetwork()
+# type = "generic" for .saveDataGeneric()
+.isOutputType <- function(x, type = "network") {
+  choices <- switch(
+    type,
+    "network" = c("individual", "rds", "rda"),
+    "findPublicClusters" = c("rds", "rda", "csv"),
+    "findAssociatedClones" = c("csv", "tsv", "rds", "rda", "table"),
+    "generic" = c("rds", "rda", "csv", "tsv", "table")
   )
-  .isCharOrNumericVector(seq_col, "seq_col")
-  .orNull(.isCharOrNumericScalar, count_col, "count_col")
-  .isDistType(dist_type)
-  .isNonneg(dist_cutoff, "dist_cutoff")
-  .checkClusterFun(cluster_fun)
-  .isTF(plots, "plots")
-  .isTF(print_plots, "print_plots")
-  .orNull(.isString, plot_title, "plot_title")
-  .orNull(.isString, plot_subtitle, "plot_subtitle")
-  .isCharOrNumericVector(color_nodes_by, "color_nodes_by")
-  .checkColorScheme(color_scheme, color_nodes_by, plots)
-  .orNull(.isString, output_dir, "output_dir")
-  if (!is.null(output_dir)) {
-    .isOutputType(output_type)
-  }
-  .isString(output_name, "output_name")
-  .isPos(pdf_width, "pdf_width")
-  .isPos(pdf_height, "pdf_height")
+  .isString(x) && pmatch(x, choices, nomatch = 0)
+}
 
+.checkOutputType <- function(x, type = "network", default = "rds") {
+  if (!.isOutputType(x, type)) {
+    warning(
+      "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
+      "Defaulting to ", dQuote(default)
+    )
+    return(default)
+  }
+  x
+}
+
+.checkOutputName <- function(x, default = "MyRepSeqNetwork",
+                             argname = "output_name"
+) {
+  if (!.isNonemptyString(x)) {
+    warning(
+      "value for ", sQuote(argname), " is not a nonempty character string. ",
+      "Defaulting to ", dQuote(default)
+    )
+    return(default)
+  }
+  if (!.isValidFilenamePart(x)) {
+    x <- .sanitizeFilenamePart(x)
+    if (!.isValidFilenamePart(x)) { x <- default }
+    warning(
+      "value for ", sQuote(argname), " may be unsafe ",
+      "for use as a file name prefix. Value changed to ", dQuote(x)
+    )
+  }
+  x
+}
+
+.checkOutfileLayout <- function(x, plotlist, default = NULL) {
+  if (!is.null(x) && (!.isString(x) || !.hasElem(plotlist, "graph_layout"))) {
+    warning(
+      sQuote("outfile_layout"), " is non-null but ",
+      sQuote("plotlist"), " does not contain a valid layout matrix named ",
+      dQuote("graph_layout"), ". No layout will be saved"
+    )
+    return(default)
+  }
+  x
+}
+
+
+# Network Analysis Arguments ----------------------------------------------
+
+.isDistType <- function(x) {
+  choices <- c("hamming", "levenshtein", "Hamming", "Levenshtein")
+  .isString(x) && pmatch(x, choices, nomatch = 0)
+}
+.MUST.isDistType <- function(x, name = NULL) {
+  if (is.null(name)) { name <- deparse(substitute(x)) }
+  .stopifnot(.isDistType(x),
+             name, "must be", dQuote("hamming"), "or", dQuote("levenshtein"),
+             "(abbreviations allowed)"
+  )
+}
+
+.matchDistType <- function(dist_type) {
+  if (pmatch(dist_type, c("levenshtein", "Levenshtein"), 0)) {
+    return("levenshtein")
+  } else if (pmatch(dist_type, c("hamming", "Hamming"), 0)) {
+    return("hamming")
+  }
+  "hamming"
+}
+
+.checkDistType <- function(x, default = "hamming") {
+  if (!.isDistType(x)) {
+    warning(
+      "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
+      "Defaulting to ", deparse(substitute(default))
+    )
+    return(default)
+  }
+  .matchDistType(x)
+}
+
+.isStatsToInclude <- function(x) {
+  .isLogicalVector(x) && !.hasNAs(x) &&
+    isTRUE(all.equal(names(x), names(chooseNodeStats())))
+}
+
+.checkStatsToInclude <- function(x, default = chooseNodeStats()) {
+  if (.isString(x))  {
+    if (x == "all") {
+      x <- chooseNodeStats(all_stats = TRUE)
+    } else if (x == "cluster_id_only") {
+      x <- exclusiveNodeStats(cluster_id = TRUE)
+    }
+  }
+  if (!.isStatsToInclude(x)) {
+    warning(
+      "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
+      "Defaulting to ", dQuote(deparse(substitute(default)))
+    )
+    return(default)
+  }
+  x
+}
+
+.isClusterFun <- function(x) {
+  choices <- c(
+    "cluster_edge_betweenness", "cluster_fast_greedy",
+    "cluster_infomap",
+    "cluster_label_prop", "cluster_leading_eigen",
+    "cluster_leiden", "cluster_louvain",
+    "cluster_optimal", "cluster_spinglass", "cluster_walktrap",
+    "edge_betweenness", "betweenness", "fast_greedy", "greedy",
+    "infomap",
+    "label_prop", "leading_eigen", "prop", "eigen",
+    "leiden", "louvain",
+    "optimal", "spinglass", "walktrap"
+  )
+  .isString(x) && pmatch(x, choices, nomatch = 0)
+}
+
+
+
+# Plotting Arguments ------------------------------------------------------
+
+
+
+.checkSizeNodesBy <- function(x, data, default = 0.5) {
+  if (!.orNull(.isCharOrNumericScalar, x) ||
+      (is.character(x) && !.isDataColref(x, data)) ||
+      (is.numeric(x) && !.isPos(x))
+  ) {
+    warning(
+      "value for ", sQuote("size_nodes_by"), " is invalid. ",
+      "Defaulting to ", deparse(substitute(default))
+    )
+    return(default)
+  }
+  x
+}
+
+.isColorNodesBy <- function(x, data, node_stats = FALSE, cluster_stats = FALSE,
+                            plots = TRUE, cluster_id_name = "cluster_id",
+                            stats_to_include = chooseNodeStats(),
+                            auto_ok = FALSE
+) {
+  is.null(x) || isFALSE(plots) || (isTRUE(auto_ok) && isTRUE(x == "auto")) ||
+    (.isString(x) &&
+       .isColorNodesBy1(x, data, node_stats, cluster_stats,
+                        cluster_id_name, stats_to_include
+       )
+    ) ||
+    (.isCharVector(x) &&
+       all(sapply(x, .isColorNodesBy1, data = data,
+                  node_stats = node_stats, cluster_stats = cluster_stats,
+                  cluster_id_name = cluster_id_name,
+                  stats_to_include = stats_to_include
+       ))
+    )
+}
+
+.isColorNodesBy1 <- function(x, data, node_stats, cluster_stats,
+                             cluster_id_name, stats_to_include
+) {
+  choices <- names(data)
+  if (node_stats) {
+    if (.isString(stats_to_include)) {
+      if (stats_to_include == "all") {
+        stats_to_include <- chooseNodeStats(all_stats = TRUE)
+      } else if (stats_to_include == "cluster_id_only") {
+        stats_to_include <- exclusiveNodeStats(cluster_id = TRUE)
+      }
+    }
+    choices <- c(choices, names(stats_to_include)[stats_to_include])
+    if (stats_to_include[["cluster_id"]] && cluster_id_name != "cluster_id") {
+      choices <- choices[choices != "cluster_id"]
+      choices <- c(choices, cluster_id_name)
+    }
+  }
+  if (cluster_stats) { choices <- c(choices, cluster_id_name) }
+  isTRUE(x %in% choices)
+}
+
+.checkColorNodesBy <- function(
+    x, data, node_stats = FALSE, cluster_stats = FALSE,
+    plots = TRUE, cluster_id_name = "cluster_id",
+    stats_to_include = chooseNodeStats(), default = NULL, auto_ok = FALSE
+) {
+  if (!.isColorNodesBy(x, data, node_stats, cluster_stats, plots,
+                       cluster_id_name, stats_to_include, auto_ok)
+  ) {
+    warning(
+      "one or more values in ", sQuote("color_nodes_by"), " are invalid. ",
+      "Defaulting to ", deparse(substitute(default))
+    )
+    return(default)
+  }
+  x
+}
+
+.isColorScheme <- function(x, len) {
+  isTRUE(len == 0) ||
+    (.isCharVector(x) && length(x) %in% c(1, len) &&
+       all(sapply(x, .isColorScheme1))
+    )
+}
+.isColorScheme1 <- function(x) {
+  choices <- c(
+    "default", "viridis", "magma", "inferno", "plasma", "cividis", "rocket",
+    "mako", "turbo", "A", "B", "C", "D", "E", "F", "G", "H"
+  )
+  choices <- c(choices,
+               paste0(choices, "-1"),
+               grDevices::hcl.pals()
+  )
+  isTRUE(x %in% choices)
+}
+
+.checkColorScheme <- function(x, color_nodes_by, default = "default") {
+  if (!.isColorScheme(x, length(color_nodes_by))) {
+    warning("value for ", sQuote("color_scheme"), " is invalid. ",
+            "Defaulting to ", deparse(substitute(default))
+    )
+    return(default)
+  }
+  x
+}
+
+
+.checkColorTitle <- function(x, color_nodes_by, default = "auto") {
+  if (!is.null(color_nodes_by) &&
+      (!.orNull(.isCharVector, x) ||
+       (!is.null(x) && !length(x) %in% c(1, length(color_nodes_by)))
+      )
+  ) {
+    warning("value for ", sQuote("color_title"), " is invalid. ",
+            "Defaulting to ", deparse(substitute(default))
+    )
+    return(default)
+  }
+  x
+}
+
+
+.checkNodeSizeLimits <- function(x, default = NULL) {
+  if (is.null(x)) {
+    return(x)
+  }
+  if (!(.isNumericVector(x) && .hasLength2(x) && x[[1]] > 0 && x[[2]] >= x[[1]])
+  ) {
+    warning(
+      "value for ", sQuote("node_size_limits"), " is invalid. ",
+      "Defaulting to ", deparse(substitute(default))
+    )
+    return(default)
+  }
+  x
+}
+
+
+.checkPlotsAgainstLayout <- function(plots) {
+  # plots is a ggraph object
+  # assumes plots$graph_layout is a nonempty two-column matrix if it exists
+  if (!.hasElem(plots, "graph_layout")) {
+    return(NULL)
+  }
+  non_layout_indices <- which(names(plots) != "graph_layout")
+  compare_layout <- function(x) {
+    isTRUE(all.equal(plots$graph_layout, as.matrix(x$data[c("x", "y")]),
+                     check.attributes = FALSE
+    ))
+  }
+  if (!all(sapply(plots[non_layout_indices], compare_layout))) {
+    warning(
+      "Graph plot layout contained in ", sQuote("net$plots$graph_layout"),
+      " does not match one or more of the plots contained in ",
+      sQuote("net$plots"), ". The graph plot layout will be used nonetheless."
+    )
+  }
+  NULL
 }
 
 
 # Associated Clusters -----------------------------------------------------
 
 
-.checkargs.findAssociatedSeqs <- function(
-    file_list, input_type, data_symbols, header, sep,
-    subject_ids, group_ids, seq_col, freq_col,
-    min_seq_length, drop_matches, min_sample_membership, pval_cutoff, outfile
+.checkargs.findAssociatedSeqs <- function(file_list, subject_ids, group_ids,
+                                          seq_col
 ) {
-  .checkargs.InputFiles(
-    file_list, input_type, data_symbols, header, sep
+  group_ids <- as.vector(group_ids, mode = "character")
+  .orNull(.MUST.isCharOrNumericVector, subject_ids, "subject_ids",
+          factor_ok = TRUE
   )
-  .orNull(.isCharOrNumericVector, subject_ids, "subject_ids")
-  .isCharOrNumericVector(group_ids, "group_ids")
-  .isCharOrNumericVector(seq_col, "seq_col")
-  .orNull(.isCharOrNumericScalar, freq_col, "freq_col")
-  .orNull(.isNonneg, min_seq_length, "min_seq_length")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .orNull(.isNonneg, min_sample_membership, "min_sample_membership")
-  .isPos(pval_cutoff, "pval_cutoff")
-  .orNull(.isString, outfile, "outfile")
+  .MUST.isCharOrNumericVector(group_ids, "group_ids", factor_ok = TRUE)
+  .MUST.isCharOrNumericScalar(seq_col, "seq_col")
+  .stopifnot(length(file_list) == length(unique(file_list)),
+             "file_list", "contains duplicate values"
+  )
+  .stopifnot(length(file_list) == length(group_ids),
+             "file_list", "and", sQuote("group_ids"),
+             "have different lengths"
+  )
+  .stopifnot(length(unique(group_ids)) == 2,
+             "group_ids", "must contain exactly two unique values"
+  )
   if (!is.null(subject_ids)) {
-    stopifnot(
-      "file_list and subject_ids have non-matching lengths" =
-        length(file_list) == length(subject_ids)
+    .stopifnot(length(file_list) == length(subject_ids),
+               "file_list", "and", sQuote("subject_ids"),
+               "have different lengths"
     )
   }
-  stopifnot(
-    "lengths of file_list and group_ids must match" =
-      length(file_list) == length(group_ids)
-  )
-  stopifnot(
-    "file_list contains duplicate values" =
-      length(file_list) == length(unique(file_list))
-  )
 }
 
 .checkargs.findAssociatedSeqs2 <- function(
-    data, seq_col, sample_col, subject_col, group_col, groups, freq_col,
-    min_seq_length, drop_matches, min_sample_membership, pval_cutoff, outfile
+    data, seq_col, sample_col, group_col, data_name, seq_col_name
 ) {
 
-  if (!is.null(groups)) {
-    warning(paste(
-      "groups argument is deprecated; group labels are now determined from",
-      "the unique values of the group_ids argument. Avoid using the groups",
-      "argument to avoid errors in future versions of NAIR"
-    ))
-  }
-  .hasAtLeastTwoRows(data)
-  .isSeqCol(data, seq_col)
-  .isDataCol(data, group_col, "group_col")
-  .isDataCol(data, sample_col, "sample_col")
-  .isDataCol(data, subject_col, "subject_col")
-  .isDataColOrNull(data, freq_col, "freq_col")
-  .orNull(.isNonneg, min_seq_length, "min_seq_length")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .orNull(.isNonneg, min_sample_membership, "min_sample_membership")
-  .isPos(pval_cutoff, "pval_cutoff")
-  .orNull(.isString, outfile, "outfile")
-  if (!is.null(groups)) {
-    warning("`groups` argument is deprecated; group labels are now determined from the unique values of the `group_ids` argument. Avoid using the `groups` argument to avoid errors in future versions of NAIR")
-  }
+  .MUST.isDataFrame(data, data_name)
+  .MUST.hasMultipleRows(data, data_name)
+  .MUST.isSeqColref(seq_col, data, seq_col_name, data_name)
+  .MUST.isDataColref(data, group_col, "group_col")
+  .MUST.isDataColref(data, sample_col, "sample_col")
+  .stopifnot(length(unique(data[[group_col]])) == 2,
+             paste0("data[[", group_col, "]]"),
+             "must contain exactly two unique values"
+  )
+
 }
 
 .checkargs.findAssociatedClones <- function(
-    file_list, input_type, data_symbols, header, sep,
-    sample_ids, subject_ids, group_ids, seq_col,
-    assoc_seqs, nbd_radius, dist_type, min_seq_length, drop_matches,
-    subset_cols, output_dir, output_type, verbose
+    file_list, input_type, data_symbols, header, sep, read.args,
+    subject_ids, group_ids, seq_col, assoc_seqs, output_dir
 ) {
 
   .checkargs.InputFiles(
-    file_list, input_type, data_symbols, header, sep
+    file_list, input_type, data_symbols, header, sep, read.args
   )
-  .orNull(.isCharOrNumericVector, subject_ids, "subject_ids")
-  .isCharOrNumericVector(group_ids, "group_ids")
-  .isCharOrNumericVector(sample_ids, "sample_ids")
-  .isCharOrNumericVector(seq_col, "seq_col")
-  .isCharOrNumericVector(assoc_seqs, "assoc_seqs")
-  .isNonneg(nbd_radius, "nbd_radius")
-  .isDistType(dist_type)
-  .orNull(.isNonneg, min_seq_length, "min_seq_length")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .orNull(.isCharOrNumericVector, subset_cols, "subset_cols")
-  .isString(output_dir, "output_dir")
-  .isOutputType(output_type, "findAssociatedClones")
-  .isTF(verbose, "verbose")
-
-}
-
-.checkargs.buildAssociatedClusterNetwork <- function(
-    file_list, input_type, data_symbols, header, sep,
-    seq_col, min_seq_length, drop_matches, drop_isolated_nodes,
-    node_stats, stats_to_include, cluster_stats, color_nodes_by, output_name
-) {
-
-  .checkargs.InputFiles(
-    file_list, input_type, data_symbols, header, sep
+  .orNull(.MUST.isCharOrNumericVector, subject_ids, "subject_ids",
+          factor_ok = TRUE
   )
-  .isCharOrNumericVector(seq_col, "seq_col")
-  .orNull(.isNonneg, min_seq_length, "min_seq_length")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .isTF(drop_isolated_nodes, "drop_isolated_nodes")
-  .isTF(node_stats, "node_stats")
-  .isTF(cluster_stats, "cluster_stats")
-  .checkStatsToInclude(stats_to_include)
-  .orNull(.isCharOrNumericVector, color_nodes_by, "color_nodes_by")
-  .isString(output_name, "output_name")
-
-}
-
-
-# Plotting Functions ------------------------------------------------------
-
-.checkargs.generateNetworkGraphPlots <- function(
-    igraph, data, print_plots, plot_title, plot_subtitle, color_nodes_by,
-    color_scheme, color_legend, color_title, edge_width, size_nodes_by,
-    node_size_limits, size_title
-) {
-
-  .isIgraph(igraph, "igraph")
-  .isDataFrame(data, "data")
-  .checkIgraphAgainstData(igraph, data)
-  .isTF(print_plots, "print_plots")
-  .orNull(.isString, plot_title, "plot_title")
-  .orNull(.isString, plot_subtitle, "plot_subtitle")
-  .checkColorNodesBy(color_nodes_by, data)
-  .checkColorScheme(color_scheme, color_nodes_by)
-  .isTFOrAuto(color_legend, "color_legend")
-  .checkColorTitle(color_title, color_nodes_by)
-  .isPos(edge_width, "edge_width")
-  .checkSizeNodesBy(size_nodes_by, data)
-  .checkNodeSizeLimits(node_size_limits)
-  .orNull(.isString, size_title, "size_title")
-
-}
-
-# Mid-level Functions -----------------------------------------------------
-
-.checkargs.generateNetworkObjects <- function(
-    data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes
-) {
-
-  .isDataFrame(data, "data")
-  .hasAtLeastTwoRows(data)
-  .isSeqCol(data, seq_col)
-  .isDistType(dist_type)
-  .isNonneg(dist_cutoff, "dist_cutoff")
-  .isTF(drop_isolated_nodes, "drop_isolated_nodes")
-
-}
-
-.checkargs.InputFiles <- function(
-    file_list, input_type, data_symbols, header, sep
-) {
-  .isCharVector(file_list, "file_list")
-  .isInputType(input_type)
-  if (input_type == "rda") {
-    .isString(data_symbols, "data_symbols")
+  .MUST.isCharOrNumericVector(group_ids, "group_ids", factor_ok = TRUE)
+  .MUST.isCharOrNumericScalar(seq_col, "seq_col")
+  .MUST.isCharVector(assoc_seqs, "assoc_seqs")
+  .stopifnot(length(file_list) == length(unique(file_list)),
+             "file_list", "contains duplicate values"
+  )
+  .stopifnot(length(file_list) == length(group_ids),
+             "file_list", "and", sQuote("group_ids"),
+             "have different lengths"
+  )
+  .stopifnot(length(unique(group_ids)) == 2,
+             "group_ids", "must contain exactly two unique values"
+  )
+  if (!is.null(subject_ids)) {
+    .stopifnot(length(file_list) == length(subject_ids),
+               "file_list", "and", sQuote("subject_ids"),
+               "have different lengths"
+    )
   }
-  if (input_type %in% c("csv", "table", "tsv", "txt")) {
-    .isTF(header, "header")
-    .isString(sep, "sep")
-  }
-}
+  .MUST.isString(output_dir, "output_dir")
 
-.checkargs.CombineSamples <- function(
-    file_list, input_type, data_symbols, header, sep,
-    seq_col, min_seq_length, drop_matches, subset_cols,
-    sample_ids, subject_ids, group_ids
-) {
-  .checkargs.InputFiles(
-    file_list, input_type, data_symbols, header, sep
-  )
-  .isCharOrNumericVector(seq_col, "seq_col")
-  .orNull(.isNonneg, min_seq_length, "min_seq_length")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .orNull(.isCharOrNumericVector, subset_cols, "subset_cols")
-  .orNull(.isCharOrNumericVector, sample_ids, "sample_ids")
-  .orNull(.isCharOrNumericVector, subject_ids, "subject_ids")
-  .orNull(.isCharOrNumericVector, group_ids, "group_ids")
-}
-
-.checkargs.filterInputData <- function(
-    data, seq_col, min_seq_length, drop_matches, subset_cols, count_col
-) {
-
-  .isDataFrame(data, "data")
-  .isSeqCol(data, seq_col)
-  .orNull(.isNonneg, min_seq_length, "min_seq_length")
-  .orNull(.isString, drop_matches, "drop_matches")
-  .isDataColsOrNull(data, subset_cols, "subset_cols")
-  .isDataColOrNull(data, count_col, "count_col")
-
-}
-
-.checkargs.addClusterLabels <- function(
-    plot, net, top_n_clusters, cluster_id_col, criterion,
-    size, color, greatest_values
-) {
-
-  .isGgraph(plot, "plot")
-  .hasNodeAndClusterData(net, "net")
-  .isPosInt(top_n_clusters, "top_n_clusters")
-  .isDataCol(net$node_data, cluster_id_col, "cluster_id_col")
-  .isDataCol(net$cluster_data, criterion, "criterion")
-  .isPos(size, "size")
-  .isString(color, "color")
-  .isTF(greatest_values, "greatest_values")
-
-}
-
-.checkargs.saveNetwork <- function(
-    net, output_dir, output_type, output_filename, pdf_width, pdf_height
-) {
-
-  .isBaseNetworkOutput(net, "net")
-  .orNull(.isString, output_dir, "output_dir")
-  .isOutputType(output_type)
-  .isString(output_filename, "output_filename")
-  .isPos(pdf_width, "pdf_width")
-  .isPos(pdf_height, "pdf_height")
-
-}
-
-.checkargs.saveNetworkPlots <- function(
-    plotlist, outfile, pdf_width, pdf_height
-) {
-  .isPlotlist(plotlist, "plotlist")
-  .isString(outfile, "outfile")
-  .isPos(pdf_width, "pdf_width")
-  .isPos(pdf_height, "pdf_height")
-}
-
-
-.checkargs.chooseNodeStats <- function(
-    degree, cluster_id, transitivity, closeness, centrality_by_closeness,
-    eigen_centrality, centrality_by_eigen, betweenness,
-    centrality_by_betweenness, authority_score, coreness, page_rank, all_stats
-) {
-  .isTF(degree, "degree")
-  .isTF(cluster_id, "cluster_id")
-  .isTF(transitivity, "transitivity")
-  .isTF(closeness, "closeness")
-  .isTF(centrality_by_closeness, "centrality_by_closeness")
-  .isTF(eigen_centrality, "eigen_centrality")
-  .isTF(centrality_by_eigen, "centrality_by_eigen")
-  .isTF(betweenness, "betweenness")
-  .isTF(centrality_by_betweenness, "centrality_by_betweenness")
-  .isTF(authority_score, "authority_score")
-  .isTF(coreness, "coreness")
-  .isTF(page_rank, "page_rank")
-  .isTF(all_stats, "all_stats")
-}
-
-.checkargs.addNodeNetworkStats <- function(
-  data, net, stats_to_include, cluster_fun
-) {
-  .isDataFrame(data, "data")
-  .isIgraph(net, "net")
-  .checkIgraphAgainstData(net, data)
-  .checkStatsToInclude(stats_to_include)
-  .checkClusterFun(cluster_fun)
-}
-.checkargs.addClusterMembership <- function(data, net, fun) {
-  .isDataFrame(data, "data")
-  .isIgraph(net, "net")
-  .checkIgraphAgainstData(net, data)
-  .checkClusterFun(fun, "fun")
-}
-
-.checkargs.getClusterStats <- function(
-    data, adjacency_matrix, seq_col, count_col, cluster_id_col,
-    degree_col, cluster_fun
-) {
-  .isDataFrame(data, "data")
-  .isAdjacencyMatrix(adjacency_matrix, "adjacency_matrix")
-  .checkDataAgainstMatrix(data, adjacency_matrix)
-  .isSeqCol(data, seq_col)
-  .isDataColOrNull(data, count_col, "count_col")
-  .isDataColOrNull(data, cluster_id_col, "cluster_id_col")
-  .isDataColOrNull(data, degree_col, "degree_col")
-  .checkClusterFun(cluster_fun)
-}
-
-.checkargs.sparseAdjacencyMatFromSeqs <- function(
-    seqs, dist_type, max_dist, drop_isolated_nodes
-) {
-  .isValidSeqVector(seqs)
-  .isDistType(dist_type)
-  .isNonneg(max_dist, "max_dist")
-  .isTF(drop_isolated_nodes, "drop_isolated_nodes")
 }
 
 
@@ -453,7 +532,7 @@
       when = "0.0.9038",
       what = "buildPublicClusterNetwork(node_stats)",
       details =
-        "all node-level network properties are now automatically computed",
+        "All node-level network properties are now automatically computed.",
       env = env,
       user_env = user_env
     )
@@ -463,7 +542,7 @@
       when = "0.0.9038",
       what = "buildPublicClusterNetwork(stats_to_include)",
       details =
-        "all node-level network properties are now automatically computed",
+        "All node-level network properties are now automatically computed.",
       env = env,
       user_env = user_env
     )
@@ -473,7 +552,7 @@
       when = "0.0.9038",
       what = "buildPublicClusterNetwork(cluster_stats)",
       details =
-        "all cluster-level network properties are now automatically computed",
+        "All cluster-level network properties are now automatically computed.",
       env = env,
       user_env = user_env
     )
@@ -490,7 +569,7 @@
       when = "0.0.9038",
       what = "findAssociatedSeqs(groups)",
       details =
-        "group labels are now determined from the unique values of group_ids",
+        "Group labels are determined from the unique group ID values.",
       env = env,
       user_env = user_env
     )
@@ -499,8 +578,23 @@
     lifecycle::deprecate_warn(
       when = "0.0.9038",
       what = "findAssociatedSeqs(sample_ids)",
+      details = "Custom sample IDs are not relevant to this function.",
+      env = env,
+      user_env = user_env
+    )
+  }
+}
+.checkDeprecated.findAssociatedSeqs2 <- function(
+    groups,
+    env = caller_env(),
+    user_env = caller_env(2)
+) {
+  if (lifecycle::is_present(groups)) {
+    lifecycle::deprecate_warn(
+      when = "0.0.9038",
+      what = "findAssociatedSeqs(groups)",
       details =
-        "custom sample IDs are not relevant to this function",
+        "Group labels are determined from the unique group ID values.",
       env = env,
       user_env = user_env
     )

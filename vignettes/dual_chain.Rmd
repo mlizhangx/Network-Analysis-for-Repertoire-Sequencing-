@@ -18,7 +18,9 @@ For single-cell data, cell-level network analysis can be performed based on join
 We simulate some toy data to demonstrate the usage.
 
 ```{r}
+set.seed(42)
 library(NAIR)
+
 dat <- simulateToyData(chains = 2)
 head(dat)
 ```
@@ -28,21 +30,23 @@ The input data is assumed to have the following format:
 * Each row corresponds to a unique cell
 * The data contains separate columns for alpha chain sequence and beta chain sequence
 
-Dual-chain network analysis can be performed using the `buildRepSeqNetwork` function (or `generateNetworkObjects` as a lower-level alternative) by supplying a length-2 vector to the `seq_col` argument:
+Dual-chain network analysis can be performed using `buildRepSeqNetwork()` (or `generateNetworkObjects()`) by supplying a length-2 vector to the `seq_col` parameter:
 
 * First entry should reference the column for alpha chain sequence
 * Second entry should reference the column for beta chain sequence
 
 ```{r}
 # Build network based on joint dual-chain similarity
-network <- buildRepSeqNetwork(dat, seq_col = c("AlphaSeq", "BetaSeq"),
-                              count_col = "UMIs",
-                              node_stats = TRUE, stats_to_include = "all",
-                              cluster_stats = TRUE, 
-                              color_nodes_by = "SampleID",
-                              size_nodes_by = "UMIs",
-                              node_size_limits = c(0.5, 3),
-                              print_plots = FALSE, output_dir = NULL)
+network <- buildNet(dat, 
+                    seq_col = c("AlphaSeq", "BetaSeq"),
+                    count_col = "UMIs",
+                    node_stats = TRUE, 
+                    stats_to_include = "all",
+                    cluster_stats = TRUE, 
+                    color_nodes_by = "SampleID",
+                    size_nodes_by = "UMIs",
+                    node_size_limits = c(0.5, 3)
+)
 ```
 
 We print the network graph plot with labels added for the largest two clusters:
@@ -51,7 +55,7 @@ We print the network graph plot with labels added for the largest two clusters:
 addClusterLabels(network$plots$SampleID, network, top_n_clusters = 2, size = 8)
 ```
 
-The list returned by `buildRepSeqNetwork` contains the following items:
+The list returned `buildRepSeqNetwork()` the following items:
 
 ```{r}
 names(network)
@@ -67,4 +71,4 @@ head(network$cluster_data)
 ```
 
 
-The remainder of the output and customization follows the [general case for the buildRepSeqNetwork function](buildRepSeqNetwork.html).
+The remainder of the output and customization follows the [general case for  `buildRepSeqNetwork()`](buildRepSeqNetwork.html).
