@@ -388,27 +388,29 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">toy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateToyData.html">simulateToyData</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Simple call:</span></span></span>
+<span class="r-in"><span><span class="co"># Simple call</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">=</span> <span class="fu">buildNet</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">toy_data</span>,</span></span>
-<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span></span></span>
+<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>  print_plots <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="buildRepSeqNetwork-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Customized:</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">buildNet</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">toy_data</span>,</span></span>
-<span class="r-in"><span>  seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>  <span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>,</span></span>
 <span class="r-in"><span>  dist_type <span class="op">=</span> <span class="st">"levenshtein"</span>,</span></span>
 <span class="r-in"><span>  node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  cluster_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  cluster_fun <span class="op">=</span> <span class="st">"louvain"</span>,</span></span>
-<span class="r-in"><span>  cluster_id_name <span class="op">=</span> <span class="st">"cluster_id_louvain"</span>,</span></span>
+<span class="r-in"><span>  cluster_id_name <span class="op">=</span> <span class="st">"cluster_membership"</span>,</span></span>
 <span class="r-in"><span>  count_col <span class="op">=</span> <span class="st">"CloneCount"</span>,</span></span>
-<span class="r-in"><span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transitivity"</span>, <span class="st">"cluster_id_louvain"</span>, <span class="st">"SampleID"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plasma-1"</span>, <span class="st">"Viridis"</span>, <span class="st">"default"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"cluster_membership"</span>, <span class="st">"coreness"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"Viridis"</span>, <span class="st">"plasma-1"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>,</span></span>
-<span class="r-in"><span>  node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1.5</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  plot_title <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  plot_subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>  print_plots <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -422,21 +424,28 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Obtaining cluster properties...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Partitioning the network graph into clusters...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Cluster membership variable ‘cluster_id_louvain’ added to node metadata.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Cluster membership variable ‘cluster_membership’ added to node metadata.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Computing statistics for the 21 clusters in the network...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Data frame ‘cluster_data’ added to list of network objects.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by transitivity...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by cluster_id_louvain...</span>
-<span class="r-plt img"><img src="buildRepSeqNetwork-1.png" alt="" width="700" height="433"></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by SampleID...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by cluster_membership...</span>
 <span class="r-plt img"><img src="buildRepSeqNetwork-2.png" alt="" width="700" height="433"></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by coreness...</span>
+<span class="r-plt img"><img src="buildRepSeqNetwork-3.png" alt="" width="700" height="433"></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> New plots added to ‘net$plots’</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ‘output_dir’ is “NULL”. Output will not be saved.</span>
-<span class="r-plt img"><img src="buildRepSeqNetwork-3.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="buildRepSeqNetwork-4.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/typeof.html" class="external-link">typeof</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "list"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "details"          "igraph"           "adjacency_matrix" "node_data"       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "cluster_data"     "plots"           </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">network</span><span class="op">$</span><span class="va">details</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seq_col</span>
@@ -460,10 +469,10 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cluster_id_variable</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              louvain </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> "cluster_id_louvain" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "cluster_membership" </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cluster_data_goes_with</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "cluster_id_louvain"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "cluster_membership"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $count_col_for_cluster_data</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "CloneCount"</span>
@@ -490,7 +499,7 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11     1.505460e-01          0.15054597    2.156593                  2.156593</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12     5.269516e-01          0.52695160  111.034076                111.034076</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 13     1.468110e-01          0.14681104   77.439560                 77.439560</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    authority_score coreness   page_rank cluster_id_louvain</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    authority_score coreness   page_rank cluster_membership</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2     6.407681e-19        1 0.008064516                  1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5     0.000000e+00        2 0.009136977                  2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8     4.558284e-02        2 0.003869458                  3</span>

@@ -161,25 +161,19 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Generate network</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="buildRepSeqNetwork.html">buildRepSeqNetwork</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="buildRepSeqNetwork.html">buildNet</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="va">toy_data</span>,</span></span>
-<span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span></span></span>
+<span class="r-in"><span>    seq_col <span class="op">=</span> <span class="st">"CloneSeq"</span>,</span></span>
+<span class="r-in"><span>    plot_title <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    plot_subtitle <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Label each node with its receptor sequence</span></span></span>
-<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">labelNodes</span><span class="op">(</span><span class="va">network</span>, <span class="st">"CloneSeq"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">labelNodes</span><span class="op">(</span><span class="va">network</span>, <span class="st">"CloneSeq"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># View the plot</span></span></span>
 <span class="r-in"><span><span class="va">network</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-plt img"><img src="addGraphLabels-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Alternative method, working with the plot directly</span></span></span>
-<span class="r-in"><span><span class="fu">addGraphLabels</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">network</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>  <span class="va">network</span><span class="op">$</span><span class="va">node_data</span><span class="op">$</span><span class="va">CloneSeq</span>,</span></span>
-<span class="r-in"><span>  size <span class="op">=</span> <span class="fl">4</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="addGraphLabels-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

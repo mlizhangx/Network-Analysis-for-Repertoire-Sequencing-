@@ -325,15 +325,18 @@ details.</p>
 <p>Specify <code>print_plots = TRUE</code> to print the plots to the R
 plotting window.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildNet</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>,</span>
-<span>         color_nodes_by <span class="op">=</span> <span class="st">"SampleID"</span>,</span>
-<span>         color_scheme <span class="op">=</span> <span class="st">"Viridis"</span>,</span>
-<span>         size_nodes_by <span class="op">=</span> <span class="st">"CloneCount"</span>,</span>
-<span>         node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
-<span>         plot_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>         print_plots <span class="op">=</span> <span class="cn">TRUE</span></span>
+<code class="sourceCode R"><span><span class="va">net</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildNet</a></span><span class="op">(</span><span class="va">toy_data</span>, <span class="st">"CloneSeq"</span>,</span>
+<span>                node_stats <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>                color_nodes_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SampleID"</span>, <span class="st">"transitivity"</span>, <span class="st">"coreness"</span><span class="op">)</span>,</span>
+<span>                color_scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"default"</span>, <span class="st">"plasma-1"</span>, <span class="st">"mako-1"</span><span class="op">)</span>,</span>
+<span>                color_title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"Transitivity"</span>, <span class="st">"Coreness"</span><span class="op">)</span>,</span>
+<span>                size_nodes_by <span class="op">=</span> <span class="st">"degree"</span>,</span>
+<span>                node_size_limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>                plot_title <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                plot_subtitle <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>                print_plots <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-11-1.png" width="100%" style="display: block; margin: auto;"><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-11-2.png" width="100%" style="display: block; margin: auto;"><img src="buildRepSeqNetwork_files/figure-html/unnamed-chunk-11-3.png" width="100%" style="display: block; margin: auto;"></p>
 <p>See <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">this
 article</a> for more on how to customize the visualizations.</p>
 </div>
@@ -385,13 +388,27 @@ network nodes, where each row corresponds to a node in the network
 graph:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">net</span><span class="op">$</span><span class="va">node_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         CloneSeq CloneFrequency CloneCount SampleID</span></span>
-<span><span class="co">#&gt; 2  GGAGATGAATCGG    0.007777102       3057  Sample1</span></span>
-<span><span class="co">#&gt; 5  GAAAGAGAATTCG    0.009336593       3670  Sample1</span></span>
-<span><span class="co">#&gt; 8  GGGGAGAAATTGG    0.006220155       2445  Sample1</span></span>
-<span><span class="co">#&gt; 11 GGGGGAGAATTGC    0.012969469       5098  Sample1</span></span>
-<span><span class="co">#&gt; 12 GGGGGGGAATTGC    0.009079646       3569  Sample1</span></span>
-<span><span class="co">#&gt; 13 AGGGGGAAATTGG    0.014941093       5873  Sample1</span></span></code></pre></div>
+<span><span class="co">#&gt;         CloneSeq CloneFrequency CloneCount SampleID degree transitivity</span></span>
+<span><span class="co">#&gt; 2  GGAGATGAATCGG    0.007777102       3057  Sample1      1          NaN</span></span>
+<span><span class="co">#&gt; 5  GAAAGAGAATTCG    0.009336593       3670  Sample1      3    0.3333333</span></span>
+<span><span class="co">#&gt; 8  GGGGAGAAATTGG    0.006220155       2445  Sample1      2    1.0000000</span></span>
+<span><span class="co">#&gt; 11 GGGGGAGAATTGC    0.012969469       5098  Sample1      4    0.6666667</span></span>
+<span><span class="co">#&gt; 12 GGGGGGGAATTGC    0.009079646       3569  Sample1     10    0.3555556</span></span>
+<span><span class="co">#&gt; 13 AGGGGGAAATTGG    0.014941093       5873  Sample1      5    0.1000000</span></span>
+<span><span class="co">#&gt;    eigen_centrality centrality_by_eigen betweenness centrality_by_betweenness</span></span>
+<span><span class="co">#&gt; 2      3.099733e-18        5.265477e-19    0.000000                  0.000000</span></span>
+<span><span class="co">#&gt; 5      0.000000e+00        0.000000e+00  108.000000                108.000000</span></span>
+<span><span class="co">#&gt; 8      4.558649e-02        4.558649e-02    0.000000                  0.000000</span></span>
+<span><span class="co">#&gt; 11     1.505537e-01        1.505537e-01    1.549451                  1.549451</span></span>
+<span><span class="co">#&gt; 12     5.269180e-01        5.269180e-01   73.970918                 73.970918</span></span>
+<span><span class="co">#&gt; 13     1.468234e-01        1.468234e-01   75.439560                 75.439560</span></span>
+<span><span class="co">#&gt;    authority_score coreness   page_rank</span></span>
+<span><span class="co">#&gt; 2       0.00000000        1 0.008196721</span></span>
+<span><span class="co">#&gt; 5       0.00000000        2 0.010578507</span></span>
+<span><span class="co">#&gt; 8       0.04558649        2 0.003936684</span></span>
+<span><span class="co">#&gt; 11      0.15055366        4 0.005034736</span></span>
+<span><span class="co">#&gt; 12      0.52691798        6 0.011491588</span></span>
+<span><span class="co">#&gt; 13      0.14682343        3 0.008703523</span></span></code></pre></div>
 <p><a name="subset_cols"></a></p>
 <p>Since <code><a href="../reference/buildRepSeqNetwork.html">buildNet()</a></code> was called with <a href="#isolated_nodes"><code>drop_isolated_nodes = TRUE</code></a>, some
 of the original rows are missing. The original row names are preserved,
@@ -420,16 +437,15 @@ cluster properties such as node count and mean sequence length, as seen
 <p><code>plots</code> is a list containing any plots created as well as
 a matrix <code>graph_layout</code> storing the node layout used in the
 plots. Each plot is named according to the variable used to color the
-nodes. The default (uncolored) plot is named
-<code>uniform_color</code>.</p>
+nodes.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">net</span><span class="op">$</span><span class="va">plots</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "uniform_color" "graph_layout"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "SampleID"     "transitivity" "coreness"     "graph_layout"</span></span></code></pre></div>
 <p>Each plot is a <a href="https://ggraph.data-imaginist.com/" class="external-link"><code>ggraph</code></a> (a
 special kind of <a href="https://ggplot2.tidyverse.org/" class="external-link"><code>ggplot</code></a>).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">net</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">uniform_color</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "ggraph" "gg"     "ggplot"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "NULL"</span></span></code></pre></div>
 <p>Custom plots can be created when calling <code><a href="../reference/buildRepSeqNetwork.html">buildNet()</a></code> or
 afterward using <code><a href="../reference/addPlots.html">addPlots()</a></code> as described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/network_visualization.html">here</a>.</p>
 </div>
@@ -556,7 +572,7 @@ Functions<a class="anchor" aria-label="anchor" href="#supplementary-functions"><
 supplementary to <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> that can be used to
 perform additional downstream tasks. See <a href="supplementary.html">this vignette</a>.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span> <span class="co"># For pipe operator (%&gt;%)</span></span>
 <span><span class="va">toy_data</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/filterInputData.html">filterInputData</a></span><span class="op">(</span><span class="st">"CloneSeq"</span>, drop_matches <span class="op">=</span> <span class="st">"\\W"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/buildRepSeqNetwork.html">buildNet</a></span><span class="op">(</span><span class="st">"CloneSeq"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
