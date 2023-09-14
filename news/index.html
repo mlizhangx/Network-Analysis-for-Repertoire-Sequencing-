@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.9045</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,6 +60,139 @@
       <small>Source: <a href="https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.1" id="nair-101">NAIR 1.0.1<a class="anchor" aria-label="anchor" href="#nair-101"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-1-0-1">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-0-1"></a></h3>
+<ul><li>
+<code><a href="../reference/getClusterStats.html">getClusterStats()</a></code> now requires the cluster ID column to be specified and present in the provided node metadata; it will no longer compute cluster membership since it does not return the node metadata (so any membership values computed are lost).</li>
+<li>
+<code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code> now accepts and returns the list of network objects instead of accepting and returning the node metadata with the igraph as an additional input. The first parameter <code>data</code> has been deprecated and moved in position, with the second parameter <code>net</code> becoming the first parameter and accepting the list of network objects instead of just the igraph. The function still also supports the old usage (for now), as long as <code>net</code> and <code>data</code> are specified by name (or the updated argument positions are used). See section “Unified Primary Argument Across Functions” for context.</li>
+<li>Functions no longer save output to file by default. The user must provide a directory/file path to the appropriate parameter for output to be saved.</li>
+<li>All instances of <code>"individual"</code> as a default value for <code>output_type</code> have been changed to <code>"rds"</code>. <code>"rds"</code> is the preferred default since it reduces file size/clutter and the list of network objects can be restored intact (the list is the primary input/output of core <code>NAIR</code> functions) under any name desired. <code>"rda"</code> should be used if the file will be transferred across machines (the list will be restored under the name <code>net</code>), and <code>"individual"</code> should be used when the output is to be accessed from outside of R.</li>
+<li>
+<code>output_type = "individual"</code> now writes the row names of the node metadata to the first column of the csv file. These contain the original row IDs from the input data.</li>
+<li>Default value of <code>output_type</code> in <code><a href="../reference/findAssociatedClones.html">findAssociatedClones()</a></code> and <code>input_type</code> in <code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> changed from <code>"csv"</code> to <code>"rds"</code>, since these files are intermediate outputs and typically there should be no need to access them from outside of R or from another machine.</li>
+<li>
+<code><a href="../reference/buildPublicClusterNetworkByRepresentative.html">buildPublicClusterNetworkByRepresentative()</a></code> default value of <code>output_type</code> changed from <code>"rda"</code> to <code>"rds"</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-1-0-1">New Features<a class="anchor" aria-label="anchor" href="#new-features-1-0-1"></a></h3>
+<p>This section covers general new features. Other new features are grouped by subject in the following few sections.</p>
+<ul><li>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> now has the convenient alias <code><a href="../reference/buildRepSeqNetwork.html">buildNet()</a></code>.</li>
+<li>The list returned by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> now contains an element <code>details</code> with network metadata such as the argument values used in the function call.</li>
+<li>Plots with nodes colored according to a continuous variable will now have their legends displayed using a color bar instead of discrete legend values, unless that variable is also used to size the nodes.</li>
+<li>In most cases where an invalid value is supplied to a function argument for which a meaningful default exists, instead of raising an error, the argument’s value is replaced by the default value and a warning is raised.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="unified-primary-argument-across-functions-1-0-1">Unified Primary Argument Across Functions<a class="anchor" aria-label="anchor" href="#unified-primary-argument-across-functions-1-0-1"></a></h3>
+<p>Several changes and additions have been made in favor of using the list of network objects returned by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> as a unified primary input and output across the core <code>NAIR</code> functions. Adopting this convention offers several benefits: It greatly simplifies usage, since users no longer need to know which components of the list to input to which function (or what each function returns); it eliminates the task of manually updating the list of network objects; it results in the core functions working with the pipe operator; and most importantly, it improves functionality within and between functions, since functions can read and modify anything in the network list. For instance, <code><a href="../reference/addPlots.html">addPlots()</a></code> can use the coordinate layout of any existing plots to ensure a consistent layout across plots (which is no longer guaranteed otherwise), while <code><a href="../reference/addClusterStats.html">addClusterStats()</a></code> can add cluster membership values to the node metadata and record in <code>details</code> that the cluster properties correspond to these membership values (and not the values from a different instance of clustering using a different algorithm).</p>
+<p>The following changes encompass the move toward using the network list as a primary input/output:</p>
+<ul><li>
+<code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code> parameters and return value have changed. See the Breaking Changes section for details.</li>
+<li>
+<code><a href="../reference/addPlots.html">addPlots()</a></code> added as the preferred alternative to <code><a href="../reference/addPlots.html">generateNetworkGraphPlots()</a></code> and <code><a href="../reference/plotNetworkGraph.html">plotNetworkGraph()</a></code>
+</li>
+<li>
+<code><a href="../reference/addClusterStats.html">addClusterStats()</a></code> added as the preferred alternative to <code><a href="../reference/getClusterStats.html">getClusterStats()</a></code>
+</li>
+<li>
+<code><a href="../reference/addNodeStats.html">addNodeStats()</a></code> added as the preferred alternative to <code><a href="../reference/addNodeNetworkStats.html">addNodeNetworkStats()</a></code>
+</li>
+<li>
+<code><a href="../reference/addClusterLabels.html">labelClusters()</a></code> added as the preferred alternative to <code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code>
+</li>
+<li>
+<code><a href="../reference/addGraphLabels.html">labelNodes()</a></code> added as the preferred alternative to <code><a href="../reference/addGraphLabels.html">addGraphLabels()</a></code>
+</li>
+</ul><p>See the new “Supplementary Functions” vignette for examples.</p>
+</div>
+<div class="section level3">
+<h3 id="multiple-instances-of-clustering-1-0-1">Multiple Instances of Clustering<a class="anchor" aria-label="anchor" href="#multiple-instances-of-clustering-1-0-1"></a></h3>
+<p>The following changes and additions have been made to facilitate multiple instances of clustering on the same network using different clustering algorithms. See the new “Cluster Analysis” vignette for examples.</p>
+<ul><li>All functions that can perform clustering now have a parameter <code>cluster_id_name</code> that can be used to specify a custom name for the cluster membership variable added to the node metadata.</li>
+<li>Each time a new cluster membership variable is added to the node metadata, information is added to <code>details</code> recording the clustering algorithm used and the name of the corresponding cluster membership variable.</li>
+<li>When cluster properties are computed with <code><a href="../reference/addClusterStats.html">addClusterStats()</a></code>, information is added to <code>details</code> recording the cluster membership variable corresponding to the cluster properties.</li>
+<li>
+<code><a href="../reference/addClusterLabels.html">labelClusters()</a></code> and <code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code> now check <code>details</code> to confirm that the cluster properties match the specified cluster membership variable before using the node counts in the cluster properties.</li>
+<li>
+<code><a href="../reference/addClusterLabels.html">labelClusters()</a></code> and <code><a href="../reference/addClusterLabels.html">addClusterLabels()</a></code> can now be used without cluster properties; node count is computed from the cluster membership values.</li>
+<li>
+<code><a href="../reference/addClusterLabels.html">labelClusters()</a></code> can be used to label multiple plots at once.</li>
+<li>
+<code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code>, <code><a href="../reference/addClusterStats.html">addClusterStats()</a></code> and <code><a href="../reference/addNodeStats.html">addNodeStats()</a></code> now allow custom argument values for optional parameters of the clustering algorithm through the ellipses (<code>...</code>) argument.</li>
+</ul><p>It may also be of interest in the future to add functionality allowing the network list to contain multiple sets of cluster properties corresponding to different instances of clustering.</p>
+</div>
+<div class="section level3">
+<h3 id="plots-and-graph-layout-1-0-1">Plots and Graph Layout<a class="anchor" aria-label="anchor" href="#plots-and-graph-layout-1-0-1"></a></h3>
+<p>Plotting functions no longer fix the random seed when generating the coordinate layout for a plot. In order to facilitate a consistent layout across multiple plots of the same network graph, the following changes have been made.</p>
+<ul><li>Multiple plots produced in the same call to <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>, <code><a href="../reference/addPlots.html">addPlots()</a></code> and <code><a href="../reference/addPlots.html">generateNetworkGraphPlots()</a></code> will all use a common layout.</li>
+<li>Plot lists created by <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>, <code><a href="../reference/addPlots.html">addPlots()</a></code> and <code><a href="../reference/addPlots.html">generateNetworkGraphPlots()</a></code> now include a matrix <code>graph_layout</code> containing the layout used in the plots.</li>
+<li>
+<code><a href="../reference/addPlots.html">addPlots()</a></code> will automatically use the <code>graph_layout</code> mentioned above to ensure that new plots use the same layout as existing plots.</li>
+<li>If the network list already contains plots but <code>graph_layout</code> is absent, <code><a href="../reference/addPlots.html">addPlots()</a></code> will extract the layout from the first plot and use it for the new plots.</li>
+<li>
+<code><a href="../reference/addPlots.html">generateNetworkGraphPlots()</a></code> has a new parameter <code>layout</code> that can be used to specify the layout. Can be used to generate new plots with the same layout as existing plots (though <code><a href="../reference/addPlots.html">addPlots()</a></code> is easier). Can also be used to generate plots with custom layout types other than the default layout created using <code><a href="https://r.igraph.org/reference/merge_coords.html" class="external-link">igraph::layout_components()</a></code>.</li>
+<li>
+<code><a href="../reference/saveNetworkPlots.html">saveNetworkPlots()</a></code> has a new parameter <code>outfile_layout</code> that can be used to save the graph layout.</li>
+<li>
+<code><a href="../reference/saveNetwork.html">saveNetwork()</a></code> automatically saves the graph layout when <code>output_type = "individual"</code>.</li>
+</ul><p>Essentially, generating new plots with <code><a href="../reference/addPlots.html">addPlots()</a></code> will ensure a consistent layout with the initial plots. Fixing a random seed before calling <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> (or before the first call to <code><a href="../reference/addPlots.html">addPlots()</a></code>, if <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> is called with <code>plots = FALSE</code>) allows the same layout to be reproduced across multiple executions of the same code in which the initial plots are generated.</p>
+</div>
+<div class="section level3">
+<h3 id="improved-file-input-functionality-1-0-1">Improved File Input Functionality<a class="anchor" aria-label="anchor" href="#improved-file-input-functionality-1-0-1"></a></h3>
+<ul><li>Most instances of the <code>file_list</code> argument now accept a list containing connections and file paths instead of only a character vector of file paths. This allows a greater variety of data sources to be used.</li>
+<li>A greater variety of input data formats are now supported. Instances of the <code>input_type</code> parameter that accept text formats have a new parameter <code>read.args</code> that accepts a named list of optional arguments to <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code> and its variants <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv()</a></code>, etc. Dedicated arguments for <code>header</code> and <code>sep</code> still exist apart from <code>read.args</code> for backwards compatibility, but their defaults now match <code>input_type</code> (e.g., <code>sep</code> defaults to <code>","</code> for <code>input_type = "csv"</code> and to <code>""</code> for <code>input_type = "table"</code>).</li>
+<li>
+<code>input_type = "tsv"</code> now reads files using <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.delim()</a></code> instead of <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table()</a></code>.</li>
+<li>Most instances of the <code>input_type</code> argument now also support the value <code>"csv2"</code> for reading files using <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv2()</a></code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="lifecycle-changes-1-0-1">Lifecycle Changes<a class="anchor" aria-label="anchor" href="#lifecycle-changes-1-0-1"></a></h3>
+<ul><li>Version 1.0.1 is the first major release of the NAIR package. Going forward, release version numbers will follow the format <code>&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;</code>, and in-development versions will follow the format <code>&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;.&lt;dev&gt;</code>.</li>
+<li>
+<code><a href="../reference/plotNetworkGraph.html">plotNetworkGraph()</a></code> deprecated in favor of <code><a href="../reference/addPlots.html">addPlots()</a></code>.</li>
+<li>
+<code><a href="../reference/filterInputData.html">filterInputData()</a></code> argument <code>count_col</code> deprecated. Rows with NA counts are no longer dropped.</li>
+<li>
+<code>getClusterFun()</code> argument <code>cluster_fun</code> deprecated (see Breaking Changes)</li>
+<li>
+<code><a href="../reference/addNodeNetworkStats.html">addNodeNetworkStats()</a></code> deprecated in favor of <code><a href="../reference/addNodeStats.html">addNodeStats()</a></code> (see section “Unified Primary Argument Across Functions”)</li>
+<li>
+<code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code> argument <code>data</code> deprecated (see section “Unified Primary Argument Across Functions”)</li>
+<li>
+<code><a href="../reference/addClusterMembership.html">addClusterMembership()</a></code> argument <code>fun</code> deprecated in favor of <code>cluster_fun</code> for consistency with other functions.</li>
+<li>
+<code><a href="../reference/generateAdjacencyMatrix.html">sparseAdjacencyMatFromSeqs()</a></code> argument <code>max_dist</code> deprecated in favor of <code>dist_cutoff</code> for consistency with other functions.</li>
+<li>
+<code><a href="../reference/saveNetwork.html">saveNetwork()</a></code> argument <code>output_filename</code> deprecated in favor of <code>output_name</code> for consistency with other functions.</li>
+<li>
+<code><a href="../reference/generateAdjacencyMatrix.html">sparseAdjacencyMatFromSeqs()</a></code> deprecated in favor of its better-named twin <code><a href="../reference/generateAdjacencyMatrix.html">generateAdjacencyMatrix()</a></code>.</li>
+<li>
+<code><a href="../reference/generateNetworkGraph.html">generateNetworkFromAdjacencyMat()</a></code> deprecated in favor of its better-named twin <code><a href="../reference/generateNetworkGraph.html">generateNetworkGraph()</a></code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-and-bug-fixes-1-0-1">Minor Changes and Bug Fixes<a class="anchor" aria-label="anchor" href="#minor-changes-and-bug-fixes-1-0-1"></a></h3>
+<ul><li>
+<code>output_type = "individual"</code> now also saves the list of plots (if present) to an RDS file. This prevents the <code>ggraph</code> objects containing the plots from being lost, in case the user wishes to modify these plots in the future.</li>
+<li>All instances of the <code>output_name</code> parameter now automatically replace potentially unsafe characters with underscores and removes any leading or trailing non-alphanumeric characters. Safe characters include alphanumeric characters, underscores and hyphens.</li>
+<li>Package functions no longer print messages to the console by default. Functions now have a <code>verbose</code> argument which can be set to <code>TRUE</code> to enable printing of console messages. For logging purposes, these messages are now generated using <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message()</a></code> rather than <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat()</a></code>, and so send their output to <code>std.err()</code> rather than <code>std.out()</code>.</li>
+<li>
+<code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code>, <code><a href="../reference/addPlots.html">addPlots()</a></code> and <code><a href="../reference/addPlots.html">generateNetworkGraphPlots()</a></code> now have <code>print_plots</code> set to <code>FALSE</code> by default (plots are no longer printed to the R plotting window unless manually specified).</li>
+<li>
+<code><a href="../reference/buildAssociatedClusterNetwork.html">buildAssociatedClusterNetwork()</a></code> now removes duplicate observations after loading the data from all neighborhoods. When multiple associated sequences are similar, the same clone from a given sample can belong to multiple neighborhoods. Previously, this occurrence resulted in the same clone appearing multiple times in the global network.</li>
+<li>
+<code><a href="../reference/simulateToyData.html">simulateToyData()</a></code> argument <code>seed_value</code> removed. Users can set a seed prior to calling the function if desired.</li>
+<li>
+<code><a href="../reference/addPlots.html">generateNetworkGraphPlots()</a></code> now handles the case where <code>color_nodes_by</code> contains duplicate values by removing the duplicate values with a warning. If <code>color_scheme</code> is a vector, the corresponding entries of <code>color_scheme</code> are also removed. Previously, this case resulted in a list of plots containing two elements with the same name.</li>
+<li>When <code><a href="../reference/addPlots.html">generateNetworkGraphPlots()</a></code> is called with a non-numeric variable specified for <code>size_nodes_by</code>, the function now defaults to fixed node sizes with a warning.</li>
+<li>
+<code><a href="../reference/addClusterStats.html">addClusterStats()</a></code> and <code>buildRepSeqNetwork(cluster_stats = TRUE)</code> now call <code><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum()</a></code> and <code><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max()</a></code> with <code>na.rm = TRUE</code> when computing abundance-based properties. This change reflects the fact that <code><a href="../reference/buildRepSeqNetwork.html">buildRepSeqNetwork()</a></code> no longer drops input data rows with <code>NA</code> and <code>NaN</code> values in the count column.</li>
+<li>
+<code><a href="../reference/combineSamples.html">combineSamples()</a></code> and <code><a href="../reference/combineSamples.html">loadDataFromFileList()</a></code> now preserve the original row IDs of each input file, which are prepended in the combined data by sample IDs (if available) or the file number based on the order in <code>file_list</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.9044" id="nair-009044">NAIR 0.0.9044<a class="anchor" aria-label="anchor" href="#nair-009044"></a></h2>
 <div class="section level3">
