@@ -59,9 +59,9 @@ To aid in interpretation of the immune repertoire network, `NAIR` includes conve
 
 # Installation
 
-<!-- To install the latest release version of `NAIR`, use the following command: -->
+To install the latest release version of `NAIR`, use the following command:
 
-```{r, eval = FALSE, include = FALSE}
+```{r, eval = FALSE}
 install.packages("NAIR")
 ```
 

@@ -1,4 +1,4 @@
-# Current Development Version
+# NAIR 1.0.1
 
 ## Breaking Changes
 
@@ -76,6 +76,7 @@ Essentially, generating new plots with `addPlots()` will ensure a consistent lay
 
 ## Lifecycle Changes
 
+* Version 1.0.1 is the first major release of the NAIR package. Going forward, release version numbers will follow the format `<major>.<minor>.<patch>`, and in-development versions will follow the format `<major>.<minor>.<patch>.<dev>`.
 * `plotNetworkGraph()` deprecated in favor of `addPlots()`.
 * `filterInputData()` argument `count_col` deprecated. Rows with NA counts are no longer dropped.
 * `getClusterFun()` argument `cluster_fun` deprecated (see Breaking Changes)
