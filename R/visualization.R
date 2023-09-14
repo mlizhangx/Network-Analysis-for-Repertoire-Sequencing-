@@ -246,7 +246,7 @@ labelClusters <- function(
   clusters <- as.integer(cdat$cluster_id[1:top_n_clusters])
   node_labels <- as.integer(net$node_data[[cluster_id_col]])
   node_labels[duplicated(node_labels) | !node_labels %in% clusters] <- NA
-  labelNodes(net, node_labels, size = size, color = color)
+  labelNodes(net, node_labels, plots, size, color)
 }
 
 
