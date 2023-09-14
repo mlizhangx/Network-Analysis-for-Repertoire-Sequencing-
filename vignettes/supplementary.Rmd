@@ -47,7 +47,7 @@ nrow(toy_data)
 Before we go through the various functions, the code below shows an example of how some of them might be used together.
 
 ```{r, eval = FALSE}
-library(magrittr)
+library(magrittr) # For pipe operator (%>%)
 toy_data %>%
   filterInputData("CloneSeq", drop_matches = "\\W") %>%
   buildNet("CloneSeq") %>%

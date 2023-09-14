@@ -312,30 +312,35 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 set.seed(42)
 toy_data <- simulateToyData()
 
-# Simple call:
+# Simple call
 network = buildNet(
   toy_data,
-  seq_col = "CloneSeq"
+  seq_col = "CloneSeq",
+  print_plots = TRUE
 )
 
 # Customized:
 network <- buildNet(
-  toy_data,
-  seq_col = "CloneSeq",
+  toy_data, "CloneSeq",
   dist_type = "levenshtein",
   node_stats = TRUE,
   cluster_stats = TRUE,
   cluster_fun = "louvain",
-  cluster_id_name = "cluster_id_louvain",
+  cluster_id_name = "cluster_membership",
   count_col = "CloneCount",
-  color_nodes_by = c("transitivity", "cluster_id_louvain", "SampleID"),
-  color_scheme = c("plasma-1", "Viridis", "default"),
+  color_nodes_by = c("SampleID", "cluster_membership", "coreness"),
+  color_scheme = c("default", "Viridis", "plasma-1"),
   size_nodes_by = "degree",
-  node_size_limits = c(0.5, 1.5),
+  node_size_limits = c(0.1, 1.5),
   plot_title = NULL,
+  plot_subtitle = NULL,
   print_plots = TRUE,
   verbose = TRUE
 )
+
+typeof(network)
+
+names(network)
 
 network$details
 

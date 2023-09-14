@@ -95,22 +95,17 @@ toy_data <-
 
 # Generate network
 network <-
-  buildRepSeqNetwork(
+  buildNet(
     toy_data,
-    seq_col = "CloneSeq"
+    seq_col = "CloneSeq",
+    plot_title = NULL,
+    plot_subtitle = NULL
   )
 
 # Label each node with its receptor sequence
-network <- labelNodes(network, "CloneSeq")
+network <- labelNodes(network, "CloneSeq", size = 3)
 
-# View the plot
 network$plots[[1]]
 
-# Alternative method, working with the plot directly
-addGraphLabels(
-  network$plots[[1]],
-  network$node_data$CloneSeq,
-  size = 4
-)
 }
 

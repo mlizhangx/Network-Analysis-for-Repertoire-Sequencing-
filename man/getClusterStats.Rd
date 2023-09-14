@@ -191,6 +191,7 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 \seealso{
 \code{\link[=addClusterStats]{addClusterStats()}}
 \code{\link[=addClusterMembership]{addClusterMembership()}}
+\code{\link[=labelClusters]{labelClusters()}}
 }
 \examples{
 set.seed(42)

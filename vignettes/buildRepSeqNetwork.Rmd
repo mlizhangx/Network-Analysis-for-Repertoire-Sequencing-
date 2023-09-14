@@ -146,7 +146,7 @@ Other properties are global properties, meaning that their value for a given nod
 
 Node-level network properties can be computed when calling `buildRepSeqNetwork()` by setting `node_stats = TRUE`, or as a separate step using `addNodeStats()`. 
 
-```{r, eval = FALSE}
+```{r}
 net <- buildNet(toy_data, "CloneSeq", node_stats = TRUE)
 ```
 
@@ -176,13 +176,16 @@ Customized plots can be produced when calling `buildRepSeqNetwork()` or created 
 Specify `print_plots = TRUE` to print the plots to the R plotting window.
 
 ```{r}
-buildNet(toy_data, "CloneSeq",
-         color_nodes_by = "SampleID",
-         color_scheme = "Viridis",
-         size_nodes_by = "CloneCount",
-         node_size_limits = c(0.1, 2.5),
-         plot_title = NULL,
-         print_plots = TRUE
+net <- buildNet(toy_data, "CloneSeq",
+                node_stats = TRUE,
+                color_nodes_by = c("SampleID", "transitivity", "coreness"),
+                color_scheme = c("default", "plasma-1", "mako-1"),
+                color_title = c("", "Transitivity", "Coreness"),
+                size_nodes_by = "degree",
+                node_size_limits = c(0.1, 1.5),
+                plot_title = NULL,
+                plot_subtitle = NULL,
+                print_plots = TRUE
 )
 ```
 
@@ -244,7 +247,7 @@ If `buildRepSeqNetwork()` is called with [`cluster_stats = TRUE`](#cluster_analy
 
 #### Visual Plots
 
-`plots` is a list containing any plots created as well as a matrix `graph_layout` storing the node layout used in the plots. Each plot is named according to the variable used to color the nodes. The default (uncolored) plot is named `uniform_color`. 
+`plots` is a list containing any plots created as well as a matrix `graph_layout` storing the node layout used in the plots. Each plot is named according to the variable used to color the nodes. 
 
 ```{r}
 names(net$plots)
@@ -309,7 +312,7 @@ For example, if `output_name = "NetworkABC"` and `output_type = "individual"`, t
 The `NAIR` package contains a number of functions supplementary to `buildRepSeqNetwork()` that can be used to perform additional downstream tasks. See [this vignette](supplementary.html).
 
 ```{r, eval = FALSE}
-library(magrittr)
+library(magrittr) # For pipe operator (%>%)
 toy_data %>%
   filterInputData("CloneSeq", drop_matches = "\\W") %>%
   buildNet("CloneSeq") %>%

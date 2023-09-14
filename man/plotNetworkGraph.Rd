@@ -130,11 +130,7 @@ set.seed(42)
 toy_data <- simulateToyData()
 
 # Generate network for data
-net <-
-  generateNetworkObjects(
-    toy_data,
-    "CloneSeq"
-  )
+net <- buildNet(toy_data, "CloneSeq")
 
 # Plot network graph
 net_plot <- plotNetworkGraph(
@@ -142,11 +138,10 @@ net_plot <- plotNetworkGraph(
   color_nodes_by =
     net$node_data$SampleID,
   color_title = NULL,
-  color_scheme = "viridis",
   size_nodes_by =
     net$node_data$CloneCount,
   size_title = "Clone Count",
-  node_size_limits = c(0.5, 3))
+  node_size_limits = c(0.5, 1.5))
 
 print(net_plot)
 

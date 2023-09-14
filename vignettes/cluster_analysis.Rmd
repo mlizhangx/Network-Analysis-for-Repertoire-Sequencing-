@@ -290,6 +290,6 @@ net <- labelClusters(net,
                      size = 7
 )
 
-net$plots$cluster_id_greedy
-net$plots$cluster_id_louvain
+net$plots$cluster_greedy
+net$plots$cluster_louvain
 ```

@@ -418,7 +418,6 @@ buildNet(
   public_clusters$node_data[public_clusters$node_data$ClusterIDPublic == 1, ],
   "CloneSeq", 
   color_nodes_by = "CloneSeq", 
-  color_scheme = "plasma", 
   size_nodes_by = 3, 
   output_name = "Cluster 1",
   print_plots = TRUE
@@ -432,7 +431,7 @@ buildNet(
   "CloneSeq", 
   color_nodes_by = "CloneSeq", 
   color_scheme = "plasma", 
-  size_nodes_by = 3, 
+  size_nodes_by = 4, 
   output_name = "Cluster 6",
   print_plots = TRUE
 )

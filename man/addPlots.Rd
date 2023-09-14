@@ -63,6 +63,14 @@ generateNetworkGraphPlots(
       See details.
 }
 
+\item{igraph}{
+  An \code{\link[igraph]{igraph}} object containing the network graph to be plotted.
+}
+
+\item{data}{
+  A data frame containing the node metadata for the network, with each row
+  corresponding to a node.
+}
 \item{print_plots}{
   A logical scalar; should plots be printed in the \code{R} plotting window?
 }
@@ -142,19 +150,6 @@ generateNetworkGraphPlots(
     Only applicable if nodes are sized according to a variable.
     The value \code{"auto"} uses the value of \code{size_nodes_by}.
 }
-  \item{verbose}{
-      Logical. If \code{TRUE}, generates messages about the tasks
-      performed and their progress, as well as relevant properties of intermediate
-      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
-  }
-\item{igraph}{
-  An \code{\link[igraph]{igraph}} object containing the network graph to be plotted.
-}
-
-\item{data}{
-  A data frame containing the node metadata for the network, with each row
-  corresponding to a node.
-}
 \item{layout}{
   A \code{matrix} specifying the coordinate layout of the network nodes,
   with one row for each node in the network and two columns.
@@ -165,6 +160,11 @@ generateNetworkGraphPlots(
   create plots conforming to the same layout as previously-generated plots. It
   can also be used to generate plots with custom layouts.
 }
+  \item{verbose}{
+      Logical. If \code{TRUE}, generates messages about the tasks
+      performed and their progress, as well as relevant properties of intermediate
+      outputs. Messages are sent to \code{\link[=stderr]{stderr()}}.
+  }
 }
 
 \details{
@@ -241,41 +241,28 @@ NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol
 }
 
 \seealso{
+  \code{\link[=labelNodes]{labelNodes()}}
+  \code{\link[=labelClusters]{labelClusters()}}
   \code{\link[=saveNetworkPlots]{saveNetworkPlots()}}
-  \code{\link[=generateNetworkObjects]{generateNetworkObjects()}}
 }
 
 \examples{
 set.seed(42)
 toy_data <- simulateToyData()
 
-net <-
-  generateNetworkObjects(
-    toy_data,
-    "CloneSeq"
-  )
+net <- buildNet(toy_data, "CloneSeq", node_stats = TRUE)
 
-# Create two plots:
-# one with nodes colored by sample,
-# the other by clone count
 net <- addPlots(
   net,
   color_nodes_by =
-    c("SampleID", "CloneCount"),
+    c("SampleID", "transitivity", "coreness"),
   color_scheme =
-    c("Set 2", "mako-1"),
+    c("Set 2", "mako-1", "plasma-1"),
   color_title =
-    c("", "Clone Count"),
-  size_nodes_by = 1.5,
-  print_plots = TRUE
-)
-
-# Create an additional uncolored plot, using
-# same graph layout as previous two plots
-net <- addPlots(
-  net,
-  size_nodes_by = "CloneCount",
-  node_size_limits = c(0.1, 2.5),
+    c("", "Transitvity", "Coreness"),
+  size_nodes_by = "degree",
+  node_size_limits = c(0.1, 1.5),
+  plot_subtitle = NULL,
   print_plots = TRUE
 )
 

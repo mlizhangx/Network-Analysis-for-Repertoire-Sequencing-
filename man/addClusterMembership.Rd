@@ -170,7 +170,7 @@ addClusterMembership(
 }
 \seealso{
 \code{\link[=addClusterStats]{addClusterStats()}}
-\code{\link[=addClusterLabels]{addClusterLabels()}}
+\code{\link[=labelClusters]{labelClusters()}}
 }
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).

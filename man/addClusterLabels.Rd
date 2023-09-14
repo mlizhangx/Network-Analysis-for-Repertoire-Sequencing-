@@ -119,27 +119,17 @@ set.seed(42)
 toy_data <- simulateToyData()
 
 network <- buildRepSeqNetwork(
-  toy_data,
-  seq_col = "CloneSeq",
+  toy_data, "CloneSeq",
   cluster_stats = TRUE,
   color_nodes_by = "cluster_id",
-  color_scheme = "Viridis",
+  color_scheme = "turbo",
+  color_legend = FALSE,
+  plot_title = NULL,
+  plot_subtitle = NULL,
   size_nodes_by = 1
 )
 
-network <- labelClusters(
-  network,
-  top_n_clusters = 7,
-  size = 7
-)
+network <- labelClusters(network)
 
 network$plots$cluster_id
-
-# Alternative method, working with the plot directly
-addClusterLabels(
-  plot = network$plots$cluster_id,
-  net = network,
-  top_n_clusters = 7,
-  size = 7
-)
 }

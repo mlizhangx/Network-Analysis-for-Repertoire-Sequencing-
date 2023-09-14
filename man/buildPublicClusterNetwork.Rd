@@ -260,6 +260,8 @@ public_clusters <-
       ),
     seq_col = "CloneSeq",
     count_col = "CloneCount",
+    plot_title = NULL,
+    plot_subtitle = NULL,
     print_plots = TRUE
   )
 

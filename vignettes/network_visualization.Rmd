@@ -221,10 +221,13 @@ After [performing cluster analysis](https://mlizhangx.github.io/Network-Analysis
 
 ```{r}
 net <- addPlots(net,
-                color_nodes_by = c("transitivity", "CloneCount"),
-                color_scheme = c("plasma-1", "default"),
-                size_nodes_by = "CloneCount", 
-                node_size_limits = c(0.1, 3),
+                color_nodes_by = c("coreness", "degree"),
+                color_scheme = c("plasma-1", "mako-1"),
+                color_title = c("Coreness", "Network Degree"),
+                size_title = "Network Degree",
+                size_nodes_by = "degree", 
+                node_size_limits = c(0.1, 1.5),
+                plot_subtitle = NULL,
                 print_plots = TRUE
 )
 ```
