@@ -74,7 +74,12 @@ T-cell or B-cell receptors (TCR or BCR).
 
 # Installation
 
-<!-- To install the latest release version of `NAIR`, use the following command: -->
+To install the latest release version of `NAIR`, use the following
+command:
+
+``` r
+install.packages("NAIR")
+```
 
 To install the latest development version of `NAIR` from source (which
 requires compilation), use the following command:
