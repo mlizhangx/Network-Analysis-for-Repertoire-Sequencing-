@@ -198,6 +198,7 @@ buildPublicClusterNetwork <- function(
     cluster_id_name = "ClusterIDPublic",
     color_nodes_by = color_nodes_by,
     color_scheme = color_scheme,
+    plot_title = plot_title,
     output_dir = output_dir,
     output_name = output_name,
     verbose = verbose,
@@ -309,7 +310,9 @@ buildPublicClusterNetworkByRepresentative <- function(
       net,
       print_plots,
       .makePlotTitle(plot_title, "pub_clust_rep"),
-      .makePlotSubtitle(plot_subtitle, "pub_clust_rep", seq_col),
+      .makePlotSubtitle(plot_subtitle, "pub_clust_rep", seq_col,
+                        dist_type, dist_cutoff
+      ),
       color_nodes_by = color_nodes_by,
       color_scheme = color_scheme, verbose = verbose,
       ...
