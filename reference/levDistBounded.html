@@ -12,7 +12,7 @@ upper bound."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -82,7 +82,7 @@ upper bound.</p>
 <dd><p>A character string to be compared to <code>a</code>.</p></dd>
 
   <dt>k</dt>
-<dd><p>The upper bound on the Levenshtein distance between <code>a</code> and <code>b</code>.</p></dd>
+<dd><p>An integer specifying the upper bound on the Levenshtein distance between <code>a</code> and <code>b</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -110,6 +110,12 @@ advantage of this fact to reduce the computational burden.</p>
 <p>An integer. If the Levenshtein distance exceeds the specified upper bound
 <code>k</code>, then a value of <code>-1</code> is returned. Otherwise, returns the
 Levenshtein distance between <code>a</code> and <code>b</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
+    <p>The computed value may be invalid when the length of either string is close to
+or greater than the value of <code>INT_MAX</code> in the compiler that was used at
+build time (typically 2147483647).</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
