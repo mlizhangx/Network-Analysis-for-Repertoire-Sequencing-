@@ -17,7 +17,7 @@
 #define ARMA_64BIT_WORD 1
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
-#include <strings.h>
+#include <string.h>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -25,14 +25,12 @@ int hamDistBounded(std::string a,
                    std::string b,
                    const int& k) {
 
-  // if strings are identical, return 0
-  if (a == b) { return(0); }
+  if (k < 0) { return(-1); } // trivial bound
+  if (a == b) { return(0); } // strings match
+  if (k == 0) { return(-1); } // zero bound requires matching strings
 
-  // get string lengths
   int n = a.length();
   int m = b.length();
-  // Rcout << "length of a: " << n << " characters\n";
-  // Rcout << "length of b: " << m << " characters\n";
 
   // Initialize distance value, bound below by difference in string length
   int dist = abs(n - m);
@@ -41,7 +39,8 @@ int hamDistBounded(std::string a,
   if (dist > k) { return(-1); }
 
   // Compute hamming distance; longer string truncated to length of shorter
-  for (int i = 0; i < std::min(n, m); ++i) {
+  int ind_bound = std::min(n, m);
+  for (int i = 0; i < ind_bound; ++i) {
     if (a[i] != b[i]) { dist++; }
     if (dist > k) { return(-1); } // stop if distance exceeds bound
   }

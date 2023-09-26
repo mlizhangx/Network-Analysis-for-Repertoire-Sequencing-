@@ -17,7 +17,7 @@
 #define ARMA_64BIT_WORD 1
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
-#include <strings.h>
+#include <string.h>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
@@ -25,109 +25,87 @@ int levDistBounded(std::string a,
                    std::string b,
                    const int& k) {
 
-  // if strings are identical, return 0
-  if (a == b) { return(0); }
+  if (k < 0) { return(-1); } // trivial bound
+  if (a == b) { return(0); } // strings match
+  if (k == 0) { return(-1); } // zero bound requires matching strings
 
-  // get string lengths
   int n = a.length();
   int m = b.length();
-  // Rcout << "length of a: " << n << " characters\n";
-  // Rcout << "length of b: " << m << " characters\n";
 
-  // lev dist is bounded below by difference in string length;
-  // if this difference exceeds the specified bound, we are done
+  // if difference in string length exceeds bound, we are done
   if (abs(n - m) > k) { return(-1); }
 
+  // If either string is empty, distance is the length of the other
+  if (a.empty()) { return(m); }
+  if (b.empty()) { return(n); }
+
   // Strip common prefix
-  while (a[0] == b[0]) {
-    // Rcout << "First character of both strings match: Removing character " << a[0] << "...\n";
-    a = a.substr(1, n - 1);
-    b = b.substr(1, m - 1);
-    n = n - 1;
-    m = m - 1;
-    // Rcout << "a is now " << a << "\n";
-    // Rcout << "b is now " << b << "\n";
+  while (!a.empty() && !b.empty() && a.front() == b.front()) {
+    a.erase(0, 1);
+    b.erase(0, 1);
   }
-
   // Strip common suffix
-  while (a[n - 1] == b[m - 1]) {
-    // Rcout << "Last character of both strings match: Removing character " << a[a.length() - 1] << "...\n";
-    a = a.substr(0, n - 1);
-    b = b.substr(0, m - 1);
-    n = n - 1;
-    m = m - 1;
-    // Rcout << "a is now " << a << "\n";
-    // Rcout << "b is now " << b << "\n";
+  while (!a.empty() && !b.empty() && a.back() == b.back()) {
+    a.pop_back();
+    b.pop_back();
   }
+  // Use shorter string for column dimension to save memory
+  if (b.length() > a.length()) { a.swap(b); } // ensures b is not longer than a
 
-  // Use shorter string for row dimension to save memory
-  if (m > n) {
-    // Rcout << "b is longer than a; swapping to save memory...\n";
-    std::string tmp = a;
-    a = b;
-    b = tmp;
-    int tmp2 = m;
-    m = n;
-    n = tmp2;
-  }
+  // Update string lengths
+  n = a.length();
+  m = b.length();
 
-  // if b is empty, the distance is the length of a
-  if (m == 0) { return(n); }
+  if (b.empty()) { return(n); }
 
   // Bounded computation of Levenshtein distance:
-  //   compute diagonal band of matrix entries
-  //   band extends k entries to either side of each main diagonal entry
-  //   treat entries outside of this band as infinite-valued
-
-  // Get value to use as effective "infinite distance"
-  int dist_inf = std::max(n, m) + 1;
-
-  // allocate memory for current row
+  //   Full substring comparison matrix has |a|+1 rows and |b|+1 columns
+  //   Compute only a diagonal band of width 2k+1, treating other values as Inf
+  //   Only the current row and two scalars must be kept in memory
+  int dist_inf = std::max(n, m) + 1; // effectively Inf
   Rcpp::IntegerVector current_row(m + 1);
-
-  // allocate memory for two entries of previous row and other values
   int prev_above;
   int prev_diag;
   int sub_cost;
-  int start_ind;
-  int stop_ind;
-  bool bound_exceeded;
+  int ind_start;
+  int ind_bound;
+  bool bound_exceeded; // (distance bound; k)
 
-  // populate current row with values of first row
+  // fill row 0
   current_row.fill(dist_inf);
-  const int fill_bound = 1 + std::min(m, k);
-  for (int i = 0; i < fill_bound; ++i) current_row[i] = i;
-
+  int fill_bound = std::min(m, k) + 1;
+  for (int i = 0; i < fill_bound; ++i) { current_row[i] = i; }
   // Rcout << "Row 0: \n" << current_row << "\n";
 
-  // compute values in diagonal band for each row beyond the first
+  // compute remaining rows
   for (int i = 1; i < (n + 1); ++i) {
-
     // Rcout << "======================================================\nProceeding to row " << i << ":\n";
 
     // indices of entries to be computed in diagonal band for current row
-    start_ind = std::max(1, i - k); // column 0 already known
-    stop_ind = std::min(m, i + k);
-    // Rcout << "column indices of entries to be computed in current row: " << start_ind << " through " << stop_ind << "\n\n------------------------------------------\n\n";
+    ind_start = std::max(1, i - k); // column 0 already known
+    ind_bound = std::min(m, i + k) + 1;
+    // Rcout << "column indices of entries to be computed in current row: " << ind_start << " through " << stop_ind << "\n\n------------------------------------------\n\n";
 
-    // Value above-left of leftmost entry of current band row (will be
-    // sent to prev_diag before being used)
-    prev_above = current_row[start_ind - 1];
+    // Record value above-left of first band entry in new row,
+    // i.e., first band entry of previous row.
+    // This value will be assigned to prev_diag, with prev_above being updated,
+    // before computing the first band entry in the new row.
+    prev_above = current_row[ind_start - 1];
+    // (values from previous row still stored in current_row)
 
-    // If leftmost entry of current band row is in the leftmost column, it is
-    // assigned the default value; if not, the entry to its left is treated as
-    // infinite-valued
+    // If first band entry of current row is in the first column, it is
+    // assigned the default value; if not, entry to its left treated as Inf
     if (i - k < 1) {
       current_row[0] = i;
     } else {
-      current_row[start_ind - 1] = dist_inf;
+      current_row[ind_start - 1] = dist_inf;
     }
 
     // reset bound_exceeded
     bound_exceeded = true;
 
-    // compute each entry of current band row
-    for (int j = start_ind; j < (stop_ind + 1); ++j) {
+    // compute each band entry in current row
+    for (int j = ind_start; j < ind_bound; ++j) {
       // Rcout << "computing entry in column " << j << ":\n";
 
       // does the current letter of a match current letter of b?
@@ -155,16 +133,16 @@ int levDistBounded(std::string a,
 
     }
 
-    // If all entries of current band row exceed bound, we are done
+    // If all band entries in current row exceed bound, we are done
     if (bound_exceeded) { return(-1); }
 
   }
 
-  // If distance exceeds bound, return -1
+  // If final computed distance exceeds bound, return -1
   if (current_row[m] > k) { return(-1); }
 
 
-  // return distance
+  // return final computed distance if it is within bounds
   return(current_row[m]);
 
 }

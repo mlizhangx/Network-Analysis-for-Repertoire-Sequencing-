@@ -280,6 +280,46 @@ test_that("hamDistBounded works as expected", {
 test_that("levDistBounded works as expected", {
 
   expect_equal(
+    levDistBounded("foo", "foo", -5),
+    -1
+  )
+  expect_equal(
+    levDistBounded("foo", "foo", 0),
+    0
+  )
+  expect_equal(
+    levDistBounded("foo", "bar", 0),
+    -1
+  )
+  expect_equal(
+    levDistBounded("foo", "foobar", 1),
+    -1
+  )
+  expect_equal(
+    levDistBounded("", "bar", 2),
+    -1
+  )
+  expect_equal(
+    levDistBounded("", "bar", 10),
+    3
+  )
+  expect_equal(
+    levDistBounded("foo", "", 2),
+    -1
+  )
+  expect_equal(
+    levDistBounded("foo", "", 10),
+    3
+  )
+  expect_equal(
+    levDistBounded("foobar", "foo__bar", 10),
+    2
+  )
+  expect_equal(
+    levDistBounded("foo__bar", "foobar", 10),
+    2
+  )
+  expect_equal(
     levDistBounded("foo", "bar", 3),
     3
   )
@@ -601,13 +641,13 @@ test_that("generateAdjacencyMatrix behaves as expected", {
   expect_s4_class(mat, "sparseMatrix")
   expect_equal(dim(mat), c(0, 0))
 
-  mat <- diag(4)
+  mat <- as(diag(4), "dgCMatrix")
   mat2 <- generateAdjacencyMatrix(
     c("foo", "foobar", "fubar", "bar"),
     drop_isolated_nodes = FALSE
   )
   expect_s4_class(mat2, "sparseMatrix")
-  expect_equal(mat, as.matrix(mat2))
+  expect_equal(mat, mat2)
 
   mat <- matrix(1, nrow = 3, ncol = 3)
   mat[1, 3] <- mat[3, 1] <- 0

@@ -111,7 +111,7 @@ generateAdjacencyMatrix(
 # No edge connections exist based on a Hamming distance of 1
 # (returns a 0x0 sparse matrix)
 generateAdjacencyMatrix(
-  c("foo", "foobar", "fubar", "bar"),
+  c("foo", "foobar", "fubar", "bar")
 )
 
 # Same as the above example, but keeping all nodes

@@ -71,7 +71,7 @@ General network analysis on AIRR-Seq data is performed using `buildRepSeqNetwork
     * Metadata for the clusters in the network
     * Plots of the network graph
 
-See [this vignette](buildRepSeqNetwork.html) for a tutorial.
+See [`vignette("buildRepSeqNetwork")`](buildRepSeqNetwork.html) for a tutorial.
 
 ### Searching for Associated Clusters
 
@@ -92,15 +92,15 @@ The `NAIR` package includes a set of functions that facilitate searching for pub
 
 ### Network Properties and Cluster Analysis
 
-[This vignette](node_properties.html) provides an introduction to computing node-level network properties with `NAIR`.
+[`vignette("node_properties")`](node_properties.html) provides an introduction to computing node-level network properties with `NAIR`.
 
-[This vignette](cluster_analysis.html) explains how to perform cluster analysis with `NAIR`.
+[`vignette("cluster_analysis")`](cluster_analysis.html) explains how to perform cluster analysis with `NAIR`.
 
 
 
 ### Supplementary Functions
 
-[This vignette](supplementary.html) provides an overview of `NAIR` utility functions that supplement the main function `buildNet()`. 
+[`vignette("supplementary")`](supplementary.html) provides an overview of `NAIR` utility functions that supplement the main function `buildNet()`. 
 
 
 

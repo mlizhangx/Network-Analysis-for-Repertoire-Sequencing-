@@ -1,3 +1,12 @@
+# Current Development Version
+
+## Minor Changes and Bug Fixes
+
+* Fixed a bug in `levDistBounded()` that causes undefined behavior when either string is empty after removing the common prefix and suffix. This bug does not appear to affect the returned value.
+* `levDistBounded.cpp` and `hamDistBounded.cpp` now use the `string.h` header instead of `strings.h`
+
+
+
 # NAIR 1.0.1
 
 ## Breaking Changes

@@ -153,7 +153,7 @@ file.remove(
       "MyRepSeqNetwork_ClusterMetadata.csv",
       "MyRepSeqNetwork_EdgeList.txt",
       "MyRepSeqNetwork_AdjacencyMatrix.mtx",
-      "MyRepSeqNetwork_Details.rds",
+      "MyRepSeqNetwork_Details.txt",
       "MyRepSeqNetwork_Plots.rda",
       "MyRepSeqNetwork_GraphLayout.txt",
       "MyRepSeqNetwork.pdf",

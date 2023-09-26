@@ -62,6 +62,11 @@ An integer. If the Hamming distance exceeds the specified upper bound \code{k},
 then a value of \code{-1} is returned. Otherwise, returns the Hamming distance
 between \code{a} and \code{b}.
 }
+\note{
+The computed value may be invalid when the length of either string is close to
+or greater than the value of \code{INT_MAX} in the compiler that was used at
+build time (typically 2147483647).
+}
 \references{
 Hai Yang, Jason Cham, Brian Neal, Zenghua Fan, Tao He and Li Zhang. (2023).
 NAIR: Network Analysis of Immune Repertoire. \emph{Frontiers in Immunology}, vol. 14.
