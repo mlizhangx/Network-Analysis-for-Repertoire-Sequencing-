@@ -1,4 +1,4 @@
-# Current Development Version
+# NAIR 1.0.2
 
 ## Minor Changes and Bug Fixes
 
