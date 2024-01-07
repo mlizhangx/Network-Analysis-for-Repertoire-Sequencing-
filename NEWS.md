@@ -1,3 +1,11 @@
+# NAIR, Current Development Version
+
+## Minor Changes and Bug Fixes
+
+* Removed a package test that checked for particular numbers of clusters resulting from specific applications of clustering algorithms from the `igraph` package. The test no longer passes with `igraph` version 1.6.0. Rather than update the test to pass, it has been removed to avoid future occurrences of this issue.
+
+
+
 # NAIR 1.0.2
 
 ## Minor Changes and Bug Fixes

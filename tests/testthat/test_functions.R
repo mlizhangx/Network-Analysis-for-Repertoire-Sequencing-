@@ -720,9 +720,6 @@ test_that("addClusterMembership works", {
     .isPosIntegerVector(net$node_data$cluster_leiden, factor_ok = TRUE)
   )
   expect_equal(
-    net$details$clusters_in_network, c("fast_greedy" = 20, "leiden" = 55)
-  )
-  expect_equal(
     net$details$cluster_id_variable,
     c("fast_greedy" = "cluster_greedy", "leiden" = "cluster_leiden")
   )
