@@ -1256,167 +1256,191 @@ test_that("extractLayout works", {
 
 test_that("plots legends behave correctly", {
 
+  get_guide <- function(plot, aes) {
+    if (inherits(plot$guides, "Guides")) {
+      plot$guides$guides[[aes]]
+    } else {
+      plot$guides[[aes]]
+    }
+  }
 
-  expect_equal(names(net$plots$cluster_greedy$guides),
+  get_guide_params <- function(plot, aes) {
+    if (inherits(plot$guides, "Guides")) {
+      plot$guides$guides[[aes]]$params
+    } else {
+      plot$guides[[aes]]
+    }
+  }
+
+  get_guide_names <- function(plot) {
+    if (inherits(plot$guides, "Guides")) {
+      names(plot$guides$guides)
+    } else {
+      names(plot$guides)
+    }
+  }
+
+
+  expect_equal(get_guide_names(net$plots$cluster_greedy),
                "colour"
   )
-  expect_equal(net$plots$cluster_greedy$guides$colour$title,
+  expect_equal(get_guide_params(net$plots$cluster_greedy, "colour")$title,
                "cluster_greedy"
   )
-  expect_equal(net$plots$cluster_greedy$guides$colour$name,
+  expect_equal(get_guide_params(net$plots$cluster_greedy, "colour")$name,
                "legend"
   )
 
-  expect_equal(names(net$plots$cluster_leiden$guides),
+  expect_equal(get_guide_names(net$plots$cluster_leiden),
                "colour"
   )
-  expect_equal(net$plots$cluster_leiden$guides$colour,
+  expect_equal(get_guide(net$plots$cluster_leiden, "colour"),
                "none"
   )
   expect_match(net$plots$cluster_leiden$labels$subtitle,
                "Nodes colored by cluster_leiden"
   )
 
-  expect_equal(names(net$plots$transitivity$guides),
+  expect_equal(get_guide_names(net$plots$transitivity),
                c("colour", "size")
   )
-  expect_equal(net$plots$transitivity$guides$colour$title,
+  expect_equal(get_guide_params(net$plots$transitivity, "colour")$title,
                "Transitivity"
   )
-  expect_equal(net$plots$transitivity$guides$colour$name,
-               "colorbar"
+  expect_true(get_guide_params(net$plots$transitivity, "colour")$name %in%
+              c("colorbar", "colourbar")
   )
-  expect_equal(net$plots$transitivity$guides$size$title,
+  expect_equal(get_guide_params(net$plots$transitivity, "size")$title,
                "Clone Count"
   )
-  expect_equal(net$plots$transitivity$guides$size$name,
+  expect_equal(get_guide_params(net$plots$transitivity, "size")$name,
                "legend"
   )
 
-  expect_equal(names(net$plots$CloneCount$guides),
+  expect_equal(get_guide_names(net$plots$CloneCount),
                c("colour", "size")
   )
-  expect_equal(net$plots$CloneCount$guides$colour$title,
+  expect_equal(get_guide_params(net$plots$CloneCount, "colour")$title,
                "Clone Count"
   )
-  expect_equal(net$plots$CloneCount$guides$colour$name,
+  expect_equal(get_guide_params(net$plots$CloneCount, "colour")$name,
                "legend"
   )
-  expect_equal(net$plots$CloneCount$guides$size$title,
+  expect_equal(get_guide_params(net$plots$CloneCount, "size")$title,
                "Clone Count"
   )
-  expect_equal(net$plots$CloneCount$guides$size$name,
+  expect_equal(get_guide_params(net$plots$CloneCount, "size")$name,
                "legend"
   )
 
-  expect_equal(names(net$plots$eigen_centrality$guides),
+  expect_equal(get_guide_names(net$plots$eigen_centrality),
                c("colour", "size")
   )
-  expect_equal(net$plots$eigen_centrality$guides$colour$title,
+  expect_equal(get_guide_params(net$plots$eigen_centrality, "colour")$title,
                "Eigen Centrality"
   )
-  expect_equal(net$plots$eigen_centrality$guides$colour$name,
-               "colorbar"
+  expect_true(get_guide_params(net$plots$eigen_centrality, "colour")$name %in%
+              c("colorbar", "colourbar")
   )
-  expect_equal(net$plots$eigen_centrality$guides$size$title,
+  expect_equal(get_guide_params(net$plots$eigen_centrality, "size")$title,
                "eigen_centrality"
   )
-  expect_equal(net$plots$eigen_centrality$guides$size$name,
+  expect_equal(get_guide_params(net$plots$eigen_centrality, "size")$name,
                "legend"
   )
 
-  expect_equal(names(net$plots$authority_score$guides),
+  expect_equal(get_guide_names(net$plots$authority_score),
                c("colour", "size")
   )
-  expect_equal(net$plots$authority_score$guides$colour$title,
+  expect_equal(get_guide_params(net$plots$authority_score, "colour")$title,
                "authority_score"
   )
-  expect_equal(net$plots$authority_score$guides$colour$name,
-               "colorbar"
+  expect_true(get_guide_params(net$plots$authority_score, "colour")$name %in%
+              c("colorbar", "colourbar")
   )
-  expect_equal(net$plots$authority_score$guides$size$title,
+  expect_equal(get_guide_params(net$plots$authority_score, "size")$title,
                "eigen_centrality"
   )
-  expect_equal(net$plots$authority_score$guides$size$name,
+  expect_equal(get_guide_params(net$plots$authority_score, "size")$name,
                "legend"
   )
 
-  expect_equal(names(net$plots$coreness$guides),
+  expect_equal(get_guide_names(net$plots$coreness),
                c("colour", "size")
   )
-  expect_equal(net$plots$coreness$guides$colour,
+  expect_equal(get_guide(net$plots$coreness, "colour"),
                "none"
   )
-  expect_equal(net$plots$coreness$guides$size$title,
+  expect_equal(get_guide_params(net$plots$coreness, "size")$title,
                "coreness"
   )
-  expect_equal(net$plots$coreness$guides$size$name,
+  expect_equal(get_guide_params(net$plots$coreness, "size")$name,
                "legend"
   )
 
-  expect_equal(names(net$plots$page_rank$guides),
+  expect_equal(get_guide_names(net$plots$page_rank),
                c("colour", "size")
   )
-  expect_null(net$plots$page_rank$guides$colour$title
+  expect_null(get_guide_params(net$plots$page_rank, "colour")$title
   )
-  expect_equal(net$plots$page_rank$guides$colour$name,
-               "colorbar"
+  expect_true(get_guide_params(net$plots$page_rank, "colour")$name %in%
+              c("colorbar", "colourbar")
   )
-  expect_equal(net$plots$page_rank$guides$size$title,
+  expect_equal(get_guide_params(net$plots$page_rank, "size")$title,
                "page_rank"
   )
-  expect_equal(net$plots$page_rank$guides$size$name,
+  expect_equal(get_guide_params(net$plots$page_rank, "size")$name,
                "legend"
   )
 
-  expect_equal(names(net2$plots$CloneCount$guides),
+  expect_equal(get_guide_names(net2$plots$CloneCount),
                "colour"
   )
-  expect_equal(net2$plots$CloneCount$guides$colour$title,
+  expect_equal(get_guide_params(net2$plots$CloneCount, "colour")$title,
                "CloneCount"
   )
-  expect_equal(net2$plots$CloneCount$guides$colour$name,
-               "colorbar"
+  expect_true(get_guide_params(net2$plots$CloneCount, "colour")$name %in%
+              c("colorbar", "colourbar")
   )
 
   expect_equal(names(net3$plots), c("cluster_id", "graph_layout"))
-  expect_equal(names(net3$plots$cluster_id$guides),
+  expect_equal(get_guide_names(net3$plots$cluster_id),
                "colour"
   )
-  expect_equal(net3$plots$cluster_id$guides$colour$title,
+  expect_equal(get_guide_params(net3$plots$cluster_id, "colour")$title,
                "cluster_id"
   )
-  expect_equal(net3$plots$cluster_id$guides$colour$name,
+  expect_equal(get_guide_params(net3$plots$cluster_id, "colour")$name,
                "legend"
   )
 
   expect_equal(names(net4$plots), c("degree", "graph_layout"))
-  expect_equal(names(net4$plots$degree$guides),
+  expect_equal(get_guide_names(net4$plots$degree),
                "colour"
   )
-  expect_equal(net4$plots$degree$guides$colour$title,
+  expect_equal(get_guide_params(net4$plots$degree, "colour")$title,
                "degree"
   )
-  expect_equal(net4$plots$degree$guides$colour$name,
-               "colorbar"
+  expect_true(get_guide_params(net4$plots$degree, "colour")$name %in%
+              c("colorbar", "colourbar")
   )
 
   expect_equal(names(net5$plots), c("uniform_color", "graph_layout"))
-  expect_null(names(net5$plots$uniform_color$guides))
+  expect_null(get_guide_names(net5$plots$uniform_color))
 
-  expect_equal(names(sc_net$plots$SampleID$guides),
+  expect_equal(get_guide_names(sc_net$plots$SampleID),
                c("colour", "size")
   )
-  expect_equal(sc_net$plots$SampleID$guides$colour$title,
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "colour")$title,
                "SampleID"
   )
-  expect_equal(sc_net$plots$SampleID$guides$colour$name,
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "colour")$name,
                "legend"
   )
-  expect_equal(sc_net$plots$SampleID$guides$size$title,
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "size")$title,
                "UMIs"
   )
-  expect_equal(sc_net$plots$SampleID$guides$size$name,
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "size")$name,
                "legend"
   )
 
