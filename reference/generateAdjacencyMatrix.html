@@ -81,6 +81,7 @@ network graph based on sequence similarity.</p>
 <span>  dist_type <span class="op">=</span> <span class="st">"hamming"</span>,</span>
 <span>  dist_cutoff <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  drop_isolated_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -90,6 +91,7 @@ network graph based on sequence similarity.</p>
 <span>  dist_type <span class="op">=</span> <span class="st">"hamming"</span>,</span>
 <span>  dist_cutoff <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  drop_isolated_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  max_dist <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -121,6 +123,9 @@ two sequences to be identical in order for their nodes to be joined by an edge.<
   <dt>drop_isolated_nodes</dt>
 <dd><p>Logical. When <code>TRUE</code>, removes each node that is not joined by an
 edge connection to any other node in the network graph.</p></dd>
+
+  <dt>method</dt>
+<dd><p>A character string specifying the algorithm to use. Choices are <code>"default"</code> and <code>"pattern"</code>. The alternative <code>"pattern"</code> algorithm is faster than the default algorithm in most settings, at the cost of being less memory-efficient (depending on the user's system, this can potentially cause memory-related crashes for extremely large networks, with the risk greater for larger values of <code>dist_cutoff</code>). The default algorithm has superior scaling with sequence length and edge density, and therefore may be faster when dealing with long nucleotide sequences or dense networks.</p></dd>
 
   <dt>verbose</dt>
 <dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks
@@ -252,7 +257,7 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Brian Neal, Hai Yang, Phi Long Le, Li Zhang.</p>
+  <p></p><p>Developed by Brian Neal, Hai Yang, Daniil Matveev, Phi Long Le, Li Zhang.</p>
 </div>
 
 <div class="pkgdown-footer-right">
