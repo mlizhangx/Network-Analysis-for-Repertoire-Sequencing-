@@ -15,7 +15,7 @@ inline std::unordered_set<std::string> getHamming1Patterns(
   if (patterns == nullptr)
     patterns = new std::unordered_set<std::string>();
   std::string pattern;
-  for (size_t i = 0; i < static_cast<int>(str.length()); i++) {
+  for (int i = 0; i < static_cast<int>(str.length()); i++) {
     pattern = str;
     pattern[i] = '_';
     patterns->insert(pattern);
@@ -33,8 +33,8 @@ inline std::unordered_set<std::string> getHamming2Patterns(
   if (patterns == nullptr)
     patterns = new std::unordered_set<std::string>();
   std::string pattern;
-  for (size_t i = 0; i < static_cast<int>(str.length()); i++) {
-    for (size_t j = i + 1; j < static_cast<int>(str.length()); j++) {
+  for (int i = 0; i < static_cast<int>(str.length()); i++) {
+    for (int j = i + 1; j < static_cast<int>(str.length()); j++) {
       pattern = str;
       pattern[i] = pattern[j] = '_';
       patterns->insert(pattern);
