@@ -6,6 +6,7 @@
 #define ARMA_64BIT_WORD 1
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
+// [[Rcpp::depends(RcppArmadillo)]]
 
 inline std::unordered_set<std::string> getHamming1Patterns(
     const std::string& str,
@@ -14,7 +15,7 @@ inline std::unordered_set<std::string> getHamming1Patterns(
   if (patterns == nullptr)
     patterns = new std::unordered_set<std::string>();
   std::string pattern;
-  for (size_t i = 0; i < str.length(); i++) {
+  for (size_t i = 0; i < static_cast<int>(str.length()); i++) {
     pattern = str;
     pattern[i] = '_';
     patterns->insert(pattern);
@@ -32,8 +33,8 @@ inline std::unordered_set<std::string> getHamming2Patterns(
   if (patterns == nullptr)
     patterns = new std::unordered_set<std::string>();
   std::string pattern;
-  for (size_t i = 0; i < str.length(); i++) {
-    for (size_t j = i + 1; j < str.length(); j++) {
+  for (size_t i = 0; i < static_cast<int>(str.length()); i++) {
+    for (size_t j = i + 1; j < static_cast<int>(str.length()); j++) {
       pattern = str;
       pattern[i] = pattern[j] = '_';
       patterns->insert(pattern);
@@ -58,7 +59,7 @@ inline std::unordered_set<std::string> getLevi1Patterns(
   if (patterns == nullptr)
     patterns = new std::unordered_set<std::string>();
   std::string pattern;
-  for (int i = 0; i < str.length(); i++) {
+  for (int i = 0; i < static_cast<int>(str.length()); i++) {
     pattern = str;
     pattern[i] = '_';
     patterns->insert(pattern);
@@ -80,14 +81,14 @@ inline std::unordered_set<std::string> getLevi2Patterns(
   if (patterns == nullptr)
     patterns = new std::unordered_set<std::string>();
   std::string pattern;
-  for (int i = 0; i < str.length(); i++) {
+  for (int i = 0; i < static_cast<int>(str.length()); i++) {
     for (int j = 0; j < i; j++) {
       pattern = str;
       pattern.insert(j, 1, '_');
       pattern[i + 1] = '_';
       patterns->insert(pattern); // k + 1
     }
-    for (int j = i; j < str.size(); j++) {
+    for (int j = i; j < static_cast<int>(str.size()); j++) {
       if (j > i) {
         pattern = str;
         pattern[i] = '_';
@@ -211,7 +212,7 @@ arma::sp_umat buildG(
     out = out.cols(col_ids);
     // write indices of network nodes to file
     col_ids += 1;  // offset C++'s 0-index starting convention
-    col_ids.save(tempfile, raw_ascii);
+    col_ids.save(tempfile, arma::raw_ascii);
   }
 
   return out;
