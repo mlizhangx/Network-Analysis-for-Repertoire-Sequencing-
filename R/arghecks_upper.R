@@ -228,6 +228,15 @@
   "hamming"
 }
 
+.matchMethod <- function(x) {
+  if (pmatch(x, "default", 0)) {
+    return("default")
+  } else if (pmatch(x, "pattern", 0)) {
+    return("pattern")
+  }
+  "default"
+}
+
 .checkDistType <- function(x, default = "hamming") {
   if (!.isDistType(x)) {
     warning(
@@ -237,6 +246,17 @@
     return(default)
   }
   .matchDistType(x)
+}
+
+.checkMethod <- function(x, default = "default") {
+  if (!.isString(x) || !pmatch(x, c("default", "pattern"), nomatch = 0)) {
+    warning(
+      "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
+      "Defaulting to ", deparse(substitute(default))
+    )
+    return(default)
+  }
+  .matchMethod(x)
 }
 
 .isStatsToInclude <- function(x) {
