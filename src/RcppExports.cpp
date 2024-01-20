@@ -65,12 +65,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// buildG
+arma::sp_umat buildG(const std::vector<std::string>& strings, int cutoff, char metric, bool drop_deg_zero, std::string tempfile);
+RcppExport SEXP _NAIR_buildG(SEXP stringsSEXP, SEXP cutoffSEXP, SEXP metricSEXP, SEXP drop_deg_zeroSEXP, SEXP tempfileSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type strings(stringsSEXP);
+    Rcpp::traits::input_parameter< int >::type cutoff(cutoffSEXP);
+    Rcpp::traits::input_parameter< char >::type metric(metricSEXP);
+    Rcpp::traits::input_parameter< bool >::type drop_deg_zero(drop_deg_zeroSEXP);
+    Rcpp::traits::input_parameter< std::string >::type tempfile(tempfileSEXP);
+    rcpp_result_gen = Rcpp::wrap(buildG(strings, cutoff, metric, drop_deg_zero, tempfile));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_NAIR_hamAdjacencyMatSparse", (DL_FUNC) &_NAIR_hamAdjacencyMatSparse, 4},
     {"_NAIR_hamDistBounded", (DL_FUNC) &_NAIR_hamDistBounded, 3},
     {"_NAIR_levAdjacencyMatSparse", (DL_FUNC) &_NAIR_levAdjacencyMatSparse, 4},
     {"_NAIR_levDistBounded", (DL_FUNC) &_NAIR_levDistBounded, 3},
+    {"_NAIR_buildG", (DL_FUNC) &_NAIR_buildG, 5},
     {NULL, NULL, 0}
 };
 

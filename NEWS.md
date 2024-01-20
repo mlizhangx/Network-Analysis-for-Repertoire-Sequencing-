@@ -1,3 +1,16 @@
+# NAIR Current Development Version
+
+## New Features
+
+* Added internal cpp function implementing computation of graph adjacency matrix using pattern-based algorithm developed by Daniil Matveev (implemented for metrics Hamming, Levenshtein and cutoffs 0, 1, 2). Currently exists only as a hidden function and must be called using `NAIR:::.patAdjacencyMatSparse()`. 
+
+## Minor Changes and Bug Fixes
+
+* Updated tests for compatibility with upcoming changes to guides in `ggplot2` (thanks to Teun van den Brand and the `ggplot2` development team for contributing the updates)
+
+
+
+
 # NAIR 1.0.3
 
 ## Minor Changes and Bug Fixes

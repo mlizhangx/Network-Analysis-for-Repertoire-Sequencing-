@@ -17,3 +17,7 @@ levDistBounded <- function(a, b, k) {
     .Call(`_NAIR_levDistBounded`, a, b, k)
 }
 
+.patAdjacencyMatSparse <- function(strings, cutoff, metric, drop_deg_zero, tempfile) {
+    .Call(`_NAIR_buildG`, strings, cutoff, metric, drop_deg_zero, tempfile)
+}
+

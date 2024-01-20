@@ -1,0 +1,218 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#define ARMA_64BIT_WORD 1
+#include <RcppArmadillo.h>
+#include <Rcpp.h>
+
+inline std::unordered_set<std::string> getHamming1Patterns(
+    const std::string& str,
+    std::unordered_set<std::string>* patterns = nullptr
+) {
+  if (patterns == nullptr)
+    patterns = new std::unordered_set<std::string>();
+  std::string pattern;
+  for (size_t i = 0; i < str.length(); i++) {
+    pattern = str;
+    pattern[i] = '_';
+    patterns->insert(pattern);
+  }
+  pattern = str;
+  pattern.push_back('_');
+  patterns->insert(pattern);
+  return *patterns;
+}
+
+inline std::unordered_set<std::string> getHamming2Patterns(
+    const std::string& str,
+    std::unordered_set<std::string>* patterns = nullptr
+) {
+  if (patterns == nullptr)
+    patterns = new std::unordered_set<std::string>();
+  std::string pattern;
+  for (size_t i = 0; i < str.length(); i++) {
+    for (size_t j = i + 1; j < str.length(); j++) {
+      pattern = str;
+      pattern[i] = pattern[j] = '_';
+      patterns->insert(pattern);
+      pattern = str;
+      pattern[i] = '_';
+      pattern.push_back('_');
+      patterns->insert(pattern);
+    }
+  }
+  pattern = str;
+  pattern.push_back('_');
+  pattern.push_back('_');
+  patterns->insert(pattern);
+  getHamming1Patterns(str, patterns);
+  return *patterns;
+}
+
+inline std::unordered_set<std::string> getLevi1Patterns(
+    const std::string& str,
+    std::unordered_set<std::string>* patterns = nullptr
+) {
+  if (patterns == nullptr)
+    patterns = new std::unordered_set<std::string>();
+  std::string pattern;
+  for (int i = 0; i < str.length(); i++) {
+    pattern = str;
+    pattern[i] = '_';
+    patterns->insert(pattern);
+
+    pattern = str;
+    pattern.insert(i, 1, '_');
+    patterns->insert(pattern);
+  }
+  pattern = str;
+  pattern.push_back('_');
+  patterns->insert(pattern);
+  return *patterns;
+}
+
+inline std::unordered_set<std::string> getLevi2Patterns(
+    const std::string& str,
+    std::unordered_set<std::string>* patterns = nullptr
+) {
+  if (patterns == nullptr)
+    patterns = new std::unordered_set<std::string>();
+  std::string pattern;
+  for (int i = 0; i < str.length(); i++) {
+    for (int j = 0; j < i; j++) {
+      pattern = str;
+      pattern.insert(j, 1, '_');
+      pattern[i + 1] = '_';
+      patterns->insert(pattern); // k + 1
+    }
+    for (int j = i; j < str.size(); j++) {
+      if (j > i) {
+        pattern = str;
+        pattern[i] = '_';
+        pattern[j] = '_';
+        patterns->insert(pattern); // k
+      }
+      pattern = str;
+      pattern[i] = '_';
+      pattern.insert(j + 1, 1, '_');
+      patterns->insert(pattern); // k + 1
+      pattern = str;
+      pattern.insert(i, 1, '_');
+      pattern.insert(j + 1, 1, '_');
+      patterns->insert(pattern); // k + 2
+    }
+    pattern = str;
+    pattern.insert(i, 1, '_');
+    pattern.push_back('_');
+    patterns->insert(pattern); // k + 2
+  }
+  pattern = str;
+  pattern.push_back('_');
+  pattern.push_back('_');
+  patterns->insert(pattern); // k + 2
+  getLevi1Patterns(str, patterns);
+  return *patterns;
+}
+
+// [[Rcpp::export(".patAdjacencyMatSparse")]]
+arma::sp_umat buildG(
+    const std::vector<std::string>& strings,
+    int cutoff,
+    char metric,
+    bool drop_deg_zero,
+    std::string tempfile
+) {
+
+  std::unordered_map<std::string, std::vector<std::string>> pat2str;
+  std::function<std::unordered_set<std::string>(const std::string&, std::unordered_set<std::string>*)> getPatternFunc;
+  std::unordered_map<std::string, std::vector<int>> str2idx;
+  arma::sp_umat out = arma::speye<arma::sp_umat>(strings.size(), strings.size());
+  std::unordered_set<std::string> uniqueStrings;
+  std::string str, str1, str2;
+  int idx1, idx2, size;
+
+  // remember the original indices of strings
+  for (int i = 0; i < static_cast<int>(strings.size()); i++)
+    str2idx[strings[i]].push_back(i);
+
+  if (cutoff == 0) {
+    // for distance = 0 it is enough to have str2idx, uniqueStrings
+    for (const auto &pair: str2idx) {
+      str = pair.first;
+      size = str2idx[str].size();
+      for (int i1 = 0; i1 < size; i1++) {
+        idx1 = str2idx[str][i1];
+        for (int i2 = i1; i2 < size; i2++) {
+          idx2 = str2idx[str][i2];
+          out(idx1, idx2) = out(idx2, idx1) = 1;
+        }
+      }
+    }
+  } else {
+    // choose the type of edit distance
+    if (cutoff == 1 && metric == 'H') {
+      getPatternFunc = getHamming1Patterns;
+    } else if (cutoff == 2 && metric == 'H') {
+      getPatternFunc = getHamming2Patterns;
+    } else if (cutoff == 1 && metric == 'L') {
+      getPatternFunc = getLevi1Patterns;
+    } else if (cutoff == 2 && metric == 'L') {
+      getPatternFunc = getLevi2Patterns;
+    } else {
+      throw std::invalid_argument("Choose metric param from {L, H} and cutoff from {0, 1, 2}");
+    }
+
+    // collect the set of unique strings
+    for (const std::string& str : strings)
+      uniqueStrings.insert(str);
+
+    // calculate the pattern->strings map (for the set of unique strings)
+    for (const std::string& str : uniqueStrings) {
+      Rcpp::checkUserInterrupt();
+      std::unordered_set<std::string> patterns = getPatternFunc(str, nullptr);
+      for (const std::string& pattern : patterns) {
+        pat2str[pattern].push_back(str);
+      }
+    }
+
+    // calculate the adjecent matrix for unique vector of strings
+    for (const auto &entry: pat2str) {
+      Rcpp::checkUserInterrupt();
+      if (static_cast<int>(entry.second.size()) > 1 || static_cast<int>(str2idx[entry.second[0]].size()) > 1) {
+        // iterate over the pairs of unique strings corresponding to a certain pattern
+        for (int i = 0; i < static_cast<int>(entry.second.size()); i++) {
+          str1 = entry.second[i];
+          for (int j = i; j < static_cast<int>(entry.second.size()); j++) {
+            str2 = entry.second[j];
+            // iterate over the pairs of all original strings
+            // corresponding to the pair of unique strings
+            for (const auto &idx1: str2idx[str1]) {
+              for (const auto &idx2: str2idx[str2]) {
+                out(idx1, idx2) = out(idx2, idx1) = 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (drop_deg_zero) {
+    // sum entries columnwise
+    arma::sp_umat col_sums_spmat = arma::sum(out);
+    arma::urowvec col_sums(col_sums_spmat);
+    // record indices of nodes with positive degree
+    arma::uvec col_ids = find(col_sums > 1);
+    // subset matrix to keep only network nodes
+    out = out.cols(col_ids);
+    out = out.t();
+    out = out.cols(col_ids);
+    // write indices of network nodes to file
+    col_ids += 1;  // offset C++'s 0-index starting convention
+    col_ids.save(tempfile, raw_ascii);
+  }
+
+  return out;
+}
