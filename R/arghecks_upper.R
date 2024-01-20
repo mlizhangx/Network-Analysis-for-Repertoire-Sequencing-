@@ -228,10 +228,15 @@
   "hamming"
 }
 
-.matchMethod <- function(x) {
-  if (pmatch(x, "default", 0)) {
-    return("default")
-  } else if (pmatch(x, "pattern", 0)) {
+.matchMethod <- function(x, cutoff) {
+  if (pmatch(x, "pattern", 0)) {
+    if (!any(cutoff == c(0, 1, 2))) {
+      warning(
+        "pattern algorithm only supports 'dist_cutoff' values of 0, 1 and 2.",
+        "Defaulting to ", dQuote("default")
+      )
+      return("default")
+    }
     return("pattern")
   }
   "default"
@@ -248,7 +253,7 @@
   .matchDistType(x)
 }
 
-.checkMethod <- function(x, default = "default") {
+.checkMethod <- function(x, cutoff, default = "default") {
   if (!.isString(x) || !pmatch(x, c("default", "pattern"), nomatch = 0)) {
     warning(
       "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
@@ -256,7 +261,7 @@
     )
     return(default)
   }
-  .matchMethod(x)
+  .matchMethod(x, cutoff)
 }
 
 .isStatsToInclude <- function(x) {

@@ -21,6 +21,7 @@ generateAdjacencyMatrix <- function(
     dist_type = "hamming",
     dist_cutoff = 1,
     drop_isolated_nodes = TRUE,
+    method = "default",
     verbose = FALSE
 ) {
   .MUST.isValidSeqVector(seqs)
@@ -28,23 +29,36 @@ generateAdjacencyMatrix <- function(
   dist_type <- .checkDistType(dist_type)
   dist_cutoff <- .check(dist_cutoff, .isNonneg, 1)
   drop_isolated_nodes <- .checkTF(drop_isolated_nodes, TRUE)
+  method <- .checkMethod(method, dist_cutoff)
   msg <- .makemsg(verbose)
   tmpfile <- tempfile(pattern = "col_ids", fileext = ".txt")
   if (dist_type == "levenshtein") {
     msg("Computing network edges based on a max ", dist_type, " distance of ",
         dist_cutoff, "...", newline = FALSE
     )
-    out <- .levAdjacencyMatSparse(seqs, dist_cutoff, drop_isolated_nodes,
-                                  tmpfile
-    )
+    if (method == "pattern") {
+      out <- .patAdjacencyMatSparse(seqs, dist_cutoff, "L", drop_isolated_nodes,
+                                    tmpfile
+      )
+    } else {
+      out <- .levAdjacencyMatSparse(seqs, dist_cutoff, drop_isolated_nodes,
+                                    tmpfile
+      )
+    }
   } else if (dist_type == "hamming") {
     dist_type <- "hamming"
     msg("Computing network edges based on a max ", dist_type, " distance of ",
         dist_cutoff, "...", newline = FALSE
     )
-    out <- .hamAdjacencyMatSparse(seqs, dist_cutoff, drop_isolated_nodes,
-                                  tmpfile
-    )
+    if (method == "pattern") {
+      out <- .patAdjacencyMatSparse(seqs, dist_cutoff, "H", drop_isolated_nodes,
+                                    tmpfile
+      )
+    } else {
+      out <- .hamAdjacencyMatSparse(seqs, dist_cutoff, drop_isolated_nodes,
+                                    tmpfile
+      )
+    }
   } else {
     stop("invalid option for ", sQuote("dist_type"))
   }
@@ -73,6 +87,7 @@ sparseAdjacencyMatFromSeqs <- function(
     dist_type = "hamming",
     dist_cutoff = 1,
     drop_isolated_nodes = TRUE,
+    method = "default",
     verbose = FALSE,
     max_dist = deprecated()
 ) {
@@ -83,7 +98,7 @@ sparseAdjacencyMatFromSeqs <- function(
   )
   if (lifecycle::is_present(max_dist)) { dist_cutoff <- max_dist }
   generateAdjacencyMatrix(
-    seqs, dist_type, dist_cutoff, drop_isolated_nodes, verbose
+    seqs, dist_type, dist_cutoff, drop_isolated_nodes, method, verbose
   )
 }
 # Network Building --------------------------------------------------------

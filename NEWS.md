@@ -2,7 +2,8 @@
 
 ## New Features
 
-* Added internal cpp function implementing computation of graph adjacency matrix using pattern-based algorithm developed by Daniil Matveev (implemented for metrics Hamming, Levenshtein and cutoffs 0, 1, 2). Currently exists only as a hidden function and must be called using `NAIR:::.patAdjacencyMatSparse()`. 
+* New internal cpp function that computes graph adjacency matrix using pattern-based algorithm, developed by Daniil Matveev (implemented for metrics Hamming, Levenshtein and cutoffs 0, 1, 2). 
+* `generateAdjacencyMatrix()` has new parameter `method` used to specify the algorithm. Accepts value `"pattern"` to call the new routine for the pattern-based algorithm.
 
 ## Minor Changes and Bug Fixes
 
