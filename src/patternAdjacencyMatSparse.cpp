@@ -64,6 +64,10 @@ inline std::unordered_set<std::string> getHamming2Patterns(
   pattern.push_back('_');
   pattern.push_back('_');
   patterns->insert(pattern);
+  pattern = str;
+  pattern[static_cast<int>(str.length()) - 1] = '_';
+  pattern.push_back('_');
+  patterns->insert(pattern);
   getHamming1Patterns(str, patterns);
   return *patterns;
 }

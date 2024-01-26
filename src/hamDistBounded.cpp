@@ -21,8 +21,8 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-int hamDistBounded(std::string a,
-                   std::string b,
+int hamDistBounded(const std::string &a,
+                   const std::string &b,
                    const int& k) {
 
   if (k < 0) { return(-1); } // trivial bound
@@ -41,8 +41,11 @@ int hamDistBounded(std::string a,
   // Compute hamming distance; longer string truncated to length of shorter
   int ind_bound = std::min(n, m);
   for (int i = 0; i < ind_bound; ++i) {
-    if (a[i] != b[i]) { dist++; }
-    if (dist > k) { return(-1); } // stop if distance exceeds bound
+    if (a[i] != b[i]) { 
+      dist++; 
+      if (dist > k) 
+        return(-1); // stop if distance exceeds bound
+    }
   }
 
   // return distance

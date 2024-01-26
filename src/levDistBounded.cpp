@@ -45,10 +45,10 @@ int levDistBounded(std::string a,
     b.erase(0, 1);
   }
   // Strip common suffix
-  while (!a.empty() && !b.empty() && a.back() == b.back()) {
-    a.pop_back();
-    b.pop_back();
-  }
+  int bound = std::min(n, m), start;
+  for (start = 0; start < bound && a[start] == b[start]; ++start);
+  a = a.substr(start);
+  b = b.substr(start);
   // Use shorter string for column dimension to save memory
   if (b.length() > a.length()) { a.swap(b); } // ensures b is not longer than a
 
