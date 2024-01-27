@@ -32,6 +32,9 @@ generateAdjacencyMatrix <- function(
   method <- .checkMethod(method, dist_cutoff)
   msg <- .makemsg(verbose)
   tmpfile <- tempfile(pattern = "col_ids", fileext = ".txt")
+  if (dist_cutoff == 0) {
+    method <- "pattern"
+  }
   if (dist_type == "levenshtein") {
     msg("Computing network edges based on a max ", dist_type, " distance of ",
         dist_cutoff, "...", newline = FALSE
