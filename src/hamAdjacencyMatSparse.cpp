@@ -24,28 +24,34 @@ using namespace arma;
 
 // [[Rcpp::export(".hamAdjacencyMatSparse")]]
 arma::sp_umat hamAdjacencyMatSparse(
-    std::vector<std::string> strings,
+    std::vector<std::string> &strings,
     const int& maxdist,
     bool drop_deg_zero,
     std::string tempfile
 ) {
-
   // allocate memory for data structures
+  std::unordered_map<std::string, std::vector<int>> str2idx; // keep map from unique strings to indices
   const int dim = strings.size();
   int dist;
   arma::sp_umat out = speye<sp_umat>(dim, dim);  // initialize as identity mat
 
-  // compute adjacencies for upper triangle
-  for (int j = 0; j < dim; ++j) {           // columns
-    for (int i = 0; i < j; ++i) {           // rows
-      dist = hamDistBounded(strings[i], strings[j], maxdist);
-      if (dist != -1) { out(i, j) = 1; }
-      Rcpp::checkUserInterrupt();
-    }
-  }
+  for (int i = 0; i < dim; i++)
+    str2idx[strings[i]].push_back(i);
 
-  // reflect upper triangle to lower
-  out = arma::symmatu(out);
+  // compute adjacencies
+  for (auto it1 = str2idx.begin(); it1 != str2idx.end(); ++it1) {
+    for (auto it2 = str2idx.begin(); it2 != it1; ++it2) {
+      dist = hamDistBounded(it1->first, it2->first, maxdist);
+      if (dist != -1)
+        for (auto idx1 : it1->second)
+          for (auto idx2 : it2->second)
+            out(idx1, idx2) = out(idx2, idx1) = 1; 
+    }
+    for (auto idx1 : it1->second)
+      for (auto idx2 : it1->second)
+        out(idx1, idx2) = out(idx2, idx1) = 1; 
+    Rcpp::checkUserInterrupt();
+  }
 
   if (drop_deg_zero) {
 
