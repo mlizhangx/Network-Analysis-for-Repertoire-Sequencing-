@@ -227,7 +227,7 @@
     (is.matrix(x) || inherits(x, "sparseMatrix")) &&
     isTRUE(dim(x)[[1]] == dim(x)[[2]]) &&
     Matrix::isSymmetric(x, check.attributes = FALSE) &&
-    all(unique(as.vector(x)) %in% c(0, 1))
+    all(Matrix::Matrix(x, sparse = TRUE)@x %in% c(0, 1))
 }
 .MUST.isAdjacencyMatrix <- function(x, name = NULL) {
   if (is.null(name)) { name <- deparse(substitute(x)) }
