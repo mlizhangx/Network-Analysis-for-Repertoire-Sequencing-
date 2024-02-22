@@ -17,6 +17,7 @@
 #define ARMA_64BIT_WORD 1
 #include <RcppArmadillo.h>
 #include <strings.h>
+#include "dropDegreeZero.h"
 #include "hamDistBounded.h"
 using namespace Rcpp;
 using namespace arma;
@@ -53,26 +54,7 @@ arma::sp_umat hamAdjacencyMatSparse(
     Rcpp::checkUserInterrupt();
   }
 
-  if (drop_deg_zero) {
-
-    // sum entries columnwise
-    arma::sp_umat col_sums_spmat = arma::sum(out);
-    arma::urowvec col_sums(col_sums_spmat);
-
-    // record indices of nodes with positive degree
-    arma::uvec col_ids = find(col_sums > 1);
-
-    // subset matrix to keep only network nodes
-    out = out.cols(col_ids);
-    out = out.t();
-    out = out.cols(col_ids);
-
-    // write indices of network nodes to file
-    col_ids += 1;  // offset C++'s 0-index starting convention
-    col_ids.save(tempfile, raw_ascii);
-
-  }
-
+  dropDegreeZero(drop_deg_zero, out, tempfile);
   return(out);
 
 }

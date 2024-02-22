@@ -239,7 +239,7 @@
     }
     return("pattern")
   } else if (pmatch(x, "sort", 0)) {
-    if (!any(cutoff == c(0, 1))) {
+    if (!any(cutoff == c(1))) {
       warning(
         "sort algorithm only supports 'dist_cutoff' value 1.",
         "Defaulting to ", dQuote("default")
