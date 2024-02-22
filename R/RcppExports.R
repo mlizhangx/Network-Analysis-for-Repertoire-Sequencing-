@@ -21,3 +21,7 @@ levDistBounded <- function(a, b, k) {
     .Call(`_NAIR_buildG`, strings, cutoff, metric, drop_deg_zero, tempfile)
 }
 
+.sortAdjacencyMatSparse <- function(strings, cutoff, metric, drop_deg_zero, tempfile) {
+    .Call(`_NAIR_sortAdjacencyMatSparse`, strings, cutoff, metric, drop_deg_zero, tempfile)
+}
+

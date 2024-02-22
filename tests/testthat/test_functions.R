@@ -411,274 +411,305 @@ test_that("levDistBounded works as expected", {
 
 
 test_that("generateAdjacencyMatrix behaves as expected", {
-
-  cloneSeq <- c("A", "AA", "AB", "BB")
-  cloneSeqB <- c("A", "AA", "ACCC", "AB", "BB")
-  expect_warning(
-    adjMat_k0 <- generateAdjacencyMatrix(
-      cloneSeq, dist_cutoff = 0, dist_type = "levenshtein"
+  methodCutoffLim <- function(method, cutoff) {
+    if ((method == "sort" & cutoff != 1) ||
+        (method == "pattern" & cutoff > 2)) {
+      return("default")
+    } else {
+      return(method)
+    }
+  }
+  for (method in c("default", "pattern", "sort")) {
+    cloneSeq <- c("A", "AA", "AB", "BB")
+    cloneSeqB <- c("A", "AA", "ACCC", "AB", "BB")
+    expect_warning(
+      adjMat_k0 <- generateAdjacencyMatrix(
+        cloneSeq, dist_cutoff = 0, dist_type = "levenshtein",
+        method = methodCutoffLim(method, 0)
+      )
     )
-  )
-  adjMat_k1 <- generateAdjacencyMatrix(
-    cloneSeq, dist_cutoff = 1, dist_type = "levenshtein"
-  )
-  adjMat_k2 <- generateAdjacencyMatrix(
-    cloneSeq, dist_cutoff = 2, dist_type = "levenshtein"
-  )
-
-  expect_warning(
-    adjMatB_k0 <- generateAdjacencyMatrix(
-      cloneSeqB, dist_cutoff = 0, dist_type = "levenshtein"
+    adjMat_k1 <- generateAdjacencyMatrix(
+      cloneSeq, dist_cutoff = 1, dist_type = "levenshtein",
+      method = methodCutoffLim(method, 1)
     )
-  )
-  adjMatB_k1 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 1, dist_type = "levenshtein"
-  )
-  adjMatB_k2 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 2, dist_type = "levenshtein"
-  )
-  adjMatB_k3 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 3, dist_type = "levenshtein"
-  )
-  adjMatB_k4 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 4, dist_type = "levenshtein"
-  )
-  adjMat_k1_truth <- adjMat_k2_truth <- adjMatB_k2_truth <-
-    matrix(1, nrow = 4, ncol = 4)
-  adjMat_k1_truth[c(1, 2), 4] <- 0
-  adjMat_k1_truth[4, c(1, 2)] <- 0
-  adjMatB_k2_truth <- adjMat_k2_truth
-  adjMatB_k1_truth <- adjMat_k1_truth
-  adjMatB_k3_truth <- adjMatB_k4_truth <- matrix(1, nrow = 5, ncol = 5)
-  adjMatB_k3_truth[3, 5] <- 0
-  adjMatB_k3_truth[5, 3] <- 0
-
-  expect_equal(0, length(adjMat_k0))
-  expect_equal(
-    as.matrix(adjMat_k1), adjMat_k1_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:4, as.numeric(dimnames(adjMat_k1)[[1]])
-  )
-  expect_equal(
-    cloneSeq[1:4], dimnames(adjMat_k1)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMat_k2), adjMat_k2_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:4, as.numeric(dimnames(adjMat_k2)[[1]])
-  )
-  expect_equal(
-    cloneSeq[1:4], dimnames(adjMat_k2)[[2]]
-  )
-
-  expect_equal(0, length(adjMatB_k0))
-  expect_equal(
-    as.matrix(adjMatB_k1), adjMatB_k1_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k1)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k1)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMatB_k2), adjMatB_k2_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k2)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k2)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMatB_k3), adjMatB_k3_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:5, as.numeric(dimnames(adjMatB_k3)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[1:5], dimnames(adjMatB_k3)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMatB_k4), adjMatB_k4_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:5, as.numeric(dimnames(adjMatB_k4)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[1:5], dimnames(adjMatB_k4)[[2]]
-  )
-
-  expect_warning(
-    adjMat_k0 <- generateAdjacencyMatrix(
-      cloneSeq, dist_cutoff = 0, dist_type = "hamming"
+    adjMat_k2 <- generateAdjacencyMatrix(
+      cloneSeq, dist_cutoff = 2, dist_type = "levenshtein",
+      method = methodCutoffLim(method, 2)
     )
-  )
-  adjMat_k1 <- generateAdjacencyMatrix(
-    cloneSeq, dist_cutoff = 1, dist_type = "hamming"
-  )
-  adjMat_k2 <- generateAdjacencyMatrix(
-    cloneSeq, dist_cutoff = 2, dist_type = "hamming"
-  )
-
-  expect_warning(
-    adjMatB_k0 <- generateAdjacencyMatrix(
-      cloneSeqB, dist_cutoff = 0, dist_type = "hamming"
+    
+    expect_warning(
+      adjMatB_k0 <- generateAdjacencyMatrix(
+        cloneSeqB, dist_cutoff = 0, dist_type = "levenshtein",
+        method = methodCutoffLim(method, 0)
+      )
     )
-  )
-  adjMatB_k1 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 1, dist_type = "hamming"
-  )
-  adjMatB_k2 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 2, dist_type = "hamming"
-  )
-  adjMatB_k3 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 3, dist_type = "hamming"
-  )
-  adjMatB_k4 <- generateAdjacencyMatrix(
-    cloneSeqB, dist_cutoff = 4, dist_type = "hamming"
-  )
-
-
-  expect_equal(0, length(adjMat_k0))
-  expect_equal(
-    as.matrix(adjMat_k1), adjMat_k1_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:4, as.numeric(dimnames(adjMat_k1)[[1]])
-  )
-  expect_equal(
-    cloneSeq[1:4], dimnames(adjMat_k1)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMat_k2), adjMat_k2_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:4, as.numeric(dimnames(adjMat_k2)[[1]])
-  )
-  expect_equal(
-    cloneSeq[1:4], dimnames(adjMat_k2)[[2]]
-  )
-
-  expect_equal(0, length(adjMatB_k0))
-  expect_equal(
-    as.matrix(adjMatB_k1), adjMatB_k1_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k1)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k1)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMatB_k2), adjMatB_k2_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k2)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k2)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMatB_k3), adjMatB_k3_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:5, as.numeric(dimnames(adjMatB_k3)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[1:5], dimnames(adjMatB_k3)[[2]]
-  )
-  expect_equal(
-    as.matrix(adjMatB_k4), adjMatB_k4_truth,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    1:5, as.numeric(dimnames(adjMatB_k4)[[1]])
-  )
-  expect_equal(
-    cloneSeqB[1:5], dimnames(adjMatB_k4)[[2]]
-  )
-
-  mat <- matrix(1, nrow = 4, ncol = 4)
-  mat[c(1, 2), 4] <- 0
-  mat[4, c(1, 2)] <- 0
-  rownames(mat) <- c(1, 2, 3, 5)
-  colnames(mat) <- c("fee", "fie", "foe", "foo")
-  mat <- Matrix::Matrix(mat, sparse = TRUE)
-  mat2 <- generateAdjacencyMatrix(
-    c("fee", "fie", "foe", "fum", "foo")
-  )
-  expect_s4_class(mat2, "sparseMatrix")
-  expect_equal(mat, mat2)
-  expect_equal(colnames(mat), colnames(mat2))
-  expect_equal(rownames(mat), rownames(mat2))
-
-  expect_warning(
-    mat <- generateAdjacencyMatrix(
-      c("foo", "foobar", "fubar", "bar")
+    adjMatB_k1 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 1, dist_type = "levenshtein",
+      method = methodCutoffLim(method, 1)
     )
-  )
-  expect_s4_class(mat, "sparseMatrix")
-  expect_equal(dim(mat), c(0, 0))
-  expect_warning(
-    mat <- generateAdjacencyMatrix(
-      c("foo", "foobar", "fubar", "bar"), dist_cutoff = 2
+    adjMatB_k2 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 2, dist_type = "levenshtein",
+      method = methodCutoffLim(method, 2)
     )
-  )
-  expect_s4_class(mat, "sparseMatrix")
-  expect_equal(dim(mat), c(0, 0))
+    adjMatB_k3 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 3, dist_type = "levenshtein",
+      method = methodCutoffLim(method, 3)
+    )
+    adjMatB_k4 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 4, dist_type = "levenshtein",
+      method = methodCutoffLim(method, 4)
+    )
+    adjMat_k1_truth <- adjMat_k2_truth <- adjMatB_k2_truth <-
+      matrix(1, nrow = 4, ncol = 4)
+    adjMat_k1_truth[c(1, 2), 4] <- 0
+    adjMat_k1_truth[4, c(1, 2)] <- 0
+    adjMatB_k2_truth <- adjMat_k2_truth
+    adjMatB_k1_truth <- adjMat_k1_truth
+    adjMatB_k3_truth <- adjMatB_k4_truth <- matrix(1, nrow = 5, ncol = 5)
+    adjMatB_k3_truth[3, 5] <- 0
+    adjMatB_k3_truth[5, 3] <- 0
 
-  mat <- as(diag(4), "dgCMatrix")
-  mat2 <- generateAdjacencyMatrix(
-    c("foo", "foobar", "fubar", "bar"),
-    drop_isolated_nodes = FALSE
-  )
-  expect_s4_class(mat2, "sparseMatrix")
-  expect_equal(mat, mat2)
+    expect_equal(0, length(adjMat_k0))
+    expect_equal(
+      as.matrix(adjMat_k1), adjMat_k1_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:4, as.numeric(dimnames(adjMat_k1)[[1]])
+    )
+    expect_equal(
+      cloneSeq[1:4], dimnames(adjMat_k1)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMat_k2), adjMat_k2_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:4, as.numeric(dimnames(adjMat_k2)[[1]])
+    )
+    expect_equal(
+      cloneSeq[1:4], dimnames(adjMat_k2)[[2]]
+    )
 
-  mat <- matrix(1, nrow = 3, ncol = 3)
-  mat[1, 3] <- mat[3, 1] <- 0
-  rownames(mat) <- c(2, 3, 4)
-  colnames(mat) <- c("foobar", "fubar", "bar")
-  mat <- Matrix::Matrix(mat, sparse = TRUE)
-  mat2 <- generateAdjacencyMatrix(
-    c("foo", "foobar", "fubar", "bar"),
-    dist_type = "levenshtein",
-    dist_cutoff = 2
-  )
-  expect_s4_class(mat2, "sparseMatrix")
-  expect_equal(mat, mat2)
-  expect_equal(colnames(mat), colnames(mat2))
-  expect_equal(rownames(mat), rownames(mat2))
+    expect_equal(0, length(adjMatB_k0))
+    expect_equal(
+      as.matrix(adjMatB_k1), adjMatB_k1_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k1)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k1)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMatB_k2), adjMatB_k2_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k2)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k2)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMatB_k3), adjMatB_k3_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:5, as.numeric(dimnames(adjMatB_k3)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[1:5], dimnames(adjMatB_k3)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMatB_k4), adjMatB_k4_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:5, as.numeric(dimnames(adjMatB_k4)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[1:5], dimnames(adjMatB_k4)[[2]]
+    )
 
-  mat <- matrix(1, nrow = 3, ncol = 3)
-  mat[2, 3] <- mat[3, 2] <- 0
-  rownames(mat) <- c(1, 2, 4)
-  colnames(mat) <- c("foo", "foobar", "bar")
-  mat <- Matrix::Matrix(mat, sparse = TRUE)
-  mat2 <- generateAdjacencyMatrix(
-    c("foo", "foobar", "fubar", "bar"),
-    dist_cutoff = 3
-  )
-  expect_s4_class(mat2, "sparseMatrix")
-  expect_equal(mat, mat2)
-  expect_equal(colnames(mat), colnames(mat2))
-  expect_equal(rownames(mat), rownames(mat2))
+    expect_warning(
+      adjMat_k0 <- generateAdjacencyMatrix(
+        cloneSeq, dist_cutoff = 0, dist_type = "hamming",
+        method = methodCutoffLim(method, 0)
+      )
+    )
+    adjMat_k1 <- generateAdjacencyMatrix(
+      cloneSeq, dist_cutoff = 1, dist_type = "hamming",
+      method = methodCutoffLim(method, 1)
+    )
+    adjMat_k2 <- generateAdjacencyMatrix(
+      cloneSeq, dist_cutoff = 2, dist_type = "hamming",
+      method = methodCutoffLim(method, 2)
+    )
 
-  expect_false(file.exists(file.path(tempdir(), "col_ids.txt")))
+    expect_warning(
+      adjMatB_k0 <- generateAdjacencyMatrix(
+        cloneSeqB, dist_cutoff = 0, dist_type = "hamming",
+        method = methodCutoffLim(method, 0)
+      )
+    )
+    adjMatB_k1 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 1, dist_type = "hamming",
+      method = methodCutoffLim(method, 1)
+    )
+    adjMatB_k2 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 2, dist_type = "hamming",
+      method = methodCutoffLim(method, 2)
+    )
+    adjMatB_k3 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 3, dist_type = "hamming",
+      method = methodCutoffLim(method, 3)
+    )
+    adjMatB_k4 <- generateAdjacencyMatrix(
+      cloneSeqB, dist_cutoff = 4, dist_type = "hamming",
+      method = methodCutoffLim(method, 4)
+    )
+
+
+    expect_equal(0, length(adjMat_k0))
+    expect_equal(
+      as.matrix(adjMat_k1), adjMat_k1_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:4, as.numeric(dimnames(adjMat_k1)[[1]])
+    )
+    expect_equal(
+      cloneSeq[1:4], dimnames(adjMat_k1)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMat_k2), adjMat_k2_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:4, as.numeric(dimnames(adjMat_k2)[[1]])
+    )
+    expect_equal(
+      cloneSeq[1:4], dimnames(adjMat_k2)[[2]]
+    )
+
+    expect_equal(0, length(adjMatB_k0))
+    expect_equal(
+      as.matrix(adjMatB_k1), adjMatB_k1_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k1)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k1)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMatB_k2), adjMatB_k2_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      c(1, 2, 4, 5), as.numeric(dimnames(adjMatB_k2)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[c(1, 2, 4, 5)], dimnames(adjMatB_k2)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMatB_k3), adjMatB_k3_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:5, as.numeric(dimnames(adjMatB_k3)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[1:5], dimnames(adjMatB_k3)[[2]]
+    )
+    expect_equal(
+      as.matrix(adjMatB_k4), adjMatB_k4_truth,
+      ignore_attr = TRUE
+    )
+    expect_equal(
+      1:5, as.numeric(dimnames(adjMatB_k4)[[1]])
+    )
+    expect_equal(
+      cloneSeqB[1:5], dimnames(adjMatB_k4)[[2]]
+    )
+
+    mat <- matrix(1, nrow = 4, ncol = 4)
+    mat[c(1, 2), 4] <- 0
+    mat[4, c(1, 2)] <- 0
+    rownames(mat) <- c(1, 2, 3, 5)
+    colnames(mat) <- c("fee", "fie", "foe", "foo")
+    mat <- Matrix::Matrix(mat, sparse = TRUE)
+    mat2 <- generateAdjacencyMatrix(
+      c("fee", "fie", "foe", "fum", "foo"),
+      method = methodCutoffLim(method, 1)
+    )
+    expect_s4_class(mat2, "sparseMatrix")
+    expect_equal(mat, mat2)
+    expect_equal(colnames(mat), colnames(mat2))
+    expect_equal(rownames(mat), rownames(mat2))
+
+    expect_warning(
+      mat <- generateAdjacencyMatrix(
+        c("foo", "foobar", "fubar", "bar"),
+        method = methodCutoffLim(method, 1)
+      )
+    )
+    expect_s4_class(mat, "sparseMatrix")
+    expect_equal(dim(mat), c(0, 0))
+    expect_warning(
+      mat <- generateAdjacencyMatrix(
+        c("foo", "foobar", "fubar", "bar"), dist_cutoff = 2,
+        method = methodCutoffLim(method, 2)
+      )
+    )
+    expect_s4_class(mat, "sparseMatrix")
+    expect_equal(dim(mat), c(0, 0))
+
+    mat <- as(diag(4), "dgCMatrix")
+    mat2 <- generateAdjacencyMatrix(
+      c("foo", "foobar", "fubar", "bar"),
+      drop_isolated_nodes = FALSE,
+      method = methodCutoffLim(method, 1)
+    )
+    expect_s4_class(mat2, "sparseMatrix")
+    expect_equal(mat, mat2)
+
+    mat <- matrix(1, nrow = 3, ncol = 3)
+    mat[1, 3] <- mat[3, 1] <- 0
+    rownames(mat) <- c(2, 3, 4)
+    colnames(mat) <- c("foobar", "fubar", "bar")
+    mat <- Matrix::Matrix(mat, sparse = TRUE)
+    mat2 <- generateAdjacencyMatrix(
+      c("foo", "foobar", "fubar", "bar"),
+      dist_type = "levenshtein",
+      dist_cutoff = 2,
+      method = methodCutoffLim(method, 2)
+    )
+    expect_s4_class(mat2, "sparseMatrix")
+    expect_equal(mat, mat2)
+    expect_equal(colnames(mat), colnames(mat2))
+    expect_equal(rownames(mat), rownames(mat2))
+
+    mat <- matrix(1, nrow = 3, ncol = 3)
+    mat[2, 3] <- mat[3, 2] <- 0
+    rownames(mat) <- c(1, 2, 4)
+    colnames(mat) <- c("foo", "foobar", "bar")
+    mat <- Matrix::Matrix(mat, sparse = TRUE)
+    mat2 <- generateAdjacencyMatrix(
+      c("foo", "foobar", "fubar", "bar"),
+      dist_cutoff = 3,
+      method = methodCutoffLim(method, 3)
+    )
+    expect_s4_class(mat2, "sparseMatrix")
+    expect_equal(mat, mat2)
+    expect_equal(colnames(mat), colnames(mat2))
+    expect_equal(rownames(mat), rownames(mat2))
+
+    expect_false(file.exists(file.path(tempdir(), "col_ids.txt")))
+  }
 })
 
 

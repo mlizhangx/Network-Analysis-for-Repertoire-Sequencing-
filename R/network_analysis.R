@@ -43,7 +43,11 @@ generateAdjacencyMatrix <- function(
       out <- .patAdjacencyMatSparse(seqs, dist_cutoff, "L", drop_isolated_nodes,
                                     tmpfile
       )
-    } else {
+    } else if (method == "sort") {
+      out <- .sortAdjacencyMatSparse(seqs, dist_cutoff, "L",
+                                     drop_isolated_nodes, tmpfile
+      )
+    }  else {
       out <- .levAdjacencyMatSparse(seqs, dist_cutoff, drop_isolated_nodes,
                                     tmpfile
       )
@@ -56,6 +60,10 @@ generateAdjacencyMatrix <- function(
     if (method == "pattern") {
       out <- .patAdjacencyMatSparse(seqs, dist_cutoff, "H", drop_isolated_nodes,
                                     tmpfile
+      )
+    } else if (method == "sort") {
+      out <- .sortAdjacencyMatSparse(seqs, dist_cutoff, "H",
+                                     drop_isolated_nodes, tmpfile
       )
     } else {
       out <- .hamAdjacencyMatSparse(seqs, dist_cutoff, drop_isolated_nodes,

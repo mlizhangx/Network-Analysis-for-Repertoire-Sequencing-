@@ -238,6 +238,15 @@
       return("default")
     }
     return("pattern")
+  } else if (pmatch(x, "sort", 0)) {
+    if (!any(cutoff == c(0, 1))) {
+      warning(
+        "sort algorithm only supports 'dist_cutoff' value 1.",
+        "Defaulting to ", dQuote("default")
+      )
+      return("default")
+    }
+    return("sort")
   }
   "default"
 }
@@ -254,7 +263,7 @@
 }
 
 .checkMethod <- function(x, cutoff, default = "default") {
-  if (!.isString(x) || !pmatch(x, c("default", "pattern"), nomatch = 0)) {
+  if (!.isString(x) || !pmatch(x, c("default", "pattern", "sort"), nomatch = 0)) {
     warning(
       "value for ", sQuote(deparse(substitute(x))), " is invalid. ",
       "Defaulting to ", deparse(substitute(default))
