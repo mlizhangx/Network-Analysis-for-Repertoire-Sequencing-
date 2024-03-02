@@ -443,6 +443,9 @@ saveNetworkPlots <- function(
         plots_outfile
     )
   }
+  list_outfile <- file.path(output_dir, paste0(output_filename, ".rda"))
+  save(net, file = list_outfile)
+  msg("List 'net' saved to file:\n  ", list_outfile)
 
 }
 
