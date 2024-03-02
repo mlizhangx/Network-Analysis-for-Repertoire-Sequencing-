@@ -16,7 +16,7 @@ generateAdjacencyMatrix()."><!-- mathjax --><script src="https://cdnjs.cloudflar
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9001</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9002</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,7 +125,7 @@ two sequences to be identical in order for their nodes to be joined by an edge.<
 edge connection to any other node in the network graph.</p></dd>
 
   <dt>method</dt>
-<dd><p>A character string specifying the algorithm to use. Choices are <code>"default"</code> and <code>"pattern"</code>. The alternative <code>"pattern"</code> algorithm is faster than the default algorithm in most settings, at the cost of being less memory-efficient (depending on the user's system, this can potentially cause memory-related crashes for extremely large networks, with the risk greater for larger values of <code>dist_cutoff</code>). The default algorithm has superior scaling with sequence length and edge density, and therefore may be faster when dealing with long nucleotide sequences or dense networks.</p></dd>
+<dd><p>A character string specifying the algorithm to use. Choices are <code>"default"</code> and  <code>"pattern"</code>. <code>"pattern"</code> is only valid when <code>dist_cutoff &lt; 3</code>, but tends to be faster than <code>"default"</code> for sparsely connected networks, at the cost of greater memory usage (can cause crashes for large or densely-connected networks, particularly for <code>dist_cutoff = 2</code>). The default algorithm tends to be faster for densely-connected networks or long sequences.</p></dd>
 
   <dt>verbose</dt>
 <dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks
