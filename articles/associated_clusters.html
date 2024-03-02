@@ -239,7 +239,7 @@ where each element corresponds to a file containing a single sample.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 30</span></span>
 <span><span class="va">input_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmpiwzQWo/input_samples/Sample1.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/Rtmp47OPVt/input_samples/Sample1.rds"</span></span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="file-format-of-sample-data">
@@ -815,7 +815,8 @@ as described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoir
 <code class="sourceCode R"><span><span class="va">all_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addClusterLabels.html">labelClusters</a></span><span class="op">(</span><span class="va">all_clusters</span>, size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">all_clusters</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; Warning: Removed 172 rows containing missing values (`geom_text()`).</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning: Removed 172 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_text()`).</span></span></code></pre></div>
 <p><img src="associated_clusters_files/figure-html/unnamed-chunk-18-1.png" width="100%" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
