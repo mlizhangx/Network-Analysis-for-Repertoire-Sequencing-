@@ -59,7 +59,7 @@ Logical. When \code{TRUE}, removes each node that is not joined by an
 edge connection to any other node in the network graph.
 }
   \item{method}{
-A character string specifying the algorithm to use. Choices are \code{"default"} and \code{"pattern"}. The alternative \code{"pattern"} algorithm is faster than the default algorithm in most settings, at the cost of being less memory-efficient (depending on the user's system, this can potentially cause memory-related crashes for extremely large networks, with the risk greater for larger values of \code{dist_cutoff}). The default algorithm has superior scaling with sequence length and edge density, and therefore may be faster when dealing with long nucleotide sequences or dense networks.
+A character string specifying the algorithm to use. Choices are \code{"default"} and  \code{"pattern"}. \code{"pattern"} is only valid when \code{dist_cutoff < 3}, but tends to be faster than \code{"default"} for sparsely connected networks, at the cost of greater memory usage (can cause crashes for large or densely-connected networks, particularly for \code{dist_cutoff = 2}). The default algorithm tends to be faster for densely-connected networks or long sequences.
 }
   \item{verbose}{
       Logical. If \code{TRUE}, generates messages about the tasks
