@@ -2,11 +2,14 @@
 
 ## New Features
 
-* New internal cpp function that computes graph adjacency matrix using pattern-based algorithm, developed by Daniil Matveev (implemented for metrics Hamming, Levenshtein and cutoffs 0, 1, 2). 
+* New internal cpp function that computes graph adjacency matrix using pattern-based algorithm, developed by Daniil Matveev (implemented for metrics Hamming, Levenshtein and cutoffs 0, 1, 2). Faster than the default algorithm when network is sufficiently sparse and sequences are not too long, but can incur memory issues with large or densely-connected networks.
 * `generateAdjacencyMatrix()` has new parameter `method` used to specify the algorithm. Accepts value `"pattern"` to call the new routine for the pattern-based algorithm.
+* Speed improvements to the default algorithms for computing graph adjacency matrices
+* Speed improvement to the argument check used for function parameters that accept an adjacency matrix
 
 ## Minor Changes and Bug Fixes
 
+* Saving network output using `output_type = "individual"` now also saves the entire network list as an RData file (`.rda`).
 * Updated tests for compatibility with upcoming changes to guides in `ggplot2` (thanks to Teun van den Brand and the `ggplot2` development team for contributing the updates)
 
 
