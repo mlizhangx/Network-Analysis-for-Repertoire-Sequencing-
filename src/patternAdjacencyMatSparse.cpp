@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #define ARMA_64BIT_WORD 1
+#include "dropDegreeZero.h"
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 // [[Rcpp::depends(RcppArmadillo)]]
@@ -220,20 +221,6 @@ arma::sp_umat buildG(
     }
   }
 
-  if (drop_deg_zero) {
-    // sum entries columnwise
-    arma::sp_umat col_sums_spmat = arma::sum(out);
-    arma::urowvec col_sums(col_sums_spmat);
-    // record indices of nodes with positive degree
-    arma::uvec col_ids = find(col_sums > 1);
-    // subset matrix to keep only network nodes
-    out = out.cols(col_ids);
-    out = out.t();
-    out = out.cols(col_ids);
-    // write indices of network nodes to file
-    col_ids += 1;  // offset C++'s 0-index starting convention
-    col_ids.save(tempfile, arma::raw_ascii);
-  }
-
+  dropDegreeZero(drop_deg_zero, out, tempfile);
   return out;
 }
