@@ -229,6 +229,9 @@
 }
 
 .matchMethod <- function(x, cutoff) {
+  if (cutoff == 0) {
+    return("pattern")
+  }
   if (pmatch(x, "pattern", 0)) {
     if (!any(cutoff == c(0, 1, 2))) {
       warning(

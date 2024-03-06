@@ -24,6 +24,7 @@ buildRepSeqNetwork <- function(
     dist_type = "hamming",
     dist_cutoff = 1,
     drop_isolated_nodes = TRUE,
+    net_build_method = "default",
     node_stats = FALSE,
     stats_to_include = chooseNodeStats(),
     cluster_stats = FALSE,
@@ -55,6 +56,7 @@ buildRepSeqNetwork <- function(
   drop_matches <- .check(drop_matches, .isString, NULL, ornull = TRUE)
   dist_type <- .checkDistType(dist_type, "hamming")
   dist_cutoff <- .check(dist_cutoff, .isNonneg, 1)
+  net_build_method <- .checkMethod(net_build_method, dist_cutoff)
   drop_isolated_nodes <- .checkTF(drop_isolated_nodes, TRUE)
   node_stats <- .checkTF(node_stats, FALSE)
   if (isTRUE(node_stats)) {
@@ -105,8 +107,14 @@ buildRepSeqNetwork <- function(
   }
 
   # Build network
-  net <- generateNetworkObjects(data, seq_col, dist_type, dist_cutoff,
-                                drop_isolated_nodes, verbose
+  net <- generateNetworkObjects(
+    data,
+    seq_col,
+    dist_type = dist_type,
+    dist_cutoff = dist_cutoff,
+    drop_isolated_nodes = drop_isolated_nodes,
+    method = net_build_method,
+    verbose = verbose
   )
   if (is.null(net)) {
     warning("Graph contains no nodes; returning NULL. ",
