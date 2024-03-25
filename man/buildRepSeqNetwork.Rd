@@ -27,6 +27,7 @@ buildRepSeqNetwork(
   dist_type = "hamming",
   dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
+  net_build_method = "default",
   node_stats = FALSE,
   stats_to_include = chooseNodeStats(),
   cluster_stats = FALSE,
@@ -62,6 +63,7 @@ buildNet(
   dist_type = "hamming",
   dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
+  net_build_method = "default",
   node_stats = FALSE,
   stats_to_include = chooseNodeStats(),
   cluster_stats = FALSE,
@@ -146,6 +148,9 @@ buildNet(
   \item{drop_isolated_nodes}{
     A logical scalar. When \code{TRUE}, removes each node that is not joined by an
     edge connection to any other node in the network graph.
+}
+  \item{net_build_method}{
+    Passed to the \code{method} argument of \code{\link{generateAdjacencyMatrix()}}. Specifies the algorithm used to compute the network adjacency matrix.
 }
   \item{node_stats}{
     A logical scalar. Specifies whether node-level network properties are computed.
