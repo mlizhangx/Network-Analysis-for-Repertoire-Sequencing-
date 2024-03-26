@@ -14,6 +14,7 @@ generateNetworkObjects(
   dist_type = "hamming",
   dist_cutoff = 1,
   drop_isolated_nodes = TRUE,
+  method = "default",
   verbose = FALSE
 )
 }
@@ -55,6 +56,9 @@ generateNetworkObjects(
   \item{drop_isolated_nodes}{
     A logical scalar. When \code{TRUE}, removes each node that is not joined by
     an edge connection to any other node in the network graph.
+}
+  \item{method}{
+    Passed to \code{\link[=generateAdjacencyMatrix]{generateAdjacencyMatrix()}}. Specifies the algorithm used to compute the network adjacency matrix.
 }
   \item{verbose}{
       Logical. If \code{TRUE}, generates messages about the tasks

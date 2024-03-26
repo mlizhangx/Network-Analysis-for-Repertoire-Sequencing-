@@ -32,9 +32,6 @@ generateAdjacencyMatrix <- function(
   method <- .checkMethod(method, dist_cutoff)
   msg <- .makemsg(verbose)
   tmpfile <- tempfile(pattern = "col_ids", fileext = ".txt")
-  if (dist_cutoff == 0) {
-    method <- "pattern"
-  }
   if (dist_type == "levenshtein") {
     msg("Computing network edges based on a max ", dist_type, " distance of ",
         dist_cutoff, "...", newline = FALSE
@@ -120,6 +117,7 @@ generateNetworkObjects <- function(
     dist_type = "hamming",
     dist_cutoff = 1,
     drop_isolated_nodes = TRUE,
+    method = "default",
     verbose = FALSE
 ) {
   data_name <- deparse(substitute(data))
@@ -130,16 +128,17 @@ generateNetworkObjects <- function(
   dist_type <- .checkDistType(dist_type, "hamming")
   dist_cutoff <- .check(dist_cutoff, .isNonneg, 1)
   drop_isolated_nodes <- .checkTF(drop_isolated_nodes, TRUE)
+  method <- .checkMethod(method, dist_cutoff)
   msg <- .makemsg(verbose)
   if (length(seq_col) == 1) {
     net <- .generateSingleChainNetwork(
       data, seq_col,
-      dist_type, dist_cutoff, drop_isolated_nodes, verbose
+      dist_type, dist_cutoff, drop_isolated_nodes, method, verbose
     )
   } else if (length(seq_col) == 2) {
     net <- .generateDualChainNetwork(
       data, seq_col[[1]], seq_col[[2]],
-      dist_type, dist_cutoff, drop_isolated_nodes, verbose
+      dist_type, dist_cutoff, drop_isolated_nodes, method, verbose
     )
   }
   msg("Network objects and node metadata stored in a list")
@@ -172,6 +171,7 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
     dist_type = "hamming",
     dist_cutoff = 1,
     drop_isolated_nodes = TRUE,
+    method = "default",
     contig_ids = seq_along(seqs),
     outfile_adjacency_matrix = NULL,
     outfile_distance_matrix = NULL,
@@ -183,6 +183,7 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
                             dist_type = dist_type,
                             dist_cutoff = dist_cutoff,
                             drop_isolated_nodes = drop_isolated_nodes,
+                            method = method,
                             verbose = verbose
     )
   if (!is.null(outfile_adjacency_matrix)) {
@@ -200,12 +201,12 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
 
 .generateSingleChainNetwork <- function(
     data, seq_col, dist_type, dist_cutoff, drop_isolated_nodes,
-    verbose = FALSE
+    method = "default", verbose = FALSE
 ) {
   adjacency_matrix <- .generateNetworkGraphFromSeqs(
     data[[seq_col]], dist_type, dist_cutoff, contig_ids = rownames(data),
     return_type = "adjacency_matrix", drop_isolated_nodes = drop_isolated_nodes,
-    verbose = verbose
+    method = method, verbose = verbose
   )
   if (is.null(adjacency_matrix)) {
     return(NULL)
@@ -230,13 +231,13 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
 
 .generateDualChainNetwork <- function(
     data, a_col, b_col, dist_type, dist_cutoff, drop_isolated_nodes,
-    verbose = FALSE
+    method = "default", verbose = FALSE
 ) {
   msg <- .makemsg(verbose)
   msg("Computing graph adjacency based on sequences in first chain...")
   adj_mat_a <- generateAdjacencyMatrix(
     data[[a_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE,
-    verbose = verbose
+    method = method, verbose = verbose
   )
   if (sum(dim(adj_mat_a)) == 0) {
     warning("No edges exist in the network for the first chain ",
@@ -247,7 +248,7 @@ generateNetworkFromAdjacencyMat <- function(adjacency_matrix) {
   msg("Computing graph adjacency based on sequences in second chain:")
   adj_mat_b <- generateAdjacencyMatrix(
     data[[b_col]], dist_type, dist_cutoff, drop_isolated_nodes = FALSE,
-    verbose = verbose
+    method = method, verbose = verbose
   )
   if (sum(dim(adj_mat_b)) == 0) {
     warning("No edges exist in the network for the second chain ",
@@ -729,17 +730,16 @@ addClusterStats <- function(
         " for network degree added to node metadata"
     )
   }
-  if (!is.null(seq_col) && length(seq_col) == 2) {
-    net$cluster_data <- .computeClusterStatsDualChain(
-      net$node_data, net$adjacency_matrix, seq_col, count_col,
-      cluster_id_name, degree_col, verbose
-    )
-  } else {
-    net$cluster_data <- .computeClusterStats(
-      net$node_data, net$adjacency_matrix, seq_col, count_col,
-      cluster_id_name, degree_col, verbose
-    )
-  }
+
+  net$cluster_data <- .computeClusterStats(
+    net$node_data,
+    net$adjacency_matrix,
+    cluster_id_name,
+    degree_col,
+    seq_col = seq_col,
+    count_col = count_col,
+    verbose = FALSE
+  )
   msg("Data frame ", sQuote("cluster_data"),
       " added to list of network objects."
   )
@@ -798,15 +798,14 @@ getClusterStats <- function(
     degree_col <- "degree"
     data$degree <- igraph::degree(generateNetworkGraph(adjacency_matrix))
   }
-  if (!is.null(seq_col) && length(seq_col) > 1) {
-    return(.computeClusterStatsDualChain(
-      data, adjacency_matrix, seq_col, count_col, cluster_id_col, degree_col,
-      verbose
-    ))
-  }
   .computeClusterStats(
-    data, adjacency_matrix, seq_col, count_col, cluster_id_col, degree_col,
-    verbose
+    data,
+    adjacency_matrix,
+    cluster_id_col,
+    degree_col,
+    seq_col = seq_col,
+    count_col = count_col,
+    verbose = FALSE
   )
 }
 
@@ -884,97 +883,130 @@ getClusterStats <- function(
   data
 }
 
-.computeClusterStats <- function(
-    data, adjacency_matrix,
-    seq_col, count_col, cluster_id_col, degree_col, verbose = FALSE
+.calc_clustersnodes_components <- function(
+  data, out, adjacency_matrix, cluster_id_col
 ) {
-  msg <- .makemsg(verbose)
-  if (!is.null(seq_col)) {
-    seq_lengths <- nchar(data[[seq_col]])
-  }
-  # if (!is.null(count_col)) {
-  #   inf_indices <- which(!is.finite(data[[count_col]]))
-  #   data[[count_col]][inf_indices] <- 0
-  # }
-  out <- as.data.frame(table(data[[cluster_id_col]]))
-  colnames(out) <- c("cluster_id", "node_count")
-  num_clusters <- nrow(out)
-  msg("Computing statistics for the ", num_clusters,
-      " clusters in the network...",
-      newline = FALSE
+  cluster_id2node_ids <- split(
+    seq_along(data[[cluster_id_col]]),
+    data[[cluster_id_col]]
   )
-  out$eigen_centrality_eigenvalue <- out$eigen_centrality_index <-
-    out$closeness_centrality_index <- out$degree_centrality_index <-
-    out$edge_density <- out$assortativity <- out$global_transitivity <-
-    out$diameter_length <- out$seq_w_max_count <- out$max_count <-
-    out$agg_count <- out$seq_w_max_degree <- out$max_degree <-
-    out$mean_degree <- out$mean_seq_length <- NA
-  for (i in 1:num_clusters) {
-    cluster_row <- which(out[["cluster_id"]] == i)
-    node_ids <- data[[cluster_id_col]] == i
-    if (!is.null(seq_col)) {
-      out$mean_seq_length[[cluster_row]] <- round(
-        mean(seq_lengths[node_ids]), 2
-      )
-    }
-    out$mean_degree[[cluster_row]] <- round(mean(data[node_ids, degree_col]), 2)
-    max_deg <- max(data[node_ids, degree_col])
-    out$max_degree[[cluster_row]] <- max_deg
-    if (!is.null(seq_col)) {
-      node_id_max_deg <- which(node_ids & data[[degree_col]] == max_deg)[[1]]
-      out$seq_w_max_degree[[cluster_row]] <- as.character(
-        data[node_id_max_deg, seq_col]
-      )
-    }
-    if (!is.null(count_col)) {
-      is_not_all_NA <- sum(!is.na(data[node_ids, count_col])) > 0
-      if (is_not_all_NA) {
-        out$agg_count[[cluster_row]] <- sum(data[node_ids, count_col],
-                                            na.rm = TRUE
-        )
-        out$max_count[[cluster_row]] <- max(data[node_ids, count_col],
-                                            na.rm = TRUE
-        )
-        if (!is.null(seq_col)) {
-          node_id_max_count <- which(
-            node_ids & data[[count_col]] == out$max_count[[cluster_row]]
-          )[[1]]
-          out$seq_w_max_count[[cluster_row]] <- as.character(
-            data[node_id_max_count, seq_col]
-          )
+  cluster_ids <- as.character(out$cluster_id)
+  clusters_nodes <- cluster_id2node_ids[cluster_ids]
+  clusters_adj <- lapply(
+    clusters_nodes,
+    function(node_ids) adjacency_matrix[node_ids, node_ids]
+  )
+  components <- lapply(
+    clusters_adj,
+    igraph::graph_from_adjacency_matrix,
+    mode = "undirected",
+    diag = FALSE
+  )
+  return(list(clusters_nodes = clusters_nodes, components = components))
+}
+
+.calc_seq_w_max_count <- function(
+  clusters_nodes, out, clusters_counts, data, seq_col
+) {
+  vapply(
+    seq_along(clusters_nodes),
+    function(i) {
+      max_count <- out$max_count[[i]]
+      id_incluster <- match(max_count, clusters_counts[[i]])
+      id_global <- clusters_nodes[[i]][id_incluster]
+      data[[seq_col]][id_global]
+    },
+    character(1)
+  )
+}
+
+.calc_igraph_stats <- function(components, out) {
+  calculate_igraph_stat <- function(
+    stat_function, output_value = NULL, ...
+  ) {
+    vapply(
+      components,
+      function(component) {
+        result <- stat_function(component, ...)
+        if (!is.null(output_value)) {
+          result <- result[[output_value]]
         }
-      }
-    }
-    cluster_adjacency_matrix <- as.matrix(adjacency_matrix[node_ids, node_ids])
-    cluster <- generateNetworkGraph(cluster_adjacency_matrix)
-    out$diameter_length[[cluster_row]] <-
-      length(igraph::get_diameter(cluster, directed = T))
-    out$assortativity[[cluster_row]] <-
-      igraph::assortativity_degree(cluster, directed = F)
-    out$global_transitivity[[cluster_row]] <-
-      igraph::transitivity(cluster, type = "global")
-    out$edge_density[[cluster_row]] <-
-      igraph::edge_density(cluster, loops = F)
-    out$degree_centrality_index[[cluster_row]] <-
-      igraph::centr_degree(cluster, mode = "in", normalized = T)$centralization
-    out$closeness_centrality_index[[cluster_row]] <-
-      igraph::centr_clo(cluster, mode = "all", normalized = T)$centralization
-    out$eigen_centrality_index[[cluster_row]] <-
-      igraph::centr_eigen(cluster, directed = T, normalized = T)$centralization
-    out$eigen_centrality_eigenvalue[[cluster_row]] <-
-      igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
+        result
+      },
+      numeric(1)
+    )
   }
-  msg(" Done.")
+  out$eigen_centrality_eigenvalue <- calculate_igraph_stat(
+    igraph::eigen_centrality,
+    output_value = "value",
+    directed = TRUE, # why directed?
+    weights = NULL
+  )
+  out$eigen_centrality_index <- calculate_igraph_stat(
+    igraph::centr_eigen,
+    output_value = "centralization",
+    directed = TRUE, # why directed?
+    normalized = TRUE
+  )
+  out$closeness_centrality_index <- calculate_igraph_stat(
+    igraph::centr_clo,
+    output_value = "centralization",
+    mode = "all",
+    normalized = TRUE
+  )
+  out$degree_centrality_index <- calculate_igraph_stat(
+    igraph::centr_degree,
+    output_value = "centralization",
+    mode = "in",
+    normalized = TRUE
+  )
+  out$edge_density <- calculate_igraph_stat(
+    igraph::edge_density
+  )
+  out$global_transitivity <- calculate_igraph_stat(
+    igraph::transitivity,
+    type = "global"
+  )
+  out$assortativity <- calculate_igraph_stat(
+    igraph::assortativity_degree
+  )
+  out$diameter_length <-  calculate_igraph_stat(
+    igraph::diameter,
+    directed = TRUE # why directed?
+  ) + 1
   out
 }
 
-.computeClusterStatsDualChain <- function(
-    data, adjacency_matrix, seq_col, count_col,
-    cluster_id_col, degree_col, verbose = FALSE
+.calc_seq_stats <- function(
+  data, seq_col, clusters_nodes, clusters_degrees
+) {
+  seq_lens <- nchar(data[[seq_col]])
+  clusters_seq_lens <- lapply(clusters_nodes, function(nodes) seq_lens[nodes])
+  mean_seq_length <- round(vapply(clusters_seq_lens, mean, numeric(1)), 2)
+  seq_w_max_degree <- vapply(
+    seq_along(clusters_nodes),
+    function(i) {
+      max_degree <- max(clusters_degrees[[i]])
+      id_incluster <- match(max_degree, clusters_degrees[[i]])
+      id_global <- clusters_nodes[[i]][id_incluster]
+      data[[seq_col]][id_global]
+    },
+    character(1)
+  )
+
+  list(mean_seq_length = mean_seq_length, seq_w_max_degree = seq_w_max_degree)
+}
+
+.computeClusterStats <- function(
+  data,
+  adjacency_matrix,
+  cluster_id_col,
+  degree_col,
+  seq_col = NULL,
+  count_col = NULL,
+  verbose = FALSE
 ) {
   msg <- .makemsg(verbose)
-  A_seq_lengths <- nchar(data[[seq_col[[1]]]])
-  B_seq_lengths <- nchar(data[[seq_col[[2]]]])
   out <- as.data.frame(table(data[[cluster_id_col]]))
   colnames(out) <- c("cluster_id", "node_count")
   num_clusters <- nrow(out)
@@ -982,67 +1014,58 @@ getClusterStats <- function(
       " clusters in the network...",
       newline = FALSE
   )
-  out$eigen_centrality_eigenvalue <- out$eigen_centrality_index <-
-    out$closeness_centrality_index <- out$degree_centrality_index <-
-    out$edge_density <- out$assortativity <- out$global_transitivity <-
-    out$diameter_length <- out$B_seq_w_max_count <- out$A_seq_w_max_count <-
-    out$max_count <- out$agg_count <- out$B_seq_w_max_degree <-
-    out$A_seq_w_max_degree <- out$max_degree <- out$mean_degree <-
-    out$mean_B_seq_length <- out$mean_A_seq_length <- NA
-  for (i in 1:num_clusters) {
-    cluster_row <- which(out[["cluster_id"]] == i)
-    node_ids <- data[[cluster_id_col]] == i
-    out$mean_A_seq_length[[cluster_row]] <- round(
-      mean(A_seq_lengths[node_ids]), 2
+
+  clust_comp <- .calc_clustersnodes_components(
+    data, out, adjacency_matrix, cluster_id_col
+  )
+  clusters_nodes <- clust_comp$clusters_nodes
+  components <- clust_comp$components
+
+  out <- .calc_igraph_stats(components, out)
+
+  clusters_degrees <- lapply(
+    clusters_nodes, function(nodes) data[[degree_col]][nodes]
+  )
+  out$max_degree <- vapply(clusters_degrees, max, numeric(1))
+  out$mean_degree <- round(vapply(clusters_degrees, mean, numeric(1)), 2)
+
+  if (length(seq_col) == 1) {
+    seq_stat <- .calc_seq_stats(data, seq_col, clusters_nodes, clusters_degrees)
+    out$mean_seq_length <- seq_stat$mean_seq_length
+    out$seq_w_max_degree <- seq_stat$seq_w_max_degree
+  } else if (length(seq_col) == 2) {
+    seq_a_stat <- .calc_seq_stats(
+      data, seq_col[[1]], clusters_nodes, clusters_degrees
     )
-    out$mean_B_seq_length[[cluster_row]] <- round(
-      mean(B_seq_lengths[node_ids]), 2
+    seq_b_stat <- .calc_seq_stats(
+      data, seq_col[[2]], clusters_nodes, clusters_degrees
     )
-    out$mean_degree[[cluster_row]] <- round(mean(data[node_ids, degree_col]), 2)
-    max_deg <- max(data[node_ids, degree_col])
-    out$max_degree[[cluster_row]] <- max_deg
-    node_id_max_deg <- which(node_ids & data[[degree_col]] == max_deg)[[1]]
-    out$A_seq_w_max_degree[[cluster_row]] <-
-      as.character(data[node_id_max_deg, seq_col[[1]]])
-    out$B_seq_w_max_degree[[cluster_row]] <-
-      as.character(data[node_id_max_deg, seq_col[[2]]])
-    if (!is.null(count_col)) {
-      is_not_all_NA <- sum(!is.na(data[node_ids, count_col])) > 0
-      if (is_not_all_NA) {
-        out$agg_count[[cluster_row]] <- sum(data[node_ids, count_col],
-                                            na.rm = TRUE
-        )
-        out$max_count[[cluster_row]] <- max(data[node_ids, count_col],
-                                            na.rm = TRUE
-        )
-        node_id_max_count <- which(
-          node_ids & data[[count_col]] == out$max_count[[cluster_row]]
-        )[[1]]
-        out$A_seq_w_max_count[[cluster_row]] <-
-          as.character(data[node_id_max_count, seq_col[[1]]])
-        out$B_seq_w_max_count[[cluster_row]] <-
-          as.character(data[node_id_max_count, seq_col[[2]]])
-      }
-    }
-    cluster_adjacency_matrix <- as.matrix(adjacency_matrix[node_ids, node_ids])
-    cluster <- generateNetworkGraph(cluster_adjacency_matrix)
-    out$diameter_length[[cluster_row]] <-
-      length(igraph::get_diameter(cluster, directed = T))
-    out$assortativity[[cluster_row]] <-
-      igraph::assortativity_degree(cluster, directed = F)
-    out$global_transitivity[[cluster_row]] <-
-      igraph::transitivity(cluster, type = "global")
-    out$edge_density[[cluster_row]] <-
-      igraph::edge_density(cluster, loops = F)
-    out$degree_centrality_index[[cluster_row]] <-
-      igraph::centr_degree(cluster, mode = "in", normalized = T)$centralization
-    out$closeness_centrality_index[[cluster_row]] <-
-      igraph::centr_clo(cluster, mode = "all", normalized = T)$centralization
-    out$eigen_centrality_index[[cluster_row]] <-
-      igraph::centr_eigen(cluster, directed = T, normalized = T)$centralization
-    out$eigen_centrality_eigenvalue[[cluster_row]] <-
-      igraph::eigen_centrality(cluster, directed = T, weights = NA)$value
+    out$mean_A_seq_length <- seq_a_stat$mean_seq_length
+    out$mean_B_seq_length <- seq_b_stat$mean_seq_length
+    out$A_seq_w_max_degree <- seq_a_stat$seq_w_max_degree
+    out$B_seq_w_max_degree <- seq_b_stat$seq_w_max_degree
   }
+
+  if (!is.null(count_col)) {
+    clusters_counts <- lapply(
+      clusters_nodes, function(idxs) data[[count_col]][idxs]
+    )
+    out$max_count <- vapply(clusters_counts, max, numeric(1))
+    out$agg_count <- vapply(clusters_counts, sum, numeric(1))
+    if (length(seq_col) == 1) {
+      out$seq_w_max_count <- .calc_seq_w_max_count(
+        clusters_nodes, out, clusters_counts, data, seq_col
+      )
+    } else if (length(seq_col) == 2) {
+      out$A_seq_w_max_count <- .calc_seq_w_max_count(
+        clusters_nodes, out, clusters_counts, data, seq_col[[1]]
+      )
+      out$B_seq_w_max_count <- .calc_seq_w_max_count(
+        clusters_nodes, out, clusters_counts, data, seq_col[[2]]
+      )
+    }
+  }
+
   msg(" Done.")
   out
 }
