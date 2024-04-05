@@ -297,6 +297,21 @@ these variables corresponds to the count-based cluster properties:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">net</span><span class="op">$</span><span class="va">details</span><span class="op">$</span><span class="va">count_col_for_cluster_data</span></span>
 <span><span class="co">#&gt; [1] "CloneCount"</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="a-warning-about-na-abundance-values">A Warning About <code>NA</code> Abundance Values<a class="anchor" aria-label="anchor" href="#a-warning-about-na-abundance-values"></a>
+</h3>
+<p>If a cluster contains nodes with <code>NA</code> count values, then
+abundance-based properties for the cluster will be <code>NA</code>.</p>
+<p>It is recommended to remove data rows with <code>NA</code> count
+values prior to analysis. However, <code><a href="../reference/buildRepSeqNetwork.html">buildNet()</a></code> does have
+limited functionality to handle this automatically.</p>
+<p>If <code><a href="../reference/buildRepSeqNetwork.html">buildNet()</a></code> is called with the <code>count_col</code>
+parameter specified, any data rows with <code>NA</code> values in the
+count column will automatically be removed prior to network building.
+This will ensure no <code>NA</code> count values are present when
+computing abundance-based properties, whether by <code><a href="../reference/buildRepSeqNetwork.html">buildNet()</a></code>
+or downstream using <code><a href="../reference/addClusterStats.html">addClusterStats()</a></code>.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="clustering-algorithm">
