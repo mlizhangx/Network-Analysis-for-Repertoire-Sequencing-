@@ -5,8 +5,8 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-“[![metacran
-downloads](https://cranlogs.r-pkg.org/badges/grand-total/NAIR)](https://cran.r-project.org/package=NAIR)”
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/NAIR)](https://cran.r-project.org/package=NAIR)
 [![R-CMD-check](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/mlizhangx/Network-Analysis-for-Repertoire-Sequencing-/actions/workflows/check-standard.yaml)
 <!-- badges: end -->
 
