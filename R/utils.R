@@ -520,7 +520,7 @@ filterInputData <- function(
     NA_indices <- is.na(data[[count_col]])
     if (sum(NA_indices) > 0) {
       warning("dropping ", sum(NA_indices),
-              " rows containing NA/NaN values in count column", i
+              " rows containing NA/NaN values in count column"
       )
       data <- data[!NA_indices, ]
     }
