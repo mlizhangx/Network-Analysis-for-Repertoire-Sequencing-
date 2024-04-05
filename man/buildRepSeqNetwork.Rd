@@ -103,9 +103,10 @@ buildNet(
   \item{count_col}{
     Optional. Specifies the column of \code{data} containing a measure of abundance,
     e.g., clone count or unique molecular identifier (UMI) count. Accepts either
-    the column name or column index. Passed to
-    \code{\link[=addClusterStats]{addClusterStats()}}; only
-    relevant if \code{cluster_stats = TRUE}.
+    the column name or column index. If provided, data rows with \code{NA} count
+    values will be removed prior to network building. Count values are used to
+    compute certain cluster properties when \code{cluster_stats = TRUE}; see
+    \code{\link[=addClusterStats]{addClusterStats()}} for details.
 }
   \item{subset_cols}{
     Specifies which columns of the AIRR-Seq data are included in the output.

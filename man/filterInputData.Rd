@@ -15,7 +15,7 @@ filterInputData(
   min_seq_length = NULL,
   drop_matches = NULL,
   subset_cols = NULL,
-  count_col = deprecated(),
+  count_col = NULL,
   verbose = FALSE
 )
 }
@@ -51,8 +51,10 @@ filterInputData(
     included regardless of this argument's value.
 }
   \item{count_col}{
-  \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-  Does nothing.
+  Optional. Specifies the column of \code{data} containing a measure of abundance,
+    e.g., clone count or unique molecular identifier (UMI) count. Accepts either
+    the column name as a character string or the numeric column index.
+    If provided, data rows with \code{NA} count values will be removed.
 }
   \item{verbose}{
       Logical. If \code{TRUE}, generates messages about the tasks
