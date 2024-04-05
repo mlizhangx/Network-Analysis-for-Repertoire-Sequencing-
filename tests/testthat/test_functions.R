@@ -15,8 +15,10 @@ dat[191, c("CloneCount", "CloneFrequency")] <- NA
 dat[192, c("CloneCount", "CloneFrequency")] <- NaN
 dat[193, c("CloneCount", "CloneFrequency")] <- -Inf
 dat[198, c("CloneCount", "CloneFrequency")] <- Inf
+dat$VGeneID <- as.factor(sample(30, 200, replace = TRUE))
 suppressWarnings(
-  net <- buildRepSeqNetwork(dat, "CloneSeq", plots = FALSE)
+  net <- buildRepSeqNetwork(dat, "CloneSeq", plots = FALSE,
+                            count_col = "CloneCount")
 )
 net <- addNodeStats(net)
 net <- addClusterStats(net, count_col = "CloneCount",
@@ -70,10 +72,21 @@ suppressWarnings(
   )
 )
 suppressWarnings(
+  net <- addPlots(net, print_plots = FALSE,
+                  color_nodes_by = "SampleID"
+  )
+)
+suppressWarnings(
   net2 <- buildRepSeqNetwork(dat, "CloneSeq", print_plots = FALSE,
                              drop_isolated_nodes = FALSE,
                              cluster_stats = TRUE,
                              count_col = "CloneCount"
+  )
+)
+suppressWarnings(
+  net2 <- addPlots(net2, print_plots = FALSE,
+                   color_nodes_by = "VGeneID",
+                   color_scheme = "turbo"
   )
 )
 suppressWarnings(
@@ -436,7 +449,7 @@ test_that("generateAdjacencyMatrix behaves as expected", {
       cloneSeq, dist_cutoff = 2, dist_type = "levenshtein",
       method = methodCutoffLim(method, 2)
     )
-    
+
     expect_warning(
       adjMatB_k0 <- generateAdjacencyMatrix(
         cloneSeqB, dist_cutoff = 0, dist_type = "levenshtein",
@@ -788,14 +801,20 @@ test_that("addClusterStats works with NA/Inf values in counts column", {
   expect_equal(net2$cluster_data$max_count[[3]], 4422)
   expect_equal(net2$cluster_data$agg_count[[6]], Inf)
   expect_equal(net2$cluster_data$max_count[[6]], Inf)
-  expect_equal(net2$cluster_data$agg_count[[95]], as.double(NA))
-  expect_equal(net2$cluster_data$max_count[[95]], as.double(NA))
-  expect_equal(net2$cluster_data$agg_count[[96]], as.double(NA))
-  expect_equal(net2$cluster_data$max_count[[96]], as.double(NA))
-  expect_equal(net2$cluster_data$agg_count[[97]], -Inf)
-  expect_equal(net2$cluster_data$max_count[[97]], -Inf)
-  expect_equal(net2$cluster_data$agg_count[[98]], Inf)
-  expect_equal(net2$cluster_data$max_count[[98]], Inf)
+  expect_equal(net2$cluster_data$agg_count[[95]], 3609)
+  expect_equal(net2$cluster_data$max_count[[95]], 3609)
+  expect_equal(net2$cluster_data$agg_count[[96]], -Inf)
+  expect_equal(net2$cluster_data$max_count[[96]], -Inf)
+  expect_equal(net2$cluster_data$agg_count[[97]], Inf)
+  expect_equal(net2$cluster_data$max_count[[97]], Inf)
+  # expect_equal(net2$cluster_data$agg_count[[95]], as.double(NA))
+  # expect_equal(net2$cluster_data$max_count[[95]], as.double(NA))
+  # expect_equal(net2$cluster_data$agg_count[[96]], as.double(NA))
+  # expect_equal(net2$cluster_data$max_count[[96]], as.double(NA))
+  # expect_equal(net2$cluster_data$agg_count[[97]], -Inf)
+  # expect_equal(net2$cluster_data$max_count[[97]], -Inf)
+  # expect_equal(net2$cluster_data$agg_count[[98]], Inf)
+  # expect_equal(net2$cluster_data$max_count[[98]], Inf)
 })
 
 # Loading -----------------------------------------------------------------
@@ -1105,8 +1124,9 @@ test_that("saveNetwork works", {
                    row.names = 1
   )
   foo <- all.equal(net3$node_data, ndat)
-  expect_true(length(foo) == 1)
-  expect_match(foo, "is not a factor")
+  expect_true(length(foo) == 2)
+  expect_match(foo[[1]], "is not a factor")
+  expect_match(foo[[2]], "is not a factor")
   expect_equal(rownames(net3$node_data), rownames(ndat))
   cdat <- read.csv(file.path(tempdir(), "MyRepSeqNetwork_ClusterMetadata.csv"))
   foo <- all.equal(net3$cluster_data, cdat)
@@ -1311,27 +1331,8 @@ test_that("plots legends behave correctly", {
     }
   }
 
-
-  expect_equal(get_guide_names(net$plots$cluster_greedy),
-               "colour"
-  )
-  expect_equal(get_guide_params(net$plots$cluster_greedy, "colour")$title,
-               "cluster_greedy"
-  )
-  expect_equal(get_guide_params(net$plots$cluster_greedy, "colour")$name,
-               "legend"
-  )
-
-  expect_equal(get_guide_names(net$plots$cluster_leiden),
-               "colour"
-  )
-  expect_equal(get_guide(net$plots$cluster_leiden, "colour"),
-               "none"
-  )
-  expect_match(net$plots$cluster_leiden$labels$subtitle,
-               "Nodes colored by cluster_leiden"
-  )
-
+  # Continuous color scale with legend
+  # Size scale with legend
   expect_equal(get_guide_names(net$plots$transitivity),
                c("colour", "size")
   )
@@ -1348,6 +1349,41 @@ test_that("plots legends behave correctly", {
                "legend"
   )
 
+  expect_equal(get_guide_names(net$plots$authority_score),
+               c("colour", "size")
+  )
+  expect_equal(get_guide_params(net$plots$authority_score, "colour")$title,
+               "authority_score"
+  )
+  expect_true(get_guide_params(net$plots$authority_score, "colour")$name %in%
+                c("colorbar", "colourbar")
+  )
+  expect_equal(get_guide_params(net$plots$authority_score, "size")$title,
+               "eigen_centrality"
+  )
+  expect_equal(get_guide_params(net$plots$authority_score, "size")$name,
+               "legend"
+  )
+
+  # Discrete color scale with legend
+  # Size scale with legend
+  expect_equal(get_guide_names(sc_net$plots$SampleID),
+               c("colour", "size")
+  )
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "colour")$title,
+               "SampleID"
+  )
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "colour")$name,
+               "legend"
+  )
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "size")$title,
+               "UMIs"
+  )
+  expect_equal(get_guide_params(sc_net$plots$SampleID, "size")$name,
+               "legend"
+  )
+
+  # Combined color/size legend
   expect_equal(get_guide_names(net$plots$CloneCount),
                c("colour", "size")
   )
@@ -1364,6 +1400,7 @@ test_that("plots legends behave correctly", {
                "legend"
   )
 
+  # Same color/size variable with separate legends
   expect_equal(get_guide_names(net$plots$eigen_centrality),
                c("colour", "size")
   )
@@ -1380,22 +1417,7 @@ test_that("plots legends behave correctly", {
                "legend"
   )
 
-  expect_equal(get_guide_names(net$plots$authority_score),
-               c("colour", "size")
-  )
-  expect_equal(get_guide_params(net$plots$authority_score, "colour")$title,
-               "authority_score"
-  )
-  expect_true(get_guide_params(net$plots$authority_score, "colour")$name %in%
-              c("colorbar", "colourbar")
-  )
-  expect_equal(get_guide_params(net$plots$authority_score, "size")$title,
-               "eigen_centrality"
-  )
-  expect_equal(get_guide_params(net$plots$authority_score, "size")$name,
-               "legend"
-  )
-
+  # Same color/size variable with color legend omitted
   expect_equal(get_guide_names(net$plots$coreness),
                c("colour", "size")
   )
@@ -1409,6 +1431,7 @@ test_that("plots legends behave correctly", {
                "legend"
   )
 
+  # Same color/size variable with color legend title omitted
   expect_equal(get_guide_names(net$plots$page_rank),
                c("colour", "size")
   )
@@ -1424,6 +1447,7 @@ test_that("plots legends behave correctly", {
                "legend"
   )
 
+  # Continuous color variable; no size variable
   expect_equal(get_guide_names(net2$plots$CloneCount),
                "colour"
   )
@@ -1434,17 +1458,6 @@ test_that("plots legends behave correctly", {
               c("colorbar", "colourbar")
   )
 
-  expect_equal(names(net3$plots), c("cluster_id", "graph_layout"))
-  expect_equal(get_guide_names(net3$plots$cluster_id),
-               "colour"
-  )
-  expect_equal(get_guide_params(net3$plots$cluster_id, "colour")$title,
-               "cluster_id"
-  )
-  expect_equal(get_guide_params(net3$plots$cluster_id, "colour")$name,
-               "legend"
-  )
-
   expect_equal(names(net4$plots), c("degree", "graph_layout"))
   expect_equal(get_guide_names(net4$plots$degree),
                "colour"
@@ -1453,27 +1466,72 @@ test_that("plots legends behave correctly", {
                "degree"
   )
   expect_true(get_guide_params(net4$plots$degree, "colour")$name %in%
-              c("colorbar", "colourbar")
+                c("colorbar", "colourbar")
   )
 
+  # Discrete color variable; no size variable
+  expect_equal(get_guide_names(net$plots$SampleID),
+               "colour"
+  )
+  expect_equal(get_guide_params(net$plots$SampleID, "colour")$title,
+               "SampleID"
+  )
+  expect_equal(get_guide_params(net$plots$SampleID, "colour")$name,
+               "legend"
+  )
+
+
+
+  # Discrete color variable with too many levels
+  expect_equal(get_guide_names(net2$plots$VGeneID),
+               "colour"
+  )
+  expect_equal(get_guide(net2$plots$VGeneID, "colour"),
+               "none"
+  )
+  expect_match(net2$plots$VGeneID$labels$subtitle,
+               "Nodes colored by VGeneID"
+  )
+
+
+  # No color or size variable
   expect_equal(names(net5$plots), c("uniform_color", "graph_layout"))
   expect_null(get_guide_names(net5$plots$uniform_color))
 
-  expect_equal(get_guide_names(sc_net$plots$SampleID),
-               c("colour", "size")
-  )
-  expect_equal(get_guide_params(sc_net$plots$SampleID, "colour")$title,
-               "SampleID"
-  )
-  expect_equal(get_guide_params(sc_net$plots$SampleID, "colour")$name,
-               "legend"
-  )
-  expect_equal(get_guide_params(sc_net$plots$SampleID, "size")$title,
-               "UMIs"
-  )
-  expect_equal(get_guide_params(sc_net$plots$SampleID, "size")$name,
-               "legend"
-  )
+
+  # Removed checks that depend on the number of clusters since this can change
+  # when clustering algorithms in igraph package change
+
+  # expect_equal(get_guide_names(net$plots$cluster_greedy),
+  #              "colour"
+  # )
+  # expect_equal(get_guide_params(net$plots$cluster_greedy, "colour")$title,
+  #              "cluster_greedy"
+  # )
+  # expect_equal(get_guide_params(net$plots$cluster_greedy, "colour")$name,
+  #              "legend"
+  # )
+
+  # expect_equal(get_guide_names(net$plots$cluster_leiden),
+  #              "colour"
+  # )
+  # expect_equal(get_guide(net$plots$cluster_leiden, "colour"),
+  #              "none"
+  # )
+  # expect_match(net$plots$cluster_leiden$labels$subtitle,
+  #              "Nodes colored by cluster_leiden"
+  # )
+
+  # expect_equal(names(net3$plots), c("cluster_id", "graph_layout"))
+  # expect_equal(get_guide_names(net3$plots$cluster_id),
+  #              "colour"
+  # )
+  # expect_equal(get_guide_params(net3$plots$cluster_id, "colour")$title,
+  #              "cluster_id"
+  # )
+  # expect_equal(get_guide_params(net3$plots$cluster_id, "colour")$name,
+  #              "legend"
+  # )
 
 })
 
@@ -1510,25 +1568,25 @@ test_that("addPlots layout detection works", {
     all.equal(extractLayout(net2$plots$CloneCount), net$plots$graph_layout,
               check.attributes = FALSE
     ),
-    "400, 244"
+    "392, 240"
   )
   expect_match(
     all.equal(extractLayout(net3$plots[[1]]), net$plots$graph_layout,
               check.attributes = FALSE
     ),
-    "Mean relative difference"
+    "244, 240"
   )
   expect_match(
     all.equal(extractLayout(net4$plots[[1]]), net$plots$graph_layout,
               check.attributes = FALSE
     ),
-    "Mean relative difference"
+    "244, 240"
   )
   expect_match(
     all.equal(extractLayout(net5$plots[[1]]), net$plots$graph_layout,
               check.attributes = FALSE
     ),
-    "Mean relative difference"
+    "244, 240"
   )
 
   expect_equal(extractLayout(net2$plots[[1]]), net2$plots$graph_layout,

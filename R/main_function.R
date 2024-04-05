@@ -96,7 +96,7 @@ buildRepSeqNetwork <- function(
   subset_cols <- .convertColRef(subset_cols, data)
   subset_cols <- .processSubsetCols(subset_cols, c(count_col, color_nodes_by))
   data <- filterInputData(data, seq_col, min_seq_length, drop_matches,
-                          subset_cols, verbose = verbose
+                          subset_cols, count_col, verbose
   )
   if (nrow(data) < 2) {
     warning(

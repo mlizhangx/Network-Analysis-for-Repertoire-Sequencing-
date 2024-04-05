@@ -143,6 +143,14 @@ In case the data includes more than one count variable, `net$details$count_col_f
 net$details$count_col_for_cluster_data
 ```
 
+## A Warning About `NA` Abundance Values
+
+If a cluster contains nodes with `NA` count values, then abundance-based properties for the cluster will be `NA`.
+
+It is recommended to remove data rows with `NA` count values prior to analysis. However, `buildNet()` does have limited functionality to handle this automatically.
+
+If `buildNet()` is called with the `count_col` parameter specified, any data rows with `NA` values in the count column will automatically be removed prior to network building. This will ensure no `NA` count values are present when computing abundance-based properties, whether by `buildNet()` or downstream using `addClusterStats()`.
+
 
 # <a name="cluster_alg"></a> Clustering Algorithm
 
