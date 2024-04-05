@@ -14,7 +14,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,7 @@
 <span>  min_seq_length <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  drop_matches <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  subset_cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  count_col <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  count_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -117,8 +117,10 @@
     included regardless of this argument's value.</p></dd>
 
   <dt>count_col</dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a>
-  Does nothing.</p></dd>
+<dd><p>Optional. Specifies the column of <code>data</code> containing a measure of abundance,
+    e.g., clone count or unique molecular identifier (UMI) count. Accepts either
+    the column name as a character string or the numeric column index.
+    If provided, data rows with <code>NA</code> count values will be removed.</p></dd>
 
   <dt>verbose</dt>
 <dd><p>Logical. If <code>TRUE</code>, generates messages about the tasks

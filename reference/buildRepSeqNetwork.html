@@ -18,7 +18,7 @@ buildNet() is identical to buildRepSeqNetwork(), existing as
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,6 +93,7 @@ buildNet() is identical to buildRepSeqNetwork(), existing as
 <span>  dist_type <span class="op">=</span> <span class="st">"hamming"</span>,</span>
 <span>  dist_cutoff <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  drop_isolated_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  net_build_method <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  node_stats <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  stats_to_include <span class="op">=</span> <span class="fu"><a href="chooseNodeStats.html">chooseNodeStats</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cluster_stats <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -128,6 +129,7 @@ buildNet() is identical to buildRepSeqNetwork(), existing as
 <span>  dist_type <span class="op">=</span> <span class="st">"hamming"</span>,</span>
 <span>  dist_cutoff <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  drop_isolated_nodes <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  net_build_method <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  node_stats <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  stats_to_include <span class="op">=</span> <span class="fu"><a href="chooseNodeStats.html">chooseNodeStats</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cluster_stats <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -168,9 +170,10 @@ buildNet() is identical to buildRepSeqNetwork(), existing as
   <dt>count_col</dt>
 <dd><p>Optional. Specifies the column of <code>data</code> containing a measure of abundance,
     e.g., clone count or unique molecular identifier (UMI) count. Accepts either
-    the column name or column index. Passed to
-    <code><a href="addClusterStats.html">addClusterStats()</a></code>; only
-    relevant if <code>cluster_stats = TRUE</code>.</p></dd>
+    the column name or column index. If provided, data rows with <code>NA</code> count
+    values will be removed prior to network building. Count values are used to
+    compute certain cluster properties when <code>cluster_stats = TRUE</code>; see
+    <code><a href="addClusterStats.html">addClusterStats()</a></code> for details.</p></dd>
 
   <dt>subset_cols</dt>
 <dd><p>Specifies which columns of the AIRR-Seq data are included in the output.
@@ -213,6 +216,9 @@ buildNet() is identical to buildRepSeqNetwork(), existing as
   <dt>drop_isolated_nodes</dt>
 <dd><p>A logical scalar. When <code>TRUE</code>, removes each node that is not joined by an
     edge connection to any other node in the network graph.</p></dd>
+
+  <dt>net_build_method</dt>
+<dd><p>Passed to the <code>method</code> argument of <code><a href="generateAdjacencyMatrix.html">generateAdjacencyMatrix()</a></code>. Specifies the algorithm used to compute the network adjacency matrix.</p></dd>
 
   <dt>node_stats</dt>
 <dd><p>A logical scalar. Specifies whether node-level network properties are computed.</p></dd>
@@ -425,8 +431,6 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Partitioning the network graph into clusters...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Cluster membership variable ‘cluster_membership’ added to node metadata.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Computing statistics for the 21 clusters in the network...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Data frame ‘cluster_data’ added to list of network objects.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Generating graph plot with nodes colored by SampleID...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>  Done.</span>
@@ -508,34 +512,34 @@ NAIR: Network Analysis of Immune Repertoire. <em>Frontiers in Immunology</em>, v
 <span class="r-out co"><span class="r-pr">#&gt;</span> 13    1.468110e-01        3 0.008554352                  4</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cluster_id node_count mean_seq_length mean_degree max_degree seq_w_max_degree</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1          2           13.00        1.00          1    GGAGATGAATCGG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2          7           12.86        2.29          3    GAAAGAGAATTCG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          3         26           13.00        8.96         18    GGGGGGGAATTGG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          4          3           13.00        2.33          5    AGGGGGAAATTGG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          5          2           13.00        1.00          1    GGTTAGGAATTCG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          6          5           13.00        3.60          7    AGGGGAGAATTGG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   agg_count max_count seq_w_max_count diameter_length global_transitivity</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      8299      5242   GGAGCTGAATCGG               2                 NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     23255      4422   GAAATAGAATTCG               6           0.3333333</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    104676      6526   GGGGGGGAATTGG               6           0.6223539</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     12596      5873   AGGGGGAAATTGG               3           0.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      7630      4553   GGTTAGGAATTCG               2                 NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6     17971      4422   AGCGGAGAATTGG               3           0.8000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   assortativity edge_density degree_centrality_index closeness_centrality_index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           NaN    1.0000000               0.0000000                        NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   -0.16666667    0.3333333               0.1666667                  0.3650918</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   -0.09412785    0.3353846               0.3446154                  0.4808997</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   -1.00000000    0.6666667               0.3333333                  1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           NaN    1.0000000               0.0000000                        NaN</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   -0.55555556    0.7000000               0.3000000                  0.6000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   eigen_centrality_index eigen_centrality_eigenvalue</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                    NaN                    1.000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2              0.5678500                    2.342923</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3              0.5216029                   11.819166</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4              0.5857864                    1.414214</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                    NaN                    1.000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6              0.3046233                    3.086130</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cluster_id node_count eigen_centrality_eigenvalue eigen_centrality_index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1          2                    1.000000                    NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          2          7                    2.342923              0.5678500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          3         26                   11.819166              0.5216029</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          4          3                    1.414214              0.5857864</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          5          2                    1.000000                    NaN</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          6          5                    3.086130              0.3046233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   closeness_centrality_index degree_centrality_index edge_density</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                        NaN               0.0000000    1.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                  0.3650918               0.1666667    0.3333333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                  0.4808997               0.3446154    0.3353846</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                  1.0000000               0.3333333    0.6666667</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                        NaN               0.0000000    1.0000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                  0.6000000               0.3000000    0.7000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   global_transitivity assortativity diameter_length max_degree mean_degree</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                 NaN           NaN               2          1        1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2           0.3333333   -0.16666667               6          3        2.29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3           0.6223539   -0.09412785               6         18        8.96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           0.0000000   -1.00000000               3          5        2.33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                 NaN           NaN               2          1        1.00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6           0.8000000   -0.55555556               3          7        3.60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   mean_seq_length seq_w_max_degree max_count agg_count seq_w_max_count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           13.00    GGAGATGAATCGG      5242      8299   GGAGCTGAATCGG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2           12.86    GAAAGAGAATTCG      4422     23255   GAAATAGAATTCG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3           13.00    GGGGGGGAATTGG      6526    104676   GGGGGGGAATTGG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           13.00    AGGGGGAAATTGG      5873     12596   AGGGGGAAATTGG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5           13.00    GGTTAGGAATTCG      4553      7630   GGTTAGGAATTCG</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6           13.00    AGGGGAGAATTGG      4422     17971   AGCGGAGAATTGG</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

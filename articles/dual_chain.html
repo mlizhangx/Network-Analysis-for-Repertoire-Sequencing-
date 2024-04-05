@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -155,41 +155,41 @@ sequence (and similarly for <code>adj_mat_b</code>).</p>
 each of the alpha and beta chain sequences:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   cluster_id node_count mean_A_seq_length mean_B_seq_length mean_degree</span></span>
-<span><span class="co">#&gt; 1          1         15             12.13             12.87        2.60</span></span>
-<span><span class="co">#&gt; 2          2         13             13.00             13.08        4.00</span></span>
-<span><span class="co">#&gt; 3          3         16             13.00             13.94        5.81</span></span>
-<span><span class="co">#&gt; 4          4         10             12.00             12.00        2.90</span></span>
-<span><span class="co">#&gt; 5          5          3             13.00             14.00        1.67</span></span>
-<span><span class="co">#&gt; 6          6          3             13.00             14.00        2.00</span></span>
-<span><span class="co">#&gt;   max_degree A_seq_w_max_degree B_seq_w_max_degree agg_count max_count</span></span>
-<span><span class="co">#&gt; 1          7       AAAAAAAAATTC      AAAAAAAAATTCG        42         6</span></span>
-<span><span class="co">#&gt; 2         11      GGGGGGGAATTGG      GGGGGGGAATTGG        28         6</span></span>
-<span><span class="co">#&gt; 3         12      GGGGGGGAATTGG     GGGGGGGAATTGGG        49         6</span></span>
-<span><span class="co">#&gt; 4          6       AAAAAGAAATTG       AAAAAGAAATTG        39         7</span></span>
-<span><span class="co">#&gt; 5          2      AGGGGAGAATTGG     AGGGGAGAATTGGG        10         5</span></span>
-<span><span class="co">#&gt; 6          2      AAAAAAGAATTGC     AAAAAAGAATTGCG         4         2</span></span>
-<span><span class="co">#&gt;   A_seq_w_max_count B_seq_w_max_count diameter_length global_transitivity</span></span>
-<span><span class="co">#&gt; 1      AAAAAAAAATTC      AAAAAAAAATTC               6           0.2884615</span></span>
-<span><span class="co">#&gt; 2     GGGGTGGAATTGG     GGGGTGGAATTGG               7           0.3802817</span></span>
-<span><span class="co">#&gt; 3     GGGGAGAAATTGG    GGGGAGAAATTGGG               6           0.6328125</span></span>
-<span><span class="co">#&gt; 4      AAAGAAAAATTG      AAAGAAAAATTG               6           0.3750000</span></span>
-<span><span class="co">#&gt; 5     AGGGGAGAATTGG    AGGGGAGAATTGGG               3           0.0000000</span></span>
-<span><span class="co">#&gt; 6     AGAAAAGAATTGC    AGAAAAGAATTGCG               2           1.0000000</span></span>
-<span><span class="co">#&gt;   assortativity edge_density degree_centrality_index closeness_centrality_index</span></span>
-<span><span class="co">#&gt; 1   -0.16503588    0.1809524               0.3190476                  0.4497821</span></span>
-<span><span class="co">#&gt; 2   -0.15180055    0.2692308               0.3141026                  0.4357891</span></span>
-<span><span class="co">#&gt; 3   -0.08424855    0.3416667               0.3250000                  0.4650078</span></span>
-<span><span class="co">#&gt; 4   -0.33425414    0.3111111               0.3555556                  0.4889192</span></span>
-<span><span class="co">#&gt; 5   -1.00000000    0.6666667               0.3333333                  1.0000000</span></span>
-<span><span class="co">#&gt; 6           NaN    1.0000000               0.0000000                  0.0000000</span></span>
-<span><span class="co">#&gt;   eigen_centrality_index eigen_centrality_eigenvalue</span></span>
-<span><span class="co">#&gt; 1              0.6385488                    3.680389</span></span>
-<span><span class="co">#&gt; 2              0.6131393                    4.419380</span></span>
-<span><span class="co">#&gt; 3              0.5291669                    7.257172</span></span>
-<span><span class="co">#&gt; 4              0.6107669                    3.750958</span></span>
-<span><span class="co">#&gt; 5              0.5857864                    1.414214</span></span>
-<span><span class="co">#&gt; 6              0.0000000                    2.000000</span></span></code></pre></div>
+<span><span class="co">#&gt;   cluster_id node_count eigen_centrality_eigenvalue eigen_centrality_index</span></span>
+<span><span class="co">#&gt; 1          1         15                    3.680389           6.385488e-01</span></span>
+<span><span class="co">#&gt; 2          2         13                    4.419380           6.131393e-01</span></span>
+<span><span class="co">#&gt; 3          3         16                    7.257172           5.291669e-01</span></span>
+<span><span class="co">#&gt; 4          4         10                    3.750958           6.107669e-01</span></span>
+<span><span class="co">#&gt; 5          5          3                    1.414214           5.857864e-01</span></span>
+<span><span class="co">#&gt; 6          6          3                    2.000000           4.440892e-16</span></span>
+<span><span class="co">#&gt;   closeness_centrality_index degree_centrality_index edge_density</span></span>
+<span><span class="co">#&gt; 1                  0.4497821               0.3190476    0.1809524</span></span>
+<span><span class="co">#&gt; 2                  0.4357891               0.3141026    0.2692308</span></span>
+<span><span class="co">#&gt; 3                  0.4650078               0.3250000    0.3416667</span></span>
+<span><span class="co">#&gt; 4                  0.4889192               0.3555556    0.3111111</span></span>
+<span><span class="co">#&gt; 5                  1.0000000               0.3333333    0.6666667</span></span>
+<span><span class="co">#&gt; 6                  0.0000000               0.0000000    1.0000000</span></span>
+<span><span class="co">#&gt;   global_transitivity assortativity diameter_length max_degree mean_degree</span></span>
+<span><span class="co">#&gt; 1           0.2884615   -0.16503588               6          7        2.60</span></span>
+<span><span class="co">#&gt; 2           0.3802817   -0.15180055               7         11        4.00</span></span>
+<span><span class="co">#&gt; 3           0.6328125   -0.08424855               6         12        5.81</span></span>
+<span><span class="co">#&gt; 4           0.3750000   -0.33425414               6          6        2.90</span></span>
+<span><span class="co">#&gt; 5           0.0000000   -1.00000000               3          2        1.67</span></span>
+<span><span class="co">#&gt; 6           1.0000000           NaN               2          2        2.00</span></span>
+<span><span class="co">#&gt;   mean_A_seq_length mean_B_seq_length A_seq_w_max_degree B_seq_w_max_degree</span></span>
+<span><span class="co">#&gt; 1             12.13             12.87       AAAAAAAAATTC      AAAAAAAAATTCG</span></span>
+<span><span class="co">#&gt; 2             13.00             13.08      GGGGGGGAATTGG      GGGGGGGAATTGG</span></span>
+<span><span class="co">#&gt; 3             13.00             13.94      GGGGGGGAATTGG     GGGGGGGAATTGGG</span></span>
+<span><span class="co">#&gt; 4             12.00             12.00       AAAAAGAAATTG       AAAAAGAAATTG</span></span>
+<span><span class="co">#&gt; 5             13.00             14.00      AGGGGAGAATTGG     AGGGGAGAATTGGG</span></span>
+<span><span class="co">#&gt; 6             13.00             14.00      AAAAAAGAATTGC     AAAAAAGAATTGCG</span></span>
+<span><span class="co">#&gt;   max_count agg_count A_seq_w_max_count B_seq_w_max_count</span></span>
+<span><span class="co">#&gt; 1         6        42      AAAAAAAAATTC      AAAAAAAAATTC</span></span>
+<span><span class="co">#&gt; 2         6        28     GGGGTGGAATTGG     GGGGTGGAATTGG</span></span>
+<span><span class="co">#&gt; 3         6        49     GGGGAGAAATTGG    GGGGAGAAATTGGG</span></span>
+<span><span class="co">#&gt; 4         7        39      AAAGAAAAATTG      AAAGAAAAATTG</span></span>
+<span><span class="co">#&gt; 5         5        10     AGGGGAGAATTGG    AGGGGAGAATTGGG</span></span>
+<span><span class="co">#&gt; 6         2         4     AGAAAAGAATTGC    AGAAAAGAATTGCG</span></span></code></pre></div>
 <p>The remainder of the output and customization follows the <a href="buildRepSeqNetwork.html">general case for
 <code>buildRepSeqNetwork()</code></a>.</p>
   </main>

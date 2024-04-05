@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -239,7 +239,7 @@ where each element corresponds to a file containing a single sample.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">input_files</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 30</span></span>
 <span><span class="va">input_files</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] "/tmp/RtmplT9TZN/input_samples/Sample1.rds"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "/tmp/RtmpP2574R/input_samples/Sample1.rds"</span></span></code></pre></div>
 </div>
 <div class="section level5">
 <h5 id="file-format-of-sample-data">
@@ -766,14 +766,12 @@ cluster in the global network. It contains the following variables:</p>
 <code class="sourceCode R"><span><span class="co"># variables in the cluster metadata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">all_clusters</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "cluster_id"                  "node_count"                 </span></span>
-<span><span class="co">#&gt;  [3] "mean_seq_length"             "mean_degree"                </span></span>
-<span><span class="co">#&gt;  [5] "max_degree"                  "seq_w_max_degree"           </span></span>
-<span><span class="co">#&gt;  [7] "agg_count"                   "max_count"                  </span></span>
-<span><span class="co">#&gt;  [9] "seq_w_max_count"             "diameter_length"            </span></span>
-<span><span class="co">#&gt; [11] "global_transitivity"         "assortativity"              </span></span>
-<span><span class="co">#&gt; [13] "edge_density"                "degree_centrality_index"    </span></span>
-<span><span class="co">#&gt; [15] "closeness_centrality_index"  "eigen_centrality_index"     </span></span>
-<span><span class="co">#&gt; [17] "eigen_centrality_eigenvalue"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [3] "eigen_centrality_eigenvalue" "eigen_centrality_index"     </span></span>
+<span><span class="co">#&gt;  [5] "closeness_centrality_index"  "degree_centrality_index"    </span></span>
+<span><span class="co">#&gt;  [7] "edge_density"                "global_transitivity"        </span></span>
+<span><span class="co">#&gt;  [9] "assortativity"               "diameter_length"            </span></span>
+<span><span class="co">#&gt; [11] "max_degree"                  "mean_degree"                </span></span>
+<span><span class="co">#&gt; [13] "mean_seq_length"             "seq_w_max_degree"</span></span></code></pre></div>
 <p>These cluster properties are described <a href="https://mlizhangx.github.io/Network-Analysis-for-Repertoire-Sequencing-/articles/buildRepSeqNetwork.html#cluster-level-network-properties">here</a>.</p>
 </div>
 </div>

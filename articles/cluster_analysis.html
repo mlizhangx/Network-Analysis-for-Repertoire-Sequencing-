@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">NAIR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.3.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.4.9001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -188,23 +188,28 @@ cluster membership:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">net</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "cluster_id"                  "node_count"                 </span></span>
-<span><span class="co">#&gt;  [3] "mean_seq_length"             "mean_degree"                </span></span>
-<span><span class="co">#&gt;  [5] "max_degree"                  "seq_w_max_degree"           </span></span>
-<span><span class="co">#&gt;  [7] "agg_count"                   "max_count"                  </span></span>
-<span><span class="co">#&gt;  [9] "seq_w_max_count"             "diameter_length"            </span></span>
-<span><span class="co">#&gt; [11] "global_transitivity"         "assortativity"              </span></span>
-<span><span class="co">#&gt; [13] "edge_density"                "degree_centrality_index"    </span></span>
-<span><span class="co">#&gt; [15] "closeness_centrality_index"  "eigen_centrality_index"     </span></span>
-<span><span class="co">#&gt; [17] "eigen_centrality_eigenvalue"</span></span></code></pre></div>
+<span><span class="co">#&gt;  [3] "eigen_centrality_eigenvalue" "eigen_centrality_index"     </span></span>
+<span><span class="co">#&gt;  [5] "closeness_centrality_index"  "degree_centrality_index"    </span></span>
+<span><span class="co">#&gt;  [7] "edge_density"                "global_transitivity"        </span></span>
+<span><span class="co">#&gt;  [9] "assortativity"               "diameter_length"            </span></span>
+<span><span class="co">#&gt; [11] "max_degree"                  "mean_degree"                </span></span>
+<span><span class="co">#&gt; [13] "mean_seq_length"             "seq_w_max_degree"</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">net</span><span class="op">$</span><span class="va">cluster_data</span><span class="op">[</span> , <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   cluster_id node_count mean_seq_length mean_degree max_degree seq_w_max_degree</span></span>
-<span><span class="co">#&gt; 1          1         14           13.00        3.36          9    AAAAAAAAATTGC</span></span>
-<span><span class="co">#&gt; 2          2         28           12.96        8.43         18    GGGGGGGAATTGG</span></span>
-<span><span class="co">#&gt; 3          3          9           12.67        2.22          4     AGAAGAAAATTC</span></span>
-<span><span class="co">#&gt; 4          4          6           13.00        3.33          9    GGGGGGAAATTGG</span></span>
-<span><span class="co">#&gt; 5          5          6           12.00        2.17          3     AGGGAGGAATTC</span></span>
-<span><span class="co">#&gt; 6          6         25           12.00        4.60         10     AAAAAAAAATTG</span></span></code></pre></div>
+<span><span class="co">#&gt;   cluster_id node_count eigen_centrality_eigenvalue eigen_centrality_index</span></span>
+<span><span class="co">#&gt; 1          1         14                    3.627940              0.6572455</span></span>
+<span><span class="co">#&gt; 2          2         28                   11.831606              0.5524239</span></span>
+<span><span class="co">#&gt; 3          3          9                    2.238772              0.6748055</span></span>
+<span><span class="co">#&gt; 4          4          6                    2.278414              0.5237142</span></span>
+<span><span class="co">#&gt; 5          5          6                    2.228328              0.5707806</span></span>
+<span><span class="co">#&gt; 6          6         25                    5.885769              0.6291788</span></span>
+<span><span class="co">#&gt;   closeness_centrality_index degree_centrality_index</span></span>
+<span><span class="co">#&gt; 1                  0.5584465               0.3076923</span></span>
+<span><span class="co">#&gt; 2                  0.4703335               0.3333333</span></span>
+<span><span class="co">#&gt; 3                  0.2311674               0.1250000</span></span>
+<span><span class="co">#&gt; 4                  0.4266234               0.2000000</span></span>
+<span><span class="co">#&gt; 5                  0.3301948               0.2000000</span></span>
+<span><span class="co">#&gt; 6                  0.4012791               0.1983333</span></span></code></pre></div>
 <p>A brief description of each cluster-level property is given
 below:</p>
 <ul>
