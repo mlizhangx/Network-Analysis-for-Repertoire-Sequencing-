@@ -457,15 +457,15 @@ filterInputData <- function(
     min_seq_length = NULL,
     drop_matches = NULL,
     subset_cols = NULL,
-    count_col = deprecated(),
+    count_col = NULL,
     verbose = FALSE
 ) {
-  if (lifecycle::is_present(count_col)) {
-    lifecycle::deprecate_soft(
-      when = "1.0.1",
-      what = "filterInputData(count_col)",
-    )
-  }
+  # if (lifecycle::is_present(count_col)) {
+  #   lifecycle::deprecate_soft(
+  #     when = "1.0.1",
+  #     what = "filterInputData(count_col)",
+  #   )
+  # }
   data_name <- deparse(substitute(data))
   data <- as.data.frame(data)
   .MUST.isDataFrame(data, data_name)
@@ -473,7 +473,7 @@ filterInputData <- function(
   min_seq_length <- .check(min_seq_length, .isNonneg, NULL, ornull = TRUE)
   drop_matches <- .check(drop_matches, .isString, NULL, ornull = TRUE)
   subset_cols <- .checkDataColrefs(subset_cols, data, NULL)
-  # count_col <- .checkCountCol(count_col, data, NULL)
+  count_col <- .checkCountCol(count_col, data, NULL)
   msg <- .makemsg(verbose)
   msg("Input data contains ", nrow(data), " rows.")
   for (i in 1:length(seq_col)) {
@@ -513,18 +513,18 @@ filterInputData <- function(
   if (!is.null(subset_cols)) {
     data <- .subsetColumns(data, c(seq_col, subset_cols))
   }
-  # if (!is.null(count_col)) {
-  #   if (!is.numeric(data[[count_col]])) {
-  #     data[[count_col]] <- as.numeric(data[[count_col]])
-  #   }
-  #   NA_indices <- is.na(data[[count_col]])
-  #   if (sum(NA_indices) > 0) {
-  #     warning("dropping ", sum(NA_indices),
-  #             " rows containing NA/NaN values in count column", i
-  #     )
-  #     data <- data[!NA_indices, ]
-  #   }
-  # }
+  if (!is.null(count_col)) {
+    # if (!is.numeric(data[[count_col]])) {
+    #   data[[count_col]] <- as.numeric(data[[count_col]])
+    # }
+    NA_indices <- is.na(data[[count_col]])
+    if (sum(NA_indices) > 0) {
+      warning("dropping ", sum(NA_indices),
+              " rows containing NA/NaN values in count column", i
+      )
+      data <- data[!NA_indices, ]
+    }
+  }
   data
 }
 
