@@ -37,8 +37,11 @@ generateAdjacencyMatrix <- function(
         dist_cutoff, "...", newline = FALSE
     )
     if (method == "pattern") {
-      out <- .patAdjacencyMatSparse(seqs, dist_cutoff, "L", drop_isolated_nodes,
-                                    tmpfile
+      out <- RPatternJoin::similarityJoin(
+        seqs, dist_cutoff, "Levenshtein", "partition_pattern",
+        drop_deg_one = drop_isolated_nodes,
+        special_chars = FALSE,
+        output_format = "adj_matrix"
       )
     } else if (method == "sort") {
       out <- .sortAdjacencyMatSparse(seqs, dist_cutoff, "L",
@@ -55,8 +58,11 @@ generateAdjacencyMatrix <- function(
         dist_cutoff, "...", newline = FALSE
     )
     if (method == "pattern") {
-      out <- .patAdjacencyMatSparse(seqs, dist_cutoff, "H", drop_isolated_nodes,
-                                    tmpfile
+      out <- RPatternJoin::similarityJoin(
+        seqs, dist_cutoff, "Hamming", "partition_pattern",
+        drop_deg_one = drop_isolated_nodes,
+        special_chars = FALSE,
+        output_format = "adj_matrix"
       )
     } else if (method == "sort") {
       out <- .sortAdjacencyMatSparse(seqs, dist_cutoff, "H",
@@ -75,7 +81,7 @@ generateAdjacencyMatrix <- function(
   if (num_nodes == 0) {
     warning("No edges exist using the specified distance cutoff")
   } else {
-    if (drop_isolated_nodes) {
+    if (drop_isolated_nodes && method != "pattern") {
       msg("Network contains ", num_nodes,
           " nodes (after removing isolated nodes)."
       )

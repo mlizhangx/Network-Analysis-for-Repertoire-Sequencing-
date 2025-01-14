@@ -688,7 +688,7 @@ test_that("generateAdjacencyMatrix behaves as expected", {
       method = methodCutoffLim(method, 1)
     )
     expect_s4_class(mat2, "sparseMatrix")
-    expect_equal(mat, mat2)
+    expect_true(all.equal(mat, mat2, check.attributes = FALSE))
 
     mat <- matrix(1, nrow = 3, ncol = 3)
     mat[1, 3] <- mat[3, 1] <- 0
