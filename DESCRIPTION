@@ -1,13 +1,13 @@
 Package: NAIR
 Type: Package
 Title: Network Analysis of Immune Repertoire
-Version: 1.0.4.9001
+Version: 1.0.5
 Authors@R: c(
-    person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut", "cre")),
+    person("Brian", "Neal", email = "Brian.Neal@ucsf.edu", role = c("aut")),
     person("Hai", "Yang", email = "Hai.Yang@ucsf.edu", role = "aut"),
     person("Daniil", "Matveev", email = "dmatveev@sfsu.edu", role = "aut"),
     person("Phi Long", "Le", email = "PhiLong.Le@ucsf.edu", role = "aut"),
-    person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = c("cph", "aut")))
+    person("Li", "Zhang", email = "Li.Zhang@ucsf.edu", role = c("aut", "cre", "cph"))
 Description: Pipelines for studying the adaptive immune repertoire of T cells 
     and B cells via network analysis based on receptor sequence similarity. 
     Relate clinical outcomes to immune repertoires based on their network 
